@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # Backend service (Django)
+  backend:
+    build:
+      context: .
+      dockerfile: Backend/DockerFile
+    container_name: django_backend
+    environment:
+      - DEBUG=1
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOSTNAME}/${MYSQL_DATABASE}
+      - ALLOWED_HOSTS=localhost
+    volumes:
+      - ./Backend:/goldfren
+    ports:
+      - "8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mynetwork
+
+  # Frontend service (React) - COMMENTED OUT for testing purposes
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: Frontend/Dockerfile  # Path to the Dockerfile inside Frontend folder
+  #   container_name: react_frontend
+  #   environment:
+  #     - REACT_APP_API_URL=http://localhost:8000
+  #   volumes:
+  #     - ./Frontend:/frontend
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - mynetwork
+
+  # MySQL service
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    hostname: ${MYSQL_HOSTNAME}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  # Nginx service (for reverse proxy) - COMMENTED OUT for testing purposes
+  # nginx:
+  #   image: nginx:latest
+  #   container_name: nginx_proxy
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - ./Frontend/build:/usr/share/nginx/html
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - frontend
+  #     - backend
+  #   networks:
+  #     - mynetwork
+
+# Networks definition
+networks:
+  mynetwork:
+    driver: bridge
+
+# Volumes definition
+volumes:
+  mysql_data:
