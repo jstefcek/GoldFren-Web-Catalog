@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Backend service (Django)
   backend:
@@ -21,6 +19,12 @@ services:
         condition: service_healthy
     networks:
       - mynetwork
+    healthcheck:
+      test: ["CMD", "python", "manage.py", "check"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
   # Frontend service (React) - COMMENTED OUT for testing purposes
   # frontend:
@@ -42,7 +46,7 @@ services:
   # MySQL service
   mysql:
     image: mysql:8.0
-    container_name: mysql_container
+    container_name: mysql_database
     hostname: ${MYSQL_HOSTNAME}
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
