@@ -1,32 +1,34 @@
 # Adapter model definiton
-import base64
+from datetime import datetime
 
 # Class definition
 class Adapter():
-    def __init__(self, Sortiment: str, Kategorie: str, Obrazek: str, Cislo_Dilu: str, Typ: str, Prumer: int, Popis: str, Poznamka: str, Publikovat: bool, Aktualizovano: str, Aktualizoval: str):
-        self.Sortiment = Sortiment
-        self.Kategorie = Kategorie
-        self.Obrazek = Obrazek
-        self.Cislo_Dilu = Cislo_Dilu
-        self.Typ = Typ
-        self.Prumer = Prumer
-        self.Popis = Popis
-        self.Poznamka = Poznamka
-        self.Publikovat = Publikovat
-        self.Aktualizovano = Aktualizovano
-        self.Aktualizoval = Aktualizoval
+    def __init__(self, sortiment: str, kategorie: str, obrazek: str, vektor: str, cislo_dilu: str, typ: str, prumer: float, popis: str, poznamka: str, publikovat: bool, aktualizovano: datetime, aktualizoval: str):
+        self.sortiment = sortiment
+        self.kategorie = kategorie
+        self.obrazek = obrazek
+        self.vektor = vektor
+        self.cislo_dilu = cislo_dilu
+        self.typ = typ
+        self.prumer = prumer
+        self.popis = popis
+        self.poznamka = poznamka
+        self.publikovat = publikovat
+        self.aktualizovano = aktualizovano
+        self.aktualizoval = aktualizoval
     
     def to_dict(self):  
         return {
-            'Sortiment': self.Sortiment,
-            'Kategorie': self.Kategorie,
-            'Obrazek': self.Obrazek,
-            'Cislo_Dilu': self.Cislo_Dilu,
-            'Typ': self.Typ,
-            'Prumer': self.Prumer,
-            'Popis': self.Popis,
-            'Poznamka': self.Poznamka,
-            'Publikovat': self.Publikovat,
-            'Aktualizovano': self.Aktualizovano,
-            'Aktualizoval': self.Aktualizoval
+            'sortiment': self.sortiment,
+            'kategorie': self.kategorie,
+            'obrazek': self.obrazek,
+            'vektor': self.vektor,
+            'cislo_dilu': self.cislo_dilu,
+            'typ': self.typ,
+            'prumer': self.prumer,
+            'popis': self.popis,
+            'poznamka': self.poznamka,
+            'publikovat': self.publikovat,
+            'aktualizovano': self.aktualizovano,
+            'aktualizoval': self.aktualizoval
         }

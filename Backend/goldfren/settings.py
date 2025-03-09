@@ -89,7 +89,7 @@ MIGRATION_MODULES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv("MYSQL_NAME"),
+        'NAME': os.getenv("MYSQL_ROOT_NAME"),
         'USER': os.getenv("MYSQL_ROOT_USER"),
         'PASSWORD': os.getenv("MYSQL_ROOT_PASSWORD"),
         'HOST': os.getenv("MYSQL_HOSTNAME"),

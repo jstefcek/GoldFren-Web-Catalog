@@ -15,7 +15,7 @@ def get_adapters():
         cursor = conn.cursor()
         
         # Execute query
-        cursor.execute("SELECT * FROM goldfren.d_adapter Where Publikovat = 1")
+        cursor.execute("SELECT * FROM d_adapter Where Publikovat = 1")
         
         # Fetch all records
         records = cursor.fetchall()
@@ -27,17 +27,18 @@ def get_adapters():
         for record in records:
             # Create adapter object
             adapter = Adapter(
-                Sortiment=record[1],
-                Kategorie=record[2],
-                Obrazek=record[3],
-                Cislo_Dilu=record[4],
-                Typ=record[5],
-                Prumer=record[6],
-                Popis=record[7],
-                Poznamka=record[8],
-                Publikovat=record[9],
-                Aktualizovano=record[10],
-                Aktualizoval=record[11]
+                sortiment=record[1],
+                kategorie=record[2],
+                obrazek=record[3],
+                vektor=record[4],
+                cislo_dilu=record[5],
+                typ=record[6],
+                prumer=float(record[7]) if record[7] is not None else None,
+                popis=record[8],
+                poznamka=record[9],
+                publikovat=bool(record[10]),
+                aktualizovano=record[11],
+                aktualizoval=record[12]
             )
             
             # Append adapter object to list
@@ -48,7 +49,6 @@ def get_adapters():
         conn.close()
         
         # Return list of adapter objects
-        print(adapters)
         return adapters
     
     # Return None if connection fails
