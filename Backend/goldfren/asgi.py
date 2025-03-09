@@ -1,5 +1,5 @@
 """
-ASGI config for goldfren_web_catalog project.
+ASGI config for GoldFren project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'goldfren.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'GoldFren.settings')
 
 application = get_asgi_application()
