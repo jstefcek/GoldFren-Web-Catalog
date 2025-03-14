@@ -1,6 +1,7 @@
 # Business logic for the Adapter Service
 
 # Imports
+from datetime import datetime
 from Components.MySQL import connect
 from GoldFrenAPI.Models.Adapter import Adapter
 
@@ -37,7 +38,7 @@ def get_adapters():
                 popis=record[8],
                 poznamka=record[9],
                 publikovat=bool(record[10]),
-                aktualizovano=record[11],
+                aktualizovano=record[11] if isinstance(record[8], datetime) else None,
                 aktualizoval=record[12]
             )
             

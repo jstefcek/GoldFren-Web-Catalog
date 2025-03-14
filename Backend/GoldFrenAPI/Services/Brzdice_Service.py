@@ -1,6 +1,7 @@
 # Business logic for the Brzdice Service
 
 # Imports
+from datetime import datetime
 from Components.MySQL import connect
 from GoldFrenAPI.Models.Brzdice import Brzdic
 
@@ -35,7 +36,7 @@ def get_brzdice():
                 popis=record[6],
                 poznamka=record[7],
                 publikovat=bool(record[8]),
-                aktualizovano=record[9],
+                aktualizovano=record[9] if isinstance(record[8], datetime) else None,
                 aktualizoval=record[10]
             )
             

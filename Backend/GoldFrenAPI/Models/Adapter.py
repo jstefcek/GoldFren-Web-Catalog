@@ -18,17 +18,4 @@ class Adapter():
         self.aktualizoval = aktualizoval
     
     def to_dict(self):  
-        return {
-            'sortiment': self.sortiment,
-            'kategorie': self.kategorie,
-            'obrazek': self.obrazek,
-            'vektor': self.vektor,
-            'cislo_dilu': self.cislo_dilu,
-            'typ': self.typ,
-            'prumer': self.prumer,
-            'popis': self.popis,
-            'poznamka': self.poznamka,
-            'publikovat': self.publikovat,
-            'aktualizovano': self.aktualizovano,
-            'aktualizoval': self.aktualizoval
-        }
+        return self.__dict__
