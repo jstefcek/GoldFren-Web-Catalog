@@ -28,6 +28,7 @@ def get_brzdice():
         for record in records:
             # Create brzdic object
             brzdic = Brzdic(
+                id=record[0],
                 sortiment=record[1],
                 kategorie=record[2],
                 obrazek=record[3],

@@ -28,6 +28,7 @@ def get_adapters():
         for record in records:
             # Create adapter object
             adapter = Adapter(
+                id=record[0],
                 sortiment=record[1],
                 kategorie=record[2],
                 obrazek=record[3],
