@@ -28,7 +28,7 @@ def get_adapters():
         for record in records:
             # Create adapter object
             adapter = Adapter(
-                id=record[0],
+                kod=record[0],
                 sortiment=record[1],
                 kategorie=record[2],
                 obrazek=record[3],
@@ -87,7 +87,7 @@ def get_adapter(adapter_id):
         # Check if record exists
         if record:
             return Adapter(
-                id=record[0],
+                kod=record[0],
                 sortiment=record[1],
                 kategorie=record[2],
                 obrazek=record[3],

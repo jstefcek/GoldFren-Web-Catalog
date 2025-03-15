@@ -3,9 +3,9 @@ from datetime import datetime
 
 # Class definition
 class Kotouc():
-    def __init__(self, id_kod: int, sortiment: str, kategorie: str, obrazek: str, vektor: str, cislo_dilu: str, typ: str, konkurence_braking: str, konkurence_ngbrakes: str,
+    def __init__(self, kod: int, sortiment: str, kategorie: str, obrazek: str, vektor: str, cislo_dilu: str, typ: str, konkurence_braking: str, konkurence_ngbrakes: str,
                  od: int, hd: int, id: int, thk: int, poznamka: str, publikovat: bool, aktualizovano: datetime, aktualizoval: str):
-        self.id_kod = id_kod
+        self.kod = kod
         self.sortiment = sortiment
         self.kategorie = kategorie
         self.obrazek = obrazek

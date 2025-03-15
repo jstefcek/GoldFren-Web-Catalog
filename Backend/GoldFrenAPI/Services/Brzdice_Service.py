@@ -28,7 +28,7 @@ def get_brzdice():
         for record in records:
             # Create brzdic object
             brzdic = Brzdic(
-                id=record[0],
+                kod=record[0],
                 sortiment=record[1],
                 kategorie=record[2],
                 obrazek=record[3],
@@ -50,6 +50,135 @@ def get_brzdice():
         
         # Return list of brzdice objects
         return brzdice
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None
+    
+# Function to get a single brzidc by ID
+def get_brzdic(brzdic_id):
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is not None:
+        # Create cursor object
+        cursor = conn.cursor()
+        
+        # Prepare SQL query
+        cursor.execute("SELECT * FROM v_brzdice_detail WHERE kod = %s AND Publikovat = 1", (brzdic_id,))
+        
+        # Fetch single record
+        try:
+            record = cursor.fetchone()
+        
+        except Exception as ex:
+            print(ex)
+            record = None
+        
+        finally:
+            # Close cursor and connection
+            cursor.close()
+            conn.close()
+        
+        # Check if record exists
+        if record:
+            return Brzdic(
+                kod=record[0],
+                sortiment=record[1],
+                kategorie=record[2],
+                obrazek=record[3],
+                vektor=record[4],
+                cislo_dilu=record[5],
+                popis=record[6],
+                poznamka=record[7],
+                publikovat=bool(record[8]),
+                aktualizovano=record[9] if isinstance(record[8], datetime) else None,
+                aktualizoval=record[10]
+            )
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None
+    
+# Function to update an existing brzdic
+def update_brzdic(brzdic_id, data):
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is not None:
+        # Create cursor object
+        cursor = conn.cursor()
+        
+        # Prepare SQL query
+        query = """
+            UPDATE d_brzdice 
+            SET kategorie = %s, obrazek = %s, vektor = %s, 
+                cislo_dilu = %s, popis = %s, poznamka = %s, 
+                publikovat = %s, aktualizovano = NOW(), aktualizoval = %s 
+            WHERE kod = %s
+        """
+        
+        # Execute query
+        try:
+            cursor.execute(query, (
+                data["kategorie"], data["obrazek"], data["vektor"],
+                data["cislo_dilu"], data["popis"],data["poznamka"], 
+                data["publikovat"], data["aktualizoval"], brzdic_id
+            ))
+            conn.commit()
+            return True
+        
+        except Exception as ex:
+            print(ex)
+       
+        finally:
+            cursor.close()
+            conn.close()
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None
+    
+# Function to create a new adapter
+def create_brzdic(data):
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is not None:
+        # Create cursor object
+        cursor = conn.cursor()
+        
+        # Prepare SQL query
+        sql_query = """
+            INSERT INTO d_brzdice (sortiment, kategorie, obrazek, vektor, 
+                cislo_dilu, popis, poznamka, publikovat, aktualizovano, aktualizoval) 
+            VALUES (3, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
+        """
+        
+        # Execute query
+        try:
+            cursor.execute(sql_query, (
+                data["kategorie"], data["obrazek"], data["vektor"],
+                data["cislo_dilu"], data["popis"],data["poznamka"], 
+                data["publikovat"], data["aktualizoval"]
+            ))
+            conn.commit()
+            new_id = cursor.lastrowid
+
+        except Exception as ex:
+            print(ex)
+        
+        finally:
+            cursor.close()
+            conn.close()
+        
+        return new_id
     
     # Return None if connection fails
     else:

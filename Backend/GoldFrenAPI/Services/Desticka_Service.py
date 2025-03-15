@@ -25,7 +25,7 @@ def get_desticky():
         for record in records:
             # Create desticka object with main attributes
             desticka = Desticka(
-                id=record[0],
+                kod=record[0],
                 sortiment=record[1],
                 kategorie=record[2],
                 obrazek=record[3],

@@ -28,7 +28,7 @@ def get_kotouce():
         for record in records:
             # Create Kotouc object
             kotouc = Kotouc(
-                id_kod=record[0],
+                kod=record[0],
                 sortiment=record[1],
                 kategorie=record[2],
                 obrazek=record[3],

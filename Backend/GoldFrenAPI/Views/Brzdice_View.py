@@ -1,8 +1,15 @@
 # Brzdice RestAPI view definiton
 
 # Imports
-from django.http import JsonResponse
-from GoldFrenAPI.Services.Brzdice_Service import get_brzdice as get_all_brzdice
+import json
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
+from GoldFrenAPI.Services.Brzdice_Service import (
+    get_brzdice as get_all_brzdice,
+    get_brzdic,
+    update_brzdic,
+    create_brzdic
+    )
 
 # Function to get all brzdice
 def get_brzdice(request):
@@ -11,9 +18,57 @@ def get_brzdice(request):
     """
     # Get all adapters
     brzdice_objects = get_all_brzdice()
-    
-    # Convert Adapter objects to dictionaries
     brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
-    
-    # Return JSON response
     return JsonResponse(brzdice, status=200, safe=False)
+
+# Function to get a single adapter by ID
+def get_brzdic_by_id(request, brzdic_id):
+    """
+    This function returns a single brzdic by ID.
+    """
+    brzdic = get_brzdic(brzdic_id)
+    if brzdic:
+        return JsonResponse(brzdic.to_dict(), status=200)
+    return JsonResponse({"error": "Brzdic not found"}, status=404)
+
+# Function to update an adapter
+@csrf_exempt
+def update_brzdic_view(request, brzdic_id):
+    """
+    This function updates an existing brzdic.
+    """
+    if request.method != "PUT":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Parse JSON request body
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Update brzdic
+    success = update_brzdic(brzdic_id, data)
+    if success:
+        return JsonResponse({"message": "Brzdic updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update brdzic"}, status=500)
+
+# Function to create a new brzdic
+@csrf_exempt
+def create_brzdic_view(request):
+    """
+    This function creates a new brzdic.
+    """
+    if request.method != "POST":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Parse JSON request body
+    try:
+        data = json.loads(request.body)  # Parse JSON request body
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Create brzdic
+    new_id = create_brzdic(data)
+    if new_id:
+        return JsonResponse({"message": "Brzdic created successfully", "brzdic_id": new_id}, status=201)
+    return JsonResponse({"error": "Failed to create brzdic"}, status=500)

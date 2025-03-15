@@ -3,9 +3,6 @@
 # Imports
 import json
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from GoldFrenAPI.Services.Adapter_Service import (
     get_adapters as get_all_adapters,
@@ -36,7 +33,6 @@ def get_adapter_by_id(request, adapter_id):
 
 # Function to update an adapter
 @csrf_exempt
-@login_required
 def update_adapter_view(request, adapter_id):
     """
     This function updates an existing adapter.
@@ -49,9 +45,6 @@ def update_adapter_view(request, adapter_id):
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-    # Inject the logged-in user ID
-    data["aktualizoval"] = request.user.id
     
     # Update adapter
     success = update_adapter(adapter_id, data)
@@ -61,7 +54,6 @@ def update_adapter_view(request, adapter_id):
 
 # Function to create a new adapter
 @csrf_exempt
-@login_required
 def create_adapter_view(request):
     """
     This function creates a new adapter.
@@ -74,9 +66,6 @@ def create_adapter_view(request):
         data = json.loads(request.body)  # Parse JSON request body
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-    # Inject the logged-in user ID
-    data["aktualizoval"] = request.user.id
     
     # Create adapter
     new_id = create_adapter(data)

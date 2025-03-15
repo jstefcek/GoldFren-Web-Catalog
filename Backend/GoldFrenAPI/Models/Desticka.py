@@ -26,9 +26,9 @@ class KonkurenceDetail:
         return self.__dict__
 
 class Desticka:
-    def __init__(self, id: int, sortiment: int, kategorie: int, obrazek: str, vektor: str,
+    def __init__(self, kod: int, sortiment: int, kategorie: int, obrazek: str, vektor: str,
                  cislo_dilu: str, typ: int, publikovat: bool, aktualizovano: datetime, aktualizoval: int):
-        self.id = id
+        self.kod = kod
         self.sortiment = sortiment
         self.kategorie = kategorie
         self.obrazek = obrazek
@@ -57,7 +57,7 @@ class Desticka:
 
     def to_dict(self):
         return {
-            "id": self.id,
+            "kod": self.kod,
             "sortiment": self.sortiment,
             "kategorie": self.kategorie,
             "obrazek": self.obrazek,
