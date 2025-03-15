@@ -63,7 +63,7 @@ def create_brzdic_view(request):
 
     # Parse JSON request body
     try:
-        data = json.loads(request.body)  # Parse JSON request body
+        data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     
