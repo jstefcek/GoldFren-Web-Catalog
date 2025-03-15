@@ -146,3 +146,44 @@ FROM d_desticka d
 LEFT JOIN c_sortiment s on s.kod = d.sortiment
 LEFT JOIN c_kategorie k on k.kod = d.kategorie
 LEFT JOIN c_desticka_typ dt on dt.kod = d.typ;
+
+-- Table structure for table 'd_kotouc'
+CREATE TABLE IF NOT EXISTS `d_kotouc` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod kotouce',
+  `sortiment` int DEFAULT NULL COMMENT 'Kod sortimentu',
+  `kategorie` int DEFAULT NULL COMMENT 'Kod kategorie',
+  `obrazek` varchar(255) DEFAULT NULL COMMENT 'Obrazek kotouce',
+  `vektor` varchar(255) DEFAULT NULL COMMENT 'Vektor kotouce',
+  `cislo_dilu` varchar(255) DEFAULT NULL COMMENT 'Cislo dilu kotouce',
+  `typ` smallint DEFAULT NULL COMMENT 'Typ kotouce',
+  `konkurence_braking` varchar(255) DEFAULT NULL COMMENT 'Konkurence Braking',
+  `konkurence_ngbrakes` varchar(255) DEFAULT NULL COMMENT 'Konkurence NGBrakes',
+  `od` decimal(5,2) DEFAULT NULL COMMENT 'OD',
+  `hd` decimal(5,2) DEFAULT NULL COMMENT 'HD',
+  `id` decimal(5,2) DEFAULT NULL COMMENT 'ID',
+  `thk` decimal(5,2) DEFAULT NULL COMMENT 'THK',
+  `poznamka` text DEFAULT NULL COMMENT 'Poznamka ke kotouci',
+  `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
+  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  PRIMARY KEY (`kod`),
+  UNIQUE KEY `cislo_dilu` (`cislo_dilu`),
+  CONSTRAINT `FK_KOTC_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`)
+) COMMENT='Tabulka kotoucu';
+
+-- Table structure for table 'c_kotouc_typ'
+CREATE TABLE `c_kotouc_typ` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod typu kotouce',
+  `nazev` varchar(255) NOT NULL COMMENT 'Nazev typu kotouce',
+  PRIMARY KEY (`kod`)
+) COMMENT='Tabulka typu kotoucu';
+
+-- View structure for view 'v_kotouc_detail'
+CREATE OR REPLACE VIEW v_kotouc_detail AS
+SELECT k.kod, s.nazev as sortiment, ka.nazev as kategorie, k.obrazek, k.vektor, k.cislo_dilu, kt.nazev as typ, 
+k.konkurence_braking, k.konkurence_ngbrakes, k.od, k.hd, k.id, k.thk, k.poznamka, 
+k.publikovat, k.aktualizovano, k.aktualizoval
+FROM d_kotouc k
+LEFT JOIN c_sortiment s on s.kod = k.sortiment
+LEFT JOIN c_kategorie ka on ka.kod = k.kategorie
+LEFT JOIN c_kotouc_typ kt on kt.kod = k.typ;
