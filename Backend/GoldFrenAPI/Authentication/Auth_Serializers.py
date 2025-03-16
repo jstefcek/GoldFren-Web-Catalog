@@ -34,7 +34,6 @@ class GroupBasedTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'first_name': self.user.first_name,
                 'last_name': self.user.last_name,
                 'email': self.user.email,
-                'group': token['group'],
             }
         
         # Update the response data with our customized fields
