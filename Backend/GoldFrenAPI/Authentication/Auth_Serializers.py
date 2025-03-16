@@ -13,22 +13,32 @@ load_dotenv()
 class GroupBasedTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-        # Remove the refresh token from the response.
+       
+        # Remove the refresh token from the response
         data.pop('refresh', None)
         token = self.get_token(self.user)
-        data.update({
-            'user': {
+        group = token['group']
+        
+        # Base response data that's common for all users
+        base_data = {
+            'generated': timezone.now(),
+            'expire': token['exp'],
+            'lifetime_seconds': token['lifetime_seconds'],
+            'expire_date': timezone.now() + timedelta(seconds=token['lifetime_seconds']),
+        }
+        
+        # Only add user information if the user is not in the External group
+        if group != "External":
+            base_data['user'] = {
                 'id': self.user.id,
                 'first_name': self.user.first_name,
                 'last_name': self.user.last_name,
                 'email': self.user.email,
                 'group': token['group'],
-            },
-            'generated': timezone.now(),
-            'expire': token['exp'],
-            'lifetime_seconds': token['lifetime_seconds'],
-            'expire_date': timezone.now() + timedelta(seconds=token['lifetime_seconds']),
-        })
+            }
+        
+        # Update the response data with our customized fields
+        data.update(base_data)
         return data
 
     @classmethod
@@ -36,10 +46,10 @@ class GroupBasedTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         # Check user groups and set token lifetime accordingly.
         if user.groups.filter(name="External").exists():
-            lifetime_seconds = int(os.getenv("EXTERNAL_TOKEN_LIFETIME", "300"))
+            lifetime_seconds = int(os.getenv("EXTERNAL_TOKEN_LIFETIME", "1800"))
             group = "External"
         elif user.groups.filter(name="Internal").exists():
-            lifetime_seconds = int(os.getenv("INTERNAL_TOKEN_LIFETIME", "1800"))
+            lifetime_seconds = int(os.getenv("INTERNAL_TOKEN_LIFETIME", "10800"))
             group = "Internal"
         else:
             raise ValueError("User is not in a valid group")
