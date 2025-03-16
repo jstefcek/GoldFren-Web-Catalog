@@ -2,8 +2,10 @@
 
 # Imports
 import json
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.views.decorators.csrf import csrf_exempt
 from GoldFrenAPI.Services.Adapter_Service import (
     get_adapters as get_all_adapters,
     get_adapter,
@@ -12,6 +14,7 @@ from GoldFrenAPI.Services.Adapter_Service import (
 )
 
 # Function to get all adapters
+@api_view(['GET'])
 def get_adapters(request):
     """
     This function will return all adapters from the database
@@ -22,6 +25,7 @@ def get_adapters(request):
     return JsonResponse(adapters, status=200, safe=False)
 
 # Function to get a single adapter by ID
+@api_view(['GET'])
 def get_adapter_by_id(request, adapter_id):
     """
     This function returns a single adapter by ID.
@@ -32,7 +36,8 @@ def get_adapter_by_id(request, adapter_id):
     return JsonResponse({"error": "Adapter not found"}, status=404)
 
 # Function to update an adapter
-@csrf_exempt
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsInternalUser])
 def update_adapter_view(request, adapter_id):
     """
     This function updates an existing adapter.
@@ -53,7 +58,8 @@ def update_adapter_view(request, adapter_id):
     return JsonResponse({"error": "Failed to update adapter"}, status=500)
 
 # Function to create a new adapter
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsInternalUser])
 def create_adapter_view(request):
     """
     This function creates a new adapter.

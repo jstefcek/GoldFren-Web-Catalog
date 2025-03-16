@@ -2,10 +2,12 @@
 URL configuration for GoldFren project.
 """
 from django.contrib import admin
-from django.contrib.auth.views import LoginView
 from django.urls import include, path
+from GoldFrenAPI.Authentication.Auth_View import Login_View, Register_User
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/goldfren/', include('GoldFrenAPI.urls')),
+    path('api/goldfren/internal/', include('GoldFrenAPI.urls')),
+    path('auth/token/', Login_View.as_view(), name='token_obtain_pair'),
+    path('auth/register/', Register_User, name='Register_User'),
 ]

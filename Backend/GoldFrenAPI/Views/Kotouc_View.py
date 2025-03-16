@@ -2,8 +2,10 @@
 
 # Imports
 import json
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.views.decorators.csrf import csrf_exempt
 from GoldFrenAPI.Services.Kotouc_Service import (
     get_kotouce as get_all_kotouce,
     get_kotouc,
@@ -12,6 +14,7 @@ from GoldFrenAPI.Services.Kotouc_Service import (
 )
 
 # Function to get all koutce
+@api_view(['GET'])
 def get_kotouce(request):
     """
     This function will return all kotouce from the database
@@ -22,6 +25,7 @@ def get_kotouce(request):
     return JsonResponse(kotouce, status=200, safe=False)
 
 # Function to get a single kotouc by ID
+@api_view(['GET'])
 def get_kotouc_by_id(request, kotouc_id):
     """
     This function returns a single kotouc by ID.
@@ -32,7 +36,8 @@ def get_kotouc_by_id(request, kotouc_id):
     return JsonResponse({"error": "Kotouc not found"}, status=404)
 
 # Function to update an kotouc
-@csrf_exempt
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsInternalUser])
 def update_kotouc_view(request, kotouc_id):
     """
     This function updates an existing adapter.
@@ -57,7 +62,8 @@ def update_kotouc_view(request, kotouc_id):
     return JsonResponse({"error": "Failed to update adapter"}, status=500)
 
 # Function to create a new adapter
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsInternalUser])
 def create_kotouc_view(request):
     """
     This function creates a new kotouc.

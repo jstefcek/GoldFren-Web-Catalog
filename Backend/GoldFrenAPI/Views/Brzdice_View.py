@@ -2,8 +2,10 @@
 
 # Imports
 import json
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.views.decorators.csrf import csrf_exempt
 from GoldFrenAPI.Services.Brzdice_Service import (
     get_brzdice as get_all_brzdice,
     get_brzdic,
@@ -12,6 +14,7 @@ from GoldFrenAPI.Services.Brzdice_Service import (
     )
 
 # Function to get all brzdice
+@api_view(['GET'])
 def get_brzdice(request):
     """
     This function will return all brzdice from the database
@@ -22,6 +25,7 @@ def get_brzdice(request):
     return JsonResponse(brzdice, status=200, safe=False)
 
 # Function to get a single adapter by ID
+@api_view(['GET'])
 def get_brzdic_by_id(request, brzdic_id):
     """
     This function returns a single brzdic by ID.
@@ -32,7 +36,8 @@ def get_brzdic_by_id(request, brzdic_id):
     return JsonResponse({"error": "Brzdic not found"}, status=404)
 
 # Function to update an adapter
-@csrf_exempt
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsInternalUser])
 def update_brzdic_view(request, brzdic_id):
     """
     This function updates an existing brzdic.
@@ -53,7 +58,8 @@ def update_brzdic_view(request, brzdic_id):
     return JsonResponse({"error": "Failed to update brdzic"}, status=500)
 
 # Function to create a new brzdic
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsInternalUser])
 def create_brzdic_view(request):
     """
     This function creates a new brzdic.

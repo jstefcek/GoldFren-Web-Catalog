@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'GoldFrenAPI',
 ]
@@ -81,6 +82,13 @@ CORS_ALLOWED_ORIGINS = [
 
 MIGRATION_MODULES = {
     'GoldFrenAPI': None, 
+}
+
+# Django REST framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
 }
 
 # Database
