@@ -147,8 +147,8 @@ LEFT JOIN c_sortiment s on s.kod = d.sortiment
 LEFT JOIN c_kategorie k on k.kod = d.kategorie
 LEFT JOIN c_desticka_typ dt on dt.kod = d.typ;
 
--- Table structure for table 'd_kotouc'
-CREATE TABLE IF NOT EXISTS `d_kotouc` (
+-- Table structure for table 'd_kotouce'
+CREATE TABLE IF NOT EXISTS `d_kotouce` (
   `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod kotouce',
   `sortiment` int DEFAULT NULL COMMENT 'Kod sortimentu',
   `kategorie` int DEFAULT NULL COMMENT 'Kod kategorie',
@@ -183,7 +183,7 @@ CREATE OR REPLACE VIEW v_kotouc_detail AS
 SELECT k.kod, s.nazev as sortiment, ka.nazev as kategorie, k.obrazek, k.vektor, k.cislo_dilu, kt.nazev as typ, 
 k.konkurence_braking, k.konkurence_ngbrakes, k.od, k.hd, k.id, k.thk, k.poznamka, 
 k.publikovat, k.aktualizovano, k.aktualizoval
-FROM d_kotouc k
+FROM d_kotouce k
 LEFT JOIN c_sortiment s on s.kod = k.sortiment
 LEFT JOIN c_kategorie ka on ka.kod = k.kategorie
 LEFT JOIN c_kotouc_typ kt on kt.kod = k.typ;

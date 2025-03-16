@@ -61,3 +61,141 @@ def get_kotouce():
     else:
         print("Connection failed")
         return None
+    
+# Function to get a single kotouc by ID
+def get_kotouc(kotouc_id):
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is not None:
+        # Create cursor object
+        cursor = conn.cursor()
+        
+        # Prepare SQL query
+        cursor.execute("SELECT * FROM v_kotouc_detail WHERE kod = %s AND Publikovat = 1", (kotouc_id,))
+        
+        # Fetch single record
+        try:
+            record = cursor.fetchone()
+        
+        except Exception as ex:
+            print(ex)
+            record = None
+        
+        finally:
+            # Close cursor and connection
+            cursor.close()
+            conn.close()
+        
+        # Check if record exists
+        if record:
+            return Kotouc(
+                kod=record[0],
+                sortiment=record[1],
+                kategorie=record[2],
+                obrazek=record[3],
+                vektor=record[4],
+                cislo_dilu=record[5],
+                typ=record[6],
+                konkurence_braking=record[7],
+                konkurence_ngbrakes=record[8],
+                od=float(record[9]) if record[9] is not None else None,
+                hd=float(record[10]) if record[10] is not None else None,
+                id=float(record[11]) if record[11] is not None else None,
+                thk=float(record[12]) if record[12] is not None else None,
+                poznamka=record[13],
+                publikovat=bool(record[14]),
+                aktualizovano=record[15] if isinstance(record[15], datetime) else None,
+                aktualizoval=record[16]
+            )
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None
+
+# Function to update an existing kotouc
+def update_kotouc(kotouc_id, data):
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is not None:
+        # Create cursor object
+        cursor = conn.cursor()
+        
+        # Prepare SQL query
+        query = """
+            UPDATE d_kotouce
+            SET kategorie = %s, obrazek = %s, vektor = %s, 
+                cislo_dilu = %s, typ = %s, konkurence_braking = %s, konkurence_ngbrakes = %s, 
+                od = %s, hd = %s, id = %s, thk = %s, poznamka = %s, publikovat = %s, 
+                aktualizovano = NOW(), aktualizoval = %s 
+            WHERE kod = %s
+        """
+        
+        # Execute query 
+        try:
+            cursor.execute(query, (
+                data["kategorie"], data["obrazek"], data["vektor"],
+                data["cislo_dilu"], data["typ"], data["konkurence_braking"], data["konkurence_ngbrakes"],
+                data.get("od"), data.get("hd"), data.get("id"), data.get("thk"),
+                data["poznamka"], data["publikovat"], data["aktualizoval"], kotouc_id
+            ))
+            conn.commit()
+            return True
+        
+        except Exception as ex:
+            print(ex)
+       
+        finally:
+            cursor.close()
+            conn.close()
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None
+
+# Function to create a new kotouc
+def create_kotouc(data):
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is not None:
+        # Create cursor object
+        cursor = conn.cursor()
+        
+        # Prepare SQL query
+        sql_query = """
+            INSERT INTO d_kotouce (sortiment, kategorie, obrazek, vektor, cislo_dilu, typ, konkurence_braking, 
+            konkurence_ngbrakes, od, hd, id, thk, poznamka, publikovat, aktualizovano, aktualizoval) 
+            VALUES (2, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
+        """
+        
+        # Execute query
+        try:
+            cursor.execute(sql_query, (
+                data["kategorie"], data["obrazek"], data["vektor"],
+                data["cislo_dilu"], data["typ"], data["konkurence_braking"], data["konkurence_ngbrakes"],
+                data.get("od"), data.get("hd"), data.get("id"), data.get("thk"),
+                data["poznamka"], data["publikovat"], data["aktualizoval"]
+            ))
+            conn.commit()
+            new_id = cursor.lastrowid
+
+        except Exception as ex:
+            print(ex)
+        
+        finally:
+            cursor.close()
+            conn.close()
+        
+        return new_id
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None
