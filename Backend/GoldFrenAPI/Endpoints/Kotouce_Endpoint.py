@@ -1,7 +1,10 @@
 # Imports
 from django.urls import path
 from GoldFrenAPI.Views.Kotouc_View import (
-    get_kotouce, get_kotouc_by_id, update_kotouc_view, create_kotouc_view
+    get_kotouce, 
+    get_kotouc_by_id, 
+    update_kotouc_view, 
+    create_kotouc_view
 )
 
 # URL patterns

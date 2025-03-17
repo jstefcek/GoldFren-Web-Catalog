@@ -8,7 +8,8 @@ from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from django.http import JsonResponse, HttpResponseBadRequest
 from GoldFrenAPI.Services.Desticka_Service import (
     get_desticky as get_all_desticky,
-    get_desticka
+    get_desticka,
+    update_desticka
 )
 
 # Function to get all desticky
@@ -32,3 +33,29 @@ def get_desticka_by_id(request, desticka_id):
     if desticka:
         return JsonResponse(desticka.to_dict(), status=200)
     return JsonResponse({"error": "Desticka not found"}, status=404)
+
+# Function to update an desticka
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def update_desticka_view(request, desticka_id):
+    """
+    This function updates an existing desticka.
+    """
+    if request.method != "PUT":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Parse JSON request body
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Update adapter
+    try:
+        success = update_desticka(desticka_id, data)
+    except Exception as ex:
+        print(ex)
+
+    if success:
+        return JsonResponse({"message": "Desticka updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update adapter"}, status=500)

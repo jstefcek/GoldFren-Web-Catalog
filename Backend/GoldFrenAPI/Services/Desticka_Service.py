@@ -143,3 +143,56 @@ def get_desticka(desticka_id):
     else:
         print("Connection failed")
         return None
+    
+# Function to update an existing desticka
+def update_desticka(desticka_id, data):
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is not None:
+        # Create cursor object
+        cursor = conn.cursor()
+        
+        # Prepare SQL query
+        query = """
+            UPDATE d_desticka
+            SET kategorie=%s, obrazek=%s, vektor=%s, cislo_dilu=%s, typ=%s, plech_a_material=%s, plech_a_tloustka=%s, 
+                plech_a_matrice=%s, plech_b_material=%s, plech_b_tloustka=%s, plech_b_matrice=%s, izolator_a_material=%s, 
+                izolator_a_tloustka=%s, izolator_a_matrice=%s, izolator_b_material=%s, izolator_b_tloustka=%s, izolator_b_matrice=%s, 
+                segment_a_material=%s, segment_a_tloustka=%s, segment_a_matrice=%s, segment_b_material=%s, segment_b_tloustka=%s, 
+                segment_b_matrice=%s, konkurence_sbs=%s, konkurence_ebc=%s, konkurence_ferodo=%s, konkurence_a2z=%s, 
+                konkurence_rapco=%s, konkurence_grove=%s, konkurence_cleveland=%s, konkurence_matco=%s, material=%s, poznamka=%s, 
+                oem_cisla=%s, obchodni_nazev=%s, publikovat=%s, aktualizovano=NOW(), aktualizoval=%s 
+            WHERE kod = %s
+        """
+        
+        # Execute query 
+        try:
+            cursor.execute(query, (
+                data["kategorie"], data["obrazek"], data["vektor"], data["cislo_dilu"], data["typ"], 
+                data["material"]["plech_a"]["tloustka"], data["material"]["plech_a"]["material"], data["material"]["plech_a"]["matrice"],
+                data["material"]["plech_b"]["tloustka"], data["material"]["plech_b"]["material"], data["material"]["plech_b"]["matrice"],
+                data["material"]["izolator_a"]["material"], data["material"]["izolator_a"]["tloustka"], data["material"]["izolator_a"]["matrice"],
+                data["material"]["izolator_b"]["material"], data["material"]["izolator_b"]["tloustka"], data["material"]["izolator_b"]["matrice"],
+                data["material"]["segment_a"]["material"], data["material"]["segment_a"]["tloustka"], data["material"]["segment_a"]["matrice"],
+                data["material"]["segment_b"]["material"], data["material"]["segment_b"]["tloustka"], data["material"]["segment_b"]["matrice"],
+                data["konkurence"]["sbs"], data["konkurence"]["ebc"], data["konkurence"]["ferodo"], data["konkurence"]["a2z"],
+                data["konkurence"]["rapco"], data["konkurence"]["grove"], data["konkurence"]["cleveland"], data["konkurence"]["matco"], 
+                data["material_text"], data["poznamka"], data["oem_cisla"], data["obchodni_nazev"],
+                data["publikovat"], data["aktualizoval"], desticka_id
+            ))
+            conn.commit()
+            return True
+        
+        except Exception as ex:
+            print(ex)
+       
+        finally:
+            cursor.close()
+            conn.close()
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None
