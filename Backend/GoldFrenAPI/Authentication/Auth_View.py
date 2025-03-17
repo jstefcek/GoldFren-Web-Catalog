@@ -14,11 +14,9 @@ class Login_View(TokenObtainPairView):
         logger = logging.getLogger(__name__)
         auth_header = request.META.get('HTTP_AUTHORIZATION', '')
         
-        error_response = Response(
-            {'error': 'Unauthorized access attempt'},  # Changed to English but keep as needed
-            status=status.HTTP_401_UNAUTHORIZED
-        )
+        error_response = Response( {'error': 'Unauthorized access attempt'},  status=status.HTTP_401_UNAUTHORIZED)
         
+        # Check is Basic auth header is present
         if not auth_header.startswith('Basic '):
             logger.warning("Authentication attempt without Basic auth header")
             return error_response
@@ -28,11 +26,12 @@ class Login_View(TokenObtainPairView):
             base64_credentials = auth_header.split(' ')[1]
             decoded_credentials = base64.b64decode(base64_credentials).decode('utf-8')
             
-            # Verify the decoded credentials contain a colon for splitting
+            # Verify if there is : separator in the decoded credentials
             if ':' not in decoded_credentials:
                 logger.warning("Malformed credentials: missing separator")
                 return error_response
-                
+            
+            # Gets username and password from decoded credentials
             username, password = decoded_credentials.split(':', 1)
             
             # Validate that username and password are not empty
@@ -56,10 +55,11 @@ def Register_User(request):
     Register a new user. Only accessible by staff or superusers.
     """
     serializer = RegisterUserSerializer(data=request.data)
+    
+    # Check if the serializer is valid
     if serializer.is_valid():
         user = serializer.save()
-        return Response(
-            {"message": "User created successfully", "user_id": user.id},
-            status=status.HTTP_201_CREATED
-        )
+        return Response({"message": "User created successfully", "user_id": user.id}, status=status.HTTP_201_CREATED)
+    
+    # Return the errors if the serializer is not valid
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

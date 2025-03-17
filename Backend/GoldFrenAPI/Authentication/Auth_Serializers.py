@@ -73,7 +73,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         # Create a new user with the validated data
         user = User.objects.create_user(**validated_data)
         
-        # Add user to the 'External' group
+        # Add user to the 'Internal' group
         external_group = Group.objects.get(name='Internal')
         user.groups.add(external_group)
         
