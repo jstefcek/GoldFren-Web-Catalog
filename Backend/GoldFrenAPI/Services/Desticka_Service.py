@@ -10,6 +10,7 @@ def get_desticky():
     # Connect to MySQL database
     conn = connect()
 
+    # Check if connection is successful
     if conn is not None:
         cursor = conn.cursor()
 
@@ -39,12 +40,12 @@ def get_desticky():
 
             # Populate material dictionary
             desticka.material = {
-                'plech_a': MaterialInfo(material=record[7], tloustka=record[8], matrice=record[9]),
-                'plech_b': MaterialInfo(material=record[10], tloustka=record[11], matrice=record[12]),
-                'izolator_a': MaterialInfo(material=record[13], tloustka=record[14], matrice=record[15]),
-                'izolator_b': MaterialInfo(material=record[16], tloustka=record[17], matrice=record[18]),
-                'segment_a': MaterialInfo(material=record[19], tloustka=record[20], matrice=record[21]),
-                'segment_b': MaterialInfo(material=record[22], tloustka=record[23], matrice=record[24])
+                'plech_a': MaterialInfo(material=record[7], tloustka=float(record[8]) if record[8] is not None else None, matrice=record[9]),
+                'plech_b': MaterialInfo(material=record[10], tloustka=float(record[11]) if record[11] is not None else None, matrice=record[12]),
+                'izolator_a': MaterialInfo(material=record[13], tloustka=float(record[14]) if record[14] is not None else None, matrice=record[15]),
+                'izolator_b': MaterialInfo(material=record[16], tloustka=float(record[17]) if record[17] is not None else None, matrice=record[18]),
+                'segment_a': MaterialInfo(material=record[19], tloustka=float(record[20]) if record[20] is not None else None, matrice=record[21]),
+                'segment_b': MaterialInfo(material=record[22], tloustka=float(record[23]) if record[23] is not None else None, matrice=record[24])
             }
 
             # Populate konkurence details
@@ -78,11 +79,12 @@ def get_desticka(desticka_id):
     # Connect to MySQL database
     conn = connect()
 
+    # Check if connection is successful
     if conn is not None:
         cursor = conn.cursor()
 
         # Execute query
-        cursor.execute("SELECT * FROM v_desticka_detail WHERE Publikovat = 1")
+        cursor.execute("SELECT * FROM v_desticka_detail WHERE kod = %s AND Publikovat = 1", (desticka_id,))
 
         # Fetch single record
         try:
@@ -115,12 +117,12 @@ def get_desticka(desticka_id):
 
             # Populate material dictionary
             desticka.material = {
-                'plech_a': MaterialInfo(material=record[7], tloustka=record[8], matrice=record[9]),
-                'plech_b': MaterialInfo(material=record[10], tloustka=record[11], matrice=record[12]),
-                'izolator_a': MaterialInfo(material=record[13], tloustka=record[14], matrice=record[15]),
-                'izolator_b': MaterialInfo(material=record[16], tloustka=record[17], matrice=record[18]),
-                'segment_a': MaterialInfo(material=record[19], tloustka=record[20], matrice=record[21]),
-                'segment_b': MaterialInfo(material=record[22], tloustka=record[23], matrice=record[24])
+                'plech_a': MaterialInfo(material=record[7], tloustka=float(record[8]) if record[8] is not None else None, matrice=record[9]),
+                'plech_b': MaterialInfo(material=record[10], tloustka=float(record[11]) if record[11] is not None else None, matrice=record[12]),
+                'izolator_a': MaterialInfo(material=record[13], tloustka=float(record[14]) if record[14] is not None else None, matrice=record[15]),
+                'izolator_b': MaterialInfo(material=record[16], tloustka=float(record[17]) if record[17] is not None else None, matrice=record[18]),
+                'segment_a': MaterialInfo(material=record[19], tloustka=float(record[20]) if record[20] is not None else None, matrice=record[21]),
+                'segment_b': MaterialInfo(material=record[22], tloustka=float(record[23]) if record[23] is not None else None, matrice=record[24])
             }
 
             # Populate konkurence details
