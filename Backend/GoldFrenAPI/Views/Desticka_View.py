@@ -34,7 +34,7 @@ def get_desticka_by_id(request, desticka_id):
         return JsonResponse(desticka.to_dict(), status=200)
     return JsonResponse({"error": "Desticka not found"}, status=404)
 
-# Function to update an desticka
+# Function to update an desticka 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def update_desticka_view(request, desticka_id):
