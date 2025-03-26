@@ -51,6 +51,10 @@ def update_kotouc_view(request, kotouc_id):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
+    
     # Update adapter
     try:
         success = update_kotouc(kotouc_id, data)
@@ -76,6 +80,10 @@ def create_kotouc_view(request):
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
     
     # Create adapter
     new_id = create_kotouc(data)

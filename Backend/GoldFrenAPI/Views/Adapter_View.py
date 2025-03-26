@@ -45,6 +45,10 @@ def update_adapter_view(request, adapter_id):
     if request.method != "PUT":
         return HttpResponseBadRequest("Invalid request method")
 
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
+    
     # Parse JSON request body
     try:
         data = json.loads(request.body)
@@ -72,6 +76,10 @@ def create_adapter_view(request):
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
     
     # Create adapter
     new_id = create_adapter(data)

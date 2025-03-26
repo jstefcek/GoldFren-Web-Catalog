@@ -45,6 +45,10 @@ def update_brzdic_view(request, brzdic_id):
     if request.method != "PUT":
         return HttpResponseBadRequest("Invalid request method")
 
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
+    
     # Parse JSON request body
     try:
         data = json.loads(request.body)
@@ -72,6 +76,10 @@ def create_brzdic_view(request):
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
     
     # Create brzdic
     new_id = create_brzdic(data)

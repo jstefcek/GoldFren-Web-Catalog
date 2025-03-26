@@ -171,8 +171,8 @@ def update_desticka(desticka_id: int, data: dict):
         try:
             cursor.execute(query, (
                 data["kategorie"], data["obrazek"], data["vektor"], data["cislo_dilu"], data["typ"], 
-                data["material"]["plech_a"]["tloustka"], data["material"]["plech_a"]["material"], data["material"]["plech_a"]["matrice"],
-                data["material"]["plech_b"]["tloustka"], data["material"]["plech_b"]["material"], data["material"]["plech_b"]["matrice"],
+                data["material"]["plech_a"]["material"], data["material"]["plech_a"]["tloustka"], data["material"]["plech_a"]["matrice"],
+                data["material"]["plech_b"]["material"], data["material"]["plech_b"]["tloustka"], data["material"]["plech_b"]["matrice"],
                 data["material"]["izolator_a"]["material"], data["material"]["izolator_a"]["tloustka"], data["material"]["izolator_a"]["matrice"],
                 data["material"]["izolator_b"]["material"], data["material"]["izolator_b"]["tloustka"], data["material"]["izolator_b"]["matrice"],
                 data["material"]["segment_a"]["material"], data["material"]["segment_a"]["tloustka"], data["material"]["segment_a"]["matrice"],
@@ -201,13 +201,11 @@ def update_desticka(desticka_id: int, data: dict):
 def create_desticka(data: dict):
     # Connect to MySQL database
     conn = connect()
-    new_id = None
     
     # Check if connection is successful
     if conn is not None:
         # Create cursor object
         cursor = conn.cursor()
-        
         
         # Prepare SQL query
         sql_query = """
