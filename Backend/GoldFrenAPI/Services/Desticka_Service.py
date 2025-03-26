@@ -75,7 +75,7 @@ def get_desticky():
 
 
 # Get desticka by ID
-def get_desticka(desticka_id):
+def get_desticka(desticka_id: int):
     # Connect to MySQL database
     conn = connect()
 
@@ -145,7 +145,7 @@ def get_desticka(desticka_id):
         return None
     
 # Function to update an existing desticka
-def update_desticka(desticka_id, data):
+def update_desticka(desticka_id: int, data: dict):
     # Connect to MySQL database
     conn = connect()
     
@@ -191,6 +191,62 @@ def update_desticka(desticka_id, data):
         finally:
             cursor.close()
             conn.close()
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None
+    
+# Function to create a new desticka
+def create_desticka(data: dict):
+    # Connect to MySQL database
+    conn = connect()
+    new_id = None
+    
+    # Check if connection is successful
+    if conn is not None:
+        # Create cursor object
+        cursor = conn.cursor()
+        
+        
+        # Prepare SQL query
+        sql_query = """
+            INSERT INTO d_desticka
+                (sortiment, kategorie, obrazek, vektor, cislo_dilu, typ, plech_a_material, plech_a_tloustka, 
+                plech_a_matrice, plech_b_material, plech_b_tloustka, plech_b_matrice, izolator_a_material, 
+                izolator_a_tloustka, izolator_a_matrice, izolator_b_material, izolator_b_tloustka, izolator_b_matrice, 
+                segment_a_material, segment_a_tloustka, segment_a_matrice, segment_b_material, segment_b_tloustka, 
+                segment_b_matrice, konkurence_sbs, konkurence_ebc, konkurence_ferodo, konkurence_a2z, 
+                konkurence_rapco, konkurence_grove, konkurence_cleveland, konkurence_matco, material, poznamka, 
+                oem_cisla, obchodni_nazev, publikovat, aktualizovano, aktualizoval)
+            VALUES(1, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s);
+        """
+        
+        # Execute query
+        try:
+            cursor.execute(sql_query, (
+                data["kategorie"], data["obrazek"], data["vektor"], data["cislo_dilu"], data["typ"], 
+                data["material"]["plech_a"]["material"], data["material"]["plech_a"]["tloustka"], data["material"]["plech_a"]["matrice"],
+                data["material"]["plech_b"]["material"], data["material"]["plech_b"]["tloustka"], data["material"]["plech_b"]["matrice"],
+                data["material"]["izolator_a"]["material"], data["material"]["izolator_a"]["tloustka"], data["material"]["izolator_a"]["matrice"],
+                data["material"]["izolator_b"]["material"], data["material"]["izolator_b"]["tloustka"], data["material"]["izolator_b"]["matrice"],
+                data["material"]["segment_a"]["material"], data["material"]["segment_a"]["tloustka"], data["material"]["segment_a"]["matrice"],
+                data["material"]["segment_b"]["material"], data["material"]["segment_b"]["tloustka"], data["material"]["segment_b"]["matrice"],
+                data["konkurence"]["sbs"], data["konkurence"]["ebc"], data["konkurence"]["ferodo"], data["konkurence"]["a2z"],
+                data["konkurence"]["rapco"], data["konkurence"]["grove"], data["konkurence"]["cleveland"], data["konkurence"]["matco"], 
+                data["material_text"], data["poznamka"], data["oem_cisla"], data["obchodni_nazev"], data["publikovat"], data["aktualizoval"]
+            ))
+            conn.commit()
+            new_id = cursor.lastrowid
+
+        except Exception as ex:
+            raise ex
+        
+        finally:
+            cursor.close()
+            conn.close()
+        
+        return new_id
     
     # Return None if connection fails
     else:

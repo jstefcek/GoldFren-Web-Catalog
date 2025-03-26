@@ -9,7 +9,8 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from GoldFrenAPI.Services.Desticka_Service import (
     get_desticky as get_all_desticky,
     get_desticka,
-    update_desticka
+    update_desticka,
+    create_desticka
 )
 
 # Function to get all desticky
@@ -59,3 +60,25 @@ def update_desticka_view(request, desticka_id):
     if success:
         return JsonResponse({"message": "Desticka updated successfully"}, status=200)
     return JsonResponse({"error": "Failed to update adapter"}, status=500)
+
+# Function to create a new desticka
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def create_desticka_view(request):
+    """
+    This function creates a new desticka.
+    """
+    if request.method != "POST":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Parse JSON request body
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Create desticka
+    new_id = create_desticka(data)
+    if new_id:
+        return JsonResponse({"message": "Desticka created successfully", "desticka_id": new_id}, status=201)
+    return JsonResponse({"error": "Failed to create desticka"}, status=500)

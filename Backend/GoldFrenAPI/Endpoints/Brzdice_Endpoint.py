@@ -1,7 +1,10 @@
 # Imports
 from django.urls import path
 from GoldFrenAPI.Views.Brzdice_View import (
-    get_brzdice, get_brzdic_by_id, update_brzdic_view, create_brzdic_view
+    get_brzdice, 
+    get_brzdic_by_id, 
+    update_brzdic_view, 
+    create_brzdic_view
 )
 
 # URL patterns

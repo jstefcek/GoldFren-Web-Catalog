@@ -57,7 +57,7 @@ def get_brzdice():
         return None
     
 # Function to get a single brzidc by ID
-def get_brzdic(brzdic_id):
+def get_brzdic(brzdic_id: int):
     # Connect to MySQL database
     conn = connect()
     
@@ -104,7 +104,7 @@ def get_brzdic(brzdic_id):
         return None
     
 # Function to update an existing brzdic
-def update_brzdic(brzdic_id, data):
+def update_brzdic(brzdic_id: int, data: dict):
     # Connect to MySQL database
     conn = connect()
     
@@ -144,8 +144,8 @@ def update_brzdic(brzdic_id, data):
         print("Connection failed")
         return None
     
-# Function to create a new adapter
-def create_brzdic(data):
+# Function to create a new brzdic
+def create_brzdic(data: dict):
     # Connect to MySQL database
     conn = connect()
     
