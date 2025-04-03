@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'GoldFren',
     'GoldFrenAPI',
 ]
 
@@ -100,11 +101,10 @@ DATABASES = {
         'NAME': os.getenv("MYSQL_ROOT_NAME"),
         'USER': os.getenv("MYSQL_ROOT_USER"),
         'PASSWORD': os.getenv("MYSQL_ROOT_PASSWORD"),
-        'HOST': os.getenv("MYSQL_HOSTNAME"),
-        'PORT': os.getenv("MYSQL_PORT"),
+        'HOST': 'goldfren_webcatalog',
+        'PORT': 3306,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Backend/DockerFile
-    container_name: django_backend
+    container_name: goldfren_backend
     environment:
       - DEBUG=1
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
@@ -46,12 +46,13 @@ services:
   # MySQL service
   mysql:
     image: mysql:8.0
-    container_name: mysql_database
+    container_name: goldfren_mysql
     hostname: ${MYSQL_HOSTNAME}
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_ROOT_USER}
-      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./SQL:/docker-entrypoint-initdb.d

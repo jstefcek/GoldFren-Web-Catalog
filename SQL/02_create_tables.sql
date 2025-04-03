@@ -1,6 +1,3 @@
--- Creates the database and the table for the Goldfren data
-CREATE DATABASE IF NOT EXISTS goldfren_data;
-
 -- Switch to the database
 USE goldfren_data;
 
@@ -41,14 +38,6 @@ CREATE TABLE IF NOT EXISTS `d_adapter` (
   CONSTRAINT `FK_ADAPT_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
 ) COMMENT='Tabulka adapteru';
 
--- View structure for view 'v_adapter_detail'
-CREATE OR REPLACE VIEW v_adapter_detail AS
-SELECT a.kod, s.nazev as sortiment, k.nazev as kategorie, a.obrazek, a.vektor, a.cislo_dilu, a.typ, a.prumer, a.popis, a.poznamka, a.publikovat, a.aktualizovano, a.aktualizoval 
-FROM d_adapter a 
-LEFT JOIN c_sortiment s on s.kod = a.sortiment
-LEFT JOIN c_kategorie k on k.kod = a.kategorie
-  WHERE a.publikovat = 1;
-
 -- Table structure for table 'd_brzdice'
 CREATE TABLE IF NOT EXISTS `d_brzdice` (
   `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod brzdice',
@@ -66,13 +55,6 @@ CREATE TABLE IF NOT EXISTS `d_brzdice` (
   CONSTRAINT `FK_BRZD_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
   CONSTRAINT `FK_BRZD_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
 ) COMMENT='Tabulka brzdicu';
-
--- View structure for view 'v_brzdice_detail'
-CREATE OR REPLACE VIEW v_brzdice_detail AS
-SELECT b.kod, s.nazev as sortiment, k.nazev as kategorie, b.obrazek, b.vektor, b.cislo_dilu, b.popis, b.poznamka, b.publikovat, b.aktualizovano, b.aktualizoval
-FROM d_brzdice b
-LEFT JOIN c_sortiment s on s.kod = b.sortiment
-LEFT JOIN c_kategorie k on k.kod = b.kategorie;
 
 -- Tabel structure for table 'd_desticka'
 CREATE TABLE IF NOT EXISTS `d_desticka` (
@@ -135,18 +117,6 @@ CREATE TABLE IF NOT EXISTS `c_desticka_typ` (
   PRIMARY KEY (`kod`)
 ) COMMENT='Tabulka typu desticek';
 
--- View structure for view 'v_desticka_detail'
-CREATE OR REPLACE VIEW v_desticka_detail AS
-SELECT d.kod, s.nazev as sortiment, k.nazev as kategorie, d.obrazek, d.vektor, d.cislo_dilu, dt.nazev as typ, d.plech_a_material, d.plech_a_tloustka, d.plech_a_matrice, d.plech_b_material, 
-d.plech_b_tloustka, d.plech_b_matrice, d.izolator_a_material, d.izolator_a_tloustka, d.izolator_a_matrice, d.izolator_b_material, d.izolator_b_tloustka, 
-d.izolator_b_matrice, d.segment_a_material, d.segment_a_tloustka, d.segment_a_matrice, d.segment_b_material, d.segment_b_tloustka, d.segment_b_matrice, 
-d.konkurence_sbs, d.konkurence_ebc, d.konkurence_ferodo, d.konkurence_a2z, d.konkurence_rapco, d.konkurence_grove, d.konkurence_cleveland, d.konkurence_matco, 
-d.material, d.poznamka, d.oem_cisla, d.obchodni_nazev, d.publikovat, d.aktualizovano, d.aktualizoval
-FROM d_desticka d
-LEFT JOIN c_sortiment s on s.kod = d.sortiment
-LEFT JOIN c_kategorie k on k.kod = d.kategorie
-LEFT JOIN c_desticka_typ dt on dt.kod = d.typ;
-
 -- Table structure for table 'd_kotouce'
 CREATE TABLE IF NOT EXISTS `d_kotouce` (
   `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod kotouce',
@@ -177,13 +147,3 @@ CREATE TABLE `c_kotouc_typ` (
   `nazev` varchar(255) NOT NULL COMMENT 'Nazev typu kotouce',
   PRIMARY KEY (`kod`)
 ) COMMENT='Tabulka typu kotoucu';
-
--- View structure for view 'v_kotouc_detail'
-CREATE OR REPLACE VIEW v_kotouc_detail AS
-SELECT k.kod, s.nazev as sortiment, ka.nazev as kategorie, k.obrazek, k.vektor, k.cislo_dilu, kt.nazev as typ, 
-k.konkurence_braking, k.konkurence_ngbrakes, k.od, k.hd, k.id, k.thk, k.poznamka, 
-k.publikovat, k.aktualizovano, k.aktualizoval
-FROM d_kotouce k
-LEFT JOIN c_sortiment s on s.kod = k.sortiment
-LEFT JOIN c_kategorie ka on ka.kod = k.kategorie
-LEFT JOIN c_kotouc_typ kt on kt.kod = k.typ;
