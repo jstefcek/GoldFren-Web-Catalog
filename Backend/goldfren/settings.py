@@ -101,8 +101,8 @@ DATABASES = {
         'NAME': os.getenv("MYSQL_ROOT_NAME"),
         'USER': os.getenv("MYSQL_ROOT_USER"),
         'PASSWORD': os.getenv("MYSQL_ROOT_PASSWORD"),
-        'HOST': 'goldfren_webcatalog',
-        'PORT': 3306,
+        'HOST': os.getenv("MYSQL_HOSTNAME"),
+        'PORT': os.getenv("MYSQL_PORT"),
     }
 }
 
