@@ -10,8 +10,34 @@ from GoldFrenAPI.Services.Kotouc_Service import (
     get_kotouce as get_all_kotouce,
     get_kotouc,
     update_kotouc,
-    create_kotouc
+    create_kotouc,
+    kotouc_publication
 )
+
+# Change state of publikovat
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def kotouc_publication_view(request, kotouc_id):
+    """
+    This function changes the state of publikovat for a kotouc.
+    """
+    if request.method != "PATCH":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Get params from request
+    try:
+        publikovat = request.GET.get("publikovat", None)
+        if publikovat is None:
+            return JsonResponse({"error": "publikovat parameter is required"}, status=400)
+    except Exception as ex:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Update kotouc publication state
+    success = kotouc_publication(kotouc_id, publikovat)
+    
+    if success:
+        return JsonResponse({"message": "Kotouc publication state updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update kotouc publication state"}, status=500)
 
 # Function to get all koutce
 @api_view(['GET'])
