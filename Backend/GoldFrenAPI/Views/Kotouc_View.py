@@ -30,13 +30,13 @@ def kotouc_publication_view(request, kotouc_id):
         if publikovat is None:
             return JsonResponse({"error": "publikovat parameter is required"}, status=400)
     except Exception as ex:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
+        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
     
     # Update kotouc publication state
     success = kotouc_publication(kotouc_id, publikovat)
     
     if success:
-        return JsonResponse({"message": "Kotouc publication state updated successfully"}, status=200)
+        return JsonResponse({"message": f"Kotouc kod - {kotouc_id} - publication state updated successfully"}, status=200)
     return JsonResponse({"error": "Failed to update kotouc publication state"}, status=500)
 
 # Function to get all koutce
