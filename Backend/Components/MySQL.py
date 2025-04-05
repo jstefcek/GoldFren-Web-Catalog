@@ -25,7 +25,8 @@ def connect():
             passwd=MYSQL_PASSWORD,
             db=MYSQL_NAME,
             port=int(MYSQL_PORT),
-            charset="utf8mb4"
+            charset="utf8mb4",
+            cursorclass=MySQLdb.cursors.DictCursor
         )
         
         # Return connection object

@@ -28,23 +28,23 @@ def get_kotouce():
         for record in records:
             # Create Kotouc object
             kotouc = Kotouc(
-                kod=record[0],
-                sortiment=record[1],
-                kategorie=record[2],
-                obrazek=record[3],
-                vektor=record[4],
-                cislo_dilu=record[5],
-                typ=record[6],
-                konkurence_braking=record[7],
-                konkurence_ngbrakes=record[8],
-                od=float(record[9]) if record[9] is not None else None,
-                hd=float(record[10]) if record[10] is not None else None,
-                id=float(record[11]) if record[11] is not None else None,
-                thk=float(record[12]) if record[12] is not None else None,
-                poznamka=record[13],
-                publikovat=bool(record[14]),
-                aktualizovano=record[15] if isinstance(record[15], datetime) else None,
-                aktualizoval=record[16]
+                kod=int(record["kod"]),
+                sortiment=record["sortiment"],
+                kategorie=record["kategorie"],
+                obrazek=record["obrazek"],
+                vektor=record["vektor"],
+                cislo_dilu=record["cislo_dilu"],
+                typ=record["typ"],
+                konkurence_braking=record["konkurence_braking"],
+                konkurence_ngbrakes=record["konkurence_ngbrakes"],
+                od=float(record["od"]) if record["od"] is not None else None,
+                hd=float(record["hd"]) if record["hd"] is not None else None,
+                id=float(record["id"]) if record["id"] is not None else None,
+                thk=float(record["thk"]) if record["thk"] is not None else None,
+                poznamka=record["poznamka"],
+                publikovat=bool(record["publikovat"]),
+                aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
+                aktualizoval=record["aktualizoval"]
             )
             
             # Append adapter object to list
@@ -91,23 +91,23 @@ def get_kotouc(kotouc_id):
         # Check if record exists
         if record:
             return Kotouc(
-                kod=record[0],
-                sortiment=record[1],
-                kategorie=record[2],
-                obrazek=record[3],
-                vektor=record[4],
-                cislo_dilu=record[5],
-                typ=record[6],
-                konkurence_braking=record[7],
-                konkurence_ngbrakes=record[8],
-                od=float(record[9]) if record[9] is not None else None,
-                hd=float(record[10]) if record[10] is not None else None,
-                id=float(record[11]) if record[11] is not None else None,
-                thk=float(record[12]) if record[12] is not None else None,
-                poznamka=record[13],
-                publikovat=bool(record[14]),
-                aktualizovano=record[15] if isinstance(record[15], datetime) else None,
-                aktualizoval=record[16]
+                kod=int(record["kod"]),
+                sortiment=record["sortiment"],
+                kategorie=record["kategorie"],
+                obrazek=record["obrazek"],
+                vektor=record["vektor"],
+                cislo_dilu=record["cislo_dilu"],
+                typ=record["typ"],
+                konkurence_braking=record["konkurence_braking"],
+                konkurence_ngbrakes=record["konkurence_ngbrakes"],
+                od=float(record["od"]) if record["od"] is not None else None,
+                hd=float(record["hd"]) if record["hd"] is not None else None,
+                id=float(record["id"]) if record["id"] is not None else None,
+                thk=float(record["thk"]) if record["thk"] is not None else None,
+                poznamka=record["poznamka"],
+                publikovat=bool(record["publikovat"]),
+                aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
+                aktualizoval=record["aktualizoval"]
             )
     
     # Return None if connection fails

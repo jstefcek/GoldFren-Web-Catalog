@@ -26,39 +26,51 @@ def get_desticky():
         for record in records:
             # Create desticka object with main attributes
             desticka = Desticka(
-                kod=record[0],
-                sortiment=record[1],
-                kategorie=record[2],
-                obrazek=record[3],
-                vektor=record[4],
-                cislo_dilu=record[5],
-                typ=record[6],
-                publikovat=bool(record[37]),
-                aktualizovano=record[38] if isinstance(record[38], datetime) else None,
-                aktualizoval=record[39]
+                kod=record["kod"],
+                sortiment=record["sortiment"],
+                kategorie=record["kategorie"],
+                obrazek=record["obrazek"],
+                vektor=record["vektor"],
+                cislo_dilu=record["cislo_dilu"],
+                typ=record["typ"],
+                publikovat=bool(record["publikovat"]),
+                aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
+                aktualizoval=record["aktualizoval"]
             )
 
             # Populate material dictionary
             desticka.material = {
-                'plech_a': MaterialInfo(material=record[7], tloustka=float(record[8]) if record[8] is not None else None, matrice=record[9]),
-                'plech_b': MaterialInfo(material=record[10], tloustka=float(record[11]) if record[11] is not None else None, matrice=record[12]),
-                'izolator_a': MaterialInfo(material=record[13], tloustka=float(record[14]) if record[14] is not None else None, matrice=record[15]),
-                'izolator_b': MaterialInfo(material=record[16], tloustka=float(record[17]) if record[17] is not None else None, matrice=record[18]),
-                'segment_a': MaterialInfo(material=record[19], tloustka=float(record[20]) if record[20] is not None else None, matrice=record[21]),
-                'segment_b': MaterialInfo(material=record[22], tloustka=float(record[23]) if record[23] is not None else None, matrice=record[24])
+                'plech_a': MaterialInfo(material=record["plech_a_material"], 
+                                        tloustka=float(record["plech_a_tloustka"]) if record["plech_a_tloustka"] is not None else None, 
+                                        matrice=record["plech_a_matrice"]),
+                'plech_b': MaterialInfo(material=record["plech_b_material"], 
+                                        tloustka=float(record["plech_b_tloustka"]) if record["plech_b_tloustka"] is not None else None, 
+                                        matrice=record["plech_b_matrice"]),
+                'izolator_a': MaterialInfo(material=record["izolator_a_material"], 
+                                           tloustka=float(record["izolator_a_tloustka"]) if record["izolator_a_tloustka"] is not None else None, 
+                                           matrice=record["izolator_a_matrice"]),
+                'izolator_b': MaterialInfo(material=record["izolator_b_material"], 
+                                           tloustka=float(record["izolator_b_tloustka"]) if record["izolator_b_tloustka"] is not None else None, 
+                                           matrice=record["izolator_a_matrice"]),
+                'segment_a': MaterialInfo(material=record["segment_a_material"], 
+                                          tloustka=float(record["segment_a_tloustka"]) if record["segment_a_tloustka"] is not None else None, 
+                                          matrice=record["segment_a_matrice"]),
+                'segment_b': MaterialInfo(material=record["segment_b_material"], 
+                                          tloustka=float(record["segment_b_tloustka"]) if record["segment_b_tloustka"] is not None else None, 
+                                          matrice=record["segment_b_matrice"])
             }
 
             # Populate konkurence details
             desticka.konkurence = KonkurenceDetail(
-                sbs=record[25], ebc=record[26], ferodo=record[27], a2z=record[28],
-                rapco=record[29], grove=record[30], cleveland=record[31], matco=record[32]
+                sbs=record["konkurence_sbs"], ebc=record["konkurence_ebc"], ferodo=record["konkurence_ferodo"], a2z=record["konkurence_a2z"],
+                rapco=record["konkurence_rapco"], grove=record["konkurence_grove"], cleveland=record["konkurence_cleveland"], matco=record["konkurence_matco"]
             )
 
             # Assign additional attributes
-            desticka.material_text = record[33]
-            desticka.poznamka = record[34]
-            desticka.oem_cisla = record[35]
-            desticka.obchodni_nazev = record[36]
+            desticka.material_text = record["material"]
+            desticka.poznamka = record["poznamka"]
+            desticka.oem_cisla = record["oem_cisla"]
+            desticka.obchodni_nazev = record["obchodni_nazev"]
 
             # Append desticka object to list
             desticky.append(desticka)
@@ -103,39 +115,51 @@ def get_desticka(desticka_id: int):
         if record:
             # Create desticka object with main attributes
             desticka = Desticka(
-                kod=record[0],
-                sortiment=record[1],
-                kategorie=record[2],
-                obrazek=record[3],
-                vektor=record[4],
-                cislo_dilu=record[5],
-                typ=record[6],
-                publikovat=bool(record[37]),
-                aktualizovano=record[38] if isinstance(record[38], datetime) else None,
-                aktualizoval=record[39]
+                kod=record["kod"],
+                sortiment=record["sortiment"],
+                kategorie=record["kategorie"],
+                obrazek=record["obrazek"],
+                vektor=record["vektor"],
+                cislo_dilu=record["cislo_dilu"],
+                typ=record["typ"],
+                publikovat=bool(record["publikovat"]),
+                aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
+                aktualizoval=record["aktualizoval"]
             )
 
             # Populate material dictionary
             desticka.material = {
-                'plech_a': MaterialInfo(material=record[7], tloustka=float(record[8]) if record[8] is not None else None, matrice=record[9]),
-                'plech_b': MaterialInfo(material=record[10], tloustka=float(record[11]) if record[11] is not None else None, matrice=record[12]),
-                'izolator_a': MaterialInfo(material=record[13], tloustka=float(record[14]) if record[14] is not None else None, matrice=record[15]),
-                'izolator_b': MaterialInfo(material=record[16], tloustka=float(record[17]) if record[17] is not None else None, matrice=record[18]),
-                'segment_a': MaterialInfo(material=record[19], tloustka=float(record[20]) if record[20] is not None else None, matrice=record[21]),
-                'segment_b': MaterialInfo(material=record[22], tloustka=float(record[23]) if record[23] is not None else None, matrice=record[24])
+                'plech_a': MaterialInfo(material=record["plech_a_material"], 
+                                        tloustka=float(record["plech_a_tloustka"]) if record["plech_a_tloustka"] is not None else None, 
+                                        matrice=record["plech_a_matrice"]),
+                'plech_b': MaterialInfo(material=record["plech_b_material"], 
+                                        tloustka=float(record["plech_b_tloustka"]) if record["plech_b_tloustka"] is not None else None, 
+                                        matrice=record["plech_b_matrice"]),
+                'izolator_a': MaterialInfo(material=record["izolator_a_material"], 
+                                           tloustka=float(record["izolator_a_tloustka"]) if record["izolator_a_tloustka"] is not None else None, 
+                                           matrice=record["izolator_a_matrice"]),
+                'izolator_b': MaterialInfo(material=record["izolator_b_material"], 
+                                           tloustka=float(record["izolator_b_tloustka"]) if record["izolator_b_tloustka"] is not None else None, 
+                                           matrice=record["izolator_a_matrice"]),
+                'segment_a': MaterialInfo(material=record["segment_a_material"], 
+                                          tloustka=float(record["segment_a_tloustka"]) if record["segment_a_tloustka"] is not None else None, 
+                                          matrice=record["segment_a_matrice"]),
+                'segment_b': MaterialInfo(material=record["segment_b_material"], 
+                                          tloustka=float(record["segment_b_tloustka"]) if record["segment_b_tloustka"] is not None else None, 
+                                          matrice=record["segment_b_matrice"])
             }
 
             # Populate konkurence details
             desticka.konkurence = KonkurenceDetail(
-                sbs=record[25], ebc=record[26], ferodo=record[27], a2z=record[28],
-                rapco=record[29], grove=record[30], cleveland=record[31], matco=record[32]
+                sbs=record["konkurence_sbs"], ebc=record["konkurence_ebc"], ferodo=record["konkurence_ferodo"], a2z=record["konkurence_a2z"],
+                rapco=record["konkurence_rapco"], grove=record["konkurence_grove"], cleveland=record["konkurence_cleveland"], matco=record["konkurence_matco"]
             )
 
             # Assign additional attributes
-            desticka.material_text = record[33]
-            desticka.poznamka = record[34]
-            desticka.oem_cisla = record[35]
-            desticka.obchodni_nazev = record[36]
+            desticka.material_text = record["material"]
+            desticka.poznamka = record["poznamka"]
+            desticka.oem_cisla = record["oem_cisla"]
+            desticka.obchodni_nazev = record["obchodni_nazev"]
 
             # Return desticka
             return desticka

@@ -28,19 +28,19 @@ def get_adapters():
         for record in records:
             # Create adapter object
             adapter = Adapter(
-                kod=record[0],
-                sortiment=record[1],
-                kategorie=record[2],
-                obrazek=record[3],
-                vektor=record[4],
-                cislo_dilu=record[5],
-                typ=record[6],
-                prumer=float(record[7]) if record[7] is not None else None,
-                popis=record[8],
-                poznamka=record[9],
-                publikovat=bool(record[10]),
-                aktualizovano=record[11] if isinstance(record[8], datetime) else None,
-                aktualizoval=record[12]
+                kod=record["kod"],
+                sortiment=record["sortiment"],
+                kategorie=record["kategorie"],
+                obrazek=record["obrazek"],
+                vektor=record["vektor"],
+                cislo_dilu=record["cislo_dilu"],
+                typ=record["typ"],
+                prumer=float(record["prumer"]) if record["prumer"] is not None else None,
+                popis=record["popis"],
+                poznamka=record["poznamka"],
+                publikovat=bool(record["publikovat"]),
+                aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
+                aktualizoval=record["aktualizoval"]
             )
             
             # Append adapter object to list
@@ -87,19 +87,19 @@ def get_adapter(adapter_id):
         # Check if record exists
         if record:
             return Adapter(
-                kod=record[0],
-                sortiment=record[1],
-                kategorie=record[2],
-                obrazek=record[3],
-                vektor=record[4],
-                cislo_dilu=record[5],
-                typ=record[6],
-                prumer=float(record[7]) if record[7] is not None else None,
-                popis=record[8],
-                poznamka=record[9],
-                publikovat=bool(record[10]),
-                aktualizovano=record[11] if isinstance(record[11], datetime) else None,
-                aktualizoval=record[12]
+                kod=record["kod"],
+                sortiment=record["sortiment"],
+                kategorie=record["kategorie"],
+                obrazek=record["obrazek"],
+                vektor=record["vektor"],
+                cislo_dilu=record["cislo_dilu"],
+                typ=record["typ"],
+                prumer=float(record["prumer"]) if record["prumer"] is not None else None,
+                popis=record["popis"],
+                poznamka=record["poznamka"],
+                publikovat=bool(record["publikovat"]),
+                aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
+                aktualizoval=record["aktualizoval"]
             )
     
     # Return None if connection fails

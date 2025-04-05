@@ -28,17 +28,17 @@ def get_brzdice():
         for record in records:
             # Create brzdic object
             brzdic = Brzdic(
-                kod=record[0],
-                sortiment=record[1],
-                kategorie=record[2],
-                obrazek=record[3],
-                vektor=record[4],
-                cislo_dilu=record[5],
-                popis=record[6],
-                poznamka=record[7],
-                publikovat=bool(record[8]),
-                aktualizovano=record[9] if isinstance(record[8], datetime) else None,
-                aktualizoval=record[10]
+                kod=record["kod"],
+                sortiment=record["sortiment"],
+                kategorie=record["kategorie"],
+                obrazek=record["obrazek"],
+                vektor=record["vektor"],
+                cislo_dilu=record["cislo_dilu"],
+                popis=record["popis"],
+                poznamka=record["poznamka"],
+                publikovat=bool(record["publikovat"]),
+                aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
+                aktualizoval=record["aktualizoval"]
             )
             
             # Append brzdice object to list
@@ -85,17 +85,17 @@ def get_brzdic(brzdic_id: int):
         # Check if record exists
         if record:
             return Brzdic(
-                kod=record[0],
-                sortiment=record[1],
-                kategorie=record[2],
-                obrazek=record[3],
-                vektor=record[4],
-                cislo_dilu=record[5],
-                popis=record[6],
-                poznamka=record[7],
-                publikovat=bool(record[8]),
-                aktualizovano=record[9] if isinstance(record[8], datetime) else None,
-                aktualizoval=record[10]
+                kod=record["kod"],
+                sortiment=record["sortiment"],
+                kategorie=record["kategorie"],
+                obrazek=record["obrazek"],
+                vektor=record["vektor"],
+                cislo_dilu=record["cislo_dilu"],
+                popis=record["popis"],
+                poznamka=record["poznamka"],
+                publikovat=bool(record["publikovat"]),
+                aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
+                aktualizoval=record["aktualizoval"]
             )
     
     # Return None if connection fails
