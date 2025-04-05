@@ -26,7 +26,7 @@ def kotouc_publication_view(request, kotouc_id):
 
     # Get params from request
     try:
-        publikovat = request.GET.get("publikovat", None)
+        publikovat = request.GET.get("pbl", None)
         if publikovat is None:
             return JsonResponse({"error": "publikovat parameter is required"}, status=400)
     except Exception as ex:
