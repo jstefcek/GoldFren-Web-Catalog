@@ -10,7 +10,8 @@ from GoldFrenAPI.Services.Brzdice_Service import (
     get_brzdice as get_all_brzdice,
     get_brzdic,
     update_brzdic,
-    create_brzdic
+    create_brzdic,
+    brzdice_publication
     )
 
 # Function to get all brzdice
@@ -86,3 +87,28 @@ def create_brzdic_view(request):
     if new_id:
         return JsonResponse({"message": "Brzdic created successfully", "brzdic_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create brzdic"}, status=500)
+
+# Change state of publikovat
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def brzdic_publication_view(request, brzdic_id):
+    """
+    This function changes the state of publikovat for a brzdic.
+    """
+    if request.method != "PATCH":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Get params from request
+    try:
+        publikovat = request.GET.get("pbl", None)
+        if publikovat is None:
+            return JsonResponse({"error": "publikovat parameter is required"}, status=400)
+    except Exception as ex:
+        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+    
+    # Update brzdic publication state
+    success = brzdice_publication(brzdic_id, publikovat)
+    
+    if success:
+        return JsonResponse({"message": f"Brzdic kod - {brzdic_id} - publication state updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update brzdic publication state"}, status=500)

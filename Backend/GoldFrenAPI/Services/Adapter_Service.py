@@ -5,6 +5,37 @@ from datetime import datetime
 from Components.MySQL import connect
 from GoldFrenAPI.Models.Adapter import Adapter
 
+# Change state of publikovat
+def adapter_publication(adapter_id: int, publikovat: int):
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is not None:
+        # Create cursor object
+        cursor = conn.cursor()
+        
+        # Prepare SQL query
+        query = "UPDATE d_adapter SET publikovat = %s WHERE kod = %s"
+        
+        # Execute query
+        try:
+            cursor.execute(query, (publikovat, adapter_id))
+            conn.commit()
+            return True
+        
+        except Exception as ex:
+            print(ex)
+        
+        finally:
+            cursor.close()
+            conn.close()
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None
+
 # Function to get all adapters
 def get_adapters():
     # Connect to MySQL database

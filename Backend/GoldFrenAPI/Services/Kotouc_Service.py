@@ -6,7 +6,7 @@ from Components.MySQL import connect
 from GoldFrenAPI.Models.Kotouc import Kotouc
 
 # Change state of publikovat
-def kotouc_publication(kotouc_id, publikovat):
+def kotouc_publication(kotouc_id: int, publikovat: int):
     # Connect to MySQL database
     conn = connect()
     

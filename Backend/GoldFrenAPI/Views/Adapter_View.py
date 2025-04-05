@@ -10,7 +10,8 @@ from GoldFrenAPI.Services.Adapter_Service import (
     get_adapters as get_all_adapters,
     get_adapter,
     update_adapter,
-    create_adapter
+    create_adapter,
+    adapter_publication
 )
 
 # Function to get all adapters
@@ -86,3 +87,28 @@ def create_adapter_view(request):
     if new_id:
         return JsonResponse({"message": "Adapter created successfully", "adapter_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create adapter"}, status=500)
+
+# Change state of publikovat
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def adapter_publication_view(request, adapter_id):
+    """
+    This function changes the state of publikovat for a adapter.
+    """
+    if request.method != "PATCH":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Get params from request
+    try:
+        publikovat = request.GET.get("pbl", None)
+        if publikovat is None:
+            return JsonResponse({"error": "publikovat parameter is required"}, status=400)
+    except Exception as ex:
+        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+    
+    # Update adapter publication state
+    success = adapter_publication(adapter_id, publikovat)
+    
+    if success:
+        return JsonResponse({"message": f"Adapter kod - {adapter_id} - publication state updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update adapter publication state"}, status=500)

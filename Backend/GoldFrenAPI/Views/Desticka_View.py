@@ -14,31 +14,6 @@ from GoldFrenAPI.Services.Desticka_Service import (
     desticka_publication
 )
 
-# Change state of publikovat
-@api_view(['PATCH'])
-@permission_classes([IsAuthenticated, IsInternalUser])
-def desticka_publication_view(request, desticka_id):
-    """
-    This function changes the state of publikovat for a desticka.
-    """
-    if request.method != "PATCH":
-        return HttpResponseBadRequest("Invalid request method")
-
-    # Get params from request
-    try:
-        publikovat = request.GET.get("pbl", None)
-        if publikovat is None:
-            return JsonResponse({"error": "Publikovat parameter is required"}, status=400)
-    except Exception as ex:
-        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
-    
-    # Update kotouc publication state
-    success = desticka_publication(desticka_id, publikovat)
-    
-    if success:
-        return JsonResponse({"message": f"Desticka kod - {desticka_id} - publication state updated successfully"}, status=200)
-    return JsonResponse({"error": "Failed to update desticka publication state"}, status=500)
-
 # Function to get all desticky
 @api_view(['GET'])
 def get_desticky(request):
@@ -119,3 +94,28 @@ def create_desticka_view(request):
     if new_id:
         return JsonResponse({"message": "Desticka created successfully", "desticka_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create desticka"}, status=500)
+
+# Change state of publikovat
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def desticka_publication_view(request, desticka_id):
+    """
+    This function changes the state of publikovat for a desticka.
+    """
+    if request.method != "PATCH":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Get params from request
+    try:
+        publikovat = request.GET.get("pbl", None)
+        if publikovat is None:
+            return JsonResponse({"error": "Publikovat parameter is required"}, status=400)
+    except Exception as ex:
+        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+    
+    # Update desticka publication state
+    success = desticka_publication(desticka_id, publikovat)
+    
+    if success:
+        return JsonResponse({"message": f"Desticka kod - {desticka_id} - publication state updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update desticka publication state"}, status=500)

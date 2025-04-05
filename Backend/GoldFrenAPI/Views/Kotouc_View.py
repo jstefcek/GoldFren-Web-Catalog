@@ -14,31 +14,6 @@ from GoldFrenAPI.Services.Kotouc_Service import (
     kotouc_publication
 )
 
-# Change state of publikovat
-@api_view(['PATCH'])
-@permission_classes([IsAuthenticated, IsInternalUser])
-def kotouc_publication_view(request, kotouc_id):
-    """
-    This function changes the state of publikovat for a kotouc.
-    """
-    if request.method != "PATCH":
-        return HttpResponseBadRequest("Invalid request method")
-
-    # Get params from request
-    try:
-        publikovat = request.GET.get("pbl", None)
-        if publikovat is None:
-            return JsonResponse({"error": "publikovat parameter is required"}, status=400)
-    except Exception as ex:
-        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
-    
-    # Update kotouc publication state
-    success = kotouc_publication(kotouc_id, publikovat)
-    
-    if success:
-        return JsonResponse({"message": f"Kotouc kod - {kotouc_id} - publication state updated successfully"}, status=200)
-    return JsonResponse({"error": "Failed to update kotouc publication state"}, status=500)
-
 # Function to get all koutce
 @api_view(['GET'])
 def get_kotouce(request):
@@ -116,3 +91,28 @@ def create_kotouc_view(request):
     if new_id:
         return JsonResponse({"message": "Kotouc created successfully", "adapter_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create adapter"}, status=500)
+
+# Change state of publikovat
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def kotouc_publication_view(request, kotouc_id):
+    """
+    This function changes the state of publikovat for a kotouc.
+    """
+    if request.method != "PATCH":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Get params from request
+    try:
+        publikovat = request.GET.get("pbl", None)
+        if publikovat is None:
+            return JsonResponse({"error": "publikovat parameter is required"}, status=400)
+    except Exception as ex:
+        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+    
+    # Update kotouc publication state
+    success = kotouc_publication(kotouc_id, publikovat)
+    
+    if success:
+        return JsonResponse({"message": f"Kotouc kod - {kotouc_id} - publication state updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update kotouc publication state"}, status=500)
