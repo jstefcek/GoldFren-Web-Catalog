@@ -11,8 +11,8 @@ from GoldFrenAPI.Views.Brzdice_View import (
 # URL patterns
 urlpatterns = [
     path("", get_brzdice, name="get_all_brzdice"),
-    path("<int:brzdic_id>/", get_brzdic_by_id, name="get_brzdic_by_id"),
-    path("update/<int:brzdic_id>/", update_brzdic_view, name="update_brzdic"),
+    path("<int:brzdic_id>", get_brzdic_by_id, name="get_brzdic_by_id"),
+    path("update/<int:brzdic_id>", update_brzdic_view, name="update_brzdic"),
     path("create/", create_brzdic_view, name="create_brzdic"),
     path("publication/<int:brzdic_id>", brzdic_publication_view, name="brzdic_publication"),
 ]

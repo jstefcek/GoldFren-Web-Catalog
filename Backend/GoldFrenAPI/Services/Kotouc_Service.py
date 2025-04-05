@@ -205,7 +205,7 @@ def create_kotouc(data):
             konkurence_ngbrakes, od, hd, id, thk, poznamka, publikovat, aktualizovano, aktualizoval) 
             VALUES (2, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
         """
-        
+
         # Execute query
         try:
             cursor.execute(sql_query, (
