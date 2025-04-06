@@ -14,8 +14,14 @@ def save_image_file(sortiment: str, file_object, file_type: str, component_id: s
 
     # Validate file file extension
     ext = os.path.splitext(file_object.name)[1].lower()
-    if ext not in ['.jpg', '.jpeg', '.png', '.svg']:
-        raise ValueError("Unsupported file extension")
+    if file_type == 'image':
+        if ext not in ['.jpg', '.jpeg', '.png']:
+            raise ValueError("Unsupported file extension for image")
+    elif file_type == 'vector':
+        if ext not in ['.svg']:
+            raise ValueError("Unsupported file extension for vector")
+    else:
+        raise ValueError("Unsupported file type")
 
     # Construct file name and path
     filename = f"{component_id}{ext}"
