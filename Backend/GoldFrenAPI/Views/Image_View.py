@@ -27,4 +27,4 @@ class ImageUploadView(APIView):
             return Response({'error': str(ex)}, status=500)
 
         # Return the URL of the saved image
-        return Response({'url': absolute_url}, status=200)
+        return Response({'url': absolute_url, 'image_url_path': image_url}, status=200)
