@@ -5,7 +5,8 @@ USE goldfren_data;
 CREATE TABLE IF NOT EXISTS `c_sortiment` (
   `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod sortimentu',
   `nazev` varchar(255) NOT NULL COMMENT 'Nazev sortimentu',
-  `nazev_eng` varchar(255) NOT NULL COMMENT 'Nazev sortimentu v anglictine',
+  `image_categories` varchar(255) NOT NULL COMMENT 'Kategorie obrazku',
+  `publikovat` tinyint DEFAULT '1' COMMENT 'Zda se ma sortiment publikovat na webu',
   PRIMARY KEY (`kod`)
 ) COMMENT='Ciselnik nazvu sortimentu';
 

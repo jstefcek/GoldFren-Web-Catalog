@@ -12,8 +12,8 @@ services:
       - ALLOWED_HOSTS=localhost
     volumes:
       - ./Backend:/goldfren
-    ports:
-      - "8000:8000"
+      - goldfren_media:/goldfren/GoldFren_Media  
+      - static_volume:/goldfren/static  
     depends_on:
       mysql:
         condition: service_healthy
@@ -67,20 +67,19 @@ services:
       retries: 20
       start_period: 10s
 
-  # Nginx service (for reverse proxy) - COMMENTED OUT for testing purposes
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: nginx_proxy
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #     - ./Frontend/build:/usr/share/nginx/html
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - frontend
-  #     - backend
-  #   networks:
-  #     - mynetwork
+  nginx:
+    image: nginx:latest
+    container_name: goldfren_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - goldfren_media:/GoldFren_Media 
+      - static_volume:/usr/share/nginx/html/static
+    depends_on:
+      - backend
+    networks:
+      - mynetwork
 
 # Networks definition
 networks:
@@ -90,3 +89,5 @@ networks:
 # Volumes definition
 volumes:
   mysql_data:
+  goldfren_media:
+  static_volume: 

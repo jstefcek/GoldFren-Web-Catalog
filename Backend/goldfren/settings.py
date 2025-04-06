@@ -27,7 +27,13 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
 
 # SECURITY WARNING: update this when you have the production host
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'frontend']
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1', 
+    'goldfren_frontend',
+    'goldfren_nginx',
+    'catalog.goldfren.cz',  
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -162,3 +168,7 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Media files
+MEDIA_URL = '/GoldFren_Media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'GoldFren_Media')

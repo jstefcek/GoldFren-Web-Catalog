@@ -8,6 +8,6 @@ from GoldFrenAPI.Authentication.Auth_View import Login_View, Register_User
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/goldfren/internal/', include('GoldFrenAPI.urls')),
-    path('auth/token/', Login_View.as_view(), name='token_obtain_pair'),
-    path('auth/register/', Register_User, name='Register_User'),
+    path('api/auth/token/', Login_View.as_view(), name='token_obtain_pair'),
+    path('api/goldfren/auth/register/', Register_User, name='Register_User'),
 ]
