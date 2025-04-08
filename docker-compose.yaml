@@ -26,12 +26,12 @@ services:
       retries: 20
       start_period: 10s
 
-  # Frontend service (React) - COMMENTED OUT for testing purposes
+  # Frontend service (React)
   # frontend:
   #   build:
   #     context: .
   #     dockerfile: Frontend/Dockerfile  # Path to the Dockerfile inside Frontend folder
-  #   container_name: react_frontend
+  #   container_name: goldfren_frontend
   #   environment:
   #     - REACT_APP_API_URL=http://localhost:8000
   #   volumes:
