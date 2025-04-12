@@ -21,7 +21,6 @@ def get_adapters(request):
     """
     This function will return all adapters from the database with optional pagination.
     """
-    # Get pagination parameters, defaulting to 25 items per page
     try:
         # Get limit and offset from request
         req_limit = request.GET.get('limit')

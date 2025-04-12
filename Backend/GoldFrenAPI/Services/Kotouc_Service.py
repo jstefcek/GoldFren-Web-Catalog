@@ -1,9 +1,11 @@
 # Business logic for the Kotouc Service
 
 # Imports
+import logging
 from datetime import datetime
 from Components.MySQL import connect
 from GoldFrenAPI.Models.Kotouc import Kotouc
+logger = logging.getLogger(__name__)
 
 # Change state of publikovat
 def kotouc_publication(kotouc_id: int, publikovat: int):
@@ -37,7 +39,7 @@ def kotouc_publication(kotouc_id: int, publikovat: int):
         return None
 
 # Function to get all adapters
-def get_kotouce():
+def get_kotouce(limit: int = None, page: int = None):
     # Connect to MySQL database
     conn = connect()
     
@@ -46,8 +48,12 @@ def get_kotouce():
         # Create cursor object
         cursor = conn.cursor()
         
-        # Execute query
-        cursor.execute("SELECT * FROM v_kotouc_detail Where Publikovat = 1")
+        # Execute query if limit and offset are provided
+        if limit is not None and page is not None:
+            offset = 0 if page <= 1 else (page - 1) * limit
+            cursor.execute("SELECT * FROM v_kotouc_detail Where Publikovat = 1 LIMIT %s OFFSET %s", (limit, offset))
+        else:
+            cursor.execute("SELECT * FROM v_kotouc_detail Where Publikovat = 1")
         
         # Fetch all records
         records = cursor.fetchall()

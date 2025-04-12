@@ -18,12 +18,35 @@ from GoldFrenAPI.Services.Kotouc_Service import (
 @api_view(['GET'])
 def get_kotouce(request):
     """
-    This function will return all kotouce from the database
+    This function will return all kotouce from the database with optional pagination.
     """
-    # Get all adapters
-    kotouce_objects = get_all_kotouce()
-    kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
-    return JsonResponse(kotouce, status=200, safe=False)
+    try:
+        # Get limit and offset from request
+        req_limit = request.GET.get('limit')
+        req_page = request.GET.get('page', 1)
+        
+        # Validate and convert parameters
+        limit = int(req_limit) if req_limit is not None else 25
+        page = int(req_page) if req_page is not None else 1
+        
+        # Ensure positive values
+        limit = max(0, limit)
+        page = max(0, page)
+    
+        # If limit is set to 0 return all adapters
+        if limit == 0:
+            kotouce_objects = get_all_kotouce()
+            kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
+            return JsonResponse(kotouce, status=200, safe=False)
+        
+        # If limit is set to a number, return paginated adapters
+        kotouce_objects = get_all_kotouce(limit=limit, page=page)
+        kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
+        return JsonResponse(kotouce, status=200, safe=False)
+    
+    # Handle pagination errors
+    except ValueError:
+        return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
 
 # Function to get a single kotouc by ID
 @api_view(['GET'])

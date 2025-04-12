@@ -18,12 +18,35 @@ from GoldFrenAPI.Services.Brzdice_Service import (
 @api_view(['GET'])
 def get_brzdice(request):
     """
-    This function will return all brzdice from the database
+    This function will return all brzdice from the database with optional pagination.
     """
-    # Get all adapters
-    brzdice_objects = get_all_brzdice()
-    brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
-    return JsonResponse(brzdice, status=200, safe=False)
+    try:
+        # Get limit and offset from request
+        req_limit = request.GET.get('limit')
+        req_page = request.GET.get('page', 1)
+        
+        # Validate and convert parameters
+        limit = int(req_limit) if req_limit is not None else 25
+        page = int(req_page) if req_page is not None else 1
+        
+        # Ensure positive values
+        limit = max(0, limit)
+        page = max(0, page)
+        
+        # If limit is set to 0 return all adapters
+        if limit == 0:
+            brzdice_objects = get_all_brzdice()
+            brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
+            return JsonResponse(brzdice, status=200, safe=False)
+        
+        # Get all adapters
+        brzdice_objects = get_all_brzdice(limit=limit, page=page)
+        brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
+        return JsonResponse(brzdice, status=200, safe=False)
+    
+    # Handle pagination errors
+    except ValueError:
+        return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
 
 # Function to get a single adapter by ID
 @api_view(['GET'])
