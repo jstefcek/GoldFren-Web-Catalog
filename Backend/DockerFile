@@ -1,8 +1,11 @@
 # Use official Python image
-FROM python:3.13.2
+FROM python:3.13.2-alpine
 
 # Set working directory
 WORKDIR /goldfren
+
+# Install build dependencies for mysqlclient
+RUN apk add --no-cache --update gcc musl-dev mariadb-dev pkgconf
 
 # Install dependencies
 COPY Backend/requirements.txt /goldfren/requirements.txt
