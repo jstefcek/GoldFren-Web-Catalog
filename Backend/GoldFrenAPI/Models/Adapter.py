@@ -18,5 +18,16 @@ class Adapter():
         self.aktualizovano = aktualizovano
         self.aktualizoval = aktualizoval
     
-    def to_dict(self):  
-        return self.__dict__
+    def to_dict(self, filter=None):
+        # Initialize filtered_dict
+        filtered_data = {}
+        
+        # If attributes is None, return all attributes
+        if filter is None:
+            return self.__dict__
+            
+        # If attribute is in the list, return only those attributes
+        for attribute in filter:
+            if hasattr(self, attribute):
+                filtered_data[attribute] = getattr(self, attribute)
+        return filtered_data

@@ -48,11 +48,9 @@ def get_adapters(limit: int = None, page: int = None):
         
         # Execute query if limit and offset are provided
         if limit is not None and page is not None:
-            # Calculate offset and execute query
             offset = 0 if page <= 1 else (page - 1) * limit
             cursor.execute("SELECT * FROM v_adapter_detail Where Publikovat = 1 LIMIT %s OFFSET %s", (limit, offset))
         else:
-            # Execute query to get all records
             cursor.execute("SELECT * FROM v_adapter_detail Where Publikovat = 1")
         
         # Fetch all records and initialize list
