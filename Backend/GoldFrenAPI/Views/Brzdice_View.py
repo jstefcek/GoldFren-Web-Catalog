@@ -6,6 +6,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from django.http import JsonResponse, HttpResponseBadRequest
+from GoldFrenAPI.utils.utils import (
+    get_pagination,
+    get_total_count,
+    get_pagination_urls
+)
 from GoldFrenAPI.Services.Brzdice_Service import (
     get_brzdice as get_all_brzdice,
     get_brzdic,
@@ -21,28 +26,34 @@ def get_brzdice(request):
     This function will return all brzdice from the database with optional pagination.
     """
     try:
-        # Get limit and offset from request
-        req_limit = request.GET.get('limit')
-        req_page = request.GET.get('page', 1)
-        
-        # Validate and convert parameters
-        limit = int(req_limit) if req_limit is not None else 25
-        page = int(req_page) if req_page is not None else 1
-        
-        # Ensure positive values
-        limit = max(0, limit)
-        page = max(0, page)
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
         
         # If limit is set to 0 return all adapters
         if limit == 0:
             brzdice_objects = get_all_brzdice()
             brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
-            return JsonResponse(brzdice, status=200, safe=False)
+            return JsonResponse({
+                "count": len(brzdice),
+                "data": brzdice
+            }, status=200)
+            
+        # Get adapters count
+        total_brzidce = get_total_count("d_brzdice")
         
-        # Get all adapters
-        brzdice_objects = get_all_brzdice(limit=limit, page=page)
-        brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
-        return JsonResponse(brzdice, status=200, safe=False)
+        # If limit is set to a number, return paginated adapters
+        adapter_objects = get_all_brzdice(limit=limit, page=page)
+        adapters = [adapter.to_dict() for adapter in adapter_objects]
+        
+        # Construct next and previous page URLs
+        next_url, prev_url = get_pagination_urls(request, limit, page, total_brzidce)
+        
+        return JsonResponse({
+            "count": total_brzidce,
+            "next": next_url,
+            "previous": prev_url,
+            "data": adapters
+        }, status=200)
     
     # Handle pagination errors
     except ValueError:

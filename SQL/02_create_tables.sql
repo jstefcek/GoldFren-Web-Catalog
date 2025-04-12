@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `d_brzdice` (
   `vektor` varchar(255) DEFAULT NULL COMMENT 'Vektor brzdice',
   `cislo_dilu` varchar(255) DEFAULT NULL COMMENT 'Cislo dilu brzdice',
   `popis` varchar(255) DEFAULT NULL COMMENT 'Popis brzdice',
+  `typ_uchyceni` varchar(10) DEFAULT NULL COMMENT 'Typ uchyceni brzdice',
   `poznamka` text COMMENT 'Poznamka k brzdicu',
   `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
@@ -143,8 +144,31 @@ CREATE TABLE IF NOT EXISTS `d_kotouce` (
 ) COMMENT='Tabulka kotoucu';
 
 -- Table structure for table 'c_kotouc_typ'
-CREATE TABLE `c_kotouc_typ` (
+CREATE TABLE IF NOT EXISTS `c_kotouc_typ` (
   `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod typu kotouce',
   `nazev` varchar(255) NOT NULL COMMENT 'Nazev typu kotouce',
   PRIMARY KEY (`kod`)
 ) COMMENT='Tabulka typu kotoucu';
+
+-- Creates a config table that will track which columns should be visiabled for specific sortiment
+CREATE TABLE IF NOT EXISTS `c_view_config` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod zaznamu',
+  `sortiment` int DEFAULT NULL COMMENT 'Kod sortimentu',
+  `attribut` varchar(255) NOT NULL COMMENT 'Nazev atributu',
+  `publikovat` tinyint DEFAULT 0 COMMENT 'Zda se ma attribut publikovat na webu a API',
+  `vytvoreno` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Cas vytvoreni',
+  `vytvoril` int DEFAULT NULL COMMENT 'Kdo vytvoril zaznam',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  PRIMARY KEY (`kod`),
+  CONSTRAINT `FK_CONFIG_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`)
+) COMMENT='Tabulka nastaveni zobrazeni attributu na webu a API pro jednotlivy sortiment';
+
+-- Creates table for attachment info about adapters
+CREATE TABLE IF NOT EXISTS `d_adapter_attachment` (
+  `adapter_kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod zaznamu',
+  `typ_uchyceni` VARCHAR(10) NOT NULL COMMENT 'Typ uchyceni adapteru',
+  `roztec_brzdic` decimal(5,2) DEFAULT NULL COMMENT 'Roztec pro brzdic',
+  PRIMARY KEY (`adapter_kod`),
+  CONSTRAINT `FK_ADAPT_kod` FOREIGN KEY (`adapter_kod`) REFERENCES `d_adapter` (`kod`)
+) COMMENT='Tabulka nastaveni zobrazeni attributu na webu a API pro jednotlivy sortiment';

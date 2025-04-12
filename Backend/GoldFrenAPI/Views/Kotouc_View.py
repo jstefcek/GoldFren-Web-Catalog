@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from django.http import JsonResponse, HttpResponseBadRequest
+from GoldFrenAPI.utils.utils import get_pagination
 from GoldFrenAPI.Services.Kotouc_Service import (
     get_kotouce as get_all_kotouce,
     get_kotouc,
@@ -21,17 +22,8 @@ def get_kotouce(request):
     This function will return all kotouce from the database with optional pagination.
     """
     try:
-        # Get limit and offset from request
-        req_limit = request.GET.get('limit')
-        req_page = request.GET.get('page', 1)
-        
-        # Validate and convert parameters
-        limit = int(req_limit) if req_limit is not None else 25
-        page = int(req_page) if req_page is not None else 1
-        
-        # Ensure positive values
-        limit = max(0, limit)
-        page = max(0, page)
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
     
         # If limit is set to 0 return all adapters
         if limit == 0:

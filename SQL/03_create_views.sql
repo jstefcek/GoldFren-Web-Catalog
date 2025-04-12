@@ -3,15 +3,16 @@ USE goldfren_data;
 
 -- View structure for view 'v_adapter_detail'
 CREATE OR REPLACE VIEW v_adapter_detail AS
-SELECT a.kod, s.nazev as sortiment, k.nazev as kategorie, a.obrazek, a.vektor, a.cislo_dilu, a.typ, a.prumer, a.popis, a.poznamka, a.publikovat, a.aktualizovano, a.aktualizoval 
+SELECT a.kod, s.nazev as sortiment, k.nazev as kategorie, a.obrazek, a.vektor, a.cislo_dilu, a.typ, a.prumer, a.popis, aa.typ_uchyceni, aa.roztec_brzdic, a.poznamka, a.publikovat, a.aktualizovano, a.aktualizoval 
 FROM d_adapter a 
 LEFT JOIN c_sortiment s on s.kod = a.sortiment
 LEFT JOIN c_kategorie k on k.kod = a.kategorie
+LEFT JOIN d_adapter_attachment aa on a.kod = aa.adapter_kod
   WHERE a.publikovat = 1;
 
 -- View structure for view 'v_brzdice_detail'
 CREATE OR REPLACE VIEW v_brzdice_detail AS
-SELECT b.kod, s.nazev as sortiment, k.nazev as kategorie, b.obrazek, b.vektor, b.cislo_dilu, b.popis, b.poznamka, b.publikovat, b.aktualizovano, b.aktualizoval
+SELECT b.kod, s.nazev as sortiment, k.nazev as kategorie, b.obrazek, b.vektor, b.cislo_dilu, b.popis, b.typ_uchyceni, b.poznamka, b.publikovat, b.aktualizovano, b.aktualizoval
 FROM d_brzdice b
 LEFT JOIN c_sortiment s on s.kod = b.sortiment
 LEFT JOIN c_kategorie k on k.kod = b.kategorie;

@@ -70,6 +70,8 @@ def get_adapters(limit: int = None, page: int = None):
                 typ=record["typ"],
                 prumer=float(record["prumer"]) if record["prumer"] is not None else None,
                 popis=record["popis"],
+                typ_uchyceni=record["typ_uchyceni"],
+                roztec_brzdice=float(record["roztec_brzdic"]) if record["roztec_brzdic"] is not None else None,
                 poznamka=record["poznamka"],
                 publikovat=bool(record["publikovat"]),
                 aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
@@ -129,6 +131,8 @@ def get_adapter(adapter_id):
                 typ=record["typ"],
                 prumer=float(record["prumer"]) if record["prumer"] is not None else None,
                 popis=record["popis"],
+                typ_uchyceni=record["typ_uchyceni"],
+                roztec_brzdice=float(record["roztec_brzdic"]) if record["roztec_brzdic"] is not None else None,
                 poznamka=record["poznamka"],
                 publikovat=bool(record["publikovat"]),
                 aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
@@ -159,6 +163,13 @@ def update_adapter(adapter_id, data):
             WHERE kod = %s
         """
         
+        # Update info about adapter attachment to database
+        query_attachment = """
+            UPDATE d_adapter_attachment 
+            SET typ_uchyceni = %s, roztec_brzdice = %s 
+            WHERE adapter_kod = %s
+        """
+        
         # Execute query
         try:
             cursor.execute(query, (
@@ -167,6 +178,10 @@ def update_adapter(adapter_id, data):
                 data["poznamka"], data["publikovat"], data["aktualizoval"], adapter_id
             ))
             conn.commit()
+            
+            cursor.execute(query_attachment, (data["typ_uchyceni"], data["roztec_brzdic"], adapter_id))
+            conn.commit()
+            
             return True
         
         except Exception as ex:
@@ -192,21 +207,30 @@ def create_adapter(data):
         cursor = conn.cursor()
         
         # Prepare SQL query
-        sql_query = """
+        query = """
             INSERT INTO d_adapter (sortiment, kategorie, obrazek, vektor, 
                 cislo_dilu, typ, prumer, popis, poznamka, publikovat, aktualizovano, aktualizoval) 
             VALUES (6, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
         """
         
-        # Execute query
+        # Insert info about adapter attachment to database
+        query_attachment = """
+            INSERT INTO d_adapter_attachment (adapter_kod, typ_uchyceni, roztec_brzdic) 
+            VALUES (%s, %s, %s)
+        """
+        
+        # Execute queries
         try:
-            cursor.execute(sql_query, (
+            cursor.execute(query, (
                 data["kategorie"], data["obrazek"], data["vektor"],
                 data["cislo_dilu"], data["typ"], data.get("prumer"), data["popis"],
                 data["poznamka"], data["publikovat"], data["aktualizoval"]
             ))
             conn.commit()
             new_id = cursor.lastrowid
+            
+            cursor.execute(query_attachment, (new_id, data["typ_uchyceni"], data["roztec_brzdic"]))
+            conn.commit()
 
         except Exception as ex:
             print(ex)

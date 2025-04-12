@@ -6,7 +6,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from django.http import JsonResponse, HttpResponseBadRequest
-from rest_framework.pagination import LimitOffsetPagination
+from GoldFrenAPI.utils.utils import (
+    get_pagination,
+    get_total_count,
+    get_pagination_urls
+)
 from GoldFrenAPI.Services.Adapter_Service import (
     get_adapters as get_all_adapters,
     get_adapter,
@@ -22,28 +26,34 @@ def get_adapters(request):
     This function will return all adapters from the database with optional pagination.
     """
     try:
-        # Get limit and offset from request
-        req_limit = request.GET.get('limit')
-        req_page = request.GET.get('page', 1)
-        
-        # Validate and convert parameters
-        limit = int(req_limit) if req_limit is not None else 25
-        page = int(req_page) if req_page is not None else 1
-        
-        # Ensure positive values
-        limit = max(0, limit)
-        page = max(0, page)
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
     
         # If limit is set to 0 return all adapters
         if limit == 0:
             adapter_objects = get_all_adapters()
             adapters = [adapter.to_dict() for adapter in adapter_objects]
-            return JsonResponse(adapters, status=200, safe=False)
+            return JsonResponse({
+                "count": len(adapters),
+                "data": adapters
+            }, status=200)
+        
+        # Get adapters count
+        total_adapters = get_total_count("d_adapter")
         
         # If limit is set to a number, return paginated adapters
         adapter_objects = get_all_adapters(limit=limit, page=page)
         adapters = [adapter.to_dict() for adapter in adapter_objects]
-        return JsonResponse(adapters, status=200, safe=False)
+        
+        # Construct next and previous page URLs
+        next_url, prev_url = get_pagination_urls(request, limit, page, total_adapters)
+        
+        return JsonResponse({
+            "count": total_adapters,
+            "next": next_url,
+            "previous": prev_url,
+            "data": adapters
+        }, status=200)
 
     # Handle pagination errors
     except ValueError:

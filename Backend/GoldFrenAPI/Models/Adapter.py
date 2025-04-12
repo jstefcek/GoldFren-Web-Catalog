@@ -3,7 +3,7 @@ from datetime import datetime
 
 # Class definition
 class Adapter():
-    def __init__(self, kod: int, sortiment: str, kategorie: str, obrazek: str, vektor: str, cislo_dilu: str, typ: str, prumer: float, popis: str, poznamka: str, publikovat: bool, aktualizovano: datetime, aktualizoval: str):
+    def __init__(self, kod: int, sortiment: str, kategorie: str, obrazek: str, vektor: str, cislo_dilu: str, typ: str, prumer: float, popis: str, typ_uchyceni: str, roztec_brzdice: float, poznamka: str, publikovat: bool, aktualizovano: datetime, aktualizoval: str):
         self.kod = kod
         self.sortiment = sortiment
         self.kategorie = kategorie
@@ -13,6 +13,8 @@ class Adapter():
         self.typ = typ
         self.prumer = prumer
         self.popis = popis
+        self.typ_uchyceni = typ_uchyceni
+        self.roztec_brzdice = roztec_brzdice
         self.poznamka = poznamka
         self.publikovat = publikovat
         self.aktualizovano = aktualizovano

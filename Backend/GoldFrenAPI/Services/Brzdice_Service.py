@@ -70,6 +70,7 @@ def get_brzdice(limit: int = None, page: int = None):
                 vektor=record["vektor"],
                 cislo_dilu=record["cislo_dilu"],
                 popis=record["popis"],
+                typ_uchyceni=record["typ_uchyceni"],
                 poznamka=record["poznamka"],
                 publikovat=bool(record["publikovat"]),
                 aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
@@ -127,6 +128,7 @@ def get_brzdic(brzdic_id: int):
                 vektor=record["vektor"],
                 cislo_dilu=record["cislo_dilu"],
                 popis=record["popis"],
+                typ_uchyceni=record["typ_uchyceni"],
                 poznamka=record["poznamka"],
                 publikovat=bool(record["publikovat"]),
                 aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
@@ -152,7 +154,7 @@ def update_brzdic(brzdic_id: int, data: dict):
         query = """
             UPDATE d_brzdice 
             SET kategorie = %s, obrazek = %s, vektor = %s, 
-                cislo_dilu = %s, popis = %s, poznamka = %s, 
+                cislo_dilu = %s, popis = %s, typ_uchyceni = %s, poznamka = %s, 
                 publikovat = %s, aktualizovano = NOW(), aktualizoval = %s 
             WHERE kod = %s
         """
@@ -161,7 +163,7 @@ def update_brzdic(brzdic_id: int, data: dict):
         try:
             cursor.execute(query, (
                 data["kategorie"], data["obrazek"], data["vektor"],
-                data["cislo_dilu"], data["popis"],data["poznamka"], 
+                data["cislo_dilu"], data["popis"], data["typ_uchyceni"], data["poznamka"], 
                 data["publikovat"], data["aktualizoval"], brzdic_id
             ))
             conn.commit()
@@ -192,7 +194,7 @@ def create_brzdic(data: dict):
         # Prepare SQL query
         sql_query = """
             INSERT INTO d_brzdice (sortiment, kategorie, obrazek, vektor, 
-                cislo_dilu, popis, poznamka, publikovat, aktualizovano, aktualizoval) 
+                cislo_dilu, popis, typ_uchyceni, poznamka, publikovat, aktualizovano, aktualizoval) 
             VALUES (3, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
         """
         
@@ -200,7 +202,7 @@ def create_brzdic(data: dict):
         try:
             cursor.execute(sql_query, (
                 data["kategorie"], data["obrazek"], data["vektor"],
-                data["cislo_dilu"], data["popis"],data["poznamka"], 
+                data["cislo_dilu"], data["typ_uchyceni"], data["popis"],data["poznamka"], 
                 data["publikovat"], data["aktualizoval"]
             ))
             conn.commit()
