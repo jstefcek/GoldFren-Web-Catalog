@@ -5,7 +5,9 @@ from rest_framework.permissions import IsAdminUser
 import logging
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status
-from .Auth_Serializers import GroupBasedTokenObtainPairSerializer, RegisterUserSerializer
+from .Auth_Serializers import GroupBasedTokenObtainPairSerializer, RegisterUserSerializer, ChangePasswordSerializer
+from rest_framework.permissions import IsAuthenticated
+from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 
 class Login_View(TokenObtainPairView):
     serializer_class = GroupBasedTokenObtainPairSerializer
@@ -62,4 +64,18 @@ def Register_User(request):
         return Response({"message": "User created successfully", "user_id": user.id}, status=status.HTTP_201_CREATED)
     
     # Return the errors if the serializer is not valid
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsInternalUser])  
+def change_user_password(request):
+    """
+    Allows an authenticated user to change their own password.
+    """
+    serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

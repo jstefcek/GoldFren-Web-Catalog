@@ -1,5 +1,7 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
 from datetime import timedelta
@@ -78,4 +80,34 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         user.groups.add(external_group)
         
         # Return user object
+        return user
+    
+# Custom class to change password
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate(self, data):
+        user = self.context['request'].user
+        # Validate old password
+        if not user.check_password(data['old_password']):
+            raise serializers.ValidationError({"old_password": "Old password is incorrect"})
+
+        # Validate new password
+        if data['old_password'] == data['new_password']:
+            raise serializers.ValidationError({"new_password": "New password cannot be the same as old password"})
+        
+        # Validate new password against Django's password validation rules
+        try:
+            validate_password(data['new_password'], user)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError({"new_password": e.messages})
+
+        return data
+
+    def save(self):
+        # Get the user from the request context and save the new password
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
         return user
