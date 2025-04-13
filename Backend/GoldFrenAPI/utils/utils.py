@@ -20,7 +20,7 @@ def get_pagination(request):
     
     return limit, page
 
-def get_total_count(sql_table: str) -> int:
+def get_total_count(sql_table: str, states: bool) -> int:
     """
     This function returns the total count of records in the specified SQL table.
     """
@@ -28,7 +28,12 @@ def get_total_count(sql_table: str) -> int:
         # Execute SQL query to get the count
         conn = connect()
         with conn.cursor() as cursor:
-            cursor.execute(f"SELECT COUNT(*) as pocet FROM {sql_table} where Publikovat = 1")
+            # Prepare SQL query
+            query = f"SELECT COUNT(*) as pocet FROM {sql_table}"
+            query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+            
+            # Execute query and fetch result
+            cursor.execute(query)
             result = cursor.fetchone()
             return result["pocet"] if result else 0
     

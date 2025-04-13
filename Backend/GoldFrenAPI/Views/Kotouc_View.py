@@ -24,15 +24,18 @@ def get_kotouce(request):
     try:
         # Get pagination parameters from request
         limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
     
         # If limit is set to 0 return all adapters
         if limit == 0:
-            kotouce_objects = get_all_kotouce()
+            kotouce_objects = get_all_kotouce(states=states)
             kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
             return JsonResponse(kotouce, status=200, safe=False)
         
         # If limit is set to a number, return paginated adapters
-        kotouce_objects = get_all_kotouce(limit=limit, page=page)
+        kotouce_objects = get_all_kotouce(limit=limit, page=page, states=states)
         kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
         return JsonResponse(kotouce, status=200, safe=False)
     

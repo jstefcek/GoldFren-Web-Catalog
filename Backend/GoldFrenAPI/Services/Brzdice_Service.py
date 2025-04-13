@@ -37,7 +37,7 @@ def brzdice_publication(brzdic_id, publikovat):
         return None
 
 # Function to get all brzdice
-def get_brzdice(limit: int = None, page: int = None):
+def get_brzdice(limit: int = None, page: int = None, states: bool = False):
     # Connect to MySQL database
     conn = connect()
     
@@ -48,10 +48,20 @@ def get_brzdice(limit: int = None, page: int = None):
         
         # Execute query if limit and offset are provided
         if limit is not None and page is not None:
+            # Calculate offset
+            # If page is 1, offset is 0, otherwise calculate offset
             offset = 0 if page <= 1 else (page - 1) * limit
-            cursor.execute("SELECT * FROM v_brzdice_detail Where Publikovat = 1 LIMIT %s OFFSET %s", (limit, offset))
+            
+            # Prepare SQL query and execute it
+            query = "SELECT * FROM v_brzdice_detail"
+            query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+            query += " LIMIT %s OFFSET %s"
+            cursor.execute(query, (limit, offset))
         else:
-            cursor.execute("SELECT * FROM v_brzdice_detail Where Publikovat = 1")
+            # Prepare SQL query without limit and offset and execute it
+            query = "SELECT * FROM v_brzdice_detail"
+            query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+            cursor.execute(query)
         
         # Fetch all records
         records = cursor.fetchall()

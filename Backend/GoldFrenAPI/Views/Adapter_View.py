@@ -28,10 +28,13 @@ def get_adapters(request):
     try:
         # Get pagination parameters from request
         limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
     
         # If limit is set to 0 return all adapters
         if limit == 0:
-            adapter_objects = get_all_adapters()
+            adapter_objects = get_all_adapters(states=states)
             adapters = [adapter.to_dict() for adapter in adapter_objects]
             return JsonResponse({
                 "count": len(adapters),
@@ -39,10 +42,10 @@ def get_adapters(request):
             }, status=200)
         
         # Get adapters count
-        total_adapters = get_total_count("d_adapter")
+        total_adapters = get_total_count("d_adapter", states=states)
         
         # If limit is set to a number, return paginated adapters
-        adapter_objects = get_all_adapters(limit=limit, page=page)
+        adapter_objects = get_all_adapters(limit=limit, page=page, states=states)
         adapters = [adapter.to_dict() for adapter in adapter_objects]
         
         # Construct next and previous page URLs

@@ -24,15 +24,18 @@ def get_desticky(request):
     try:
         # Get pagination parameters from request
         limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
     
         # If limit is set to 0 return all adapters
         if limit == 0:
-            desticky_objects = get_all_desticky()
+            desticky_objects = get_all_desticky(states=states)
             desticky = [desticka.to_dict() for desticka in desticky_objects]
             return JsonResponse(desticky, status=200, safe=False)
         
         # If limit is set to a number, return paginated adapters
-        desticky_objects = get_all_desticky(limit=limit, page=page)
+        desticky_objects = get_all_desticky(limit=limit, page=page, states=states)
         desticky = [desticka.to_dict() for desticka in desticky_objects]
         return JsonResponse(desticky, status=200, safe=False)
     

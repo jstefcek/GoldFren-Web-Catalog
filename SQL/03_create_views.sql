@@ -7,8 +7,7 @@ SELECT a.kod, s.nazev as sortiment, k.nazev as kategorie, a.obrazek, a.vektor, a
 FROM d_adapter a 
 LEFT JOIN c_sortiment s on s.kod = a.sortiment
 LEFT JOIN c_kategorie k on k.kod = a.kategorie
-LEFT JOIN d_adapter_attachment aa on a.kod = aa.adapter_kod
-  WHERE a.publikovat = 1;
+LEFT JOIN d_adapter_attachment aa on a.kod = aa.adapter_kod;
 
 -- View structure for view 'v_brzdice_detail'
 CREATE OR REPLACE VIEW v_brzdice_detail AS

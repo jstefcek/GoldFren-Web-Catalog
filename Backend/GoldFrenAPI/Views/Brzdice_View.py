@@ -29,9 +29,12 @@ def get_brzdice(request):
         # Get pagination parameters from request
         limit, page = get_pagination(request)
         
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+        
         # If limit is set to 0 return all adapters
         if limit == 0:
-            brzdice_objects = get_all_brzdice()
+            brzdice_objects = get_all_brzdice(states=states)
             brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
             return JsonResponse({
                 "count": len(brzdice),
@@ -39,10 +42,10 @@ def get_brzdice(request):
             }, status=200)
             
         # Get adapters count
-        total_brzidce = get_total_count("d_brzdice")
+        total_brzidce = get_total_count("d_brzdice", states=states)
         
         # If limit is set to a number, return paginated adapters
-        adapter_objects = get_all_brzdice(limit=limit, page=page)
+        adapter_objects = get_all_brzdice(limit=limit, page=page, states=states)
         adapters = [adapter.to_dict() for adapter in adapter_objects]
         
         # Construct next and previous page URLs
