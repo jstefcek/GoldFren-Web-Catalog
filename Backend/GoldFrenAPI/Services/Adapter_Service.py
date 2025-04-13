@@ -3,7 +3,7 @@
 # Imports
 from datetime import datetime
 from Components.MySQL import connect
-from GoldFrenAPI.Models.Adapter import Adapter
+from GoldFrenAPI.Models.Adaptery import Adapter
 
 # Change state of publikovat
 def adapter_publication(adapter_id: int, publikovat: int):
