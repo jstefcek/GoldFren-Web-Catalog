@@ -172,3 +172,41 @@ CREATE TABLE IF NOT EXISTS `d_adapter_attachment` (
   PRIMARY KEY (`adapter_kod`),
   CONSTRAINT `FK_ADAPT_kod` FOREIGN KEY (`adapter_kod`) REFERENCES `d_adapter` (`kod`)
 ) COMMENT='Tabulka nastaveni zobrazeni attributu na webu a API pro jednotlivy sortiment';
+
+-- Creates table for prislusenstvi
+CREATE TABLE `d_prislusenstvi` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod prislusenstvi',
+  `sortiment` int DEFAULT NULL COMMENT 'Kod sortimentu',
+  `kategorie` int DEFAULT NULL COMMENT 'Kod kategorie',
+  `obrazek` varchar(255) DEFAULT NULL COMMENT 'Obrazek prislusenstvi',
+  `vektor` varchar(255) DEFAULT NULL COMMENT 'Vektor prislusenstvi',
+  `cislo_dilu` varchar(255) DEFAULT NULL COMMENT 'Cislo dilu prislusenstvi',
+  `typ` varchar(255) DEFAULT NULL COMMENT 'Typ prislusenstvi',
+  `popis` varchar(255) DEFAULT NULL COMMENT 'Popis prislusenstvi',
+  `poznamka` text DEFAULT NULL COMMENT 'Poznamka k prislusenstvi',
+  `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma prislusenstvi publikovat',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
+  `aktualizoval` tinyint DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  PRIMARY KEY (`kod`),
+  CONSTRAINT `FK_PRIS_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
+  CONSTRAINT `FK_PRIS_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
+) COMMENT 'Tabulka prislusenstvi';
+
+-- Creates table for pumpy
+CREATE TABLE `d_pumpa` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod pumpy',
+  `sortiment` int DEFAULT NULL COMMENT 'Kod sortimentu',
+  `kategorie` int DEFAULT NULL COMMENT 'Kod kategorie',
+  `obrazek` varchar(255) DEFAULT NULL COMMENT 'Obrazek pumpy',
+  `vektor` varchar(255) DEFAULT NULL COMMENT 'Vektor pumpy',
+  `cislo_dilu` varchar(255) DEFAULT NULL COMMENT 'Cislo dilu pumpy',
+  `prumer` decimal(5,2) DEFAULT NULL COMMENT 'Prumer pumpy',
+  `popis` varchar(255) DEFAULT NULL COMMENT 'Popis pumpy',
+  `poznamka` text DEFAULT NULL COMMENT 'Poznamka k pumpe',
+  `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma pumpa publikovat',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
+  `aktualizoval` tinyint DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  PRIMARY KEY (`kod`),
+  CONSTRAINT `FK_PUMP_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
+  CONSTRAINT `FK_PUMP_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
+) COMMENT 'Tabulka brzdových pump';
