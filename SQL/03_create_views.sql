@@ -37,3 +37,24 @@ FROM d_kotouce k
 LEFT JOIN c_sortiment s on s.kod = k.sortiment
 LEFT JOIN c_kategorie ka on ka.kod = k.kategorie
 LEFT JOIN c_kotouc_typ kt on kt.kod = k.typ;
+
+-- View structure for view 'v_pumpy_detail'
+CREATE OR REPLACE VIEW v_pumpy_detail AS
+SELECT p.kod, s.nazev as sortiment, k.nazev as kategorie, p.obrazek, p.vektor, p.cislo_dilu, p.prumer, p.popis, p.poznamka, p.publikovat, p.aktualizovano, p.aktualizoval 
+FROM d_pumpa p
+LEFT JOIN c_sortiment s on s.kod = p.sortiment
+LEFT JOIN c_kategorie k on k.kod = p.kategorie;
+
+-- View structure for view 'v_hadicky_detail'
+CREATE OR REPLACE VIEW v_hadicky_detail AS
+SELECT h.kod, s.nazev as sortiment, k.nazev as kategorie, h.obrazek, h.vektor, h.cislo_dilu, h.popis, h.poznamka, h.publikovat, h.aktualizovano, h.aktualizoval 
+FROM d_hadicka h
+LEFT JOIN c_sortiment s on s.kod = h.sortiment
+LEFT JOIN c_kategorie k on k.kod = h.kategorie;
+
+-- View structure for view 'v_prislusenstvi_detail'
+CREATE OR REPLACE VIEW v_prislusenstvi_detail AS
+SELECT p.kod, s.nazev as sortiment, k.nazev as kategorie, p.obrazek, p.vektor, p.cislo_dilu, p.typ, p.popis, p.poznamka, p.publikovat, p.aktualizovano, p.aktualizoval 
+FROM d_prislusenstvi p
+LEFT JOIN c_sortiment s on s.kod = p.sortiment
+LEFT JOIN c_kategorie k on k.kod = p.kategorie;

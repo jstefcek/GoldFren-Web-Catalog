@@ -1,8 +1,8 @@
-# Business logic for the Brzdice Service
+# Business logic for the Hadicky Service
 
 # Imports
 from datetime import datetime
-from GoldFrenAPI.Models.Brzdice import Brzdic
+from GoldFrenAPI.Models.Prislusenstvi import Prislusenstvi
 from GoldFrenAPI.Services.Service_utils import (
     set_publication_state, 
     get_all_items,
@@ -11,94 +11,94 @@ from GoldFrenAPI.Services.Service_utils import (
     insert_record
 )
 
-# Function to get all brzdice
-def get_brzdice(limit: int = None, page: int = None, states: bool = False):
+# Function to get all prislusenstvi from database
+def get_prislusenstvi(limit: int = None, page: int = None, states: bool = False):
     # Get all items from the database
-    records = get_all_items(sql_view="v_brzdice_detail", limit=limit, page=page, states=states)
-    brzdice = []
+    records = get_all_items(sql_view="v_prislusenstvi_detail", limit=limit, page=page, states=states)
+    all_prislusenstvi = []
     
     # Iterate through records
     for record in records:
         # Create brzdic object
-        brzdic = Brzdic(
+        prislusenstvi = Prislusenstvi(
             kod=record["kod"],
             sortiment=record["sortiment"],
             kategorie=record["kategorie"],
             obrazek=record["obrazek"],
             vektor=record["vektor"],
             cislo_dilu=record["cislo_dilu"],
+            typ=record["typ"],
             popis=record["popis"],
-            typ_uchyceni=record["typ_uchyceni"],
             poznamka=record["poznamka"],
             publikovat=bool(record["publikovat"]),
             aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
             aktualizoval=record["aktualizoval"]
         )
         
-        # Append brzdice object to list
-        brzdice.append(brzdic)
+        # Append prislusenstvi object to list
+        all_prislusenstvi.append(prislusenstvi)
         
-    # Return list of brzdice objects
-    return brzdice
-    
-# Function to get a single brzidc by ID
-def get_brzdic(brzdic_id: int):
+    # Return list of all prislusenstvi objects
+    return all_prislusenstvi
+
+# Function to get a single prislusenstvi by ID
+def get_one_prislusenstvi(prislusenstvi_id: int):
     # Get item by ID from the database
-    record = get_item_by_id(sql_view="v_adapter_detail", item_id=brzdic_id)
+    record = get_item_by_id(sql_view="v_prislusenstvi_detail", item_id=prislusenstvi_id)
         
     # Check if record exists
     if record:
-        return Brzdic(
+        return Prislusenstvi(
             kod=record["kod"],
             sortiment=record["sortiment"],
             kategorie=record["kategorie"],
             obrazek=record["obrazek"],
             vektor=record["vektor"],
             cislo_dilu=record["cislo_dilu"],
+            typ=record["typ"],
             popis=record["popis"],
-            typ_uchyceni=record["typ_uchyceni"],
             poznamka=record["poznamka"],
             publikovat=bool(record["publikovat"]),
             aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
             aktualizoval=record["aktualizoval"]
         )
-    
-# Function to update an existing brzdic
-def update_brzdic(brzdic_id: int, data: dict):
+        
+# Function to update an existing prislusenstvi
+def update_prislusenstvi(prislusenstvi_id: int, data: dict):
     # Prepare SQL query
     query = """
-        UPDATE d_brzdice 
+        UPDATE d_prislusenstvi
         SET kategorie = %s, obrazek = %s, vektor = %s, 
-            cislo_dilu = %s, popis = %s, typ_uchyceni = %s, poznamka = %s, 
+            cislo_dilu = %s, typ = %s, popis = %s, poznamka = %s, 
             publikovat = %s, aktualizovano = NOW(), aktualizoval = %s 
         WHERE kod = %s
     """
     status = execute_update(sql_query=query, params=(
                 data["kategorie"], data["obrazek"], data["vektor"],
-                data["cislo_dilu"], data["popis"], data["typ_uchyceni"], data["poznamka"], 
-                data["publikovat"], data["aktualizoval"], brzdic_id
+                data["cislo_dilu"], data["typ"], data["popis"], data["poznamka"], 
+                data["publikovat"], data["aktualizoval"], prislusenstvi_id
             ))
     
     # Return status
     return status
-    
-# Function to create a new brzdic
-def create_brzdic(data: dict):
-    # Prepare SQL query for inserting new brzdic to database
+
+# Function to create a new pumpa
+def create_prislusenstvi(data: dict):
+    # Prepare SQL query for inserting new prislusenstvi to database
     query = """
-        INSERT INTO d_brzdice (sortiment, kategorie, obrazek, vektor, 
-            cislo_dilu, popis, typ_uchyceni, poznamka, publikovat, aktualizovano, aktualizoval) 
+        INSERT INTO d_prislusenstvi (sortiment, kategorie, obrazek, vektor, 
+            cislo_dilu, typ, popis, poznamka, publikovat, aktualizovano, aktualizoval) 
         VALUES (3, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
     """
     new_id = insert_record(sql_query=query, 
         params=(data["kategorie"], data["obrazek"], data["vektor"],
-        data["cislo_dilu"], data["popis"], data["typ_uchyceni"],data["poznamka"], 
+        data["cislo_dilu"], data["typ"], data["popis"], data["poznamka"], 
         data["publikovat"], data["aktualizoval"]),
         return_id=True
     )
     return new_id
 
 # Change state of publikovat
-def brzdice_publication(brzdic_id, publikovat):
-    state = set_publication_state(sql_table="d_brzdice", publikovat=publikovat, item_id=brzdic_id)
+def prislusenstvi_publication(prislusenstvi_id, publikovat):
+    state = set_publication_state(sql_table="d_prislusenstvi", publikovat=publikovat, item_id=prislusenstvi_id)
     return state
