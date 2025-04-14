@@ -122,7 +122,7 @@ def create_hadicka_view(request):
     # Create adapter
     new_id = create_hadicka(data)
     if new_id:
-        return JsonResponse({"message": "Hadicka created successfully", "adapter_id": new_id}, status=201)
+        return JsonResponse({"message": "Hadicka created successfully", "hadicka_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create hadicka"}, status=500)
 
 # Change state of publikovat

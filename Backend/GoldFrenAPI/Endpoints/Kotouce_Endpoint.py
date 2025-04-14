@@ -13,6 +13,6 @@ urlpatterns = [
     path("", get_kotouce, name="get_all_kotouce"),
     path("<int:kotouc_id>", get_kotouc_by_id, name="get_kotouc_by_id"),
     path("update/<int:kotouc_id>", update_kotouc_view, name="update_kotouc"),
-    path("create/", create_kotouc_view, name="create_kotouc"),
+    path("create", create_kotouc_view, name="create_kotouc"),
     path("publication/<int:kotouc_id>", kotouc_publication_view, name="kotouc_publication"),
 ]

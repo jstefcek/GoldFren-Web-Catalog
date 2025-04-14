@@ -96,7 +96,7 @@ def update_pumpa_view(request, pumpa_id):
     # Update pumpa
     success = update_pumpa(pumpa_id, data)
     if success:
-        return JsonResponse({"message": "pumpa updated successfully"}, status=200)
+        return JsonResponse({"message": "Pumpa updated successfully"}, status=200)
     return JsonResponse({"error": "Failed to update pumpa"}, status=500)
 
 # Function to create a new pumpa
@@ -122,7 +122,7 @@ def create_pumpa_view(request):
     # Create adapter
     new_id = create_pumpa(data)
     if new_id:
-        return JsonResponse({"message": "pumpa created successfully", "adapter_id": new_id}, status=201)
+        return JsonResponse({"message": "Pumpa created successfully", "pumpa_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create pumpa"}, status=500)
 
 # Change state of publikovat

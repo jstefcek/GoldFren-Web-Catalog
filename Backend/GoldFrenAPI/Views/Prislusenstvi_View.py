@@ -68,7 +68,7 @@ def get_prislusenstvi_by_id(request, prislusenstvi_id):
     """
     This function returns a single prislusenstvi by ID.
     """
-    prislusenstvi = get_prislusenstvi(prislusenstvi_id)
+    prislusenstvi = get_one_prislusenstvi(prislusenstvi_id)
     if prislusenstvi:
         return JsonResponse(prislusenstvi.to_dict(), status=200)
     return JsonResponse({"error": "Prislusenstvi not found"}, status=404)
@@ -122,7 +122,7 @@ def create_prislusenstvi_view(request):
     # Create adapter
     new_id = create_prislusenstvi(data)
     if new_id:
-        return JsonResponse({"message": "Prislusenstvi created successfully", "adapter_id": new_id}, status=201)
+        return JsonResponse({"message": "Prislusenstvi created successfully", "prislusenstvi_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create prislusenstvi"}, status=500)
 
 # Change state of publikovat

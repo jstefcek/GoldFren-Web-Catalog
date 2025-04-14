@@ -1,11 +1,11 @@
 class Hadicka():
-    def __init__(self, kod, sortiment, kategorie, obrazek, vektor, oznaceni, popis, poznamka, publikovat, aktualizovano, aktualizoval):
+    def __init__(self, kod, sortiment, kategorie, obrazek, vektor, cislo_dilu, popis, poznamka, publikovat, aktualizovano, aktualizoval):
        self.kod = kod
        self.sortiment = sortiment
        self.kategorie = kategorie
        self.obrazek = obrazek
        self.vektor = vektor
-       self.oznaceni = oznaceni
+       self.cislo_dilu = cislo_dilu
        self.popis = popis
        self.poznamka = poznamka
        self.publikovat = publikovat

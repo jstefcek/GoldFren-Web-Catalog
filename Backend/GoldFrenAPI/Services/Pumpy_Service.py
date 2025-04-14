@@ -55,7 +55,7 @@ def get_pumpa(pumpa_id: int):
             obrazek=record["obrazek"],
             vektor=record["vektor"],
             cislo_dilu=record["cislo_dilu"],
-            prumer=record["prumer"],
+            prumer=float(record["prumer"]) if record["prumer"] is not None else None,
             popis=record["popis"],
             poznamka=record["poznamka"],
             publikovat=bool(record["publikovat"]),
@@ -88,7 +88,7 @@ def create_pumpa(data: dict):
     query = """
         INSERT INTO d_pumpa (sortiment, kategorie, obrazek, vektor, 
             cislo_dilu, prumer, popis, poznamka, publikovat, aktualizovano, aktualizoval) 
-        VALUES (3, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
+        VALUES (7, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
     """
     new_id = insert_record(sql_query=query, 
         params=(data["kategorie"], data["obrazek"], data["vektor"],

@@ -86,7 +86,7 @@ def create_hadicka(data: dict):
     query = """
         INSERT INTO d_hadicka (sortiment, kategorie, obrazek, vektor, 
             cislo_dilu, popis, poznamka, publikovat, aktualizovano, aktualizoval) 
-        VALUES (3, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
+        VALUES (4, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
     """
     new_id = insert_record(sql_query=query, 
         params=(data["kategorie"], data["obrazek"], data["vektor"],

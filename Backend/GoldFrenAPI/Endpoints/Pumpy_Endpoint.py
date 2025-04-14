@@ -13,6 +13,6 @@ urlpatterns = [
     path("", get_pumpy, name="get_pumpy"),
     path("<int:pumpa_id>", get_pumpa_by_id, name="get_pumpa_by_id"),
     path("update/<int:pumpa_id>", update_pumpa_view, name="update_pumpa"),
-    path("create/", create_pumpa_view, name="create_pumpa"),  
+    path("create", create_pumpa_view, name="create_pumpa"),  
     path("publication/<int:pumpa_id>", pumpa_publication_view, name="pumpa_publication"),
 ]

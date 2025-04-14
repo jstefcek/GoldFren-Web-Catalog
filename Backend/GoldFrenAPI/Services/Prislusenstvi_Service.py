@@ -88,7 +88,7 @@ def create_prislusenstvi(data: dict):
     query = """
         INSERT INTO d_prislusenstvi (sortiment, kategorie, obrazek, vektor, 
             cislo_dilu, typ, popis, poznamka, publikovat, aktualizovano, aktualizoval) 
-        VALUES (3, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
+        VALUES (5, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
     """
     new_id = insert_record(sql_query=query, 
         params=(data["kategorie"], data["obrazek"], data["vektor"],
