@@ -31,9 +31,9 @@ CREATE TABLE IF NOT EXISTS `d_adapter` (
   `prumer` decimal(5,2) DEFAULT NULL COMMENT 'Prumer adapteru',
   `popis` varchar(255) DEFAULT NULL COMMENT 'Popis adapteru',
   `poznamka` varchar(255) DEFAULT NULL COMMENT 'Poznamka k adapteru',
-  `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
+  `publikovat` int DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
-  `aktualizoval` varchar(10) DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
   PRIMARY KEY (`kod`),
   CONSTRAINT `FK_ADAPT_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
   CONSTRAINT `FK_ADAPT_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
@@ -50,13 +50,27 @@ CREATE TABLE IF NOT EXISTS `d_brzdice` (
   `popis` varchar(255) DEFAULT NULL COMMENT 'Popis brzdice',
   `typ_uchyceni` varchar(10) DEFAULT NULL COMMENT 'Typ uchyceni brzdice',
   `poznamka` text COMMENT 'Poznamka k brzdicu',
-  `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
+  `publikovat` int DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
-  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
   PRIMARY KEY (`kod`),
   CONSTRAINT `FK_BRZD_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
   CONSTRAINT `FK_BRZD_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
 ) COMMENT='Tabulka brzdicu';
+
+-- Table structure for table 'c_desticka_cast'
+CREATE TABLE IF NOT EXISTS `c_desticka_cast` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod casti desticky',
+  `nazev` varchar(255) DEFAULT NULL COMMENT 'Nazev casti desticky',
+  PRIMARY KEY (`kod`)
+) COMMENT='Tabulka casti desticek';
+
+-- Table structure for table 'c_desticka_typ'
+CREATE TABLE IF NOT EXISTS `c_desticka_typ` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod typu desticky',
+  `nazev` varchar(255) NOT NULL COMMENT 'Nazev typu desticky',
+  PRIMARY KEY (`kod`)
+) COMMENT='Tabulka typu desticek';
 
 -- Tabel structure for table 'd_desticka'
 CREATE TABLE IF NOT EXISTS `d_desticka` (
@@ -97,27 +111,24 @@ CREATE TABLE IF NOT EXISTS `d_desticka` (
   `poznamka` text DEFAULT NULL COMMENT 'Poznamka pro desticku',
   `oem_cisla` text DEFAULT NULL COMMENT 'OEM cislo desticky',
   `obchodni_nazev` varchar(255) DEFAULT NULL COMMENT 'Obchodni nazev desticky',
-  `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
+  `publikovat` int DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
-  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
   PRIMARY KEY (`kod`),
+  KEY `FK_DEST_sortiment` (`sortiment`),
+  KEY `FK_DEST_kategorie` (`kategorie`),
+  KEY `FK_DEST_typ` (`typ`),
+  CONSTRAINT `FK_DEST_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`),
   CONSTRAINT `FK_DEST_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
-  CONSTRAINT `FK_DEST_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
+  CONSTRAINT `FK_DEST_typ` FOREIGN KEY (`typ`) REFERENCES `c_desticka_typ` (`kod`)
 ) COMMENT='Tabulka desticek';
 
--- Table structure for table 'c_desticka_cast'
-CREATE TABLE IF NOT EXISTS `c_desticka_cast` (
-  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod casti desticky',
-  `nazev` varchar(255) DEFAULT NULL COMMENT 'Nazev casti desticky',
+-- Table structure for table 'c_kotouc_typ'
+CREATE TABLE IF NOT EXISTS `c_kotouc_typ` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod typu kotouce',
+  `nazev` varchar(255) NOT NULL COMMENT 'Nazev typu kotouce',
   PRIMARY KEY (`kod`)
-) COMMENT='Tabulka casti desticek';
-
--- Table structure for table 'c_desticka_typ'
-CREATE TABLE IF NOT EXISTS `c_desticka_typ` (
-  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod typu desticky',
-  `nazev` varchar(255) NOT NULL COMMENT 'Nazev typu desticky',
-  PRIMARY KEY (`kod`)
-) COMMENT='Tabulka typu desticek';
+) COMMENT='Tabulka typu kotoucu';
 
 -- Table structure for table 'd_kotouce'
 CREATE TABLE IF NOT EXISTS `d_kotouce` (
@@ -127,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `d_kotouce` (
   `obrazek` varchar(255) DEFAULT NULL COMMENT 'Obrazek kotouce',
   `vektor` varchar(255) DEFAULT NULL COMMENT 'Vektor kotouce',
   `cislo_dilu` varchar(255) DEFAULT NULL COMMENT 'Cislo dilu kotouce',
-  `typ` smallint DEFAULT NULL COMMENT 'Typ kotouce',
+  `typ` int DEFAULT NULL COMMENT 'Typ kotouce',
   `konkurence_braking` varchar(255) DEFAULT NULL COMMENT 'Konkurence Braking',
   `konkurence_ngbrakes` varchar(255) DEFAULT NULL COMMENT 'Konkurence NGBrakes',
   `od` decimal(5,2) DEFAULT NULL COMMENT 'OD',
@@ -137,18 +148,14 @@ CREATE TABLE IF NOT EXISTS `d_kotouce` (
   `poznamka` text DEFAULT NULL COMMENT 'Poznamka ke kotouci',
   `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
-  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
   PRIMARY KEY (`kod`),
   UNIQUE KEY `cislo_dilu` (`cislo_dilu`),
-  CONSTRAINT `FK_KOTC_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`)
+  KEY `FK_KOTC_sortiment` (`sortiment`),
+  KEY `FK_KOTC_typ` (`typ`),
+  CONSTRAINT `FK_KOTC_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
+  CONSTRAINT `FK_KOTC_typ` FOREIGN KEY (`typ`) REFERENCES `c_kotouc_typ` (`kod`)
 ) COMMENT='Tabulka kotoucu';
-
--- Table structure for table 'c_kotouc_typ'
-CREATE TABLE IF NOT EXISTS `c_kotouc_typ` (
-  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod typu kotouce',
-  `nazev` varchar(255) NOT NULL COMMENT 'Nazev typu kotouce',
-  PRIMARY KEY (`kod`)
-) COMMENT='Tabulka typu kotoucu';
 
 -- Creates a config table that will track which columns should be visiabled for specific sortiment
 CREATE TABLE IF NOT EXISTS `c_view_config` (
@@ -184,9 +191,9 @@ CREATE TABLE `d_prislusenstvi` (
   `typ` varchar(255) DEFAULT NULL COMMENT 'Typ prislusenstvi',
   `popis` varchar(255) DEFAULT NULL COMMENT 'Popis prislusenstvi',
   `poznamka` text DEFAULT NULL COMMENT 'Poznamka k prislusenstvi',
-  `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma prislusenstvi publikovat',
+  `publikovat` int DEFAULT NULL COMMENT 'Zda se ma prislusenstvi publikovat',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
-  `aktualizoval` tinyint DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
   PRIMARY KEY (`kod`),
   CONSTRAINT `FK_PRIS_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
   CONSTRAINT `FK_PRIS_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
@@ -203,10 +210,30 @@ CREATE TABLE `d_pumpa` (
   `prumer` decimal(5,2) DEFAULT NULL COMMENT 'Prumer pumpy',
   `popis` varchar(255) DEFAULT NULL COMMENT 'Popis pumpy',
   `poznamka` text DEFAULT NULL COMMENT 'Poznamka k pumpe',
-  `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma pumpa publikovat',
+  `publikovat` int DEFAULT NULL COMMENT 'Zda se ma pumpa publikovat',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
-  `aktualizoval` tinyint DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo aktualizoval zaznam',
   PRIMARY KEY (`kod`),
   CONSTRAINT `FK_PUMP_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
   CONSTRAINT `FK_PUMP_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
 ) COMMENT 'Tabulka brzdových pump';
+
+-- Creates table for brzdove hadicky
+CREATE TABLE `d_hadicka` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod hadicky',
+  `sortiment` int DEFAULT NULL COMMENT 'Kod sortimentu',
+  `kategorie` int DEFAULT NULL COMMENT 'Kod kategorie',
+  `obrazek` varchar(255) DEFAULT NULL COMMENT 'Obrazek hadicky',
+  `vektor` varchar(255) DEFAULT NULL COMMENT 'Vektor hadicky',
+  `cislo_dilu` varchar(255) DEFAULT NULL COMMENT 'Cislo dilu hadicky',
+  `popis` varchar(255) DEFAULT NULL COMMENT 'Popis hadicky',
+  `poznamka` text COMMENT 'Poznamka hadicky',
+  `publikovat` int DEFAULT NULL COMMENT 'Jestli se ma zaznam publikovat',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`kod`),
+  KEY `FK_HADI_sortiment` (`sortiment`),
+  KEY `FK_HADI_kategorie` (`kategorie`),
+  CONSTRAINT `FK_HADI_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`),
+  CONSTRAINT `FK_HADI_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`)
+) COMMENT='Tabulka brzdovych hadicek';

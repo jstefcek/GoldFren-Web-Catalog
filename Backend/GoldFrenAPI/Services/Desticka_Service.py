@@ -2,7 +2,7 @@
 
 # Imports
 from Components.MySQL import connect
-from GoldFrenAPI.Models.Desticka import Desticka, MaterialInfo, KonkurenceDetail
+from GoldFrenAPI.Models.Desticky import Desticka, MaterialInfo, KonkurenceDetail
 from datetime import datetime
 
 # Change state of publikovat

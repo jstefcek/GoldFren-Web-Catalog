@@ -4,7 +4,7 @@
 import logging
 from datetime import datetime
 from Components.MySQL import connect
-from GoldFrenAPI.Models.Kotouc import Kotouc
+from GoldFrenAPI.Models.Kotouce import Kotouc
 logger = logging.getLogger(__name__)
 
 # Change state of publikovat
