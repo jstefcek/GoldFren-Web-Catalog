@@ -1,4 +1,4 @@
-# Business logic for the Hadicky Service
+# Business logic for the Pumpy Service
 
 # Imports
 from datetime import datetime

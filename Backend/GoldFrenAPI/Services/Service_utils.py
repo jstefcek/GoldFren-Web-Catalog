@@ -174,3 +174,32 @@ def insert_record(sql_query: str, params: tuple, return_id: bool = False):
     else:
         print("Connection failed")
         return None
+    
+def get_filtered_records(sql_query: str, params: list):
+    """
+    Function to get filtered records from the database
+    """
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is not None:
+        cursor = conn.cursor()
+        
+        # Execute query
+        try:
+            cursor.execute(sql_query, params)
+            records = cursor.fetchall()
+            return records
+        
+        except Exception as ex:
+            print(ex)
+        
+        finally:
+            cursor.close()
+            conn.close()
+    
+    # Return None if connection fails
+    else:
+        print("Connection failed")
+        return None

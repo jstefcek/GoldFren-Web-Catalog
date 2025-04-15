@@ -1,7 +1,5 @@
 # Imports
 from django.urls import include, path
-from django.conf import settings
-from django.conf.urls.static import static
 
 # URL patterns
 urlpatterns = [
@@ -13,4 +11,5 @@ urlpatterns = [
     path("hadicky/", include("GoldFrenAPI.Endpoints.Hadicky_Endpoint")),
     path("pumpy/", include("GoldFrenAPI.Endpoints.Pumpy_Endpoint")),
     path("prislusenstvi/", include("GoldFrenAPI.Endpoints.Prislusenstvi_Endpoint")),
+    path("vozidla/", include("GoldFrenAPI.Endpoints.Vozidla_Endpoint")),
 ]

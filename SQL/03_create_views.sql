@@ -513,3 +513,25 @@ inner join c_kategorie ka on sk.kategorie = ka.kod
 inner join v_prislusenstvi_detail vpd on vp.prislusenstvi = vpd.kod
 order by vpd.cislo_dilu asc
 limit 18446744073709551615;
+
+-- Create view for vozidlo data, for filtering based on kategorie
+CREATE OR REPLACE VIEW v_vozidla AS
+SELECT     vz.kod AS vozidlo_kod,
+		   vr.kategorie as kategorie_kod,
+		   vr.kod as vyrobce_kod,
+           vr.nazev AS vyrobce,
+           Ifnull(vz.objem, 'Not available') AS objem,
+           Concat( vr.nazev, ' ', 
+           		IF ( Isnull(vz.typ), '', Concat(vz.typ, ' ') ), 
+           		IF ( Isnull(vz.objem), '', Concat(vz.objem, ' ') ), 
+           		IF ( Isnull(vz.oznaceni), '', Concat(vz.oznaceni, ' ') ), 
+           		IF ( Isnull(vz.rok_od), '', Concat(vz.rok_od, ' - ') ), 
+           		IF ( Isnull(vz.rok_do), 'Now', Concat( 
+           		IF (Isnull(vz.rok_od), '-', ''), vz.rok_do ) ) ) AS model,
+           Concat(vz.rok_od, ' - ', Ifnull(vz.rok_do, 'Now')) AS rok_vyroby
+FROM       d_vyrobce vr
+INNER JOIN d_vozidlo vz
+ON         vr.kod = vz.vyrobce
+ORDER BY   vyrobce ASC,
+           objem ASC,
+           model ASC;
