@@ -22,7 +22,7 @@ def get_vyrobce_names(request):
         return JsonResponse(vyrobce_list, safe=False, status=200)
     return JsonResponse({"error": "Vyrobce not found"}, status=404)
 
-# Function to get vozidlo filtered by kategorie_id, vyrobce_id, objem, model, rok_vyroby
+# Function to get vozidlo filtered by kategorie_kod, vyrobce_kod, objem, model, rok_vyroby
 @api_view(['GET'])
 def get_vozidlo_filtered_view(request):
     """
@@ -44,3 +44,21 @@ def get_vozidlo_filtered_view(request):
         vozidla_list = [vozidlo.to_dict() for vozidlo in vozidla_objects]
         return JsonResponse(vozidla_list, safe=False, status=200)
     return JsonResponse({"error": "Vozidlo not found"}, status=404)
+
+# Function would return all vozidlo sortiment in katalog
+@api_view(['GET'])
+def get_vozidlo_sortiment_view(request):
+    """
+    This function returns all vozidlo sortiment in katalog
+    """
+    vozidlo_kod = request.GET.get("vozidlo_kod", None)
+    if not vozidlo_kod:
+        return JsonResponse({"error": "vozidlo_kod is required"}, status=400)
+    
+    # Get vozidlo sortiment from database
+    # vozidlo_sortiment = get_vozidlo_sortiment()
+    
+    # For now, return empty list
+    vozidlo_sortiment = []
+    
+    return JsonResponse(vozidlo_sortiment, safe=False, status=200)

@@ -78,3 +78,20 @@ def get_vozidlo_filtered(kategorie_kod: int, vyrobce_kod: int = None, objem: str
 
     # Return list of vozidlo objects
     return return_vozidlo if return_vozidlo else None
+
+def get_vozidlo_sortiment():
+    """
+    Function to get vozidlo sortiment
+    """
+    # Prepare SQL query
+    query = "SELECT * FROM v_vozidla_sortiment"
+    
+    # Execute the query and fetch records
+    records = get_filtered_records(sql_query=query)
+    
+    # Check if records are found
+    if records:
+        return records
+    
+    # Return None if no records found
+    return None

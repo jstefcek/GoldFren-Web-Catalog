@@ -66,6 +66,7 @@ select
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
+	vk.vozidlo,
 	CONCAT(
             		vr.nazev,
             		' ',
@@ -131,6 +132,7 @@ select
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
 	vr.nazev as Vyrobce,
+	vd.vozidlo,
 	CONCAT(
             		vr.nazev,
             		' ',
@@ -203,6 +205,7 @@ select
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
+	vb.vozidlo,
 	CONCAT(
             		vr.nazev,
             		' ',
@@ -265,6 +268,7 @@ select
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
+	vk.vozidlo,
 	CONCAT(
             		vr.nazev,
             		' ',
@@ -331,6 +335,7 @@ select
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
+	vb.vozidlo,
 	CONCAT(
             		vr.nazev,
             		' ',
@@ -395,6 +400,7 @@ select
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
+	vp.vozidlo,
 	CONCAT(
             		vr.nazev,
             		' ',
@@ -458,6 +464,7 @@ select
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
+	vp.vozidlo,
 	CONCAT(
             		vr.nazev,
             		' ',
