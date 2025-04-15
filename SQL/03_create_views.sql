@@ -63,10 +63,8 @@ LEFT JOIN c_kategorie k on k.kod = p.kategorie;
 CREATE OR REPLACE VIEW v_vozidlo_adapter AS
 select
  	ad.cislo_dilu as cislo_dilu,
-	ka.nazev as kategorie_cze,
-	ka.nazev_eng as kategorie_eng,
-	sk.nazev as subkategorie_cze,
-	sk.nazev_eng as subkategorie_eng,
+	ka.nazev as kategorie,
+	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
 	CONCAT(
             		vr.nazev,
@@ -130,10 +128,8 @@ limit 18446744073709551615;
 CREATE OR REPLACE VIEW v_vozidlo_desticka AS
 select
 	de.cislo_dilu as cislo_dilu,
-	ka.nazev as kategorie_cze,
-	ka.nazev_eng as kategorie_eng,
-	sk.nazev as subkategorie_cze,
-	sk.nazev_eng as subkategorie_eng,
+	ka.nazev as kategorie,
+	sk.nazev as subkategorie,
 	vr.nazev as Vyrobce,
 	CONCAT(
             		vr.nazev,
@@ -204,10 +200,8 @@ limit 18446744073709551615;
 CREATE OR REPLACE VIEW v_vozidlo_hadicka AS
 select
 	ha.cislo_dilu as cislo_dilu,
-	ka.nazev as kategorie_cze,
-	ka.nazev_eng as kategorie_eng,
-	sk.nazev as subkategorie_cze,
-	sk.nazev_eng as subkategorie_eng,
+	ka.nazev as kategorie,
+	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
 	CONCAT(
             		vr.nazev,
@@ -268,10 +262,8 @@ limit 18446744073709551615;
 CREATE OR REPLACE VIEW v_vozidlo_kotouc AS
 select
 	ko.cislo_dilu as cislo_dilu,
-	ka.nazev as kategorie_cze,
-	ka.nazev_eng as kategorie_eng,
-	sk.nazev as subkategorie_cze,
-	sk.nazev_eng as subkategorie_eng,
+	ka.nazev as kategorie,
+	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
 	CONCAT(
             		vr.nazev,
@@ -336,10 +328,8 @@ limit 18446744073709551615;
 CREATE OR REPLACE VIEW v_vozidlo_brzdic AS
 select
 	bo.cislo_dilu as cislo_dilu,
-	ka.nazev as kategorie_cze,
-	ka.nazev_eng as kategorie_eng,
-	sk.nazev as subkategorie_cze,
-	sk.nazev_eng as subkategorie_eng,
+	ka.nazev as kategorie,
+	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
 	CONCAT(
             		vr.nazev,
@@ -402,10 +392,8 @@ limit 18446744073709551615;
 CREATE OR REPLACE VIEW v_vozidlo_pumpa AS
 select
 	vpd.cislo_dilu as cislo_dilu,
-	ka.nazev as kategorie_cze,
-	ka.nazev_eng as kategorie_eng,
-	sk.nazev as subkategorie_cze,
-	sk.nazev_eng as subkategorie_eng,
+	ka.nazev as kategorie,
+	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
 	CONCAT(
             		vr.nazev,
@@ -467,10 +455,8 @@ limit 18446744073709551615;
 CREATE OR REPLACE VIEW v_vozidlo_prislusenstvi AS
 select
 	vpd.cislo_dilu as cislo_dilu,
-	ka.nazev as kategorie_cze,
-	ka.nazev_eng as kategorie_eng,
-	sk.nazev as subkategorie_cze,
-	sk.nazev_eng as subkategorie_eng,
+	ka.nazev as kategorie,
+	sk.nazev as subkategorie,
 	vr.nazev as vyrobce,
 	CONCAT(
             		vr.nazev,
