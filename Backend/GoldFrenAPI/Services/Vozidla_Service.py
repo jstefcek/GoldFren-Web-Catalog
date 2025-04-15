@@ -107,6 +107,10 @@ def get_vozidlo_sortiment_all(vozidlo_id):
         raw_records = get_filtered_records(sql_query, [vozidlo_id])
         
         if raw_records:
-            result[key] = [model_class(**record).to_dict() for record in raw_records]
+            items = [model_class(**record).to_dict() for record in raw_records]
+            result[key] = {
+                "count": len(items),
+                "items": items
+            }
 
     return result if result else None

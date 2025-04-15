@@ -540,5 +540,5 @@ FROM       d_vyrobce vr
 INNER JOIN d_vozidlo vz
 ON         vr.kod = vz.vyrobce
 ORDER BY   vyrobce ASC,
-           objem ASC,
+           cast(objem as unsigned) ASC,
            model ASC;
