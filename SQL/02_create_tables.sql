@@ -237,3 +237,171 @@ CREATE TABLE `d_hadicka` (
   CONSTRAINT `FK_HADI_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`),
   CONSTRAINT `FK_HADI_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`)
 ) COMMENT='Tabulka brzdovych hadicek';
+
+-- Creates table for vyrobce
+CREATE TABLE `d_vyrobce` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod vyrobce',
+  `kategorie` int DEFAULT NULL COMMENT 'Kod kategorie',
+  `nazev` varchar(255) DEFAULT NULL COMMENT 'Nazev vyrobce',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`kod`),
+  UNIQUE KEY `UQ_VYRO_kategorie` (`kategorie`,`nazev`),
+  KEY `kategorie` (`kategorie`),
+  CONSTRAINT `FK_VYRO_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
+) COMMENT='Tabulka vyrobcu vozidel';
+
+-- Creates table for pozice of sortiment
+CREATE TABLE `c_pozice` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod pozice',
+  `sortiment` int DEFAULT NULL COMMENT 'Kod sortimentu',
+  `nazev` varchar(255) DEFAULT NULL COMMENT 'Nazev pozice v CZ',
+  `nazev_eng` varchar(255) DEFAULT NULL COMMENT 'Nazev pozice v EN',
+  PRIMARY KEY (`kod`),
+  CONSTRAINT `FK_POZI_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`)
+) COMMENT='Tabulka pozice jednotliveho sortimentu';
+
+-- Creates table for subkategorie
+CREATE TABLE `c_subkategorie` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod subkategorie',
+  `kategorie` int DEFAULT NULL COMMENT 'Kod kategorie',
+  `nazev` varchar(255) DEFAULT NULL COMMENT 'Nazev subkategorie v CZ',
+  `nazev_eng` varchar(255) DEFAULT NULL COMMENT 'Nazev subkategorie v EN',
+  PRIMARY KEY (`kod`),
+  KEY `kategorie` (`kategorie`),
+  CONSTRAINT `FK_SUBK_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
+) COMMENT='Tabulka subkategorii vozidel';
+
+-- Creates table for vozidlo
+CREATE TABLE `d_vozidlo` (
+  `kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod vozidla',
+  `subkategorie` int DEFAULT NULL COMMENT 'Kod subkategorie vozidla',
+  `vyrobce` int DEFAULT NULL COMMENT 'Kod vyrobce vozidla',
+  `typ` varchar(255) DEFAULT NULL COMMENT 'Typ vozidla',
+  `objem` int DEFAULT NULL COMMENT 'Objem vozidla',
+  `oznaceni` varchar(255) DEFAULT NULL COMMENT 'Oznaceni vozidla',
+  `rok_od` smallint DEFAULT NULL COMMENT 'Rok vyroby vozidla od',
+  `mesic_od` smallint DEFAULT NULL COMMENT 'Mesic vyroby vozidla od',
+  `rok_do` smallint DEFAULT NULL COMMENT 'Rok vyroby vozidla do',
+  `mesic_do` smallint DEFAULT NULL COMMENT 'Mesic vyroby vozidla do',
+  `vykon` smallint DEFAULT NULL COMMENT 'Vykon vozidla',
+  `poznamka` text COMMENT 'Poznamka k vozidlu',
+  `index` smallint DEFAULT NULL COMMENT 'Index vozidla',
+  `publikovat` int DEFAULT NULL COMMENT 'Jestli se ma vozidlo publikovat na webu',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy bylo vozidlo aktualizovano',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo aktualizoval vozidlo',
+  PRIMARY KEY (`kod`),
+  KEY `subkategorie` (`subkategorie`),
+  KEY `vyrobce` (`vyrobce`),
+  KEY `typ` (`typ`),
+  KEY `oznaceni` (`oznaceni`),
+  KEY `rok_od` (`rok_od`),
+  KEY `rok_do` (`rok_do`),
+  CONSTRAINT `FK_VOZI_subkategorie` FOREIGN KEY (`subkategorie`) REFERENCES `c_subkategorie` (`kod`),
+  CONSTRAINT `FK_VOZI_vyrobce` FOREIGN KEY (`vyrobce`) REFERENCES `d_vyrobce` (`kod`)
+) COMMENT='Tabulka vozidel';
+
+-- Creates table for vozidlo_adapter
+CREATE TABLE `c_vozidlo_adapter` (
+  `vozidlo` int NOT NULL COMMENT 'Kod vozidla',
+  `adapter` int NOT NULL COMMENT 'Kod adapteru',
+  `pozice` int NOT NULL COMMENT 'Kod pozice',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`vozidlo`,`adapter`,`pozice`),
+  KEY `adapter` (`adapter`),
+  KEY `pozice` (`pozice`),
+  CONSTRAINT `FK_VZADPT_adapter` FOREIGN KEY (`adapter`) REFERENCES `d_adapter` (`kod`),
+  CONSTRAINT `FK_VZADPT_pozice` FOREIGN KEY (`pozice`) REFERENCES `c_pozice` (`kod`),
+  CONSTRAINT `FK_VZADPT_vozidlo` FOREIGN KEY (`vozidlo`) REFERENCES `d_vozidlo` (`kod`) ON DELETE CASCADE ON UPDATE CASCADE
+) COMMENT='Tabulka pro spojeni adapteru s vozidly';
+
+-- Creates table for vozidlo prislusenstvi
+CREATE TABLE `c_vozidlo_prislusenstvi` (
+  `vozidlo` int NOT NULL COMMENT 'Kod vozidla',
+  `prislusenstvi` int NOT NULL COMMENT 'Kod prislusenstvi',
+  `pozice` int NOT NULL COMMENT 'Kod pozice',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`vozidlo`,`prislusenstvi`,`pozice`),
+  KEY `prislusenstvi` (`prislusenstvi`),
+  KEY `pozice` (`pozice`),
+  CONSTRAINT `FK_VZPRIS_prislusenstvi` FOREIGN KEY (`prislusenstvi`) REFERENCES `d_prislusenstvi` (`kod`),
+  CONSTRAINT `FK_VZPRIS_pozice` FOREIGN KEY (`pozice`) REFERENCES `c_pozice` (`kod`),
+  CONSTRAINT `FK_VZPRIS_vozidlo` FOREIGN KEY (`vozidlo`) REFERENCES `d_vozidlo` (`kod`) ON DELETE CASCADE ON UPDATE CASCADE
+) COMMENT='Tabulka pro spojeni prislusenstvi s vozidly';
+
+-- Creates table for vozidlo kotouc
+CREATE TABLE `c_vozidlo_kotouc` (
+  `vozidlo` int NOT NULL COMMENT 'Kod vozidla',
+  `kotouc` int NOT NULL COMMENT 'Kod kotouce',
+  `pozice` int NOT NULL COMMENT 'Kod pozice',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`vozidlo`,`kotouc`,`pozice`),
+  KEY `pozice` (`pozice`),
+  KEY `kotouc` (`kotouc`),
+  CONSTRAINT `FK_VZKOTO_kotouc` FOREIGN KEY (`kotouc`) REFERENCES `d_kotouce` (`kod`),
+  CONSTRAINT `FK_VZKOTO_pozice` FOREIGN KEY (`pozice`) REFERENCES `c_pozice` (`kod`),
+  CONSTRAINT `FK_VZKOTO_vozidlo` FOREIGN KEY (`vozidlo`) REFERENCES `d_vozidlo` (`kod`) ON DELETE CASCADE ON UPDATE CASCADE
+) COMMENT='Tabulka pro spojeni kotoucu s vozidly';
+
+-- Creates table for vozidlo brzdic
+CREATE TABLE `c_vozidlo_brzdic` (
+  `vozidlo` int NOT NULL COMMENT 'Kod vozidla',
+  `brzdic` int NOT NULL COMMENT 'Kod brzdice',
+  `pozice` int NOT NULL COMMENT 'Kod pozice',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`vozidlo`,`brzdic`,`pozice`),
+  KEY `brzdic` (`brzdic`),
+  KEY `pozice` (`pozice`),
+  CONSTRAINT `FK_VZBRZD` FOREIGN KEY (`brzdic`) REFERENCES `d_brzdice` (`kod`),
+  CONSTRAINT `FK_VZBRZD_pozice` FOREIGN KEY (`pozice`) REFERENCES `c_pozice` (`kod`),
+  CONSTRAINT `FK_VZBRZD_vozidlo` FOREIGN KEY (`vozidlo`) REFERENCES `d_vozidlo` (`kod`) ON DELETE CASCADE ON UPDATE CASCADE
+) COMMENT='Tabulka pro spojeni brzdicu s vozidly';
+
+-- Creates table for vozidlo desticka
+CREATE TABLE `c_vozidlo_desticka` (
+  `vozidlo` int NOT NULL COMMENT 'Kod vozidla',
+  `desticka` int NOT NULL COMMENT 'Kod desticky',
+  `pozice` int NOT NULL COMMENT 'Kod pozice',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`vozidlo`,`desticka`,`pozice`),
+  KEY `desticka` (`desticka`),
+  KEY `pozice` (`pozice`),
+  CONSTRAINT `FK_VZDEST` FOREIGN KEY (`desticka`) REFERENCES `d_desticka` (`kod`),
+  CONSTRAINT `FK_VZDEST_pozice` FOREIGN KEY (`pozice`) REFERENCES `c_pozice` (`kod`),
+  CONSTRAINT `FK_VZDEST_vozidlo` FOREIGN KEY (`vozidlo`) REFERENCES `d_vozidlo` (`kod`) ON DELETE CASCADE ON UPDATE CASCADE
+) COMMENT='Tabulka pro spojeni desticky s vozidly';
+
+-- Creates table for vozidlo hadicka
+CREATE TABLE `c_vozidlo_hadicka` (
+  `vozidlo` int NOT NULL COMMENT 'Kod vozidla',
+  `hadicka` int NOT NULL COMMENT 'Kod hadicky',
+  `pozice` int NOT NULL COMMENT 'Kod pozice',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`vozidlo`,`hadicka`,`pozice`),
+  KEY `hadicka` (`hadicka`),
+  KEY `pozice` (`pozice`),
+  CONSTRAINT `FK_VZHADI_hadicka` FOREIGN KEY (`hadicka`) REFERENCES `d_hadicka` (`kod`),
+  CONSTRAINT `FK_VZHADI_pozice` FOREIGN KEY (`pozice`) REFERENCES `c_pozice` (`kod`),
+  CONSTRAINT `FK_VZHADI_vozidlo` FOREIGN KEY (`vozidlo`) REFERENCES `d_vozidlo` (`kod`) ON DELETE CASCADE ON UPDATE CASCADE
+) COMMENT='Tabulka pro spojeni desticky s vozidly';
+
+-- Creates table for vozidlo pumpa
+CREATE TABLE `c_vozidlo_pumpa` (
+  `vozidlo` int NOT NULL COMMENT 'Kod vozidla',
+  `pumpa` int NOT NULL COMMENT 'Kod pumpy',
+  `pozice` int NOT NULL COMMENT 'Kod pozice',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` smallint DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`vozidlo`,`pumpa`,`pozice`),
+  KEY `pumpa` (`pumpa`),
+  KEY `pozice` (`pozice`),
+  CONSTRAINT `FK_VZPUMP_pumpa` FOREIGN KEY (`pumpa`) REFERENCES `d_pumpa` (`kod`),
+  CONSTRAINT `FK_VZPUMP_pozice` FOREIGN KEY (`pozice`) REFERENCES `c_pozice` (`kod`),
+  CONSTRAINT `FK_VZPUMP_vozidlo` FOREIGN KEY (`vozidlo`) REFERENCES `d_vozidlo` (`kod`) ON DELETE CASCADE ON UPDATE CASCADE
+) COMMENT='Tabulka pro spojeni pumpy s vozidly';

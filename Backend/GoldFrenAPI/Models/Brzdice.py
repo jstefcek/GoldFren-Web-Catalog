@@ -3,7 +3,7 @@ from datetime import datetime
 
 # Class definition
 class Brzdic():
-    def __init__(self, kod: int, sortiment: str, kategorie: str, obrazek: str, vektor: str, cislo_dilu: str, popis: str, typ_uchyceni: str, poznamka: str, publikovat: bool, aktualizovano: datetime, aktualizoval: str):
+    def __init__(self, kod: int, sortiment: str, kategorie: str, obrazek: str, vektor: str, cislo_dilu: str, popis: str, typ_uchyceni: str, pocet_pistku: int, poznamka: str, publikovat: bool, aktualizovano: datetime, aktualizoval: str):
         self.kod = kod
         self.sortiment = sortiment
         self.kategorie = kategorie
@@ -12,6 +12,7 @@ class Brzdic():
         self.cislo_dilu = cislo_dilu
         self.popis = popis
         self.typ_uchyceni = typ_uchyceni
+        self.pocet_pistku = pocet_pistku
         self.poznamka = poznamka
         self.publikovat = publikovat
         self.aktualizovano = aktualizovano

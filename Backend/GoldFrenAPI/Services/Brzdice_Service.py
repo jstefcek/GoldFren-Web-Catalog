@@ -29,6 +29,7 @@ def get_brzdice(limit: int = None, page: int = None, states: bool = False):
             cislo_dilu=record["cislo_dilu"],
             popis=record["popis"],
             typ_uchyceni=record["typ_uchyceni"],
+            pocet_pistku=record["pocet_pistku"],
             poznamka=record["poznamka"],
             publikovat=bool(record["publikovat"]),
             aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
@@ -57,6 +58,7 @@ def get_brzdic(brzdic_id: int):
             cislo_dilu=record["cislo_dilu"],
             popis=record["popis"],
             typ_uchyceni=record["typ_uchyceni"],
+            pocet_pistku=record["pocet_pistku"],
             poznamka=record["poznamka"],
             publikovat=bool(record["publikovat"]),
             aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
@@ -69,13 +71,13 @@ def update_brzdic(brzdic_id: int, data: dict):
     query = """
         UPDATE d_brzdice 
         SET kategorie = %s, obrazek = %s, vektor = %s, 
-            cislo_dilu = %s, popis = %s, typ_uchyceni = %s, poznamka = %s, 
+            cislo_dilu = %s, popis = %s, typ_uchyceni = %s, pocet_pistku = %s, poznamka = %s, 
             publikovat = %s, aktualizovano = NOW(), aktualizoval = %s 
         WHERE kod = %s
     """
     status = execute_update(sql_query=query, params=(
                 data["kategorie"], data["obrazek"], data["vektor"],
-                data["cislo_dilu"], data["popis"], data["typ_uchyceni"], data["poznamka"], 
+                data["cislo_dilu"], data["popis"], data["typ_uchyceni"], data["pocet_pistku"], data["poznamka"], 
                 data["publikovat"], data["aktualizoval"], brzdic_id
             ))
     
@@ -87,12 +89,12 @@ def create_brzdic(data: dict):
     # Prepare SQL query for inserting new brzdic to database
     query = """
         INSERT INTO d_brzdice (sortiment, kategorie, obrazek, vektor, 
-            cislo_dilu, popis, typ_uchyceni, poznamka, publikovat, aktualizovano, aktualizoval) 
-        VALUES (3, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
+            cislo_dilu, popis, typ_uchyceni, poznamka, pocet_pistku, publikovat, aktualizovano, aktualizoval) 
+        VALUES (3, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
     """
     new_id = insert_record(sql_query=query, 
         params=(data["kategorie"], data["obrazek"], data["vektor"],
-        data["cislo_dilu"], data["popis"], data["typ_uchyceni"],data["poznamka"], 
+        data["cislo_dilu"], data["popis"], data["typ_uchyceni"], data["pocet_pistku"], data["poznamka"], 
         data["publikovat"], data["aktualizoval"]),
         return_id=True
     )
