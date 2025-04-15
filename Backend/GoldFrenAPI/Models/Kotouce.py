@@ -36,3 +36,26 @@ class Kotouc():
             if hasattr(self, attribute):
                 filtered_data[attribute] = getattr(self, attribute)
         return filtered_data
+    
+class VozidloKotouc():
+    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, Oznaceni_vozidla, typ, objem, vnejsi_prumer, roztecny_prumer, vnitrni_prumer, tloustka, Specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+        self.cislo_dilu = cislo_dilu
+        self.kategorie = kategorie
+        self.subkategorie = subkategorie
+        self.vyrobce = vyrobce
+        self.vozidlo = vozidlo
+        self.Oznaceni_vozidla = Oznaceni_vozidla
+        self.typ = typ
+        self.objem = objem
+        self.vnejsi_prumer = vnejsi_prumer
+        self.roztecny_prumer = roztecny_prumer
+        self.vnitrni_prumer = vnitrni_prumer
+        self.tloustka = tloustka
+        self.Specialni_oznaceni = Specialni_oznaceni
+        self.rok_od = rok_od
+        self.rok_do = rok_do
+        self.pozice = pozice
+        self.publikovat = publikovat
+    
+    def to_dict(self):
+        return self.__dict__

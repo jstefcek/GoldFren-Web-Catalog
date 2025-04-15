@@ -131,7 +131,7 @@ select
 	de.cislo_dilu as cislo_dilu,
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
-	vr.nazev as Vyrobce,
+	vr.nazev as vyrobce,
 	vd.vozidlo,
 	CONCAT(
             		vr.nazev,

@@ -4,6 +4,13 @@
 from datetime import datetime
 from GoldFrenAPI.Models.Vyrobce import Vyrobce
 from GoldFrenAPI.Models.Vozidlo import FilteredVozidlo
+from GoldFrenAPI.Models.Adaptery import VozidloAdapter
+from GoldFrenAPI.Models.Desticky import VozidloDesticka
+from GoldFrenAPI.Models.Brzdice import VozidloBrzdic
+from GoldFrenAPI.Models.Hadicky import VozidloHadicka
+from GoldFrenAPI.Models.Kotouce import VozidloKotouc
+from GoldFrenAPI.Models.Pumpy import VozidloPumpa
+from GoldFrenAPI.Models.Prislusenstvi import VozidloPrislusenstvi
 from GoldFrenAPI.Services.Service_utils import (
     get_filtered_records
 )
@@ -79,19 +86,27 @@ def get_vozidlo_filtered(kategorie_kod: int, vyrobce_kod: int = None, objem: str
     # Return list of vozidlo objects
     return return_vozidlo if return_vozidlo else None
 
-def get_vozidlo_sortiment():
+def get_vozidlo_sortiment_all(vozidlo_id):
     """
-    Function to get vozidlo sortiment
+    Loads data from multiple vozidlo views and returns only the ones with results.
     """
-    # Prepare SQL query
-    query = "SELECT * FROM v_vozidla_sortiment"
-    
-    # Execute the query and fetch records
-    records = get_filtered_records(sql_query=query)
-    
-    # Check if records are found
-    if records:
-        return records
-    
-    # Return None if no records found
-    return None
+    views = {
+        "adapter": ("v_vozidlo_adapter", VozidloAdapter),
+        "desticka": ("v_vozidlo_desticka", VozidloDesticka),
+        "brzdic": ("v_vozidlo_brzdic", VozidloBrzdic),
+        "hadicka": ("v_vozidlo_hadicka", VozidloHadicka),
+        "kotouc": ("v_vozidlo_kotouc", VozidloKotouc),
+        "prislusenstvi": ("v_vozidlo_prislusenstvi", VozidloPrislusenstvi),
+        "pumpa": ("v_vozidlo_pumpa", VozidloPumpa),
+    }
+
+    result = {}
+
+    for key, (view_name, model_class) in views.items():
+        sql_query = f"SELECT * FROM {view_name} WHERE vozidlo = %s"
+        raw_records = get_filtered_records(sql_query, [vozidlo_id])
+        
+        if raw_records:
+            result[key] = [model_class(**record).to_dict() for record in raw_records]
+
+    return result if result else None

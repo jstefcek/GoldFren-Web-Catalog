@@ -74,3 +74,33 @@ class Desticka:
             "oem_cisla": self.oem_cisla,
             "obchodni_nazev": self.obchodni_nazev
         }
+        
+class VozidloDesticka():
+    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, konkurence_sbs, konkurence_ebc, konkurence_ferodo, konkurence_a2z, 
+                 konkurence_rapco, konkurence_grove, konkurence_cleveland, konkurence_matco, material, oem_cisla, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+        self.cislo_dilu = cislo_dilu
+        self.kategorie = kategorie
+        self.subkategorie = subkategorie
+        self.vyrobce = vyrobce
+        self.vozidlo = vozidlo
+        self.oznaceni_vozidla = oznaceni_vozidla
+        self.typ = typ
+        self.objem = objem
+        self.konkurence_sbs = konkurence_sbs
+        self.konkurence_ebc = konkurence_ebc
+        self.konkurence_ferodo = konkurence_ferodo
+        self.konkurence_a2z = konkurence_a2z
+        self.konkurence_rapco = konkurence_rapco
+        self.konkurence_grove = konkurence_grove
+        self.konkurence_cleveland = konkurence_cleveland
+        self.konkurence_matco = konkurence_matco
+        self.material = material
+        self.oem_cisla = oem_cisla
+        self.specialni_oznaceni = specialni_oznaceni
+        self.rok_od = rok_od
+        self.rok_do = rok_do
+        self.pozice = pozice
+        self.publikovat = publikovat
+        
+    def to_dict(self):
+        return self.__dict__

@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from GoldFrenAPI.Services.Vozidla_Service import (
     get_vyrobce_by_kategorie,
-    get_vozidlo_filtered
+    get_vozidlo_filtered,
+    get_vozidlo_sortiment_all
 )
 
 # Function to return all vyrobce by kategorie ID
@@ -48,17 +49,18 @@ def get_vozidlo_filtered_view(request):
 # Function would return all vozidlo sortiment in katalog
 @api_view(['GET'])
 def get_vozidlo_sortiment_view(request):
-    """
-    This function returns all vozidlo sortiment in katalog
-    """
     vozidlo_kod = request.GET.get("vozidlo_kod", None)
     if not vozidlo_kod:
         return JsonResponse({"error": "vozidlo_kod is required"}, status=400)
     
-    # Get vozidlo sortiment from database
-    # vozidlo_sortiment = get_vozidlo_sortiment()
-    
-    # For now, return empty list
-    vozidlo_sortiment = []
-    
-    return JsonResponse(vozidlo_sortiment, safe=False, status=200)
+    try:
+        vozidlo_id = int(vozidlo_kod)
+    except ValueError:
+        return JsonResponse({"error": "vozidlo_kod must be an integer"}, status=400)
+
+    data = get_vozidlo_sortiment_all(vozidlo_id)
+
+    if not data:
+        return JsonResponse({"message": "No sortiment data found for vozidlo"}, status=404)
+
+    return JsonResponse(data, safe=False, status=200)

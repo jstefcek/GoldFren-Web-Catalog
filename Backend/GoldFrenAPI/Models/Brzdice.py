@@ -31,3 +31,25 @@ class Brzdic():
             if hasattr(self, attribute):
                 filtered_data[attribute] = getattr(self, attribute)
         return filtered_data
+    
+class VozidloBrzdic():
+    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, prumer, typ_uchyceni, roztec_brzdic, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+        self.cislo_dilu = cislo_dilu
+        self.kategorie = kategorie
+        self.subkategorie = subkategorie
+        self.vyrobce = vyrobce
+        self.vozidlo = vozidlo
+        self.oznaceni_vozidla = oznaceni_vozidla
+        self.typ = typ
+        self.objem = objem
+        self.prumer = prumer
+        self.typ_uchyceni = typ_uchyceni
+        self.roztec_brzdic = roztec_brzdic
+        self.specialni_oznaceni = specialni_oznaceni
+        self.rok_od = rok_od
+        self.rok_do = rok_do
+        self.pozice = pozice
+        self.publikovat = publikovat
+    
+    def to_dict(self):
+        return self.__dict__
