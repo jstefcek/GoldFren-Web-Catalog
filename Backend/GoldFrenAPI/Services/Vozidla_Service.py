@@ -39,13 +39,13 @@ def get_vyrobce_by_kategorie(kategorie_id: int):
     # Return list of vyrobce objects
     return vyrobce
 
-def get_vozidlo_filtered(kategorie_id: int, vyrobce_id: int = None, objem: str = None, model: str = None, rok_vyroby: str = None):
+def get_vozidlo_filtered(kategorie_kod: int, vyrobce_kod: int = None, objem: str = None, model: str = None, rok_vyroby: str = None):
     """
     Function to get vozidlo by optional filters
     """
     # Prepare SQL query
     query = "SELECT * FROM v_vozidla WHERE kategorie_kod = %s AND vyrobce_kod = %s"
-    params = [kategorie_id, vyrobce_id]
+    params = [kategorie_kod, vyrobce_kod]
 
     # Add optional filters to the query
     if objem:
