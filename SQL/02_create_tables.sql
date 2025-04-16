@@ -405,3 +405,17 @@ CREATE TABLE `c_vozidlo_pumpa` (
   CONSTRAINT `FK_VZPUMP_pozice` FOREIGN KEY (`pozice`) REFERENCES `c_pozice` (`kod`),
   CONSTRAINT `FK_VZPUMP_vozidlo` FOREIGN KEY (`vozidlo`) REFERENCES `d_vozidlo` (`kod`) ON DELETE CASCADE ON UPDATE CASCADE
 ) COMMENT='Tabulka pro spojeni pumpy s vozidly';
+
+-- Creates table for kotouce varianty
+CREATE TABLE `c_kotouc_varianta` (
+  `varianta_kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod varianty kotouce',
+  `kotouc` int DEFAULT NULL COMMENT 'Kod kotouce',
+  `varianta` int DEFAULT NULL COMMENT 'Varianta kotouce',
+  `obrazek` int DEFAULT NULL COMMENT 'Nazev obrazku',
+  `publikovat` int DEFAULT NULL COMMENT 'Jestli se ma zaznam publikovat',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`varianta_kod`),
+  UNIQUE KEY `UQ_KOTO_varianta` (`kotouc`,`varianta`),
+  CONSTRAINT `FK_KOTO_varianta` FOREIGN KEY (`kotouc`) REFERENCES `d_kotouce` (`kod`) ON DELETE CASCADE ON UPDATE CASCADE
+) COMMENT='Tabulka s varianty kotoucu';

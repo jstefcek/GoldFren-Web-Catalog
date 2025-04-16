@@ -81,6 +81,22 @@ TEMPLATES = [
     },
 ]
 
+# File cache settings
+CACHE_LOCATION = os.getenv("DJANGO_CACHE_LOCATION", "/tmp/django_cache")
+CACHE_ENTRIES = os.getenv("DJANGO_CACHE_ENTRIES", 100000)
+CACHE_TIMEOUT = os.getenv("DJANGO_CACHE_TIMEOUT", 60 * 60 * 24)
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_LOCATION,
+        'TIMEOUT': CACHE_TIMEOUT,
+        'OPTIONS': {
+            'MAX_ENTRIES': CACHE_ENTRIES,
+        },
+    }
+}
+
 WSGI_APPLICATION = 'GoldFren.wsgi.application'
 
 CORS_ALLOWED_ORIGINS = [

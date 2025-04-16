@@ -88,7 +88,7 @@ def get_vozidlo_filtered(kategorie_kod: int, vyrobce_kod: int = None, objem: str
 
 def get_vozidlo_sortiment_all(vozidlo_id):
     """
-    Loads data from multiple vozidlo views and returns only the ones with results.
+    Load sortiment data for specific vozidlo id 
     """
     views = {
         "adapter": ("v_vozidlo_adapter", VozidloAdapter),

@@ -14,7 +14,8 @@ services:
     volumes:
       - ./Backend:/goldfren
       - goldfren_media:/goldfren/GoldFren_Media  
-      - static_volume:/goldfren/static  
+      - static_volume:/goldfren/static
+      - ./djangocache:/tmp/django_cache
     depends_on:
       mysql:
         condition: service_healthy

@@ -38,7 +38,7 @@ class Kotouc():
         return filtered_data
     
 class VozidloKotouc():
-    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, Oznaceni_vozidla, typ, objem, vnejsi_prumer, roztecny_prumer, vnitrni_prumer, tloustka, Specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, Oznaceni_vozidla, typ, objem, obrazek, vektor, vnejsi_prumer, roztecny_prumer, vnitrni_prumer, tloustka, Specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
         self.cislo_dilu = cislo_dilu
         self.kategorie = kategorie
         self.subkategorie = subkategorie
@@ -47,6 +47,8 @@ class VozidloKotouc():
         self.Oznaceni_vozidla = Oznaceni_vozidla
         self.typ = typ
         self.objem = objem
+        self.obrazek = obrazek
+        self.vektor = vektor
         self.vnejsi_prumer = vnejsi_prumer
         self.roztecny_prumer = roztecny_prumer
         self.vnitrni_prumer = vnitrni_prumer

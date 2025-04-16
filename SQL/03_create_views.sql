@@ -263,70 +263,84 @@ limit 18446744073709551615;
 
 -- Create view for vozidlo kotouc data
 CREATE OR REPLACE VIEW v_vozidlo_kotouc AS
-select
-	ko.cislo_dilu as cislo_dilu,
-	ka.nazev as kategorie,
-	sk.nazev as subkategorie,
-	vr.nazev as vyrobce,
-	vk.vozidlo,
-	CONCAT(
-            		vr.nazev,
-            		' ',
-            
-            	if (
-            		ISNULL(vz.typ),
-            		'',
-            		CONCAT(vz.typ, ' ')
-            	),
-            
-            if (
-            	ISNULL(vz.objem),
-            	'',
-            	CONCAT(vz.objem, ' ')
-            ),
-            
-            if (
-            	ISNULL(vz.oznaceni),
-            	'',
-            	CONCAT(vz.oznaceni, ' ')
-            ),
-            
-            if (
-            	ISNULL(vz.rok_od),
-            	'',
-            	CONCAT(vz.rok_od, '-')
-            ),
-            
-            if (
-            	ISNULL(vz.rok_do),
-            	'',
-            	CONCAT(
-            
-            		if (ISNULL(vz.rok_od), '-', ''),
-            		vz.rok_do
-            	)
-            )
-            	) as Oznaceni_vozidla,
-	vz.typ,
-	vz.objem,
-	ko.od as vnejsi_prumer,
-	ko.hd as roztecny_prumer,
-	ko.id as vnitrni_prumer,
-	ko.thk as tloustka,
-	vz.oznaceni as Specialni_oznaceni,
-	vz.rok_od,
-	vz.rok_do,
-	pz.nazev_eng as pozice,
+(
+  SELECT
+    ko.cislo_dilu as cislo_dilu,
+    ka.nazev as kategorie,
+    sk.nazev as subkategorie,
+    vr.nazev as vyrobce,
+    vk.vozidlo,
+    CONCAT(
+      vr.nazev, ' ',
+      IF(ISNULL(vz.typ), '', CONCAT(vz.typ, ' ')),
+      IF(ISNULL(vz.objem), '', CONCAT(vz.objem, ' ')),
+      IF(ISNULL(vz.oznaceni), '', CONCAT(vz.oznaceni, ' ')),
+      IF(ISNULL(vz.rok_od), '', CONCAT(vz.rok_od, '-')),
+      IF(ISNULL(vz.rok_do), '', CONCAT(IF(ISNULL(vz.rok_od), '-', ''), vz.rok_do))
+    ) as Oznaceni_vozidla,
+    vz.typ,
+    vz.objem,
+    ko.obrazek,
+    ko.vektor,
+    ko.od as vnejsi_prumer,
+    ko.hd as roztecny_prumer,
+    ko.id as vnitrni_prumer,
+    ko.thk as tloustka,
+    vz.oznaceni as Specialni_oznaceni,
+    vz.rok_od,
+    vz.rok_do,
+    pz.nazev_eng as pozice,
     ko.publikovat
-from c_vozidlo_kotouc as vk
-inner join d_vozidlo as vz on vk.vozidlo = vz.kod
-inner join d_vyrobce as vr on vz.vyrobce = vr.kod
-inner join c_pozice as pz on vk.pozice = pz.kod
-inner join c_subkategorie sk on vz.subkategorie = sk.kod
-inner join c_kategorie ka on sk.kategorie = ka.kod
-inner join v_kotouc_detail ko on vk.kotouc = ko.kod
-order by ko.cislo_dilu asc
-limit 18446744073709551615;
+  FROM c_vozidlo_kotouc AS vk
+  INNER JOIN d_vozidlo AS vz ON vk.vozidlo = vz.kod
+  INNER JOIN d_vyrobce AS vr ON vz.vyrobce = vr.kod
+  INNER JOIN c_pozice AS pz ON vk.pozice = pz.kod
+  INNER JOIN c_subkategorie sk ON vz.subkategorie = sk.kod
+  INNER JOIN c_kategorie ka ON sk.kategorie = ka.kod
+  INNER JOIN v_kotouc_detail ko ON vk.kotouc = ko.kod
+  WHERE ko.publikovat = 1
+)
+UNION DISTINCT
+(
+  SELECT
+    CONCAT(ko.cislo_dilu, '-', kv.varianta) as cislo_dilu,
+    ka.nazev as kategorie,
+    sk.nazev as subkategorie,
+    vr.nazev as vyrobce,
+    vk.vozidlo,
+    CONCAT(
+      vr.nazev, ' ',
+      IF(ISNULL(vz.typ), '', CONCAT(vz.typ, ' ')),
+      IF(ISNULL(vz.objem), '', CONCAT(vz.objem, ' ')),
+      IF(ISNULL(vz.oznaceni), '', CONCAT(vz.oznaceni, ' ')),
+      IF(ISNULL(vz.rok_od), '', CONCAT(vz.rok_od, '-')),
+      IF(ISNULL(vz.rok_do), '', CONCAT(IF(ISNULL(vz.rok_od), '-', ''), vz.rok_do))
+    ) as Oznaceni_vozidla,
+    vz.typ,
+    vz.objem,
+    kv.obrazek,
+    ko.vektor,
+    ko.od as vnejsi_prumer,
+    ko.hd as roztecny_prumer,
+    ko.id as vnitrni_prumer,
+    ko.thk as tloustka,
+    vz.oznaceni as Specialni_oznaceni,
+    vz.rok_od,
+    vz.rok_do,
+    pz.nazev_eng as pozice,
+    ko.publikovat
+  FROM c_vozidlo_kotouc AS vk
+  INNER JOIN d_vozidlo AS vz ON vk.vozidlo = vz.kod
+  INNER JOIN d_vyrobce AS vr ON vz.vyrobce = vr.kod
+  INNER JOIN c_pozice AS pz ON vk.pozice = pz.kod
+  INNER JOIN c_subkategorie sk ON vz.subkategorie = sk.kod
+  INNER JOIN c_kategorie ka ON sk.kategorie = ka.kod
+  INNER JOIN v_kotouc_detail ko ON vk.kotouc = ko.kod
+  INNER JOIN c_kotouc_varianta kv ON vk.kotouc = kv.kotouc
+  WHERE ko.publikovat = 1 AND kv.publikovat = 1
+)
+ORDER BY cislo_dilu ASC
+LIMIT 18446744073709551615;
 
 -- Create view for vozidlo brzdic data
 CREATE OR REPLACE VIEW v_vozidlo_brzdic AS
