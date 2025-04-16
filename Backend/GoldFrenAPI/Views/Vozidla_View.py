@@ -9,23 +9,24 @@ from GoldFrenAPI.Services.Vozidla_Service import (
 )
 
 # Cache timeout settings
-CACHE_TIMEOUT = os.getenv("DJANGO_CACHE_TIMEOUT", 86400)
+CACHE_TIMEOUT = int(os.getenv("DJANGO_CACHE_TIMEOUT", 86400))
 
 @api_view(['GET'])
 def get_vyrobce_names(request):
     # Get the kategorie_kod from the request
     kategorie_kod = request.GET.get("kategorie_kod")
+    all_params = request.GET.get("all_params", "false").lower() == "true"
     if not kategorie_kod:
         return JsonResponse({"error": "kategorie_kod is required"}, status=400)
 
     # Check if there is a cached version of the vyrobce names
-    cache_key = f"vyrobce_names_{kategorie_kod}"
+    cache_key = f"vyrobce_names_{kategorie_kod}_{all_params}"
     cached_data = cache.get(cache_key)
     if cached_data:
         return JsonResponse(cached_data, safe=False, status=200)
 
     # If not cached, fetch the vyrobce names from the database
-    vyrobce_objects = get_vyrobce_by_kategorie(kategorie_kod)
+    vyrobce_objects = get_vyrobce_by_kategorie(kategorie_kod, all_params=all_params)
     if vyrobce_objects:
         vyrobce_list = [v.to_dict() for v in vyrobce_objects]
         cache.set(cache_key, vyrobce_list, timeout=CACHE_TIMEOUT)

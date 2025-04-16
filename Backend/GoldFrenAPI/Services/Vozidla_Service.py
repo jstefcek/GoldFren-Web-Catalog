@@ -15,7 +15,7 @@ from GoldFrenAPI.Services.Service_utils import (
     get_filtered_records
 )
 
-def get_vyrobce_by_kategorie(kategorie_id: int):
+def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
     """
     Function to get all vyrobce by kategorie ID
     """
@@ -36,11 +36,15 @@ def get_vyrobce_by_kategorie(kategorie_id: int):
             kod=record["kod"],
             kategorie=record["kategorie"],
             nazev=record["nazev"],
-            aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
-            aktualizoval=record["aktualizoval"]
+            aktualizoval=record["aktualizoval"],
+            aktualizovano=record["aktualizovano"]
         )
         
-        # Append vyrobce object to list
+        # Append vyrobce object to list withozt unnecessary attributes
+        if not all_params:
+            del vyrobce_obj.aktualizoval
+            del vyrobce_obj.aktualizovano
+            del vyrobce_obj.kategorie
         vyrobce.append(vyrobce_obj)
         
     # Return list of vyrobce objects

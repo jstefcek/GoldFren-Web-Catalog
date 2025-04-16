@@ -18,7 +18,7 @@ class Prislusenstvi():
         return self.__dict__
     
 class VozidloPrislusenstvi():
-    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, typ_prislusenstvi, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, obrazek, vektor, typ_prislusenstvi, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
         self.cislo_dilu = cislo_dilu
         self.kategorie = kategorie
         self.subkategorie = subkategorie
@@ -27,6 +27,8 @@ class VozidloPrislusenstvi():
         self.oznaceni_vozidla = oznaceni_vozidla
         self.typ = typ
         self.objem = objem
+        self.obrazek = obrazek
+        self.vektor = vektor
         self.typ_prislusenstvi = typ_prislusenstvi
         self.specialni_oznaceni = specialni_oznaceni
         self.rok_od = rok_od

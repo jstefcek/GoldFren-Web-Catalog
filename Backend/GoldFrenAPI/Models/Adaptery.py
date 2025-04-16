@@ -35,7 +35,8 @@ class Adapter():
         return filtered_data
     
 class VozidloAdapter():
-    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, prumer, typ_uchyceni, roztec_brzdic, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, obrazek, vektor, 
+                 prumer, typ_uchyceni, roztec_brzdic, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
         self.cislo_dilu = cislo_dilu
         self.kategorie = kategorie
         self.subkategorie = subkategorie
@@ -44,6 +45,8 @@ class VozidloAdapter():
         self.oznaceni_vozidla = oznaceni_vozidla
         self.typ = typ
         self.objem = objem
+        self.obrazek = obrazek
+        self.vektor = vektor
         self.prumer = prumer
         self.typ_uchyceni = typ_uchyceni
         self.roztec_brzdic = roztec_brzdic
