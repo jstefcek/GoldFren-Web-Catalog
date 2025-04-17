@@ -62,6 +62,7 @@ LEFT JOIN c_kategorie k on k.kod = p.kategorie;
 -- Create view for vozidlo adapter data
 CREATE OR REPLACE VIEW v_vozidlo_adapter AS
 select
+	ad.kod,
  	ad.cislo_dilu as cislo_dilu,
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,

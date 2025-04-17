@@ -203,3 +203,45 @@ def get_filtered_records(sql_query: str, params: list):
     else:
         print("Connection failed")
         return None
+    
+def get_records(sql_query: str, params: list = None, limit: int = None, page: int = None):
+    """
+    Executes a fully provided SQL query with optional Publikovat filtering amd pagination (LIMIT/OFFSET).
+
+    Args:
+        sql_query (str): SQL query
+        params (list, optional): SQL Parameters
+        limit (int, optional): Number of records to fetch.
+        page (int, optional): Page number for pagination (starts from 1).
+
+    Returns:
+        list: List of result records, or None if failed.
+    """
+    # Connect to MySQL database
+    conn = connect()
+    
+    # Check if connection is successful
+    if conn is None:
+        print("Connection failed")
+        return None
+
+    # Create cursor object
+    cursor = conn.cursor()
+    try:
+        # Add LIMIT/OFFSET if needed for pagination
+        if limit is not None and page is not None:
+            offset = 0 if page <= 1 else (page - 1) * limit
+            sql_query += " LIMIT %s OFFSET %s"
+            params = (params or []) + [limit, offset]
+
+        # Execute the final query with parameters
+        cursor.execute(sql_query, params or [])
+        return cursor.fetchall()
+
+    except Exception as ex:
+        print(ex)
+        return None
+
+    finally:
+        cursor.close()
+        conn.close()

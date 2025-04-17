@@ -5,7 +5,8 @@ from GoldFrenAPI.Views.Adapter_View import (
     get_adapter_by_id, 
     update_adapter_view, 
     create_adapter_view,
-    adapter_publication_view
+    adapter_publication_view,
+    get_filtered_adapters_view
 )
 
 # URL patterns
@@ -15,4 +16,5 @@ urlpatterns = [
     path("update/<int:adapter_id>", update_adapter_view, name="update_adapter"),
     path("create", create_adapter_view, name="create_adapter"),  
     path("publication/<int:adapter_id>", adapter_publication_view, name="adapter_publication"),
+    path("filter", get_filtered_adapters_view, name="get_filtered_adapters_view"),
 ]

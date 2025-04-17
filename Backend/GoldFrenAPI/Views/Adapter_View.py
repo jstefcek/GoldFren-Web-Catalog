@@ -9,6 +9,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from GoldFrenAPI.utils.utils import (
     get_pagination,
     get_total_count,
+    get_total_count_with_params,
     get_pagination_urls
 )
 from GoldFrenAPI.Services.Adapter_Service import (
@@ -16,7 +17,9 @@ from GoldFrenAPI.Services.Adapter_Service import (
     get_adapter,
     update_adapter,
     create_adapter,
-    adapter_publication
+    adapter_publication,
+    get_filtered_adapters,
+    get_vozidla_for_adapter
 )
 
 # Function to get all adapters
@@ -73,6 +76,74 @@ def get_adapter_by_id(request, adapter_id):
         return JsonResponse(adapter.to_dict(), status=200)
     return JsonResponse({"error": "Adapter not found"}, status=404)
 
+# Function to return adapters that match specific parameters
+@api_view(['GET'])
+def get_filtered_adapters_view(request):
+    """
+    This function returns adapters that match specific parameters.
+    """
+    try:    
+        # Get parameters from request
+        pozice = request.GET.get("pozice", None)
+        prumer_min = request.GET.get("prumer_min", None)
+        prumer_max = request.GET.get("prumer_max", None)
+        uchyceni = request.GET.get("uchyceni", None)
+        roztec_min = request.GET.get("roztec_min", None)
+        roztec_max = request.GET.get("roztec_max", None)
+        
+        # Checks if parameters are provided
+        if not pozice:
+            return JsonResponse({"error": "pozice parameter is required"}, status=400)
+        if not prumer_min:
+            return JsonResponse({"error": "prumer_min parameter is required"}, status=400)
+        if not prumer_max:
+            return JsonResponse({"error": "prumer_max parameter is required"}, status=400)
+        
+        # Store params to dict
+        filters = {
+            "pozice": pozice,
+            "prumer": (prumer_min, prumer_max),
+            "uchyceni": uchyceni,
+            "roztec_brzdic": (roztec_min, roztec_max)
+        }
+        
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+    
+        # If limit is set to 0 return all adapters
+        if limit == 0:
+            adapter_objects = get_filtered_adapters(states=states, filters=filters)
+            adapters = [adapter for adapter in adapter_objects]
+            return JsonResponse({
+                "count": len(adapters),
+                "data": adapters
+            }, status=200)
+        
+        # If limit is set to a number, return paginated adapters
+        adapter_objects = get_filtered_adapters(limit=limit, page=page, states=states, filters=filters)
+        adapters = [adapter for adapter in adapter_objects]
+        
+        # Get filtered adapters count
+        total_adapters = get_total_count_with_params("SELECT DISTINCT kod, cislo_dilu, pozice, prumer, typ_uchyceni, roztec_brzdic FROM v_vozidlo_adapter", 
+                                                     states=states, filters=filters)
+        
+        # Construct next and previous page URLs
+        next_url, prev_url = get_pagination_urls(request, limit, page, total_adapters)
+        
+        return JsonResponse({
+            "count": total_adapters,
+            "next": next_url,
+            "previous": prev_url,
+            "data": adapters
+        }, status=200)
+
+    # Handle pagination errors
+    except ValueError:
+        return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
+    
 # Function to update an adapter
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsInternalUser])

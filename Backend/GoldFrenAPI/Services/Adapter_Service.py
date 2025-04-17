@@ -2,19 +2,24 @@
 
 # Imports
 from datetime import datetime
-from GoldFrenAPI.Models.Adaptery import Adapter
+from GoldFrenAPI.Models.Adaptery import Adapter, VozidloAdapter
 from GoldFrenAPI.Services.Service_utils import (
     set_publication_state, 
-    get_all_items,
     get_item_by_id,
     execute_update,
-    insert_record
+    insert_record,
+    get_records
 )
 
 # Function to get all adapters
 def get_adapters(limit: int = None, page: int = None, states: bool = False):
     # Get all items from the database
-    records = get_all_items(sql_view="v_adapter_detail", limit=limit, page=page, states=states)
+    query = """
+        SELECT *
+        FROM v_adapter_detail"""
+    query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+    
+    records = get_records(sql_query=query, limit=limit, page=page)
     adapters = []
     
     # Iterate through records
@@ -126,3 +131,104 @@ def create_adapter(data):
 def adapter_publication(adapter_id: int, publikovat: int):
     state = set_publication_state(sql_table="d_adapter", publikovat=publikovat, item_id=adapter_id)
     return state
+
+# Find specific adapter by given parameters
+def get_filtered_adapters(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, prumer, typ_uchyceni, roztec_brzdic
+    FROM v_vozidlo_adapter
+    """
+    params = []
+    filter_clauses = []
+
+    # Apply publication filter
+    filter_clauses.append("publikovat in (0,1)" if states else "Publikovat = 1")
+
+    # Dynamic filters from dictionary
+    if filters:
+        for column, value in filters.items():
+            if isinstance(value, tuple) and len(value) == 2:
+                # Only add BETWEEN if both bounds are provided
+                if value[0] is not None and value[1] is not None:
+                    filter_clauses.append(f"{column} BETWEEN %s AND %s")
+                    params.extend(value)
+            else:
+                if value is not None:
+                    filter_clauses.append(f"{column} = %s")
+                    params.append(value)
+
+    # Append filters to base query
+    if filter_clauses:
+        query += " WHERE " + " AND ".join(filter_clauses)
+    
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+    
+    adapters = []
+    for record in records:
+        # Instead of creating a VozidloAdapter object, create a dictionary.
+        adapter = {
+            "kod": record["kod"],
+            "cislo_dilu": record["cislo_dilu"],
+            "obrazek": record["obrazek"],
+            "vektor": record["vektor"],
+            "pozice": record["pozice"],
+            "prumer": float(record["prumer"]) if record["prumer"] is not None else None,
+            "typ_uchyceni": record["typ_uchyceni"],
+            "roztec_brzdic": float(record["roztec_brzdic"]) if record["roztec_brzdic"] is not None else None,
+        }
+        
+        adapters.append(adapter)
+    
+    # Return list of matching adapter dictionaries
+    return adapters if adapters else None
+
+# Find specific adapter by given parameters
+def get_vozidla_for_adapter(limit: int = None, page: int = None, states: bool = False, adapter_kod: int = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT *
+    FROM v_vozidlo_adapter
+    WHERE kod = %s
+    """
+    params = [adapter_kod]
+    query += " AND publikovat in (0,1)" if states else " AND Publikovat = 1"
+        
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+
+    adapters = []
+    for record in records:
+        # Create adapter object
+        adapter = VozidloAdapter(
+            kod=record["kod"],
+            cislo_dilu=record["cislo_dilu"],
+            kategorie=record["kategorie"],
+            subkategorie=record["subkategorie"],
+            vyrobce=record["vyrobce"],
+            vozidlo=record["vozidlo"],
+            oznaceni_vozidla=record["oznaceni_vozidla"],
+            typ=record["typ"],
+            objem=record["objem"],
+            obrazek=record["obrazek"],
+            vektor=record["vektor"],
+            prumer=float(record["prumer"]) if record["prumer"] is not None else None,
+            typ_uchyceni=record["typ_uchyceni"],
+            roztec_brzdic=float(record["roztec_brzdic"]) if record["roztec_brzdic"] is not None else None,
+            specialni_oznaceni=record["specialni_oznaceni"],
+            rok_od=record["rok_od"],
+            rok_do=record["rok_do"],
+            pozice=record["pozice"],
+            publikovat=bool(record["publikovat"]) if record["publikovat"] is not None else None,
+        )
+            
+        # Append adapter object to list
+        adapters.append(adapter)
+        
+    # Return list of matching adapters objects
+    return adapters if adapters else None
