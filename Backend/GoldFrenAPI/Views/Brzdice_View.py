@@ -48,8 +48,8 @@ def get_brzdice(request):
         total_brzidce = get_total_count("d_brzdice", states=states)
         
         # If limit is set to a number, return paginated adapters
-        adapter_objects = get_all_brzdice(limit=limit, page=page, states=states)
-        adapters = [adapter.to_dict() for adapter in adapter_objects]
+        brzdice_objects = get_all_brzdice(limit=limit, page=page, states=states)
+        brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
         
         # Construct next and previous page URLs
         next_url, prev_url = get_pagination_urls(request, limit, page, total_brzidce)
@@ -58,7 +58,7 @@ def get_brzdice(request):
             "count": total_brzidce,
             "next": next_url,
             "previous": prev_url,
-            "data": adapters
+            "data": brzdice
         }, status=200)
     
     # Handle pagination errors
@@ -96,7 +96,7 @@ def get_filtered_brzdice_view(request):
         # Store params to dict
         filters = {
             "pozice": pozice,
-            "uchyceni": uchyceni,
+            "typ_uchyceni": uchyceni,
             "pocet_pistku": (pistku_min, pistku_max)
         }
         
@@ -117,21 +117,24 @@ def get_filtered_brzdice_view(request):
         
         # Return paginated brzdice with filters
         brzdice_objects = get_filtered_brzdice(limit=limit, page=page, states=states, filters=filters)
-        brzdice = [brzdic for brzdic in brzdice_objects]
-        
-        # Get filtered brzdice count
-        total_brzdice = get_total_count_with_params("SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, uchyceni FROM v_vozidlo_brzdic", 
-                                                     states=states, filters=filters)
-        
-        # Construct next and previous page URLs
-        next_url, prev_url = get_pagination_urls(request, limit, page, total_brzdice)
-        
-        return JsonResponse({
-            "count": total_brzdice,
-            "next": next_url,
-            "previous": prev_url,
-            "data": brzdice
-        }, status=200)
+        if brzdice_objects:
+            brzdice = [brzdic for brzdic in brzdice_objects]
+            
+            # Get filtered brzdice count
+            total_brzdice = get_total_count_with_params("SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, typ_uchyceni FROM v_vozidlo_brzdic", 
+                                                        states=states, filters=filters)
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_brzdice)
+            
+            return JsonResponse({
+                "count": total_brzdice,
+                "next": next_url,
+                "previous": prev_url,
+                "data": brzdice
+            }, status=200)
+        else:
+            return JsonResponse({"error": "No brzdic has been found.."}, status=404)
 
     # Handle pagination errors
     except ValueError:

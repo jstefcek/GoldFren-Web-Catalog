@@ -110,7 +110,7 @@ def brzdice_publication(brzdic_id, publikovat):
 def get_filtered_brzdice(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, uchyceni FROM v_vozidlo_brzdic
+    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, typ_uchyceni FROM v_vozidlo_brzdic
     """
     params = []
     filter_clauses = []
@@ -188,10 +188,13 @@ def get_vozidla_for_brzdic(limit: int = None, page: int = None, states: bool = F
             objem=record["objem"],
             obrazek=record["obrazek"],
             vektor=record["vektor"],
-            prumer=float(record["prumer"]) if record["prumer"] is not None else None,
             typ_uchyceni=record["typ_uchyceni"],
             pocet_pistku=float(record["pocet_pistku"]) if record["pocet_pistku"] is not None else None,
             specialni_oznaceni=record["specialni_oznaceni"],
+            rok_od=record["rok_od"],
+            rok_do=record["rok_do"],
+            pozice=record["pozice"],
+            publikovat=record["publikovat"]
         )
             
         # Append brzdic object to list
