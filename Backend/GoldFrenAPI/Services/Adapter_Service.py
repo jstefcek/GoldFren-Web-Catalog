@@ -149,7 +149,7 @@ def get_filtered_adapters(limit: int = None, page: int = None, states: bool = Fa
     if filters:
         for column, value in filters.items():
             if isinstance(value, tuple) and len(value) == 2:
-                # Only add BETWEEN if both bounds are provided
+                # Check if the both values are not None
                 if value[0] is not None and value[1] is not None:
                     filter_clauses.append(f"{column} BETWEEN %s AND %s")
                     params.extend(value)
@@ -187,16 +187,16 @@ def get_filtered_adapters(limit: int = None, page: int = None, states: bool = Fa
     return adapters if adapters else None
 
 # Find specific adapter by given parameters
-def get_vozidla_for_adapter(limit: int = None, page: int = None, states: bool = False, adapter_kod: int = None):
+def get_vozidla_for_adapter(limit: int = None, page: int = None, states: bool = False, adapter_id: int = None):
     # Prepare SQL query and add kod
     query = """
     SELECT *
     FROM v_vozidlo_adapter
     WHERE kod = %s
     """
-    params = [adapter_kod]
+    params = [adapter_id]
     query += " AND publikovat in (0,1)" if states else " AND Publikovat = 1"
-        
+
     # Execute query and get records
     records = get_records(sql_query=query, params=params, limit=limit, page=page)
     if not records:

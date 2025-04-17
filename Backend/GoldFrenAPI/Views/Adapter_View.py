@@ -144,6 +144,55 @@ def get_filtered_adapters_view(request):
     except ValueError:
         return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
     
+# Function to get vozidla for a specific adapter
+@api_view(['GET'])
+def get_vozidla_for_adapter_view(request):
+    """
+    This function returns vozidla for a specific adapter.
+    """
+    try:
+        # Get parameters from request
+        adapter_id = request.GET.get("adapter_id", None)
+        
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+        
+        # If limit is set to 0 return all adapters
+        if limit == 0:
+            adapter_objects = get_vozidla_for_adapter(adapter_id=adapter_id)
+            adapters = [adapter for adapter in adapter_objects]
+            return JsonResponse({
+                "count": len(adapters),
+                "data": adapters
+            }, status=200)
+        
+        # Get vozidla for the adapter
+        vozidla_objects = get_vozidla_for_adapter(limit=limit, page=page, states=states, adapter_id=adapter_id)
+        if vozidla_objects:
+            vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
+        
+            # Get filtered adapters count
+            total_adapters = get_total_count_with_params("SELECT * FROM v_vozidlo_adapter",
+                                                        states=states, filters={"kod": adapter_id})
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_adapters)
+            
+            return JsonResponse({
+                "count": total_adapters,
+                "next": next_url,
+                "previous": prev_url,
+                "data": vozidla
+            }, status=200)
+            
+        return JsonResponse({"error": "No vozidla found for this adapter"}, status=404)
+    
+    except Exception as ex:
+        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
+    
 # Function to update an adapter
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsInternalUser])
