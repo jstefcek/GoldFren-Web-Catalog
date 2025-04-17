@@ -78,7 +78,7 @@ export default function Header() {
           <div className="flex-shrink-0">
             <a href="/" className="flex items-center">
               <img
-                src="/goldfren-logo.svg"
+                src="/logo/goldfren-logo.svg"
                 alt="GoldFren Logo"
                 className="h-8 w-auto"
               />
@@ -92,8 +92,8 @@ export default function Header() {
                 <div
                   key={item.name}
                   className="relative group"
-                  onMouseEnter={() => setIsSortimentOpen(true)}
-                  onMouseLeave={() => setIsSortimentOpen(false)}
+                  //onMouseEnter={() => setIsSortimentOpen(true)}
+                  //onMouseLeave={() => setIsSortimentOpen(false)}
                 >
                   {item.submenu ? (
                     <div>
