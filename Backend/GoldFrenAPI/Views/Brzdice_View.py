@@ -9,14 +9,17 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from GoldFrenAPI.utils.utils import (
     get_pagination,
     get_total_count,
-    get_pagination_urls
+    get_pagination_urls,
+    get_total_count_with_params
 )
 from GoldFrenAPI.Services.Brzdice_Service import (
     get_brzdice as get_all_brzdice,
     get_brzdic,
     update_brzdic,
     create_brzdic,
-    brzdice_publication
+    brzdice_publication,
+    get_filtered_brzdice,
+    get_vozidla_for_brzdic,
     )
 
 # Function to get all brzdice
@@ -72,6 +75,116 @@ def get_brzdic_by_id(request, brzdic_id):
     if brzdic:
         return JsonResponse(brzdic.to_dict(), status=200)
     return JsonResponse({"error": "Brzdic not found"}, status=404)
+
+# Function to return brzdice that match specific parameters
+@api_view(['GET'])
+def get_filtered_brzdice_view(request):
+    """
+    This function returns brzdice that match specific parameters.
+    """
+    try:    
+        # Get parameters from request
+        pozice = request.GET.get("pozice", None)
+        uchyceni = request.GET.get("uchyceni", None)
+        pistku_min = request.GET.get("pistku_min", None)
+        pistku_max = request.GET.get("pistku_max", None)
+        
+        # Checks if parameters are provided
+        if not pozice:
+            return JsonResponse({"error": "pozice parameter is required"}, status=400)
+        
+        # Store params to dict
+        filters = {
+            "pozice": pozice,
+            "uchyceni": uchyceni,
+            "pocet_pistku": (pistku_min, pistku_max)
+        }
+        
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+    
+        # If limit is set to 0 return all filtered brzdice
+        if limit == 0:
+            brzdice_objects = get_filtered_brzdice(states=states, filters=filters)
+            brzdice = [brzdic for brzdic in brzdice_objects]
+            return JsonResponse({
+                "count": len(brzdice),
+                "data": brzdice
+            }, status=200)
+        
+        # Return paginated brzdice with filters
+        brzdice_objects = get_filtered_brzdice(limit=limit, page=page, states=states, filters=filters)
+        brzdice = [brzdic for brzdic in brzdice_objects]
+        
+        # Get filtered brzdice count
+        total_brzdice = get_total_count_with_params("SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, uchyceni FROM v_vozidlo_brzdic", 
+                                                     states=states, filters=filters)
+        
+        # Construct next and previous page URLs
+        next_url, prev_url = get_pagination_urls(request, limit, page, total_brzdice)
+        
+        return JsonResponse({
+            "count": total_brzdice,
+            "next": next_url,
+            "previous": prev_url,
+            "data": brzdice
+        }, status=200)
+
+    # Handle pagination errors
+    except ValueError:
+        return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
+    
+# Function to get vozidla for a specific brzdic
+@api_view(['GET'])
+def get_vozidla_for_brzdic_view(request):
+    """
+    This function returns vozidla for a specific brzdic.
+    """
+    try:
+        # Get parameters from request
+        brzdic_id = request.GET.get("brzdic_id", None)
+        
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+        
+        # If limit is set to 0 return all adapters
+        if limit == 0:
+            brzdice_objects = get_vozidla_for_brzdic(brzdic_id=brzdic_id)
+            adapters = [brzdic for brzdic in brzdice_objects]
+            return JsonResponse({
+                "count": len(adapters),
+                "data": adapters
+            }, status=200)
+        
+        # Get vozidla for the brzdic
+        brzdice_objects = get_vozidla_for_brzdic(limit=limit, page=page, states=states, brzdic_id=brzdic_id)
+        if brzdice_objects:
+            vozidla = [vozidlo.to_dict() for vozidlo in brzdice_objects]
+        
+            # Get filtered adapters count
+            total_vozidla_brzdice = get_total_count_with_params("SELECT * FROM v_vozidlo_brzdic",
+                                                        states=states, filters={"kod": brzdic_id})
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_vozidla_brzdice)
+            
+            return JsonResponse({
+                "count": total_vozidla_brzdice,
+                "next": next_url,
+                "previous": prev_url,
+                "data": vozidla
+            }, status=200)
+            
+        return JsonResponse({"error": "No vozidla found for this brzdic"}, status=404)
+    
+    except Exception as ex:
+        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
 
 # Function to update an adapter
 @api_view(['PUT'])

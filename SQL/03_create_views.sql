@@ -352,6 +352,7 @@ LIMIT 18446744073709551615;
 -- Create view for vozidlo brzdic data
 CREATE OR REPLACE VIEW v_vozidlo_brzdic AS
 select
+	bo.kod,
 	bo.cislo_dilu as cislo_dilu,
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,

@@ -33,7 +33,8 @@ class Brzdic():
         return filtered_data
     
 class VozidloBrzdic():
-    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, obrazek, vektor, prumer, typ_uchyceni, roztec_brzdic, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+    def __init__(self, kod, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, obrazek, vektor, prumer, typ_uchyceni, pocet_pistku, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+        self.kod = kod
         self.cislo_dilu = cislo_dilu
         self.kategorie = kategorie
         self.subkategorie = subkategorie
@@ -46,7 +47,7 @@ class VozidloBrzdic():
         self.vektor = vektor
         self.prumer = prumer
         self.typ_uchyceni = typ_uchyceni
-        self.roztec_brzdic = roztec_brzdic
+        self.pocet_pistku = pocet_pistku
         self.specialni_oznaceni = specialni_oznaceni
         self.rok_od = rok_od
         self.rok_do = rok_do

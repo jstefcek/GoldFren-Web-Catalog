@@ -18,7 +18,6 @@ def get_adapters(limit: int = None, page: int = None, states: bool = False):
         SELECT *
         FROM v_adapter_detail"""
     query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
-    
     records = get_records(sql_query=query, limit=limit, page=page)
     adapters = []
     
@@ -169,7 +168,6 @@ def get_filtered_adapters(limit: int = None, page: int = None, states: bool = Fa
     
     adapters = []
     for record in records:
-        # Instead of creating a VozidloAdapter object, create a dictionary.
         adapter = {
             "kod": record["kod"],
             "cislo_dilu": record["cislo_dilu"],
@@ -186,7 +184,7 @@ def get_filtered_adapters(limit: int = None, page: int = None, states: bool = Fa
     # Return list of matching adapter dictionaries
     return adapters if adapters else None
 
-# Find specific adapter by given parameters
+# Get vozidla for specific adapter
 def get_vozidla_for_adapter(limit: int = None, page: int = None, states: bool = False, adapter_id: int = None):
     # Prepare SQL query and add kod
     query = """

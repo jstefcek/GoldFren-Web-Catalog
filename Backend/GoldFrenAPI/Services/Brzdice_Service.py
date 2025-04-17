@@ -2,13 +2,14 @@
 
 # Imports
 from datetime import datetime
-from GoldFrenAPI.Models.Brzdice import Brzdic
+from GoldFrenAPI.Models.Brzdice import Brzdic, VozidloBrzdic
 from GoldFrenAPI.Services.Service_utils import (
     set_publication_state, 
     get_all_items,
     get_item_by_id,
     execute_update,
-    insert_record
+    insert_record,
+    get_records
 )
 
 # Function to get all brzdice
@@ -104,3 +105,97 @@ def create_brzdic(data: dict):
 def brzdice_publication(brzdic_id, publikovat):
     state = set_publication_state(sql_table="d_brzdice", publikovat=publikovat, item_id=brzdic_id)
     return state
+
+# Find specific brzdic by given parameters
+def get_filtered_brzdice(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, uchyceni FROM v_vozidlo_brzdic
+    """
+    params = []
+    filter_clauses = []
+
+    # Apply publication filter
+    filter_clauses.append("publikovat in (0,1)" if states else "Publikovat = 1")
+
+    # Dynamic filters from dictionary
+    if filters:
+        for column, value in filters.items():
+            if isinstance(value, tuple) and len(value) == 2:
+                # Check if the both values are not None
+                if value[0] is not None and value[1] is not None:
+                    filter_clauses.append(f"{column} BETWEEN %s AND %s")
+                    params.extend(value)
+            else:
+                if value is not None:
+                    filter_clauses.append(f"{column} = %s")
+                    params.append(value)
+
+    # Append filters to base query
+    if filter_clauses:
+        query += " WHERE " + " AND ".join(filter_clauses)
+    
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+    
+    brzdice = []
+    for record in records:
+        brzdic = {
+            "kod": record["kod"],
+            "cislo_dilu": record["cislo_dilu"],
+            "obrazek": record["obrazek"],
+            "vektor": record["vektor"],
+            "pozice": record["pozice"],
+            "pocet_pistku": record["pocet_pistku"],
+            "typ_uchyceni": record["typ_uchyceni"],
+        }
+        
+        brzdice.append(brzdic)
+    
+    # Return list of matching brzdice dictionaries
+    return brzdice if brzdice else None
+
+# Find specific vozidlo for brzdic
+def get_vozidla_for_brzdic(limit: int = None, page: int = None, states: bool = False, brzdic_id: int = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT *
+    FROM v_vozidlo_brzdic
+    WHERE kod = %s
+    """
+    params = [brzdic_id]
+    query += " AND publikovat in (0,1)" if states else " AND Publikovat = 1"
+
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+
+    brzdice = []
+    for record in records:
+        # Create adapter object
+        brzdic = VozidloBrzdic(
+            kod=record["kod"],
+            cislo_dilu=record["cislo_dilu"],
+            kategorie=record["kategorie"],
+            subkategorie=record["subkategorie"],
+            vyrobce=record["vyrobce"],
+            vozidlo=record["vozidlo"],
+            oznaceni_vozidla=record["oznaceni_vozidla"],
+            typ=record["typ"],
+            objem=record["objem"],
+            obrazek=record["obrazek"],
+            vektor=record["vektor"],
+            prumer=float(record["prumer"]) if record["prumer"] is not None else None,
+            typ_uchyceni=record["typ_uchyceni"],
+            pocet_pistku=float(record["pocet_pistku"]) if record["pocet_pistku"] is not None else None,
+            specialni_oznaceni=record["specialni_oznaceni"],
+        )
+            
+        # Append brzdic object to list
+        brzdice.append(brzdic)
+        
+    # Return list of matching brzdice objects
+    return brzdice if brzdice else None
