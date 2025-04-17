@@ -15,9 +15,10 @@ i18n
       en: {
         translation: {
           home: 'Home',
+          nove: 'New',
           sortiment: 'Products',
           kontakt: 'Contact',
-          login: 'Login',
+          login: 'Login in',
           adaptery: 'Adapters',
           brzdice: 'Calipers',
           desticky: 'Pads',
@@ -30,9 +31,10 @@ i18n
       cs: {
         translation: {
           home: 'Domů',
+          nove: 'Nové',
           sortiment: 'Sortiment',
           kontakt: 'Kontakt',
-          login: 'Přihlásit',
+          login: 'Přihlásit se',
           adaptery: 'Adaptéry',
           brzdice: 'Brzdiče',
           desticky: 'Destičky',
@@ -45,6 +47,7 @@ i18n
       de: {
         translation: {
           home: 'Startseite',
+          nove: 'Neu',
           sortiment: 'Produkte',
           kontakt: 'Kontakt',
           login: 'Anmelden',

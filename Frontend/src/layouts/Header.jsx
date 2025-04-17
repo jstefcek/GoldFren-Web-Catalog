@@ -31,6 +31,7 @@ export default function Header() {
   // Set menu items
   const menuItems = [
     { name: t('home'), path: '/' },
+    { name: t('nove'), path: '/nove' },
     { 
       name: t('sortiment'), 
       submenu: [
@@ -88,7 +89,12 @@ export default function Header() {
           <div className="hidden lg:flex w-full justify-center">
             <nav className="flex space-x-8">
               {menuItems.map((item) => (
-                <div key={item.name} className="relative group">
+                <div 
+                    key={item.name} 
+                    className="relative group"
+                    onMouseEnter={() => setIsSortimentOpen(true)}
+                    onMouseLeave={() => setIsSortimentOpen(false)}
+                >
                   {item.submenu ? (
                     <div>
                         <button 
@@ -102,7 +108,8 @@ export default function Header() {
                                 <ChevronDown className="h-6 w-4 ml-1" />
                             )}
                         </button>
-                      
+                    
+                    {/* Main Menu - sub menu */}
                     <div className={`absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 focus:outline-none z-10 transition-all duration-200 ${isSortimentOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                         <div className="py-1">
                           {item.submenu.map((subitem) => (
@@ -161,7 +168,10 @@ export default function Header() {
                         onClick={() => changeLanguage(lang.code)}
                         className="block w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-gray-100 hover:text-red-600"
                     >
-                        {lang.flag} {lang.name}
+                        <span className="flex items-center gap-x-3">
+                            <span className="text-xl">{lang.flag}</span>
+                            <span>{lang.name}</span>
+                        </span>
                   </button>
                   ))}
                 </div>
@@ -171,7 +181,7 @@ export default function Header() {
             {/* Login Button */}
             <a
               href="/login"
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150"
+              className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-md text-sm font-medium transition duration-150 whitespace-nowrap"
             >
               {t('login')}
             </a>
