@@ -124,21 +124,24 @@ def get_filtered_adapters_view(request):
         
         # If limit is set to a number, return paginated adapters
         adapter_objects = get_filtered_adapters(limit=limit, page=page, states=states, filters=filters)
-        adapters = [adapter for adapter in adapter_objects]
-        
-        # Get filtered adapters count
-        total_adapters = get_total_count_with_params("SELECT DISTINCT kod, cislo_dilu, pozice, prumer, typ_uchyceni, roztec_brzdic FROM v_vozidlo_adapter", 
-                                                     states=states, filters=filters)
-        
-        # Construct next and previous page URLs
-        next_url, prev_url = get_pagination_urls(request, limit, page, total_adapters)
-        
-        return JsonResponse({
-            "count": total_adapters,
-            "next": next_url,
-            "previous": prev_url,
-            "data": adapters
-        }, status=200)
+        if adapter_objects:
+            adapters = [adapter for adapter in adapter_objects]
+            
+            # Get filtered adapters count
+            total_adapters = get_total_count_with_params("SELECT DISTINCT kod, cislo_dilu, pozice, prumer, typ_uchyceni, roztec_brzdic FROM v_vozidlo_adapter", 
+                                                        states=states, filters=filters)
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_adapters)
+            
+            return JsonResponse({
+                "count": total_adapters,
+                "next": next_url,
+                "previous": prev_url,
+                "data": adapters
+            }, status=200)
+        else:
+            return JsonResponse({"error": "No adapter has been found.."}, status=404)
 
     # Handle pagination errors
     except ValueError:
