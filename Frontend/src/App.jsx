@@ -1,19 +1,20 @@
-//import { useState } from 'react'
+import { Routes, Route } from "react-router-dom";
+import Header from "/src/layouts/Header";
+import Home from "/src/pages/Home";
+import "/src/localization/language_setup"
 
 function App() {
-
   return (
-    <>
-      <div className="bg-blue-500 text-white p-5 shadow-xl">
-        <h1 className="text-4xl font-bold">
-          Hello Vite + React + Tailwind CSS!
-        </h1>
-        <p className="mt-2">
-          This is a simple setup to get you started with Vite, React, and Tailwind CSS.
-        </p>
-      </div>  
-    </>
-  )
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/* Add other routes as needed */}
+        </Routes>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
