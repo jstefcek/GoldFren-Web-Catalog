@@ -31,7 +31,6 @@ export default function Header() {
   // Set menu items
   const menuItems = [
     { name: t("home"), path: "/" },
-    { name: t("nove"), path: "/nove" },
     {
       name: t("sortiment"),
       submenu: [

@@ -1,10 +1,10 @@
 // Specific configuration for filters based on category
 export const filterConfigs = {
     motorbike: [
-      { name: "manufacturer", label: "Manufacturer", placeholder: "Please select the manufacturer", type: "select", options: ["Honda", "Yamaha", "Kawasaki"] },
-      { name: "displacement", label: "Displacement", placeholder: "Please select the displacement", type: "number" },
-      { name: "model", label: "Model", placeholder: "Please select the model", type: "select", options: [] },
-      { name: "year", label: "Year of production", placeholder: "Please select the year of production", type: "number" },
+      { name: "vyrobce", label: "Výrobce motocyklu", placeholder: "Vyberte prosím výrobce", type: "select", options: ["Honda", "Yamaha", "Kawasaki", "BMW", "AJS", "TET"] },
+      { name: "objem", label: "Zdvihový objem", placeholder: "Vyberte prosím zdvihový objem", type: "select", options: [], dependsOn: "vyrobce" },
+      { name: "model", label: "Model motocyklu", placeholder: "Vyberte prosím model", type: "select", options: [], dependsOn: "objem" },
+      { name: "year", label: "Rok výroby", placeholder: "Zadejte prosím rok výroby", type: "text", optional: true, dependsOn: "model" },
     ],
     car: [
       { name: "manufacturer", label: "Manufacturer", placeholder: "Please select the manufacturer", type: "select", options: ["Audi", "BMW", "Tesla"] },
@@ -13,7 +13,7 @@ export const filterConfigs = {
     ],
     kart: [
       { name: "engine", label: "Engine", placeholder: "Type of engine", type: "input" },
-      { name: "year", label: "Year", placeholder: "e.g. 2021", type: "number" },
+      { name: "year", label: "Year", placeholder: "e.g. 2021", type: "range-slider", minValue: 0, maxValue: 200, step: 1 },
     ],
     bike: [
       { name: "type", label: "Type", placeholder: "Mountain, Road…", type: "select", options: ["Road", "Mountain", "Hybrid"] },
