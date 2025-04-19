@@ -14,131 +14,9 @@ import {
 } from "lucide-react";
 import { columnsConfig } from "./Column_Config";
 import { useTranslation } from "react-i18next";
+import { fetchCategoryData } from "../../hooks/DataGrid_APIHook";
 
-const staticData = [
-  {
-    id: 1,
-    obrazek: "https://gogen.cz/cdn/shop/files/5769201.jpg?v=1710842451",
-    vektor: null,
-    cislo_dilu: "4001A",
-    typ: "Nové",
-    prumer: 110,
-    typ_uchyceni: "Radial",
-    roztec_brzdice: 200,
-  },
-  {
-    id: 2,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4002A",
-    typ: "Nové",
-    prumer: 150,
-    typ_uchyceni: "Axis",
-    roztec_brzdice: null,
-  },
-  {
-    id: 3,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4003A",
-    typ: "Nové",
-    prumer: 120,
-    typ_uchyceni: "Axis",
-    roztec_brzdice: null,
-  },
-  {
-    id: 4,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4004A",
-    typ: "Nové",
-    prumer: 100,
-    typ_uchyceni: "Radial",
-    roztec_brzdice: 210,
-  },
-  {
-    id: 5,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4005A",
-    typ: "Nové",
-    prumer: 120,
-    typ_uchyceni: "Axis",
-    roztec_brzdice: null,
-  },
-  {
-    id: 6,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4006A",
-    typ: "Nové",
-    prumer: 100,
-    typ_uchyceni: "Radial",
-    roztec_brzdice: 210,
-  },
-  {
-    id: 7,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4007A",
-    typ: "Nové",
-    prumer: 120,
-    typ_uchyceni: "Axis",
-    roztec_brzdice: null,
-  },
-  {
-    id: 8,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4008A",
-    typ: "Nové",
-    prumer: 100,
-    typ_uchyceni: "Radial",
-    roztec_brzdice: 210,
-  },
-  {
-    id: 9,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4009A",
-    typ: "Nové",
-    prumer: 120,
-    typ_uchyceni: "Axis",
-    roztec_brzdice: null,
-  },
-  {
-    id: 10,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4010A",
-    typ: "Nové",
-    prumer: 100,
-    typ_uchyceni: "Radial",
-    roztec_brzdice: 210,
-  },
-  {
-    id: 11,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4011A",
-    typ: "Nové",
-    prumer: 120,
-    typ_uchyceni: "Axis",
-    roztec_brzdice: null,
-  },
-  {
-    id: 12,
-    obrazek: null,
-    vektor: null,
-    cislo_dilu: "4012A",
-    typ: "Nové",
-    prumer: 100,
-    typ_uchyceni: "Radial",
-    roztec_brzdice: 210,
-  },
-];
-
-export default function DataGrid({ category = "" }) {
+export default function DataGrid({ category = "", apiUrl = null }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -152,13 +30,25 @@ export default function DataGrid({ category = "" }) {
   const columns = columnsConfig[category] || [];
 
   useEffect(() => {
-    // Simulate loading data
-    setIsLoading(true);
-    setTimeout(() => {
-      setData(staticData);
-      setIsLoading(false);
-    }, 100);
-  }, [category]);
+    const loadData = async () => {
+      setIsLoading(true);
+      
+      try {
+        // Use the fetchCategoryData helper to get data for the specific category
+        const result = await fetchCategoryData(category, apiUrl);
+        setData(result);
+      } catch (error) {
+        console.error("Error loading data:", error);
+        setData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (category) {
+      loadData();
+    }
+  }, [category, apiUrl]);
 
   const handleSort = (colKey) => {
     if (sortColumn === colKey) {
@@ -183,15 +73,27 @@ export default function DataGrid({ category = "" }) {
   };
 
   const filtered = data.filter((row) =>
-    columns.some((col) =>
-      row[col.key]?.toString().toLowerCase().includes(search.toLowerCase())
-    )
+    columns.some((col) => {
+      const value = row[col.key];
+      return value !== null && value !== undefined && 
+        value.toString().toLowerCase().includes(search.toLowerCase());
+    })
   );
 
   const sorted = sortColumn
     ? [...filtered].sort((a, b) => {
-        const aVal = a[sortColumn]?.toString().toLowerCase() || "";
-        const bVal = b[sortColumn]?.toString().toLowerCase() || "";
+        const aVal = a[sortColumn] !== null ? a[sortColumn]?.toString().toLowerCase() : "";
+        const bVal = b[sortColumn] !== null ? b[sortColumn]?.toString().toLowerCase() : "";
+        
+        if (aVal === bVal) return 0;
+        
+        // Handle numeric values for proper sorting
+        if (!isNaN(aVal) && !isNaN(bVal)) {
+          return sortDirection === "asc" 
+            ? parseFloat(aVal) - parseFloat(bVal) 
+            : parseFloat(bVal) - parseFloat(aVal);
+        }
+        
         if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
         if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
         return 0;
@@ -203,7 +105,7 @@ export default function DataGrid({ category = "" }) {
 
   // Get selected items data for export/print
   const getSelectedItemsData = () => {
-    return data.filter(item => selectedRows.includes(item.id));
+    return data.filter(item => selectedRows.includes(item.id || item.kod));
   };
 
   const handleExportToExcel = () => {
@@ -324,7 +226,7 @@ export default function DataGrid({ category = "" }) {
                 variant="outline" 
                 size="sm" 
                 onClick={handleExportToExcel}
-                className="flex items-center gap-1 text-green-600 border-green-200 hover:bg-green-50"
+                className="flex items-center gap-1 text-green-600 border-green-200 hover:bg-green-50 cursor-pointer"
                 title="Export to Excel"
               >
                 <FileSpreadsheet size={16} />
@@ -334,7 +236,7 @@ export default function DataGrid({ category = "" }) {
                 variant="outline" 
                 size="sm" 
                 onClick={handleExportToCSV}
-                className="flex items-center gap-1 text-blue-600 border-blue-200 hover:bg-blue-50"
+                className="flex items-center gap-1 text-blue-600 border-blue-200 hover:bg-sky-50 cursor-pointer"
                 title="Export to CSV"
               >
                 <FileText size={16} />
@@ -344,7 +246,7 @@ export default function DataGrid({ category = "" }) {
                 variant="outline" 
                 size="sm" 
                 onClick={handlePrint}
-                className="flex items-center gap-1 text-purple-600 border-purple-200 hover:bg-purple-50"
+                className="flex items-center gap-1 text-purple-600 border-purple-200 hover:bg-purple-50 cursor-pointer"
                 title="Print data"
               >
                 <Printer size={16} />
@@ -411,7 +313,7 @@ export default function DataGrid({ category = "" }) {
                         if (selectedRows.length === paged.length) {
                           setSelectedRows([]);
                         } else {
-                          setSelectedRows(paged.map((row) => row.id));
+                          setSelectedRows(paged.map((row) => row.id || row.kod));
                         }
                       }}
                       className="rounded border-gray-300 text-red-600 focus:ring-red-500"
@@ -446,19 +348,19 @@ export default function DataGrid({ category = "" }) {
             <tbody>
               {paged.map((row) => (
                 <tr 
-                  key={row.id} 
+                  key={row.id || row.kod} 
                   className={`border-t hover:bg-gray-50 transition-colors ${
-                    selectedRows.includes(row.id) ? "bg-red-50" : ""
+                    selectedRows.includes(row.id || row.kod) ? "bg-red-50" : ""
                   }`}
                 >
                   <td className="px-2 py-3">
                     <div className="flex justify-center">
                       <input
                         type="checkbox"
-                        checked={selectedRows.includes(row.id)}
-                        onChange={() => handleSelectRow(row.id)}
+                        checked={selectedRows.includes(row.id || row.kod)}
+                        onChange={() => handleSelectRow(row.id || row.kod)}
                         className="rounded border-gray-300 text-red-600 focus:ring-red-500"
-                        aria-label={`Select row ${row.id}`}
+                        aria-label={`Select row ${row.id || row.kod}`}
                       />
                     </div>
                   </td>
@@ -498,10 +400,10 @@ export default function DataGrid({ category = "" }) {
                         </div>
                       ) : col.link ? (
                         <a
-                          href={`/${category}/${row.id}`}
+                          href={`/${category}/${row.id || row.kod}`}
                           className="text-red-600 hover:text-red-800 font-medium cursor-pointer focus:outline-none focus:underline"
                         >
-                          {row[col.key] ?? `${category}/${row.id}`}
+                          {row[col.key] ?? `${category}/${row.id || row.kod}`}
                         </a>
                       ) : (
                         <span className={row[col.key] === null ? "text-gray-400" : ""}>
