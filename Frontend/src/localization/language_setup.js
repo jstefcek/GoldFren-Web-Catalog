@@ -14,6 +14,7 @@ i18n
     resources: {
       en: {
         translation: {
+          clear_search: "Reset search filters",
           home: 'Home',
           nove: 'New',
           sortiment: 'Products',
@@ -56,6 +57,7 @@ i18n
       },
       cs: {
         translation: {
+          clear_search: "Vyresetovat filtrování dat",
           home: 'Domů',
           nove: 'Nové',
           sortiment: 'Sortiment',
@@ -98,6 +100,7 @@ i18n
       },
       de: {
         translation: {
+          clear_search: "Reset search filters",
           home: 'Startseite',
           nove: 'Neu',
           sortiment: 'Produkte',
