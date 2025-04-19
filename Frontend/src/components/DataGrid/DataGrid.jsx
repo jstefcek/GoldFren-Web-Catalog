@@ -54,6 +54,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
     }
   }, [category, apiUrl]);
 
+  // Sorting type ASC or DESC
   const handleSort = (colKey) => {
     if (sortColumn === colKey) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -63,6 +64,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
     }
   };
 
+  // Reset filters and sorting
   const handleReset = () => {
     setSearch("");
     setSortColumn(null);
@@ -70,6 +72,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
     setSelectedRows([]);
   };
 
+  // Get ID of selected row/rows
   const handleSelectRow = (id) => {
     setSelectedRows((prev) =>
       prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
@@ -149,10 +152,14 @@ export default function DataGrid({ category = "", apiUrl = null }) {
       <div className="flex flex-col md:flex-row md:flex-wrap gap-4 justify-between mb-6 items-start md:items-center">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
           <div className="relative w-full sm:w-64">
+            
+            {/* ICON - Search icon */}
             <Search
               className="absolute left-3 top-2.5 text-gray-400"
               size={18}
             />
+
+            {/* INPUT - Search input */}
             <Input
               placeholder={t("datagrid.search_placeholder")}
               value={search}
@@ -161,6 +168,8 @@ export default function DataGrid({ category = "", apiUrl = null }) {
               aria-label="Search data"
             />
           </div>
+
+          {/* BTN - Reset filters and sorting */}
           <Button
             variant="outline"
             onClick={handleReset}
@@ -175,11 +184,12 @@ export default function DataGrid({ category = "", apiUrl = null }) {
           <div className="flex items-center gap-2">
             {selectedRows.length > 0 && (
               <span className="text-sm font-medium text-gray-700 mr-2">
-                {selectedRows.length} selected
+                {selectedRows.length} {t("datagrid.selected")}
               </span>
             )}
             {selectedRows.length > 0 && (
               <div className="flex gap-1">
+                {/* BTN - Export to Excel */}
                 <Button
                   variant="outline"
                   size="sm"
@@ -190,6 +200,8 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                   <FileSpreadsheet size={16} />
                   <span className="hidden sm:inline">Excel</span>
                 </Button>
+
+                {/* BTN - Export to CSV */}
                 <Button
                   variant="outline"
                   size="sm"
@@ -200,6 +212,8 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                   <FileText size={16} />
                   <span className="hidden sm:inline">CSV</span>
                 </Button>
+
+                {/* BTN - Print selected data */}
                 <Button
                   variant="outline"
                   size="sm"
@@ -216,6 +230,8 @@ export default function DataGrid({ category = "", apiUrl = null }) {
 
           <div className="flex items-center gap-2 ml-2">
             <SlidersHorizontal className="text-gray-500" size={18} />
+
+            {/* SELECT - Number of items on page selector */}
             <select
               className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
               value={pageSize}
@@ -227,14 +243,15 @@ export default function DataGrid({ category = "", apiUrl = null }) {
             >
               {[10, 25, 50, 100].map((size) => (
                 <option key={size} value={size}>
-                  {size} / {t("datagrid.page")}
+                  {size} {t("datagrid.entries")} {t("datagrid.on")} {t("datagrid.page")}
                 </option>
               ))}
             </select>
           </div>
         </div>
       </div>
-
+      
+      {/* When filter returns no data */}
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200 bg-white">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -246,7 +263,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
               <Search size={48} />
             </div>
             <h3 className="text-lg font-medium text-gray-700">
-              No results found
+                {t("datagrid.no_results_found")}
             </h3>
             <p className="text-gray-500 mt-1">
               {search ? `No matches for "${search}"` : "No data available"}
@@ -257,7 +274,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                 onClick={handleReset}
                 className="mt-4 border-red-500 text-red-600 hover:bg-red-50"
               >
-                Reset search
+                {t("datagrid.reset")}
               </Button>
             )}
           </div>
@@ -330,9 +347,10 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                       />
                     </div>
                   </td>
+                  
                   {columns.map((col) => (
                     <td key={col.key} className="px-4 py-3 text-gray-700">
-                      {col.key === "obrazek" && row[col.key] ? (
+                      {col.type === "image" && row[col.key] ? (
                         <div className="flex justify-center">
                           <a
                             href={row[col.key]}
@@ -348,7 +366,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                             />
                           </a>
                         </div>
-                      ) : col.key === "vektor" && row[col.key] ? (
+                      ) : col.type === "vector" && row[col.key] ? (
                         <div className="flex justify-center">
                           <a
                             href={row[col.key]}
@@ -393,16 +411,16 @@ export default function DataGrid({ category = "", apiUrl = null }) {
         <div className="text-sm text-gray-500 order-2 sm:order-1">
           {filtered.length > 0 ? (
             <>
-              Showing{" "}
-              {Math.min((currentPage - 1) * pageSize + 1, filtered.length)} to{" "}
-              {Math.min(currentPage * pageSize, filtered.length)} of{" "}
-              {filtered.length} entries
+              {t("datagrid.showing")}{" "}
+              {Math.min((currentPage - 1) * pageSize + 1, filtered.length)} {t("datagrid.to")}{" "}
+              {Math.min(currentPage * pageSize, filtered.length)} {t("datagrid.of")}{" "}
+              {filtered.length} {t("datagrid.entries")}
               {filtered.length !== data.length && (
-                <span> (filtered from {data.length} total entries)</span>
+                <span> ({t("datagrid.filtered_from")} {data.length} {t("datagrid.total_entries")})</span>
               )}
             </>
           ) : (
-            <>Nothing to display</>
+            <>{t("datagrid.nothing_to_display")}</>
           )}
         </div>
 

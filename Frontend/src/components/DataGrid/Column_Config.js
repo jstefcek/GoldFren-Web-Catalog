@@ -3,11 +3,13 @@ export const columnsConfig = {
     { 
         key: "obrazek", 
         i18n: "datagrid.picture", 
+        type: "image",
         sortable: false 
     },
     { 
         key: "vektor", 
         i18n: "datagrid.vektor", 
+        type: "vector",
         sortable: false 
     },
     {

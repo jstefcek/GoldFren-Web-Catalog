@@ -2,146 +2,24 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
+import translationEN from './languages/english.json';
+import translationCS from './languages/czech.json';
+import translationDE from './languages/german.json';
+
+const resources = {
+  en: { translation: translationEN },
+  cs: { translation: translationCS },
+  de: { translation: translationDE }
+};
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     fallbackLng: 'cs',
     debug: false,
-    interpolation: {
-      escapeValue: false,
-    },
-    resources: {
-      en: {
-        translation: {
-          clear_search: "Reset search filters",
-          home: 'Home',
-          nove: 'New',
-          sortiment: 'Products',
-          kontakt: 'Contact',
-          login: 'Login in',
-          adaptery: 'Adapters',
-          brzdice: 'Calipers',
-          desticky: 'Pads',
-          hadicky: 'Hoses',
-          kotouce: 'Discs',
-          pumpy: 'Pumps',
-          prislusenstvi: 'Accessories',
-          searchTitle: 'Search Goldfren catalog',
-          adapter_title: 'GOLDfren brake adapters',
-          category: {
-            motorbike: 'Motorbike',
-            car: 'Car',
-            kart: 'Kart',
-            bike: 'Bike',
-            plane: 'Plane',
-            industry: 'Industry',
-            pad: 'Brake Pads',
-            brake: 'Brakes',
-            adapter: 'Brake Adapter',
-            disc: 'Brake Disc',
-          },
-          datagrid: {
-            page: "Page",
-            search_placeholder: "Quick Search",
-            reset: "Reset search & Filters",
-            picture: "Picture",
-            vektor: "CAD drawing",
-            part_number: "Part number",
-            type: "Type",
-            diameter: "Diameter [mm]",
-            attached_type: "Attachment type",
-            brakepad_spacing: "Brakepad spacing [mm]",
-          },
-        },
-      },
-      cs: {
-        translation: {
-          clear_search: "Vyresetovat filtrování dat",
-          home: 'Domů',
-          nove: 'Nové',
-          sortiment: 'Sortiment',
-          kontakt: 'Kontakt',
-          login: 'Přihlásit se',
-          adaptery: 'Adaptéry',
-          brzdice: 'Brzdiče',
-          desticky: 'Destičky',
-          hadicky: 'Hadičky',
-          kotouce: 'Kotouče',
-          pumpy: 'Pumpy',
-          prislusenstvi: 'Příslušenství',
-          searchTitle: 'Vyhledávání v katalogu GOLDfren',
-          adapter_title: 'Brzdové adaptéry GOLDfren',
-          category: {
-            motorbike: 'Motorka',
-            car: 'Auto',
-            kart: 'Motokára',
-            bike: 'Kolo',
-            plane: 'Letadlo',
-            industry: 'Průmysl',
-            pad: 'Brzdové destičky',
-            brake: 'Brzdy',
-            adapter: 'Adaptér brzd',
-            disc: 'Brzdový kotouč',
-          },
-          datagrid: {
-            page: "Stránka",
-            search_placeholder: "Filtrovat výsledkami",
-            reset: "Resetovat filtry",
-            picture: "Obrázek",
-            vektor: "Nákres",
-            part_number: "Číslu dílu",
-            type: "Typ",
-            diameter: "Průměr [mm]",
-            attached_type: "Typ uchycení",
-            brakepad_spacing: "Rozteč brzdiče [mm]",
-          },
-        },
-      },
-      de: {
-        translation: {
-          clear_search: "Reset search filters",
-          home: 'Startseite',
-          nove: 'Neu',
-          sortiment: 'Produkte',
-          kontakt: 'Kontakt',
-          login: 'Anmelden',
-          adaptery: 'Adapter',
-          brzdice: 'Bremssättel',
-          desticky: 'Beläge',
-          hadicky: 'Schläuche',
-          kotouce: 'Scheiben',
-          pumpy: 'Pumpen',
-          prislusenstvi: 'Zubehör',
-          searchTitle: 'GOLDfren-Katalog durchsuchen',
-          adapter_title: 'GOLDfren Bremsadapter',
-          category: {
-            motorbike: 'Motorrad',
-            car: 'Auto',
-            kart: 'Kart',
-            bike: 'Fahrrad',
-            plane: 'Flugzeug',
-            industry: 'Industrie',
-            pad: 'Bremsbeläge',
-            brake: 'Bremsen',
-            adapter: 'Bremsadapter',
-            disc: 'Bremsscheibe',
-          },
-          datagrid: {
-            page: "Page",
-            search_placeholder: "Quick Search",
-            reset: "Reset search & Filters",
-            picture: "Picture",
-            vektor: "CAD drawing",
-            part_number: "Part number",
-            type: "Type",
-            diameter: "Diameter [mm]",
-            attached_type: "Attachment type",
-            brakepad_spacing: "Brakepad spacing [mm]",
-          },
-        }
-      }
-    },
+    interpolation: { escapeValue: false },
+    resources
   });
 
 export default i18n;
