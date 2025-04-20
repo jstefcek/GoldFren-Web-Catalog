@@ -2,7 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import Header from "/src/layouts/Header";
 import Home from "/src/pages/Home";
 import Adaptery from "./pages/Adaptery";
-import "/src/localization/language_setup"
+import "/src/localization/language_setup";
+import Footer from "./layouts/Footer"
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/adaptery" element={<Adaptery />} />
         </Routes>
       </main>
+      <Footer />
     </div>
   );
 }
