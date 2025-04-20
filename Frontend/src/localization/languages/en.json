@@ -14,6 +14,7 @@
   "prislusenstvi": "Accessories",
   "searchTitle": "Search Goldfren catalog",
   "adapter_title": "GOLDfren brake adapters",
+  "desticky_title": "GOLDfren brake pads",
   "footer_created": "Created by",
   "category": {
     "motorbike": "Motorbike",
@@ -48,6 +49,10 @@
     "from": "from",
     "entries": "items",
     "filtered_from": "filtered from",
-    "total_entries": "total entries"
+    "total_entries": "total entries",
+    "material_text": "Material",
+    "oem_cisla": "OEM production numbers",
+    "show_less": "show less",
+    "show_more": "show more"
   }
 }  

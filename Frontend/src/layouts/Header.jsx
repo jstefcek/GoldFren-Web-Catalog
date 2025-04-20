@@ -48,7 +48,7 @@ export default function Header() {
 
   // Languages setup with flags
   const languages = [
-    { code: "cs", name: "Čeština", flag: "🇨🇿" },
+    { code: "cs", name: "Česky", flag: "🇨🇿" },
     { code: "en", name: "English", flag: "🇬🇧" },
     { code: "de", name: "Deutsch", flag: "🇩🇪" },
   ];

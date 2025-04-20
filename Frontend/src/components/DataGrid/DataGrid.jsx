@@ -18,6 +18,7 @@ import { fetchCategoryData } from "../../hooks/DataGrid_APIHook";
 import { exportToCSV } from "./functions/ExportCSV";
 import { exportToExcel } from "./functions/ExportExcel";
 import { PrintData } from "./functions/ExportPrint";
+import { TextTruncate } from "./ui/Custom_TextTruncate";
 
 export default function DataGrid({ category = "", apiUrl = null }) {
   const [data, setData] = useState([]);
@@ -152,7 +153,6 @@ export default function DataGrid({ category = "", apiUrl = null }) {
       <div className="flex flex-col md:flex-row md:flex-wrap gap-4 justify-between mb-6 items-start md:items-center">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
           <div className="relative w-full sm:w-64">
-            
             {/* ICON - Search icon */}
             <Search
               className="absolute left-3 top-2.5 text-gray-400"
@@ -243,14 +243,15 @@ export default function DataGrid({ category = "", apiUrl = null }) {
             >
               {[10, 25, 50, 100].map((size) => (
                 <option key={size} value={size}>
-                  {size} {t("datagrid.entries")} {t("datagrid.on")} {t("datagrid.page")}
+                  {size} {t("datagrid.entries")} {t("datagrid.on")}{" "}
+                  {t("datagrid.page")}
                 </option>
               ))}
             </select>
           </div>
         </div>
       </div>
-      
+
       {/* When filter returns no data */}
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200 bg-white">
         {isLoading ? (
@@ -263,7 +264,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
               <Search size={48} />
             </div>
             <h3 className="text-lg font-medium text-gray-700">
-                {t("datagrid.no_results_found")}
+              {t("datagrid.no_results_found")}
             </h3>
             <p className="text-gray-500 mt-1">
               {search ? `No matches for "${search}"` : "No data available"}
@@ -314,7 +315,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                     }`}
                   >
                     <div className="flex items-center gap-1">
-                      {t(col.i18n)}
+                      {t(col.label)}
                       {col.sortable &&
                         (sortColumn === col.key ? (
                           <span className="text-red-600">
@@ -347,7 +348,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                       />
                     </div>
                   </td>
-                  
+
                   {columns.map((col) => (
                     <td key={col.key} className="px-4 py-3 text-gray-700">
                       {col.type === "image" && row[col.key] ? (
@@ -361,7 +362,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                             <img
                               src={row[col.key]}
                               alt={category + " image"}
-                              className="max-w-[60px] h-auto rounded shadow object-contain"
+                              className="max-w-[160px] h-auto rounded shadow object-contain"
                               loading="lazy"
                             />
                           </a>
@@ -377,7 +378,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                             <img
                               src={row[col.key]}
                               alt={category + " vektor"}
-                              className="max-w-[60px] h-auto rounded object-contain"
+                              className="max-w-[160px] h-auto rounded object-contain"
                               loading="lazy"
                             />
                           </a>
@@ -389,6 +390,11 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                         >
                           {row[col.key] ?? `${category}/${row.id || row.kod}`}
                         </a>
+                      ) : col.useTruncation ? (
+                        <TextTruncate
+                          text={row[col.key]}
+                          maxRows={col.maxRows || 3}
+                        />
                       ) : (
                         <span
                           className={
@@ -412,11 +418,16 @@ export default function DataGrid({ category = "", apiUrl = null }) {
           {filtered.length > 0 ? (
             <>
               {t("datagrid.showing")}{" "}
-              {Math.min((currentPage - 1) * pageSize + 1, filtered.length)} {t("datagrid.to")}{" "}
-              {Math.min(currentPage * pageSize, filtered.length)} {t("datagrid.of")}{" "}
-              {filtered.length} {t("datagrid.entries")}
+              {Math.min((currentPage - 1) * pageSize + 1, filtered.length)}{" "}
+              {t("datagrid.to")}{" "}
+              {Math.min(currentPage * pageSize, filtered.length)}{" "}
+              {t("datagrid.of")} {filtered.length} {t("datagrid.entries")}
               {filtered.length !== data.length && (
-                <span> ({t("datagrid.filtered_from")} {data.length} {t("datagrid.total_entries")})</span>
+                <span>
+                  {" "}
+                  ({t("datagrid.filtered_from")} {data.length}{" "}
+                  {t("datagrid.total_entries")})
+                </span>
               )}
             </>
           ) : (

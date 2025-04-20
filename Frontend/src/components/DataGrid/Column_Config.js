@@ -1,45 +1,129 @@
 export const columnsConfig = {
   adaptery: [
     { 
-        key: "obrazek", 
-        i18n: "datagrid.picture", 
-        type: "image",
-        sortable: false 
+      key: "obrazek", 
+      label: "datagrid.picture", 
+      type: "image",
+      sortable: false 
     },
     { 
-        key: "vektor", 
-        i18n: "datagrid.vektor", 
-        type: "vector",
-        sortable: false 
+      key: "vektor", 
+      label: "datagrid.vektor", 
+      type: "vector",
+      sortable: false 
     },
     {
       key: "cislo_dilu",
-      i18n: "datagrid.part_number",
+      label: "datagrid.part_number",
       sortable: true,
       filterable: true,
       link: true,
     },
     { 
-        key: "typ", 
-        i18n: "datagrid.type", 
-        sortable: true, 
-        filterable: true },
+      key: "typ", 
+      label: "datagrid.type", 
+      sortable: true, 
+      filterable: true 
+    },
     {
       key: "prumer",
-      i18n: "datagrid.diameter",
+      label: "datagrid.diameter",
       sortable: true,
       filterable: true,
       
     },
     {
       key: "typ_uchyceni",
-      i18n: "datagrid.attached_type",
+      label: "datagrid.attached_type",
       sortable: true,
       filterable: true,
     },
     {
       key: "roztec_brzdice",
-      i18n: "datagrid.brakepad_spacing",
+      label: "datagrid.brakepad_spacing",
+      sortable: true,
+      filterable: true,
+    },
+  ],
+  desticky: [
+    { 
+      key: "obrazek", 
+      label: "datagrid.picture", 
+      type: "image",
+      sortable: false 
+    },
+    { 
+      key: "vektor", 
+      label: "datagrid.vektor", 
+      type: "vector",
+      sortable: false 
+    },
+    {
+      key: "cislo_dilu",
+      label: "datagrid.part_number",
+      sortable: true,
+      filterable: true,
+      link: true,
+    },
+    {
+      key: "material_text",
+      label: "datagrid.material_text",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "oem_cisla",
+      label: "datagrid.oem_cisla",
+      sortable: true,
+      filterable: true,
+      maxRows: 3,
+      useTruncation: true,
+    },
+    {
+      key: "konkurence_sbs",
+      label: "SBS",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "konkurence_ebs",
+      label: "EBS",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "konkurence_ferodo",
+      label: "Ferodo",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "konkurence_a2z",
+      label: "A2Z",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "konkurence_rapco",
+      label: "Rapco",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "konkurence_grove",
+      label: "Grove",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "konkurence_cleveland",
+      label: "Cleveland",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "konkurence_matco",
+      label: "Matco",
       sortable: true,
       filterable: true,
     },

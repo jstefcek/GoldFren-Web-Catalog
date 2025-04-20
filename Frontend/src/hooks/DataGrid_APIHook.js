@@ -14,13 +14,14 @@ export const fetchCategoryData = async (category, apiUrl) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
       const result = await response.json();
       
       // Use category-specific transformers if available
       const transformer = dataTransformers[category];
       if (transformer) {
-        return transformer(result);
+        console.log("Vybran transforem model")
+        let result_data = transformer(result)
+        return result_data;
       }
       
       // Default transformation if no specific transformer is available
