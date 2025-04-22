@@ -3,6 +3,7 @@ import Header from "/src/layouts/Header";
 import Home from "/src/pages/Home";
 import Adaptery from "./pages/Adaptery";
 import Desticky from "./pages/Desticky";
+import Brzdice from "./pages/Brzdice";
 import "/src/localization/language_setup";
 import Footer from "./layouts/Footer"
 
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/adaptery" element={<Adaptery />} />
           <Route path="/desticky" element={<Desticky />} />
+          <Route path="/brzdice" element={<Brzdice />} />
         </Routes>
       </main>
       <Footer />

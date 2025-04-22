@@ -1,9 +1,9 @@
 export const dataTransformers = {
+    // Adaptery transformed data
     adaptery: (data) => {
-      if (data.data && Array.isArray(data.data)) {
+      if (Array.isArray(data.data)) {
         return data.data.map(item => ({
           ...item,
-          // Transform data
           id: item.kod,
           obrazek: item.obrazek ? "http://localhost/GoldFren_Media/adaptery/image/" + item.obrazek : null,
           vektor: item.vektor ? "http://localhost/GoldFren_Media/adaptery/vector/" + item.vektor : null,
@@ -17,12 +17,29 @@ export const dataTransformers = {
       }
       return [];
     },
+
+    // Brzdice transformed data
+    brzdice: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/brzdice/image/" + item.obrazek : null,
+          vektor: item.vektor ? "http://localhost/GoldFren_Media/brzdice/vector/" + item.vektor : null,
+          cislo_dilu: item.cislo_dilu,
+          typ_uchyceni: item.typ_uchyceni,
+          pocet_pistku: item.pocet_pistku,
+          popis: item.popis,
+        }));
+      }
+      return [];
+    },
     
+    // Desticky transformed data
     desticky: (data) => {
       if (Array.isArray(data)) {
         return data.map(item => ({
           ...item,
-          // Transform data
           id: item.kod,
           obrazek: item.obrazek ? "http://localhost/GoldFren_Media/desticky/image/" + item.obrazek : null,
           // TODO: stahnout vectory z c41 DB

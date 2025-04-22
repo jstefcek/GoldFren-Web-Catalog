@@ -15,6 +15,7 @@
     "searchTitle": "Vyhledávání v katalogu GOLDfren",
     "adapter_title": "Brzdové adaptéry GOLDfren",
     "desticky_title": "Brzdové destičky GOLDfren",
+    "brzdice_title": "Brzdové třmeny GOLDfren",
     "footer_created": "Vytvořil",
     "category": {
       "motorbike": "Motorka",
@@ -34,7 +35,7 @@
       "reset": "Resetovat filtry",
       "picture": "Obrázek",
       "vektor": "Nákres",
-      "part_number": "Číslu dílu",
+      "part_number": "Číslo dílu",
       "type": "Typ",
       "diameter": "Průměr [mm]",
       "attached_type": "Typ uchycení",
@@ -53,6 +54,8 @@
       "material_text": "Materiál",
       "oem_cisla": "OEM výrobní čísla",
       "show_less": "ukázat méně",
-      "show_more": "ukázat více"
+      "show_more": "ukázat více",
+      "pistku_count": "Počet pístku",
+      "description": "Popis"
     }
 }  

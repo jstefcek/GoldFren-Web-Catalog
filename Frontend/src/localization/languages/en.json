@@ -53,6 +53,8 @@
     "material_text": "Material",
     "oem_cisla": "OEM production numbers",
     "show_less": "show less",
-    "show_more": "show more"
+    "show_more": "show more",
+    "pistku_count": "Piston number",
+    "description": "Description"
   }
 }  

@@ -15,7 +15,11 @@ from GoldFrenAPI.Services.Service_utils import (
 # Function to get all brzdice
 def get_brzdice(limit: int = None, page: int = None, states: bool = False):
     # Get all items from the database
-    records = get_all_items(sql_view="v_brzdice_detail", limit=limit, page=page, states=states)
+    query = """
+        SELECT *
+        FROM v_brzdice_detail"""
+    query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+    records = get_records(sql_query=query, limit=limit, page=page)
     brzdice = []
     
     # Iterate through records
