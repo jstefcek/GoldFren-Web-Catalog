@@ -11,6 +11,7 @@ from GoldFrenAPI.Services.Service_utils import (
     insert_record,
     get_records
 )
+from GoldFrenAPI.utils.utils import prepare_sql_filters
 
 # Function to get all brzdice
 def get_brzdice(limit: int = None, page: int = None, states: bool = False):
@@ -117,27 +118,17 @@ def get_filtered_brzdice(limit: int = None, page: int = None, states: bool = Fal
     SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, typ_uchyceni FROM v_vozidlo_brzdic
     """
     params = []
-    filter_clauses = []
+    filter_condition = []
 
     # Apply publication filter
-    filter_clauses.append("publikovat in (0,1)" if states else "Publikovat = 1")
+    filter_condition.append("publikovat in (0,1)" if states else "Publikovat = 1")
 
     # Dynamic filters from dictionary
-    if filters:
-        for column, value in filters.items():
-            if isinstance(value, tuple) and len(value) == 2:
-                # Check if the both values are not None
-                if value[0] is not None and value[1] is not None:
-                    filter_clauses.append(f"{column} BETWEEN %s AND %s")
-                    params.extend(value)
-            else:
-                if value is not None:
-                    filter_clauses.append(f"{column} = %s")
-                    params.append(value)
+    filter_condition, params = prepare_sql_filters(filters=filters, filter_condition=filter_condition, params=params)
 
     # Append filters to base query
-    if filter_clauses:
-        query += " WHERE " + " AND ".join(filter_clauses)
+    if filter_condition:
+        query += " WHERE " + " AND ".join(filter_condition)
     
     # Execute query and get records
     records = get_records(sql_query=query, params=params, limit=limit, page=page)

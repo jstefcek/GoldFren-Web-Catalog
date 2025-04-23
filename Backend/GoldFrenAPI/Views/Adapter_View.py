@@ -53,7 +53,6 @@ def get_adapters(request):
         
         # Construct next and previous page URLs
         next_url, prev_url = get_pagination_urls(request, limit, page, total_adapters)
-        
         return JsonResponse({
             "count": total_adapters,
             "next": next_url,
@@ -87,7 +86,7 @@ def get_filtered_adapters_view(request):
         pozice = request.GET.get("pozice", None)
         prumer_min = request.GET.get("prumer_min", None)
         prumer_max = request.GET.get("prumer_max", None)
-        uchyceni = request.GET.get("uchyceni", None)
+        uchyceni = request.GET.get("typ_uchyceni", None)
         roztec_min = request.GET.get("roztec_min", None)
         roztec_max = request.GET.get("roztec_max", None)
         
@@ -103,7 +102,7 @@ def get_filtered_adapters_view(request):
         filters = {
             "pozice": pozice,
             "prumer": (prumer_min, prumer_max),
-            "uchyceni": uchyceni,
+            "typ_uchyceni": uchyceni,
             "roztec_brzdic": (roztec_min, roztec_max)
         }
         

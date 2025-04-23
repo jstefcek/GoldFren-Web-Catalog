@@ -129,6 +129,7 @@ limit 18446744073709551615;
 -- Create view for vozidlo desticky data
 CREATE OR REPLACE VIEW v_vozidlo_desticka AS
 select
+	de.kod,
 	de.cislo_dilu as cislo_dilu,
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
@@ -174,8 +175,6 @@ select
             	) as oznaceni_vozidla,
 	vz.typ as typ,
 	vz.objem as objem,
-	ad.obrazek,
-	ad.vektor,
 	de.obrazek,
 	de.vektor,
 	de.konkurence_sbs, 

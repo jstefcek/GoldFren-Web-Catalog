@@ -37,8 +37,8 @@ export const dataTransformers = {
     
     // Desticky transformed data
     desticky: (data) => {
-      if (Array.isArray(data)) {
-        return data.map(item => ({
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
           ...item,
           id: item.kod,
           obrazek: item.obrazek ? "http://localhost/GoldFren_Media/desticky/image/" + item.obrazek : null,

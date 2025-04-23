@@ -6,7 +6,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from django.http import JsonResponse, HttpResponseBadRequest
-from GoldFrenAPI.utils.utils import get_pagination
+from GoldFrenAPI.utils.utils import (
+    get_pagination,
+    get_total_count,
+    get_pagination_urls                         
+)
 from GoldFrenAPI.Services.Desticka_Service import (
     get_desticky as get_all_desticky,
     get_desticka,
@@ -32,12 +36,26 @@ def get_desticky(request):
         if limit == 0:
             desticky_objects = get_all_desticky(states=states)
             desticky = [desticka.to_dict() for desticka in desticky_objects]
-            return JsonResponse(desticky, status=200, safe=False)
+            return JsonResponse({
+                "count": len(desticky),
+                "data": desticky
+            }, status=200)
+            
+        # Get adapters count
+        total_desticky = get_total_count("d_desticka", states=states)
         
         # If limit is set to a number, return paginated adapters
         desticky_objects = get_all_desticky(limit=limit, page=page, states=states)
         desticky = [desticka.to_dict() for desticka in desticky_objects]
-        return JsonResponse(desticky, status=200, safe=False)
+        
+        # Construct next and previous page URLs
+        next_url, prev_url = get_pagination_urls(request, limit, page, total_desticky)
+        return JsonResponse({
+            "count": total_desticky,
+            "next": next_url,
+            "previous": prev_url,
+            "data": desticky
+        }, status=200)
     
     # Handle pagination errors
     except ValueError:

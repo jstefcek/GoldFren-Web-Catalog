@@ -5,16 +5,23 @@ from GoldFrenAPI.Models.Desticky import Desticka, MaterialInfo, KonkurenceDetail
 from datetime import datetime
 from GoldFrenAPI.Services.Service_utils import (
     set_publication_state, 
-    get_all_items,
     get_item_by_id,
     execute_update,
-    insert_record
+    insert_record,
+    get_records
+)
+from GoldFrenAPI.utils.utils import (
+    prepare_sql_filters
 )
 
 # Function to get all desticka records
 def get_desticky(limit: int = None, page: int = None, states: bool = False):
     # Get all items from the database
-    records = get_all_items(sql_view="v_desticka_detail", limit=limit, page=page, states=states)
+    query = """
+        SELECT *
+        FROM v_desticka_detail"""
+    query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+    records = get_records(sql_query=query, limit=limit, page=page)
     desticky = []
 
     for record in records:
@@ -192,3 +199,44 @@ def create_desticka(data: dict):
 def desticka_publication(desticka_id: int, publikovat: int):
     state = set_publication_state(sql_table="d_desticka", publikovat=publikovat, item_id=desticka_id)
     return state
+
+# Find specific brzdic by given parameters
+def get_filtered_desticky(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, typ_uchyceni FROM v_vozidlo_desticka
+    """
+    params = []
+    filter_condition = []
+
+    # Apply publication filter
+    filter_condition.append("publikovat in (0,1)" if states else "Publikovat = 1")
+
+    # Dynamic filters from dictionary
+    filter_condition, params = prepare_sql_filters(filters=filters, filter_condition=filter_condition, params=params)
+
+    # Append filters to base query
+    if filter_condition:
+        query += " WHERE " + " AND ".join(filter_condition)
+    
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+    
+    desticky = []
+    for record in records:
+        desticka = {
+            "kod": record["kod"],
+            "cislo_dilu": record["cislo_dilu"],
+            "obrazek": record["obrazek"],
+            "vektor": record["vektor"],
+            "pozice": record["pozice"],
+            "pocet_pistku": record["pocet_pistku"],
+            "typ_uchyceni": record["typ_uchyceni"],
+        }
+        
+        desticky.append(desticka)
+    
+    # Return list of matching brzdice dictionaries
+    return desticky if desticky else None

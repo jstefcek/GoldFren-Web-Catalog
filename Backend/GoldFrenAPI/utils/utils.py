@@ -107,3 +107,41 @@ def get_pagination_urls(request, limit: int, page: int, total_count: int):
     next_url = f"{base_url}?limit={limit}&page={next_page}" if next_page else None
     prev_url = f"{base_url}?limit={limit}&page={previous_page}" if previous_page else None
     return next_url, prev_url
+
+def prepare_sql_filters(filters: dict, filter_condition: list, params: list):
+    """
+    This function prepare sql filters based on type of instance
+    """
+    # Check for filters and return 
+    if filters:
+        for column, value in filters.items():
+            # Check for tuple and then set it for minimum and maximum value
+            if isinstance(value, tuple) and len(value) == 2:
+                if value[0] is not None and value[1] is not None:
+                    filter_condition.append(f"{column} BETWEEN %s AND %s")
+                    params.extend(value)
+                    
+            # Check for list value and then add find is set 
+            if isinstance(value, list) and len(value) > 0:
+                print('')
+                    
+            # Checks for dict value and then check for type of condition
+            if isinstance(value, dict) and len(value) > 0:
+                # if find_in_set is set then use this condition
+                if value == 'find_in_set':
+                    for key, col_value in value.items():
+                        filter_condition.append = f"FIND_IN_SET(%s , REPLACE({column}, ' ', '')) > 0"
+                        params.append(col_value)
+                    
+                # If we should search value in multiple columns
+                elif value == 'search_in_columns':
+                    print('')
+            
+            # Just add column condition and param
+            else:
+                if value is not None:
+                    filter_condition.append(f"{column} = %s")
+                    params.append(value)
+       
+    # Return filter condition and params        
+    return filter_condition, params
