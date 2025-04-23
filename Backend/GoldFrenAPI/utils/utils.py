@@ -52,33 +52,16 @@ def get_total_count_with_params(query: str, states: bool, filters: dict = None) 
         # Execute SQL query to get the count
         conn = connect()
         with conn.cursor() as cursor:
-            filter_clauses = []
+            filter_condition = []
             parameters = []
-            
-            # Publication filter
-            if states:
-                filter_clauses.append("publikovat in (0,1)")
-            else:
-                filter_clauses.append("publikovat = 1")
-            
-            # Dynamic filters from the filters dictionay, if provided
-            if filters:
-                for column, value in filters.items():
-                    if isinstance(value, tuple) and len(value) == 2:
-                        if value[0] is not None and value[1] is not None:
-                            filter_clauses.append(f"{column} BETWEEN %s AND %s")
-                            parameters.extend(value)
-                    else:
-                        if value is not None:
-                            filter_clauses.append(f"{column} = %s")
-                            parameters.append(value)
-            
-            # Append filters to the query
-            if filter_clauses:
-                if "WHERE" in query.upper():
-                    query += " AND " + " AND ".join(filter_clauses)
-                else:
-                    query += " WHERE " + " AND ".join(filter_clauses)
+
+            # Apply publication filter 
+            filter_condition.append("publikovat in (0,1)" if states else "Publikovat = 1")
+            filter_condition, parameters = prepare_sql_filters(filters=filters, filter_condition=filter_condition, params=parameters)
+
+            # Append filters to base query
+            if filter_condition:
+                query += " WHERE " + " AND ".join(filter_condition)
             
             # Wrap query and return count
             count_query = f"SELECT COUNT(*) as pocet FROM ({query}) AS sub"
@@ -123,25 +106,20 @@ def prepare_sql_filters(filters: dict, filter_condition: list, params: list):
                     
             # Check for list value and then add find is set 
             if isinstance(value, list) and len(value) > 0:
-                print('')
+                for col_value in value:
+                    filter_condition.append(f"FIND_IN_SET(REPLACE(%s, ' ', ''), REPLACE({column}, ' ', '')) > 0")
+                    params.append(col_value)
                     
-            # Checks for dict value and then check for type of condition
-            if isinstance(value, dict) and len(value) > 0:
-                # if find_in_set is set then use this condition
-                if value == 'find_in_set':
-                    for key, col_value in value.items():
-                        filter_condition.append = f"FIND_IN_SET(%s , REPLACE({column}, ' ', '')) > 0"
-                        params.append(col_value)
-                    
-                # If we should search value in multiple columns
-                elif value == 'search_in_columns':
-                    print('')
+            # Find in multiple columns
+            if isinstance(value, dict) and value["search_value"] is not None:
+                filter_condition.append(f"%s IN ({value['search_in_columns']})")
+                params.append(value["search_value"])
             
-            # Just add column condition and param
+            # Just add column condition and param 
             else:
-                if value is not None:
+                if value is not None and not isinstance(value, dict) and not isinstance(value, list):
                     filter_condition.append(f"{column} = %s")
                     params.append(value)
        
-    # Return filter condition and params        
+    # Return filter condition and params  
     return filter_condition, params

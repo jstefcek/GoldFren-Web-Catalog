@@ -204,15 +204,16 @@ def desticka_publication(desticka_id: int, publikovat: int):
 def get_filtered_desticky(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, typ_uchyceni FROM v_vozidlo_desticka
+    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, material, konkurence_sbs, konkurence_ebc, konkurence_ferodo, 
+    konkurence_a2z, konkurence_rapco, konkurence_grove, konkurence_cleveland, konkurence_matco, 
+    oem_cisla, pozice
+    FROM v_vozidlo_desticka
     """
     params = []
     filter_condition = []
 
-    # Apply publication filter
+    # Apply publication filter 
     filter_condition.append("publikovat in (0,1)" if states else "Publikovat = 1")
-
-    # Dynamic filters from dictionary
     filter_condition, params = prepare_sql_filters(filters=filters, filter_condition=filter_condition, params=params)
 
     # Append filters to base query
@@ -220,10 +221,12 @@ def get_filtered_desticky(limit: int = None, page: int = None, states: bool = Fa
         query += " WHERE " + " AND ".join(filter_condition)
     
     # Execute query and get records
+    print(query)
     records = get_records(sql_query=query, params=params, limit=limit, page=page)
     if not records:
         return None
     
+    # Prepare data and return if someting found
     desticky = []
     for record in records:
         desticka = {
@@ -232,10 +235,17 @@ def get_filtered_desticky(limit: int = None, page: int = None, states: bool = Fa
             "obrazek": record["obrazek"],
             "vektor": record["vektor"],
             "pozice": record["pozice"],
-            "pocet_pistku": record["pocet_pistku"],
-            "typ_uchyceni": record["typ_uchyceni"],
+            "oem_cisla": record["oem_cisla"],
+            "material": record["material"],
+            "konkurence_sbs": record["konkurence_sbs"],
+            "konkurence_ebc": record["konkurence_ebc"],
+            "konkurence_ferodo": record["konkurence_ferodo"],
+            "konkurence_a2z": record["konkurence_a2z"],
+            "konkurence_rapco": record["konkurence_rapco"],
+            "konkurence_grove": record["konkurence_grove"],
+            "konkurence_cleveland": record["konkurence_cleveland"],
+            "konkurence_matco": record["konkurence_matco"],
         }
-        
         desticky.append(desticka)
     
     # Return list of matching brzdice dictionaries
