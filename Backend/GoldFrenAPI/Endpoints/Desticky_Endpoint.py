@@ -6,7 +6,8 @@ from GoldFrenAPI.Views.Desticka_View import (
     update_desticka_view,
     create_desticka_view,
     desticka_publication_view,
-    get_filtered_desticky_view
+    get_filtered_desticky_view,
+    get_vozidla_for_desticka_view
 )
 
 # URL patterns
@@ -17,4 +18,5 @@ urlpatterns = [
     path("create", create_desticka_view, name="create_desticka"),
     path("publication/<int:desticka_id>", desticka_publication_view, name="desticka_publication"),
     path("filter", get_filtered_desticky_view, name="get_filtered_desticky_view"),
+    path("vozidla", get_vozidla_for_desticka_view, name="get_vozidla_for_desticka_view"),
 ]

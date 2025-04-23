@@ -159,7 +159,7 @@ def get_vozidla_for_brzdic_view(request):
         # If limit is set to 0 return all adapters
         if limit == 0:
             brzdice_objects = get_vozidla_for_brzdic(brzdic_id=brzdic_id)
-            adapters = [brzdic for brzdic in brzdice_objects]
+            adapters = [brzdic.to_dict() for brzdic in brzdice_objects]
             return JsonResponse({
                 "count": len(adapters),
                 "data": adapters

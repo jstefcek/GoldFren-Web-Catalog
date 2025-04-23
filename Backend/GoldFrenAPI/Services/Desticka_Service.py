@@ -1,7 +1,7 @@
 # Business logic for the Desticka Service
 
 # Imports
-from GoldFrenAPI.Models.Desticky import Desticka, MaterialInfo, KonkurenceDetail
+from GoldFrenAPI.Models.Desticky import Desticka, MaterialInfo, KonkurenceDetail, VozidloDesticka
 from datetime import datetime
 from GoldFrenAPI.Services.Service_utils import (
     set_publication_state, 
@@ -221,7 +221,6 @@ def get_filtered_desticky(limit: int = None, page: int = None, states: bool = Fa
         query += " WHERE " + " AND ".join(filter_condition)
     
     # Execute query and get records
-    print(query)
     records = get_records(sql_query=query, params=params, limit=limit, page=page)
     if not records:
         return None
@@ -248,5 +247,58 @@ def get_filtered_desticky(limit: int = None, page: int = None, states: bool = Fa
         }
         desticky.append(desticka)
     
-    # Return list of matching brzdice dictionaries
+    # Return list of matching desticky dictionaries
+    return desticky if desticky else None
+
+# Get vozidla for specific desticka
+def get_vozidla_for_desticka(limit: int = None, page: int = None, states: bool = False, desticka_id: int = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT *
+    FROM v_vozidlo_desticka
+    WHERE kod = %s
+    """
+    params = [desticka_id]
+    query += " AND publikovat in (0,1)" if states else " AND Publikovat = 1"
+
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+
+    desticky = []
+    for record in records:
+        desticka = VozidloDesticka(
+            kod=record["kod"],
+            cislo_dilu=record["cislo_dilu"],
+            kategorie=record["kategorie"],
+            subkategorie=record["subkategorie"],
+            vyrobce=record["vyrobce"],
+            vozidlo=record["vozidlo"],
+            oznaceni_vozidla=record["oznaceni_vozidla"],
+            typ=record["typ"],
+            objem=record["objem"],
+            obrazek=record["obrazek"],
+            vektor=record["vektor"],
+            konkurence_sbs=record["konkurence_sbs"],
+            konkurence_ebc=record["konkurence_ebc"],
+            konkurence_ferodo=record["konkurence_ferodo"],
+            konkurence_a2z=record["konkurence_a2z"],
+            konkurence_rapco=record["konkurence_rapco"],
+            konkurence_grove=record["konkurence_grove"],
+            konkurence_cleveland=record["konkurence_cleveland"],
+            konkurence_matco=record["konkurence_matco"],
+            material=record["material"],
+            oem_cisla=record["oem_cisla"],
+            specialni_oznaceni=record["specialni_oznaceni"],
+            rok_od=record["rok_od"],
+            rok_do=record["rok_do"],
+            pozice=record["pozice"],
+            publikovat=bool(record["publikovat"]) if record["publikovat"] is not None else None
+        )
+
+        # Append desticka object to list
+        desticky.append(desticka)
+        
+    # Return list of matching desticky objects
     return desticky if desticky else None

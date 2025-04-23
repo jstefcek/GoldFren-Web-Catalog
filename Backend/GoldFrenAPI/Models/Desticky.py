@@ -76,8 +76,9 @@ class Desticka:
         }
         
 class VozidloDesticka():
-    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, obrazek, vektor, konkurence_sbs, konkurence_ebc, konkurence_ferodo, konkurence_a2z, 
+    def __init__(self, kod, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, obrazek, vektor, konkurence_sbs, konkurence_ebc, konkurence_ferodo, konkurence_a2z, 
                  konkurence_rapco, konkurence_grove, konkurence_cleveland, konkurence_matco, material, oem_cisla, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+        self.kod = kod
         self.cislo_dilu = cislo_dilu
         self.kategorie = kategorie
         self.subkategorie = subkategorie

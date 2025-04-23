@@ -18,7 +18,8 @@ from GoldFrenAPI.Services.Desticka_Service import (
     update_desticka,
     create_desticka,
     desticka_publication,
-    get_filtered_desticky
+    get_filtered_desticky,
+    get_vozidla_for_desticka
 )
 
 # Function to get all desticky
@@ -34,7 +35,7 @@ def get_desticky(request):
         # Try to get state parameter from request
         states = bool(request.GET.get("states", False))
     
-        # If limit is set to 0 return all adapters
+        # If limit is set to 0 return all destickas
         if limit == 0:
             desticky_objects = get_all_desticky(states=states)
             desticky = [desticka.to_dict() for desticka in desticky_objects]
@@ -43,10 +44,10 @@ def get_desticky(request):
                 "data": desticky
             }, status=200)
             
-        # Get adapters count
+        # Get destickas count
         total_desticky = get_total_count("d_desticka", states=states)
         
-        # If limit is set to a number, return paginated adapters
+        # If limit is set to a number, return paginated destickas
         desticky_objects = get_all_desticky(limit=limit, page=page, states=states)
         desticky = [desticka.to_dict() for desticka in desticky_objects]
         
@@ -86,8 +87,6 @@ def get_filtered_desticky_view(request):
         material = request.GET.get("material", None)
         oem_cisla = request.GET.get("oem_cisla", None)
         
-        print(material)
-        
         # Store params to dict
         filters = {
             "konkurence": {"search_in_columns": "konkurence_a2z, konkurence_cleveland, konkurence_ebc, konkurence_ferodo, konkurence_grove, konkurence_matco, konkurence_rapco, konkurence_sbs",
@@ -96,15 +95,13 @@ def get_filtered_desticky_view(request):
             "oem_cisla": [oem_cisla] if oem_cisla else None
         }
         
-        print(filters)
-        
         # Get pagination parameters from request 
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
         states = bool(request.GET.get("states", False))
     
-        # If limit is set to 0 return all adapters
+        # If limit is set to 0 return all destickas
         if limit == 0:
             desticky_objects = get_filtered_desticky(states=states, filters=filters)
             desticky = [desticka for desticka in desticky_objects]
@@ -113,12 +110,12 @@ def get_filtered_desticky_view(request):
                 "data": desticky
             }, status=200)
         
-        # If limit is set to a number, return paginated adapters
+        # If limit is set to a number, return paginated destickas
         desticky_objects = get_filtered_desticky(limit=limit, page=page, states=states, filters=filters)
         if desticky_objects:
             desticky = [desticka for desticka in desticky_objects]
             
-            # Get filtered adapters count
+            # Get filtered destickas count
             total_desticky = get_total_count_with_params("""SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, material, konkurence_sbs, konkurence_ebc, konkurence_ferodo, 
                                                             konkurence_a2z, konkurence_rapco, konkurence_grove, konkurence_cleveland, konkurence_matco, 
                                                             oem_cisla, pozice
@@ -140,6 +137,55 @@ def get_filtered_desticky_view(request):
     # Handle pagination errors
     except ValueError:
         return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
+    
+# Function to get vozidla for a specific desticka
+@api_view(['GET'])
+def get_vozidla_for_desticka_view(request):
+    """
+    This function returns vozidla for a specific desticka.
+    """
+    try:
+        # Get parameters from request
+        desticka_id = request.GET.get("desticka_id", None)
+        
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+        
+        # If limit is set to 0 return all desticka
+        if limit == 0:
+            vozidla_objects = get_vozidla_for_desticka(desticka_id=desticka_id)
+            vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
+            return JsonResponse({
+                "count": len(vozidla),
+                "data": vozidla
+            }, status=200)
+        
+        # Get vozidla for the desticka
+        vozidla_objects = get_vozidla_for_desticka(limit=limit, page=page, states=states, desticka_id=desticka_id)
+        if vozidla_objects:
+            vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
+        
+            # Get filtered destickas count
+            total_destickas = get_total_count_with_params("SELECT * FROM v_vozidlo_desticka",
+                                                        states=states, filters={"kod": desticka_id})
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_destickas)
+            
+            return JsonResponse({
+                "count": total_destickas,
+                "next": next_url,
+                "previous": prev_url,
+                "data": vozidla
+            }, status=200)
+            
+        return JsonResponse({"error": "No vozidla found for this desticka"}, status=404)
+    
+    except Exception as ex:
+        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
 
 # Function to update an desticka 
 @api_view(['PUT'])
@@ -162,7 +208,7 @@ def update_desticka_view(request, desticka_id):
         user = request.user
         data["aktualizoval"] = user.id
         
-        # Update adapter
+        # Update desticka
         try:
             success = update_desticka(desticka_id, data)
         except Exception as ex:
@@ -170,7 +216,7 @@ def update_desticka_view(request, desticka_id):
 
         if success:
             return JsonResponse({"message": "Desticka updated successfully"}, status=200)
-        return JsonResponse({"error": "Failed to update adapter"}, status=500)
+        return JsonResponse({"error": "Failed to update desticka"}, status=500)
     except Exception as ex:
         raise ex
 
