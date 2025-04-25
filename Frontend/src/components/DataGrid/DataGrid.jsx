@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { columnsConfig } from "./Column_Config";
 import { useTranslation } from "react-i18next";
-import { fetchCategoryData } from "../../hooks/DataGrid_APIHook";
+import { fetchData } from "../../hooks/Data_APIHook";
 import { exportToCSV } from "./functions/ExportCSV";
 import { exportToExcel } from "./functions/ExportExcel";
 import { PrintData } from "./functions/ExportPrint";
@@ -40,7 +40,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
 
       try {
         // Use the fetchCategoryData helper to get data for the specific category
-        const result = await fetchCategoryData(category, apiUrl);
+        const result = await fetchData(category, apiUrl);
         setData(result);
       } catch (error) {
         console.error("Error loading data:", error);

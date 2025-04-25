@@ -6,7 +6,7 @@ function Adaptery() {
   const { t } = useTranslation();
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto">
       <h1 className="text-4xl font-bold mb-4 ml-6 text-left mt-4">{t('adapter_title')}</h1>
       <DataGrid category="adaptery" apiUrl={"http://localhost/api/goldfren/internal/adaptery?limit=0"} />
     </div>

@@ -1,6 +1,6 @@
 import { dataTransformers } from "./DataTransformers/DataTransformer"
 
-export const fetchCategoryData = async (category, apiUrl) => {
+export const fetchData = async (category, apiUrl) => {
     // If no API URL is provided, return empty data
     if (!apiUrl) {
       console.warn('No API URL provided for category:', category);
@@ -19,7 +19,6 @@ export const fetchCategoryData = async (category, apiUrl) => {
       // Use category-specific transformers if available
       const transformer = dataTransformers[category];
       if (transformer) {
-        console.log("Vybran transforem model")
         let result_data = transformer(result)
         return result_data;
       }
