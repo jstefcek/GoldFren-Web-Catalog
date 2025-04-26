@@ -64,7 +64,6 @@ export const dataTransformers = {
       return [];
     },
 
-    // Desticka detial transformed data
     // Desticka detail transformed data
     desticka_detail: (data) => {
       if (data) {
@@ -92,6 +91,25 @@ export const dataTransformers = {
         };
       }
       return {};
+    },
+
+    // Desticka vozidla transformed data
+    desticka_vozidla: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          vyrobce: item.vyrobce,
+          kategorie: item.kategorie,
+          subkategorie: item.subkategorie,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+          objem: item.objem,
+          rok_od: item.rok_od,
+          rok_do: item.rok_do,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
     },
     
   };

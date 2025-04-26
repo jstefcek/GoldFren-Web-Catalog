@@ -260,6 +260,7 @@ def get_vozidla_for_desticka(limit: int = None, page: int = None, states: bool =
     """
     params = [desticka_id]
     query += " AND publikovat in (0,1)" if states else " AND Publikovat = 1"
+    query += " ORDER BY vyrobce ASC, oznaceni_vozidla ASC"
 
     # Execute query and get records
     records = get_records(sql_query=query, params=params, limit=limit, page=page)

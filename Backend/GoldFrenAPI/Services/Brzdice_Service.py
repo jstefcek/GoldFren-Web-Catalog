@@ -51,7 +51,7 @@ def get_brzdice(limit: int = None, page: int = None, states: bool = False):
 # Function to get a single brzidc by ID
 def get_brzdic(brzdic_id: int):
     # Get item by ID from the database
-    record = get_item_by_id(sql_view="v_adapter_detail", item_id=brzdic_id)
+    record = get_item_by_id(sql_view="v_brzdice_detail", item_id=brzdic_id)
         
     # Check if record exists
     if record:

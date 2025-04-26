@@ -66,6 +66,14 @@
     "vehicle_notload_text": "Click the button above to load compatible vehicles",
     "no_compatibility": "No compatibility found",
     "no_material": "No material information available",
-    "no_drawing": "No CAD drawing available"
+    "no_drawing": "No CAD drawing available",
+    "manufacturer": "Manufacturer",
+    "category": "Vehicle category",
+    "subcategory": "Subcategory",
+    "vehicle_type": "Vehicle type",
+    "volume": "Volume [cm3]",
+    "year_from": "Year of manufacture from",
+    "year_to": "Year of manufacture to",
+    "position": "Part position"
   }
 }  

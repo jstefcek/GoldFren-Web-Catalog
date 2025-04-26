@@ -67,7 +67,15 @@
       "vehicle_notload_text": "Kliknutím na tlačítko výše načtete kompatibilní vozidla",
       "no_compatibility": "Žádná kompatibilita",
       "no_material": "Informace o materiálu nejsou k dispozici",
-      "no_drawing": "Žádný dostupný výkres"
+      "no_drawing": "Žádný dostupný výkres",
+      "manufacturer": "Výrobce",
+      "category": "Kategorie vozidla",
+      "subcategory": "Subkategorie",
+      "vehicle_type": "Označení",
+      "volume": "Objem [cm3]",
+      "year_from": "Rok výroby od",
+      "year_to": "Rok výroby do",
+      "position": "Pozice dílu"
     },
     "error": {
       "loading_failed": "Načítání selhalo",

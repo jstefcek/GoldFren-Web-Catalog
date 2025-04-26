@@ -3,6 +3,8 @@ import { Car, Bike, Plane, AlertCircle, Loader2, ArrowLeft, ChevronDown, Chevron
 import { fetchData } from "../../hooks/Data_APIHook";
 import { useTranslation } from "react-i18next";
 import { NavigationStrip } from "../ui/Custom_NavigationStrip";
+import DataGrid from "../DataGrid/DataGrid";
+const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function BrakePadDetail({ category = "", apiUrl = null }) {
   // Get the ID from the URL (would work with React Router)
@@ -116,6 +118,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
         {t("brake_pad_title")} - {displayData(padData.cislo_dilu)}
       </h1>
 
+      {/* Top sections in a grid */}
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
         
         {/* Left column with image and vector drawing */}
@@ -174,7 +177,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                   {displayedOemNumbers.map((code, index) => (
                     <span
                       key={index}
-                      className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-2"
+                      className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-1"
                     >
                       {code}
                     </span>
@@ -184,7 +187,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                 {shouldShowOemToggle && (
                   <button 
                     onClick={() => setShowAllOem(!showAllOem)}
-                    className="flex items-center justify-center w-full mt-2 py-2 text-sm text-blue-600 hover:text-blue-800 font-medium border border-blue-200 rounded-md hover:bg-blue-50 transition-colors"
+                    className="flex items-center justify-center w-full mt-4 py-2 text-sm text-blue-600 hover:text-blue-800 font-medium border border-blue-200 rounded-md hover:bg-blue-50 transition-colors"
                   >
                     {showAllOem ? (
                       <>
@@ -299,7 +302,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
         {showVehicles ? (
           <div className="mt-4">
-            <DataGrid category="vehicles" apiUrl={`/api/compatibility/${id}`} />
+            <DataGrid category="desticka_vozidla" apiUrl={`${serverUrl}/api/goldfren/internal/desticky/vozidla?limit=0&desticka_id=${padData.id}`} />
           </div>
         ) : (
           <div className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-md">
@@ -314,102 +317,6 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// Mock implementation of DataGrid component to make the code complete
-function DataGrid({ category, apiUrl }) {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    const loadVehicleData = async () => {
-      setLoading(true);
-      try {
-        const result = await fetchData(category, apiUrl);
-        setData(result || []);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error loading vehicle data:", error);
-        setError(t("error.loading_failed") || "Failed to load vehicle compatibility data");
-        setLoading(false);
-      }
-    };
-
-    loadVehicleData();
-  }, [category, apiUrl, t]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-40">
-        <Loader2 className="h-6 w-6 text-red-600 animate-spin mr-2" />
-        <p>{t("loading.vehicles") || "Loading vehicle compatibility..."}</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-4 bg-red-50 rounded-md border border-red-200">
-        <div className="flex items-center text-red-600 mb-2">
-          <AlertCircle className="h-5 w-5 mr-2" />
-          <p className="font-medium">{error}</p>
-        </div>
-        <button 
-          onClick={() => window.location.reload()}
-          className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
-        >
-          {t("button.try_again") || "Try again"}
-        </button>
-      </div>
-    );
-  }
-
-  if (!data.length) {
-    return (
-      <div className="p-6 bg-gray-50 rounded-md text-center">
-        <p className="text-gray-600">{t("datagrid.no_vehicles") || "No compatible vehicles found"}</p>
-      </div>
-    );
-  }
-
-  // Render actual vehicle data grid here
-  return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full text-sm text-left">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-sm font-semibold text-gray-700">
-              {t("datagrid.vehicle_make")}
-            </th>
-            <th className="px-6 py-3 text-sm font-semibold text-gray-700">
-              {t("datagrid.vehicle_model")}
-            </th>
-            <th className="px-6 py-3 text-sm font-semibold text-gray-700">
-              {t("datagrid.production_year")}
-            </th>
-            <th className="px-6 py-3 text-sm font-semibold text-gray-700">
-              {t("datagrid.engine")}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((vehicle, index) => (
-            <tr
-              key={index}
-              className="border-t hover:bg-gray-50 transition-colors"
-            >
-              <td className="px-6 py-3">{vehicle.make || "-"}</td>
-              <td className="px-6 py-3">{vehicle.model || "-"}</td>
-              <td className="px-6 py-3">{vehicle.year || "-"}</td>
-              <td className="px-6 py-3">{vehicle.engine || "-"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }
