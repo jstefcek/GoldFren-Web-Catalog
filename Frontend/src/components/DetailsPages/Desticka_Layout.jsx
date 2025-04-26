@@ -47,7 +47,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       setLoading(false);
       setError(t("error.missing_parameters") || "Missing required parameters");
     }
-  }, [category, apiUrl]);
+  }, [category, apiUrl, id, isValidId, t]);
 
   // Helper function to safely display data with fallbacks
   const displayData = (data, fallback = "-") => {
