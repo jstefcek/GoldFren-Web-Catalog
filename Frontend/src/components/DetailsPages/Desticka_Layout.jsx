@@ -1,190 +1,315 @@
-import { useState } from "react";
-import { Car, Bike, Plane } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Car, Bike, Plane, AlertCircle, Loader2, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
+import { fetchData } from "../../hooks/Data_APIHook";
+import { useTranslation } from "react-i18next";
+import { NavigationStrip } from "../ui/Custom_NavigationStrip";
 
-export default function BrakePadDetail() {
+export default function BrakePadDetail({ category = "", apiUrl = null }) {
   // Get the ID from the URL (would work with React Router)
   const id = window.location.pathname.split("/").pop();
-
+  
+  // Validate that ID is a number
+  const isValidId = !isNaN(id) && id.trim() !== "";
+  
   // State for controlling vehicle compatibility loading
   const [showVehicles, setShowVehicles] = useState(false);
+  const [padData, setPadData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showAllOem, setShowAllOem] = useState(false);
+  const { t } = useTranslation();
 
-  // Static mock data
-  const padData = {
-    title: "Brake pad",
-    type: "001",
-    material: "AD, K1, K5, K5-LX, S33, S3",
-    dimensions: {
-      width: 62.3,
-      height: 41,
-      thickness: 9,
-      backplateThickness: 4,
-    },
-    oem: [
-      "43082 1090",
-      "43082 1118",
-      "43082 1131",
-      "43082 1137",
-      "43082 1151",
-      "69100 15810",
-      "69140 03D00",
-      "69140 15D00",
-      "69140 28C00",
-      "5XT W0046 50",
-    ],
-    equivalents: {
-      sbs: "632",
-      ebc: "FA 152",
-      ferodo: "FDB 659",
-      a2z: "",
-      rapco: "",
-      grove: "",
-      cleveland: "",
-      matco: "",
-    },
-    imageUrl: "/api/placeholder/400/320",
-    svgUrl: "/api/vector/brake-pad-001.svg", // Added SVG URL to data
+  // Call API to get data
+  useEffect(() => {
+    const loadData = async () => {
+      if (!isValidId) {
+        setError("Invalid product ID");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const result = await fetchData(category, apiUrl + id);
+        setPadData(result || {});
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading data:", error);
+        setError(t("error.loading_failed") || "Failed to load data");
+        setPadData({});
+        setLoading(false);
+      }
+    };
+
+    if (category && apiUrl) {
+      loadData();
+    } else {
+      setLoading(false);
+      setError(t("error.missing_parameters") || "Missing required parameters");
+    }
+  }, [category, apiUrl]);
+
+  // Helper function to safely display data with fallbacks
+  const displayData = (data, fallback = "-") => {
+    return data || fallback;
   };
 
+  // Split OEM numbers or other comma-separated values safely
+  const splitValues = (value) => {
+    if (!value) return [];
+    return value.split(",").map(item => item.trim()).filter(Boolean);
+  };
+
+  // Handle loading state
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 text-red-600 animate-spin mb-4" />
+        <p className="text-gray-700">{t("loading.data") || "Loading data..."}</p>
+      </div>
+    );
+  }
+
+  // Handle error or invalid ID
+  if (error || !isValidId) {
+    return (
+      <div className="p-6 max-w-screen-xl mx-auto">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 flex items-start">
+          <AlertCircle className="h-6 w-6 text-red-600 mr-4 flex-shrink-0 mt-1" />
+          <div>
+            <h2 className="text-lg font-medium text-red-700 mb-2">
+              {t("error.title") || "Error"}
+            </h2>
+            <p className="text-red-600">{error || t("error.invalid_id") || "Invalid product ID"}</p>
+            <button 
+              onClick={() => window.history.back()}
+              className="mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors"
+            >
+              {t("error.btn_go_back") || "Go Back"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Get OEM numbers
+  const oemNumbers = splitValues(padData.oem_cisla);
+  
+  // Determine if we should show the show more/less button
+  const shouldShowOemToggle = oemNumbers.length > 10;
+  
+  // Limit OEM numbers displayed if showAllOem is false
+  const displayedOemNumbers = showAllOem ? oemNumbers : oemNumbers.slice(0, 10);
+
   return (
-    <div className="p-4 md:p-6 max-w-screen-xl mx-auto">
+    <div className="p-4 md:p-4 max-w-screen-xl mx-auto">
+      {/* Top navigation strip */}
+      <NavigationStrip
+        to="/desticky"
+        label={t('back_to_list') || 'Back to list'}
+        description="GOLDfren brzdové destičky"
+      />
+
+      {/* Page title */}
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        {padData.title} - {id}
+        {t("brake_pad_title")} - {displayData(padData.cislo_dilu)}
       </h1>
 
-      <div className="flex flex-col lg:flex-row gap-6 mb-6">
+      <div className="flex flex-col lg:flex-row gap-8 mb-8">
+        
         {/* Left column with image and vector drawing */}
-        <div className="lg:w-[70%] rounded-lg shadow border border-gray-200 bg-white p-6">
+        <div className="lg:w-2/3 rounded-lg shadow border border-gray-200 bg-white p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
             {/* Image */}
             <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="text-lg font-medium mb-3">Image</h3>
-              <img
-                src={padData.imageUrl}
-                alt="Brake pad"
-                className="w-full h-auto object-contain rounded shadow-sm"
-              />
+              <h3 className="text-lg font-medium mb-3">{t("datagrid.picture")}</h3>
+              {padData.image ? (
+                <a href={padData.image} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={padData.image}
+                    alt={`Brake pad ${displayData(padData.cislo_dilu)}`}
+                    className="w-full h-auto object-contain rounded shadow-sm cursor-pointer"
+                  />
+                </a>
+              ) : (
+                <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded">
+                  <p className="text-gray-500">{t("datagrid.no_image") || "No image available"}</p>
+                </div>
+              )}
             </div>
 
             {/* Technical Drawing */}
             <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="text-lg font-medium mb-3">Technical Drawing</h3>
-              <div className="w-full flex justify-center">
-                <img
-                  src={padData.svgUrl}
-                  alt="Brake pad technical drawing"
-                  className="w-full h-auto object-contain rounded shadow-sm"
-                />
-              </div>
+              <h3 className="text-lg font-medium mb-3">{t("datagrid.vektor")}</h3>
+              {padData.vektor ? (
+                <div className="w-full flex justify-center">
+                  <img
+                    src={padData.vektor}
+                    alt={`Brake pad technical drawing ${displayData(padData.cislo_dilu)}`}
+                    className="w-full h-auto object-contain rounded shadow-sm"
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded">
+                  <p className="text-gray-500">{t("datagrid.no_drawing") || "No drawing available"}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Right column with OEM numbers */}
-        <div className="lg:w-[30%] rounded-lg shadow border border-gray-200 bg-white p-6">
+        {/* Right column with OEM numbers - fixed height with scroll */}
+        <div className="lg:w-1/3 rounded-lg shadow border border-gray-200 bg-white p-6 flex flex-col">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
-            OEM Reference Numbers
+            {t("datagrid.oem_cisla")}
           </h2>
-          <div className="flex flex-wrap gap-2">
-            {padData.oem.map((code, index) => (
-              <span
-                key={index}
-                className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium"
-              >
-                {code}
-              </span>
-            ))}
+          
+          {/* Scrollable container for OEM numbers */}
+          <div className="flex-grow" style={{ height: "200px" }}>
+            {oemNumbers.length > 0 ? (
+              <div className="overflow-y-auto h-full pr-2">
+                <div className="flex flex-wrap gap-2">
+                  {displayedOemNumbers.map((code, index) => (
+                    <span
+                      key={index}
+                      className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-2"
+                    >
+                      {code}
+                    </span>
+                  ))}
+                </div>
+                
+                {shouldShowOemToggle && (
+                  <button 
+                    onClick={() => setShowAllOem(!showAllOem)}
+                    className="flex items-center justify-center w-full mt-2 py-2 text-sm text-blue-600 hover:text-blue-800 font-medium border border-blue-200 rounded-md hover:bg-blue-50 transition-colors"
+                  >
+                    {showAllOem ? (
+                      <>
+                        <ChevronUp className="h-4 w-4 mr-1" />
+                        {t("datagrid.show_less") || "Show less"}
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="h-4 w-4 mr-1" />
+                        {t("datagrid.show_more", { count: oemNumbers.length - 10 }) || `Show ${oemNumbers.length - 10} more`}
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <span className="text-gray-500">{t("datagrid.no_oem") || "No OEM numbers available"}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Bottom sections in a grid */}
-      <div className="flex flex-col lg:flex-row gap-6 mb-6">
+      <div className="flex flex-col lg:flex-row gap-8 mb-8">
+        
         {/* Compatibility table */}
-        <div className="lg:w-[80%] rounded-lg shadow border border-gray-200 bg-white p-6">
+        <div className="lg:w-4/5 rounded-lg shadow border border-gray-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
-            Compatibility Table
+            {t("datagrid.compatibility_table")}
           </h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-left">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-sm font-semibold text-gray-700">
-                    Brand
-                  </th>
-                  <th className="px-6 py-3 text-sm font-semibold text-gray-700">
-                    Code
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(padData.equivalents).map(([brand, code]) => (
-                  <tr
-                    key={brand}
-                    className="border-t hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 capitalize">
-                        {brand}
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{code || "—"}</div>
-                    </td>
+            {padData.konkurence && Object.keys(padData.konkurence).length > 0 ? (
+              <table className="min-w-full text-sm text-left">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-sm font-semibold text-gray-700">
+                      {t("datagrid.brand")}
+                    </th>
+                    <th className="px-6 py-3 text-sm font-semibold text-gray-700">
+                      {t("datagrid.brand_code")}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {Object.entries(padData.konkurence).map(([brand, code]) => (
+                    <tr
+                      key={brand}
+                      className="border-t hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-6 py-3 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900 capitalize">
+                          {brand}
+                        </div>
+                      </td>
+                      <td className="px-6 py-3 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{displayData(code)}</div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="h-32 flex items-center justify-center bg-gray-50 rounded-md">
+                <p className="text-gray-500">
+                  {t("datagrid.no_compatibility") || "No compatibility data available"}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Material section */}
-        <div className="lg:w-[20%] rounded-lg shadow border border-gray-200 bg-white p-6">
+        <div className="lg:w-1/5 rounded-lg shadow border border-gray-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
-            Material Composition
+            {t("datagrid.material_text")}
           </h2>
           <div className="flex flex-wrap gap-2">
-            {padData.material.split(", ").map((material, index) => (
-              <span
-                key={index}
-                className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium"
-              >
-                {material}
-              </span>
-            ))}
+            {splitValues(padData.material).length > 0 ? (
+              splitValues(padData.material).map((material, index) => (
+                <span
+                  key={index}
+                  className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium"
+                >
+                  {material}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-500">{t("datagrid.no_material") || "No material information available"}</span>
+            )}
           </div>
         </div>
       </div>
 
       {/* Vehicle Compatibility Section */}
       <div className="rounded-lg shadow border border-gray-200 bg-white p-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <h2 className="text-xl font-semibold text-gray-700">
-            Compatible Vehicles
+            {t("datagrid.compatible_vehicles")}
           </h2>
           {!showVehicles && (
             <button
               onClick={() => setShowVehicles(true)}
               className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors flex items-center gap-2"
+              disabled={!isValidId}
             >
-              <span>Load Compatible Vehicles</span>
+              <span>{t("datagrid.load_vehicles") || "Load Compatible Vehicles"}</span>
             </button>
           )}
         </div>
 
         {showVehicles ? (
           <div className="mt-4">
-            {/* Import and use DataGrid component when vehicles should be shown */}
             <DataGrid category="vehicles" apiUrl={`/api/compatibility/${id}`} />
           </div>
         ) : (
-          <div className="h-32 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-md">
-            <div className="flex items-center mb-2">
+          <div className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-md">
+            <div className="flex items-center mb-4">
               <Car className="h-8 w-8 mr-4 text-gray-500" />
               <Bike className="h-8 w-8 mr-4 text-gray-500" />
-              <Plane className="h-8 w-8 mr-4 text-gray-500" />
+              <Plane className="h-8 w-8 text-gray-500" />
             </div>
-            <p className="text-gray-500">
-              Click the button above to load compatible vehicles
+            <p className="text-gray-500 text-center max-w-md">
+              {t("datagrid.vehicle_notload_text") || "Click the button above to load compatible vehicle information"}
             </p>
           </div>
         )}
@@ -195,15 +320,96 @@ export default function BrakePadDetail() {
 
 // Mock implementation of DataGrid component to make the code complete
 function DataGrid({ category, apiUrl }) {
-  // This is a placeholder - in your actual implementation, you would
-  // import the real DataGrid component from your second code snippet
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    const loadVehicleData = async () => {
+      setLoading(true);
+      try {
+        const result = await fetchData(category, apiUrl);
+        setData(result || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading vehicle data:", error);
+        setError(t("error.loading_failed") || "Failed to load vehicle compatibility data");
+        setLoading(false);
+      }
+    };
+
+    loadVehicleData();
+  }, [category, apiUrl, t]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-40">
+        <Loader2 className="h-6 w-6 text-red-600 animate-spin mr-2" />
+        <p>{t("loading.vehicles") || "Loading vehicle compatibility..."}</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 bg-red-50 rounded-md border border-red-200">
+        <div className="flex items-center text-red-600 mb-2">
+          <AlertCircle className="h-5 w-5 mr-2" />
+          <p className="font-medium">{error}</p>
+        </div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+        >
+          {t("button.try_again") || "Try again"}
+        </button>
+      </div>
+    );
+  }
+
+  if (!data.length) {
+    return (
+      <div className="p-6 bg-gray-50 rounded-md text-center">
+        <p className="text-gray-600">{t("datagrid.no_vehicles") || "No compatible vehicles found"}</p>
+      </div>
+    );
+  }
+
+  // Render actual vehicle data grid here
   return (
-    <div className="p-4 border border-gray-200 rounded-md bg-gray-50">
-      <p>Loading vehicle compatibility data from: {apiUrl}</p>
-      <p>
-        This would be replaced by the actual DataGrid component showing vehicle
-        compatibility. Used category {category}
-      </p>
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-sm text-left">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-sm font-semibold text-gray-700">
+              {t("datagrid.vehicle_make")}
+            </th>
+            <th className="px-6 py-3 text-sm font-semibold text-gray-700">
+              {t("datagrid.vehicle_model")}
+            </th>
+            <th className="px-6 py-3 text-sm font-semibold text-gray-700">
+              {t("datagrid.production_year")}
+            </th>
+            <th className="px-6 py-3 text-sm font-semibold text-gray-700">
+              {t("datagrid.engine")}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((vehicle, index) => (
+            <tr
+              key={index}
+              className="border-t hover:bg-gray-50 transition-colors"
+            >
+              <td className="px-6 py-3">{vehicle.make || "-"}</td>
+              <td className="px-6 py-3">{vehicle.model || "-"}</td>
+              <td className="px-6 py-3">{vehicle.year || "-"}</td>
+              <td className="px-6 py-3">{vehicle.engine || "-"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

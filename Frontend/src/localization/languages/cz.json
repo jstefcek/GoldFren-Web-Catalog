@@ -17,6 +17,8 @@
     "desticky_title": "Brzdové destičky GOLDfren",
     "brzdice_title": "Brzdové třmeny GOLDfren",
     "footer_created": "Vytvořil",
+    "brake_pad_title": "Brzdová destička GOLDfren",
+    "back_to_list": "Zpět na ",
     "category": {
       "motorbike": "Motorka",
       "car": "Auto",
@@ -34,7 +36,7 @@
       "search_placeholder": "Filtrovat výsledkami",
       "reset": "Resetovat filtry",
       "picture": "Obrázek",
-      "vektor": "Nákres",
+      "vektor": "Výkres CAD",
       "part_number": "Číslo dílu",
       "type": "Typ",
       "diameter": "Průměr [mm]",
@@ -56,6 +58,22 @@
       "show_less": "ukázat méně",
       "show_more": "ukázat více",
       "pistku_count": "Počet pístku",
-      "description": "Popis"
+      "description": "Popis",
+      "compatibility_table": "Tabulka kompatibility",
+      "brand": "Značka",
+      "brand_code": "Označení",
+      "compatible_vehicles": "Kompatibilní vozidla",
+      "load_vehicles": "Načíst kompatibilní vozidla",
+      "vehicle_notload_text": "Kliknutím na tlačítko výše načtete kompatibilní vozidla",
+      "no_compatibility": "Žádná kompatibilita",
+      "no_material": "Informace o materiálu nejsou k dispozici",
+      "no_drawing": "Žádný dostupný výkres"
+    },
+    "error": {
+      "loading_failed": "Načítání selhalo",
+      "missing_parameters": "Chybí parametry",
+      "title": "Chyba při načítání výsledků",
+      "invalid_id": "Neplatné ID produktu",
+      "btn_go_back": "Zpět"
     }
 }  

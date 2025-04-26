@@ -63,5 +63,35 @@ export const dataTransformers = {
       }
       return [];
     },
+
+    // Desticka detial transformed data
+    // Desticka detail transformed data
+    desticka_detail: (data) => {
+      if (data) {
+        return {
+          ...data,
+          id: data.kod,
+          image: data.obrazek ? "http://localhost/GoldFren_Media/desticky/image/" + data.obrazek : null,
+          //vektor: data.vektor ? "http://localhost/GoldFren_Media/desticky/vector/" + data.vektor : null,
+          vektor: null,
+          cislo_dilu: data.cislo_dilu,
+          typ: data.typ,
+          material: data.material_text,
+          oem_cisla: data.oem_cisla || null,
+          obchodni_nazev: data.obchodni_nazev,
+          konkurence: {
+            sbs: data.konkurence?.sbs || null,
+            ebc: data.konkurence?.ebc || null,
+            ferodo: data.konkurence?.ferodo || null,
+            a2z: data.konkurence?.a2z || null,
+            rapco: data.konkurence?.rapco || null,
+            grove: data.konkurence?.grove || null,
+            cleveland: data.konkurence?.cleveland || null,
+            matco: data.konkurence?.matco || null
+          }
+        };
+      }
+      return {};
+    },
     
   };

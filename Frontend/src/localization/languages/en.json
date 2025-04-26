@@ -16,6 +16,8 @@
   "adapter_title": "GOLDfren brake adapters",
   "desticky_title": "GOLDfren brake pads",
   "footer_created": "Created by",
+  "brake_pad_title": "Brake pad GOLDfren",
+  "back_to_list": "Back to ",
   "category": {
     "motorbike": "Motorbike",
     "car": "Car",
@@ -55,6 +57,15 @@
     "show_less": "show less",
     "show_more": "show more",
     "pistku_count": "Piston number",
-    "description": "Description"
+    "description": "Description",
+    "compatibility_table": "Compatibility table",
+    "brand": "Brand name",
+    "brand_code": "Brand code",
+    "compatible_vehicles": "Compatible vehicles",
+    "load_vehicles": "Load compatible vehicles",
+    "vehicle_notload_text": "Click the button above to load compatible vehicles",
+    "no_compatibility": "No compatibility found",
+    "no_material": "No material information available",
+    "no_drawing": "No CAD drawing available"
   }
 }  

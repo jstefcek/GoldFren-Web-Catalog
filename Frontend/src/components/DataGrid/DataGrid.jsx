@@ -80,6 +80,9 @@ export default function DataGrid({ category = "", apiUrl = null }) {
     );
   };
 
+  // Check if any filter is active to show/hide reset button
+  const isFilterActive = search !== "" || sortColumn !== null || selectedRows.length > 0;
+
   // Filter data
   const filtered = data.filter((row) =>
     columns.some((col) => {
@@ -169,15 +172,16 @@ export default function DataGrid({ category = "", apiUrl = null }) {
             />
           </div>
 
-          {/* BTN - Reset filters and sorting */}
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="flex gap-1 items-center cursor-pointer border-gray-300 hover:bg-gray-50"
-            disabled={!search && !sortColumn && selectedRows.length === 0}
-          >
-            <X size={16} /> {t("datagrid.reset")}
-          </Button>
+          {/* BTN - Reset filters and sorting - Only show when filters are active */}
+          {isFilterActive && (
+            <Button
+              variant="outline"
+              onClick={handleReset}
+              className="flex gap-1 items-center cursor-pointer border-gray-300 hover:bg-gray-50"
+            >
+              <X size={16} /> {t("datagrid.reset")}
+            </Button>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
