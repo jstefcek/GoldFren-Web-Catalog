@@ -38,8 +38,9 @@ class Kotouc():
         return filtered_data
     
 class VozidloKotouc():
-    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ_vozidla, objem, 
+    def __init__(self, kod, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ_vozidla, objem, 
                  obrazek, vektor, vnejsi_prumer, roztecny_prumer, vnitrni_prumer, tloustka, typ, rok_od, rok_do, pozice, publikovat):
+        self.kod = kod
         self.cislo_dilu = cislo_dilu
         self.kategorie = kategorie
         self.subkategorie = subkategorie

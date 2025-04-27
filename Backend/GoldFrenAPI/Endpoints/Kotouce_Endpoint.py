@@ -5,7 +5,9 @@ from GoldFrenAPI.Views.Kotouc_View import (
     get_kotouc_by_id, 
     update_kotouc_view, 
     create_kotouc_view,
-    kotouc_publication_view
+    kotouc_publication_view,
+    get_vozidla_for_kotouc_view,
+    get_filtered_kotouc_view
 )
 
 # URL patterns
@@ -15,4 +17,6 @@ urlpatterns = [
     path("update/<int:kotouc_id>", update_kotouc_view, name="update_kotouc"),
     path("create", create_kotouc_view, name="create_kotouc"),
     path("publication/<int:kotouc_id>", kotouc_publication_view, name="kotouc_publication"),
+    path("filter", get_filtered_kotouc_view, name="get_filtered_kotouc_view"),
+    path("vozidla", get_vozidla_for_kotouc_view, name="get_vozidla_for_kotouc_view"),
 ]

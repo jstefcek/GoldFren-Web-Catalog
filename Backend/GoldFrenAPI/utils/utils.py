@@ -117,7 +117,7 @@ def prepare_sql_filters(filters: dict, filter_condition: list, params: list):
             
             # Just add column condition and param 
             else:
-                if value is not None and not isinstance(value, dict) and not isinstance(value, list):
+                if value is not None and not isinstance(value, dict) and not isinstance(value, list) and not isinstance(value, tuple):
                     filter_condition.append(f"{column} = %s")
                     params.append(value)
        

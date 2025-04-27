@@ -158,8 +158,6 @@ def get_vozidla_for_hadicka(limit: int = None, page: int = None, states: bool = 
     params = [hadicka_id]
     query += " AND publikovat in (0,1)" if states else " AND Publikovat = 1"
     query += " ORDER BY vyrobce ASC, oznaceni_vozidla ASC"
-
-    print(query)
     
     # Execute query and get records
     records = get_records(sql_query=query, params=params, limit=limit, page=page)

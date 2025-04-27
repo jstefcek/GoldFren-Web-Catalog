@@ -273,6 +273,7 @@ limit 18446744073709551615;
 CREATE OR REPLACE VIEW v_vozidlo_kotouc AS
 (
   SELECT
+	ko.kod,
     ko.cislo_dilu as cislo_dilu,
     ka.nazev as kategorie,
     sk.nazev as subkategorie,
@@ -311,6 +312,7 @@ CREATE OR REPLACE VIEW v_vozidlo_kotouc AS
 UNION DISTINCT
 (
   SELECT
+	ko.kod,
     CONCAT(ko.cislo_dilu, '-', kv.varianta) as cislo_dilu,
     ka.nazev as kategorie,
     sk.nazev as subkategorie,

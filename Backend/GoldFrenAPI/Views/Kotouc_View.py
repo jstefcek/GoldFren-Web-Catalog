@@ -6,13 +6,19 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from django.http import JsonResponse, HttpResponseBadRequest
-from GoldFrenAPI.utils.utils import get_pagination
+from GoldFrenAPI.utils.utils import (
+    get_pagination,
+    get_pagination_urls,
+    get_total_count_with_params                     
+)
 from GoldFrenAPI.Services.Kotouc_Service import (
     get_kotouce as get_all_kotouce,
     get_kotouc,
     update_kotouc,
     create_kotouc,
-    kotouc_publication
+    kotouc_publication,
+    get_filtered_kotouce,
+    get_vozidla_for_kotouc
 )
 
 # Function to get all koutce
@@ -53,6 +59,125 @@ def get_kotouc_by_id(request, kotouc_id):
     if kotouc:
         return JsonResponse(kotouc.to_dict(), status=200)
     return JsonResponse({"error": "Kotouc not found"}, status=404)
+
+# Function to return kotouc that match specific parameters
+@api_view(['GET'])
+def get_filtered_kotouc_view(request):
+    """
+    This function returns kotouc that match specific parameters.
+    """
+    try:    
+        # Get parameters from request
+        vnejsi_prumer_min = request.GET.get("vnejsi_prumer_min", None)
+        vnejsi_prumer_max = request.GET.get("vnejsi_prumer_max", None)
+        roztecny_prumer_min = request.GET.get("roztecny_prumer_min", None)
+        roztecny_prumer_max = request.GET.get("roztecny_prumer_max", None)
+        vnitrni_prumer_min = request.GET.get("vnitrni_prumer_min", None)
+        vnitrni_prumer_max = request.GET.get("vnitrni_prumer_max", None)
+        tloustka_min = request.GET.get("tloustka_min", None)
+        tloustka_max = request.GET.get("tloustka_max", None)
+        typ = request.GET.get("typ", None)
+        
+        # Store params to dict
+        filters = {
+            "vnejsi_prumer": (vnejsi_prumer_min, vnejsi_prumer_max),
+            "roztecny_prumer": (roztecny_prumer_min, roztecny_prumer_max),
+            "vnitrni_prumer": (vnitrni_prumer_min, vnitrni_prumer_max),
+            "tloustka": (tloustka_min, tloustka_max),
+            "typ": typ
+        }
+        
+        # Get pagination parameters from request 
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+    
+        # If limit is set to 0 return all kotouce
+        if limit == 0:
+            kotouce_objects = get_filtered_kotouce(states=states, filters=filters)
+            if kotouce_objects:
+                kotouce = [kotouc for kotouc in kotouce_objects]
+                return JsonResponse({
+                    "count": len(kotouce),
+                    "data": kotouce
+                }, status=200)
+        
+        # If limit is set to a number, return paginated kotouce
+        kotouce_objects = get_filtered_kotouce(limit=limit, page=page, states=states, filters=filters)
+        if kotouce_objects:
+            kotouce = [kotouc for kotouc in kotouce_objects]
+            
+            # Get filtered destickas count
+            total_kotouce = get_total_count_with_params("""SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, vnejsi_prumer, roztecny_prumer, vnitrni_prumer, tloustka, typ, pozice
+                                                            FROM v_vozidlo_kotouc""", 
+                                                        states=states, filters=filters)
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_kotouce)
+            return JsonResponse({
+                "count": total_kotouce,
+                "next": next_url,
+                "previous": prev_url,
+                "data": kotouce
+            }, status=200)
+        else:
+            return JsonResponse({"error": "No kotouce has been found.."}, status=404)
+
+    # Handle pagination errors
+    except ValueError:
+        return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
+    
+# Function to get vozidla for a specific kotouc
+@api_view(['GET'])
+def get_vozidla_for_kotouc_view(request):
+    """
+    This function returns vozidla for a specific kotouc.
+    """
+    try:
+        # Get parameters from request
+        kotouc_id = request.GET.get("kotouc_id", None)
+        if not kotouc_id:
+            return JsonResponse({"error": "Missing kotouc_id parameter"}, status=400)
+        
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+        
+        # If limit is set to 0 return all kotouc
+        if limit == 0:
+            vozidla_objects = get_vozidla_for_kotouc(kotouc_id=kotouc_id)
+            if vozidla_objects:
+                vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
+                return JsonResponse({
+                    "count": len(vozidla),
+                    "data": vozidla
+                }, status=200)
+        
+        # Get vozidla for the kotouc
+        vozidla_objects = get_vozidla_for_kotouc(limit=limit, page=page, states=states, kotouc_id=kotouc_id)
+        if vozidla_objects:
+            vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
+        
+            # Get filtered kotouc count
+            total_destickas = get_total_count_with_params("SELECT * FROM v_vozidlo_kotouc",
+                                                        states=states, filters={"kod": kotouc_id})
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_destickas)
+            return JsonResponse({
+                "count": total_destickas,
+                "next": next_url,
+                "previous": prev_url,
+                "data": vozidla
+            }, status=200)
+            
+        return JsonResponse({"error": "No vozidla found for this kotouc"}, status=404)
+    
+    except Exception as ex:
+        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
 
 # Function to update an kotouc
 @api_view(['PUT'])
