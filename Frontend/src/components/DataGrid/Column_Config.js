@@ -10,6 +10,18 @@ export const columnsConfig = {
     {key: "roztec_brzdice", label: "datagrid.brakepad_spacing", sortable: true, filterable: true },
   ],
 
+  // Adapter vozidla web column config
+  adapter_vozidla: [
+    {key: "vyrobce", label: "datagrid.manufacturer", sortable: true, filterable: true },
+    {key: "kategorie", label: "datagrid.category", sortable: true, filterable: true },
+    {key: "subkategorie", label: "datagrid.subcategory", sortable: true, filterable: true },
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "objem", label: "datagrid.volume", sortable: true, filterable: true },
+    {key: "rok_od", label: "datagrid.year_from", sortable: true, filterable: true },
+    {key: "rok_do", label: "datagrid.year_to", sortable: true, filterable: true },
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+  ],
+
   // Brzdice web column config
   brzdice: [
     {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },

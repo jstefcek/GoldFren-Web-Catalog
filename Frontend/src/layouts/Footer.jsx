@@ -17,8 +17,8 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="w-full text-center text-sm text-gray-500 py-4 mt-auto bg-white border-t border-gray-200">
-      ©{year} Andrea Špačková – PRODUCT SPACEK – All rights reserved – Version: {version} – {t("footer_created")}:{" "}
+    <footer className="w-full min-h-[48px] text-center text-sm text-gray-500 py-4 bg-white border-t border-gray-200">
+      ©{year} Andrea Špačková - PRODUCT SPACEK – All rights reserved – Version: {version} – {t("footer_created")}:{" "}
       <a
         href={linkedin_url}
         target="_blank"

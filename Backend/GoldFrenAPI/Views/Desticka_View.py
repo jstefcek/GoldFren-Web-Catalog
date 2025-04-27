@@ -38,11 +38,12 @@ def get_desticky(request):
         # If limit is set to 0 return all destickas
         if limit == 0:
             desticky_objects = get_all_desticky(states=states)
-            desticky = [desticka.to_dict() for desticka in desticky_objects]
-            return JsonResponse({
-                "count": len(desticky),
-                "data": desticky
-            }, status=200)
+            if desticky_objects:
+                desticky = [desticka.to_dict() for desticka in desticky_objects]
+                return JsonResponse({
+                    "count": len(desticky),
+                    "data": desticky
+                }, status=200)
             
         # Get destickas count
         total_desticky = get_total_count("d_desticka", states=states)

@@ -18,6 +18,44 @@ export const dataTransformers = {
       return [];
     },
 
+    // Adapter detail transformed data
+    adapter_detail: (data) => {
+      if (data) {
+        return {
+          ...data,
+          id: data.kod,
+          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/adaptery/image/" + data.obrazek : null,
+          vektor: data.vektor ? "http://localhost/GoldFren_Media/adaptery/vector/" + data.vektor : null,
+          cislo_dilu: data.cislo_dilu,
+          typ: data.typ,
+          prumer: data.prumer,
+          popis: data.popis,
+          typ_uchyceni: data.typ_uchyceni,
+          roztec_brzdice: data.roztec_brzdice,
+        };
+      }
+      return {};
+    },
+
+    // Adapter vozidla transformed data
+    adapter_vozidla: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          vyrobce: item.vyrobce,
+          kategorie: item.kategorie,
+          subkategorie: item.subkategorie,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+          objem: item.objem,
+          rok_od: item.rok_od,
+          rok_do: item.rok_do,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
+    },
+
     // Brzdice transformed data
     brzdice: (data) => {
       if (Array.isArray(data.data)) {

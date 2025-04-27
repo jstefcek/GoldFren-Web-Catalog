@@ -20,7 +20,6 @@ export const fetchData = async (category, apiUrl) => {
       const transformer = dataTransformers[category];
       if (transformer) {
         let result_data = transformer(result)
-        console.log(result_data)
         return result_data;
       }
       

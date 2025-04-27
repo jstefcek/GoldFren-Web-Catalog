@@ -165,11 +165,12 @@ def get_vozidla_for_adapter_view(request):
         # If limit is set to 0 return all adapters
         if limit == 0:
             adapter_objects = get_vozidla_for_adapter(adapter_id=adapter_id)
-            adapters = [adapter.to_dict() for adapter in adapter_objects]
-            return JsonResponse({
-                "count": len(adapters),
-                "data": adapters
-            }, status=200)
+            if adapter_objects:
+                adapters = [adapter.to_dict() for adapter in adapter_objects]
+                return JsonResponse({
+                    "count": len(adapters),
+                    "data": adapters
+                }, status=200)
         
         # Get vozidla for the adapter
         vozidla_objects = get_vozidla_for_adapter(limit=limit, page=page, states=states, adapter_id=adapter_id)

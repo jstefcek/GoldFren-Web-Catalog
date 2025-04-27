@@ -152,7 +152,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-screen-xl mx-auto">
+    <div className="p-4 md:p-6 w-full">
       <div className="flex flex-col md:flex-row md:flex-wrap gap-4 justify-between mb-6 items-start md:items-center">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
           <div className="relative w-full sm:w-64">
