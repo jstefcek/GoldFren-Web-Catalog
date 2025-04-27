@@ -114,7 +114,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       />
 
       {/* Page title */}
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
+      <h1 className="text-3xl font-bold text-gray-800 mb-4 mt-8">
         {t("brake_pad_title")} - {displayData(padData.cislo_dilu)}
       </h1>
 

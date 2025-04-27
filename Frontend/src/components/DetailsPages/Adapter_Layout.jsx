@@ -109,8 +109,8 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       />
 
       {/* Page title */}
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        {t("adapter_title")} - {displayData(adapterData.cislo_dilu)}
+      <h1 className="text-3xl font-bold text-gray-800 mb-4 mt-8">
+        {t("adapter_detail_title")} - {displayData(adapterData.cislo_dilu)}
       </h1>
 
       {/* Top sections in a grid */}
