@@ -16,7 +16,8 @@ class Hadicka():
         return self.__dict__
     
 class VozidloHadicka():
-    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, obrazek, vektor, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+    def __init__(self, kod, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, obrazek, vektor, poznamka, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+        self.kod = kod
         self.cislo_dilu = cislo_dilu
         self.kategorie = kategorie
         self.subkategorie = subkategorie
@@ -27,6 +28,7 @@ class VozidloHadicka():
         self.objem = objem
         self.obrazek = obrazek
         self.vektor = vektor
+        self.poznamka = poznamka
         self.specialni_oznaceni = specialni_oznaceni
         self.rok_od = rok_od
         self.rok_do = rok_do

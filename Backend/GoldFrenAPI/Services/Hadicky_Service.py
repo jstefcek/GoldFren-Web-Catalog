@@ -2,19 +2,26 @@
 
 # Imports
 from datetime import datetime
-from GoldFrenAPI.Models.Hadicky import Hadicka
+from GoldFrenAPI.Models.Hadicky import Hadicka, VozidloHadicka
 from GoldFrenAPI.Services.Service_utils import (
     set_publication_state, 
-    get_all_items,
     get_item_by_id,
     execute_update,
-    insert_record
+    insert_record,
+    get_records
+)
+from GoldFrenAPI.utils.utils import (
+    prepare_sql_filters
 )
 
 # Function to get all hadicky from database
 def get_hadicky(limit: int = None, page: int = None, states: bool = False):
     # Get all items from the database
-    records = get_all_items(sql_view="v_hadicky_detail", limit=limit, page=page, states=states)
+    query = """
+        SELECT *
+        FROM v_hadicky_detail"""
+    query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+    records = get_records(sql_query=query, limit=limit, page=page)
     hadicky = []
     
     # Iterate through records
@@ -100,3 +107,89 @@ def create_hadicka(data: dict):
 def hadicka_publication(hadicka_id, publikovat):
     state = set_publication_state(sql_table="d_hadicka", publikovat=publikovat, item_id=hadicka_id)
     return state
+
+# Find specific hadicky by given parameters
+def get_filtered_hadicky(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, poznamka, pozice
+    FROM v_vozidlo_hadicka
+    """
+    params = []
+    filter_condition = []
+
+    # Apply publication filter 
+    filter_condition.append("publikovat in (0,1)" if states else "Publikovat = 1")
+    filter_condition, params = prepare_sql_filters(filters=filters, filter_condition=filter_condition, params=params)
+
+    # Append filters to base query
+    if filter_condition:
+        query += " WHERE " + " AND ".join(filter_condition)
+    
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+    
+    # Prepare data and return if someting found
+    hadicky = []
+    for record in records:
+        hadicka = {
+            "kod": record["kod"],
+            "cislo_dilu": record["cislo_dilu"],
+            "obrazek": record["obrazek"],
+            "vektor": record["vektor"],
+            "poznamka": record["poznamka"],
+            "pozice": record["pozice"],
+        }
+        hadicky.append(hadicka)
+    
+    # Return list of matching hadicky dictionaries
+    return hadicky if hadicky else None
+
+# Get vozidla for specific hadicka
+def get_vozidla_for_hadicka(limit: int = None, page: int = None, states: bool = False, hadicka_id: int = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT *
+    FROM v_vozidlo_hadicka
+    WHERE kod = %s
+    """
+    params = [hadicka_id]
+    query += " AND publikovat in (0,1)" if states else " AND Publikovat = 1"
+    query += " ORDER BY vyrobce ASC, oznaceni_vozidla ASC"
+
+    print(query)
+    
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+
+    hadicky = []
+    for record in records:
+        hadicka = VozidloHadicka(
+            kod=record["kod"],
+            cislo_dilu=record["cislo_dilu"],
+            kategorie=record["kategorie"],
+            subkategorie=record["subkategorie"],
+            vyrobce=record["vyrobce"],
+            vozidlo=record["vozidlo"],
+            oznaceni_vozidla=record["oznaceni_vozidla"],
+            typ=record["typ"],
+            objem=record["objem"],
+            obrazek=record["obrazek"],
+            vektor=record["vektor"],
+            poznamka=record["poznamka"],
+            specialni_oznaceni=record["specialni_oznaceni"],
+            rok_od=record["rok_od"],
+            rok_do=record["rok_do"],
+            pozice=record["pozice"],
+            publikovat=bool(record["publikovat"]) if record["publikovat"] is not None else None
+        )
+
+        # Append hadicka object to list
+        hadicky.append(hadicka)
+        
+    # Return list of matching hadicka objects
+    return hadicky if hadicky else None

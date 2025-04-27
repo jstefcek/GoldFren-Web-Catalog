@@ -109,11 +109,12 @@ def get_filtered_brzdice_view(request):
         # If limit is set to 0 return all filtered brzdice
         if limit == 0:
             brzdice_objects = get_filtered_brzdice(states=states, filters=filters)
-            brzdice = [brzdic for brzdic in brzdice_objects]
-            return JsonResponse({
-                "count": len(brzdice),
-                "data": brzdice
-            }, status=200)
+            if brzdice_objects:
+                brzdice = [brzdic for brzdic in brzdice_objects]
+                return JsonResponse({
+                    "count": len(brzdice),
+                    "data": brzdice
+                }, status=200)
         
         # Return paginated brzdice with filters
         brzdice_objects = get_filtered_brzdice(limit=limit, page=page, states=states, filters=filters)

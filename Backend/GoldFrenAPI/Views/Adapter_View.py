@@ -115,11 +115,12 @@ def get_filtered_adapters_view(request):
         # If limit is set to 0 return all adapters
         if limit == 0:
             adapter_objects = get_filtered_adapters(states=states, filters=filters)
-            adapters = [adapter for adapter in adapter_objects]
-            return JsonResponse({
-                "count": len(adapters),
-                "data": adapters
-            }, status=200)
+            if adapter_objects:
+                adapters = [adapter for adapter in adapter_objects]
+                return JsonResponse({
+                    "count": len(adapters),
+                    "data": adapters
+                }, status=200)
         
         # If limit is set to a number, return paginated adapters
         adapter_objects = get_filtered_adapters(limit=limit, page=page, states=states, filters=filters)

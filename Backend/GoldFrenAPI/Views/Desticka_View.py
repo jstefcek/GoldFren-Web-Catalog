@@ -105,11 +105,12 @@ def get_filtered_desticky_view(request):
         # If limit is set to 0 return all destickas
         if limit == 0:
             desticky_objects = get_filtered_desticky(states=states, filters=filters)
-            desticky = [desticka for desticka in desticky_objects]
-            return JsonResponse({
-                "count": len(desticky),
-                "data": desticky
-            }, status=200)
+            if desticky_objects:
+                desticky = [desticka for desticka in desticky_objects]
+                return JsonResponse({
+                    "count": len(desticky),
+                    "data": desticky
+                }, status=200)
         
         # If limit is set to a number, return paginated destickas
         desticky_objects = get_filtered_desticky(limit=limit, page=page, states=states, filters=filters)

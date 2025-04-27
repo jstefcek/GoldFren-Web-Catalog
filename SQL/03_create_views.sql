@@ -205,6 +205,7 @@ limit 18446744073709551615;
 -- Create view for vozidlo hadicky data
 CREATE OR REPLACE VIEW v_vozidlo_hadicka AS
 select
+	ha.kod,
 	ha.cislo_dilu as cislo_dilu,
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
@@ -253,6 +254,7 @@ select
 	vz.oznaceni as specialni_oznaceni,
 	ha.obrazek,
 	ha.vektor,
+	ha.poznamka,
 	vz.rok_od,
 	vz.rok_do,
 	pz.nazev_eng as pozice,
