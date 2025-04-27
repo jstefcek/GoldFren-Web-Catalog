@@ -15,10 +15,12 @@
   "searchTitle": "Search Goldfren catalog",
   "adapter_title": "GOLDfren brake adapters",
   "desticky_title": "GOLDfren brake pads",
+  "kotouce_title": "GOLDfren brake discs",
   "footer_created": "Created by",
-  "brake_pad_title": "Brake pad GOLDfren",
-  "caliper_title": "Brake caliper GOLDfren",
+  "brake_pad_title": "GOLDfren Brake pad",
+  "caliper_title": "GOLDfren Brake caliper",
   "adapter_detail_title": "GOLDfren Brake adapter",
+  "kotouc_title": "GOLDfren brake disc",
   "back_to_list": "Back to ",
   "category": {
     "motorbike": "Motorbike",
@@ -77,6 +79,11 @@
     "volume": "Volume [cm3]",
     "year_from": "Year of manufacture from",
     "year_to": "Year of manufacture to",
-    "position": "Part position"
+    "position": "Part position",
+    "outer_diameter": "Outer diameter [mm]",
+    "pitch_diameter": "Pitch diameter [mm]",
+    "inside_diameter": "Inner diameter [mm]",
+    "thickness": "Thickness [mm]",
+    "note": "Note"
   }
 }  

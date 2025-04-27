@@ -16,10 +16,12 @@
     "adapter_title": "Brzdové adaptéry GOLDfren",
     "desticky_title": "Brzdové destičky GOLDfren",
     "brzdice_title": "Brzdové třmeny GOLDfren",
+    "kotouce_title": "Brzdové kotouče GOLDfren",
     "footer_created": "Vytvořil",
     "brake_pad_title": "Brzdová destička GOLDfren",
     "caliper_title": "Brzdový třmen GOLDfren",
     "adapter_detail_title": "Brzdový adaptér GOLDfren",
+    "kotouc_title": "Brzdový kotouč GOLDfren",
     "back_to_list": "Zpět na ",
     "category": {
       "motorbike": "Motorka",
@@ -38,7 +40,7 @@
       "search_placeholder": "Filtrovat výsledkami",
       "reset": "Resetovat filtry",
       "picture": "Obrázek",
-      "vektor": "Výkres CAD",
+      "vektor": "Výkres",
       "part_number": "Číslo dílu",
       "type": "Typ",
       "diameter": "Průměr [mm]",
@@ -78,7 +80,12 @@
       "volume": "Objem [cm3]",
       "year_from": "Rok výroby od",
       "year_to": "Rok výroby do",
-      "position": "Pozice dílu"
+      "position": "Pozice dílu",
+      "outer_diameter": "Vnější průměr [mm]",
+      "pitch_diameter": "Roztečný průměr [mm]",
+      "inside_diameter": "Vnitřní průměr [mm]",
+      "thickness": "Tloušťka [mm]",
+      "note": "Poznámka"
     },
     "error": {
       "loading_failed": "Načítání selhalo",

@@ -185,5 +185,121 @@ export const dataTransformers = {
       }
       return [];
     },
+
+    // Kotouce transformed data
+    kotouce: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/kotouce/image/" + item.obrazek : null,
+          //vektor: item.vektor ? "http://localhost/GoldFren_Media/kotouce/vector/" + item.vektor : null,
+          vektor: null,
+          cislo_dilu: item.cislo_dilu,
+          typ: item.typ,
+          vnejsi_prumer: item.od,
+          roztecny_prumer: item.hd,
+          vnitrni_prumer: item.id,
+          tloustka: item.thk,
+          konkurence_branking: item.konkurence_branking,
+          konkurence_ngbrakes: item.konkurence_ngbrakes,
+          poznamka: item.poznamka,
+        }));
+      }
+      return [];
+    },
+
+    // Kotouc detail transformed data
+    kotouc_detail: (data) => {
+      if (data) {
+        return {
+          ...data,
+          id: data.kod,
+          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/kotouce/image/" + data.obrazek : null,
+          //vektor: data.vektor ? "http://localhost/GoldFren_Media/kotouce/vector/" + data.vektor : null,
+          vektor: null,
+          cislo_dilu: data.cislo_dilu,
+          typ: data.typ,
+          vnejsi_prumer: data.od,
+          roztecny_prumer: data.hd,
+          vnitrni_prumer: data.id,
+          tloustka: data.thk,
+          konkurence_branking: data.konkurence_branking,
+          konkurence_ngbrakes: data.konkurence_ngbrakes,
+          poznamka: data.poznamka,
+        };
+      }
+      return {};
+    },
+
+    // Kotouc vozidla transformed data
+    kotouc_vozidla: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          vyrobce: item.vyrobce,
+          kategorie: item.kategorie,
+          subkategorie: item.subkategorie,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+          objem: item.objem,
+          rok_od: item.rok_od,
+          rok_do: item.rok_do,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
+    },
+
+    // Hadicky transformed data
+    hadicky: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/hadicky/image/" + item.obrazek : null,
+          //vektor: item.vektor ? "http://localhost/GoldFren_Media/hadicky/vector/" + item.vektor : null,
+          vektor: null,
+          cislo_dilu: item.cislo_dilu,
+          poznamka: item.poznamka,
+        }));
+      }
+      return [];
+    },
+
+    // Hadicka detail transformed data
+    hadicka_detail: (data) => {
+      if (data) {
+        return {
+          ...data,
+          id: data.kod,
+          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/hadicky/image/" + data.obrazek : null,
+          //vektor: data.vektor ? "http://localhost/GoldFren_Media/hadicyk/vector/" + data.vektor : null,
+          vektor: null,
+          cislo_dilu: data.cislo_dilu,
+          poznamka: data.poznamka,
+        };
+      }
+      return {};
+    },
+
+    // Hadicka vozidla transformed data
+    hadicka_vozidla: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          vyrobce: item.vyrobce,
+          kategorie: item.kategorie,
+          subkategorie: item.subkategorie,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+          objem: item.objem,
+          rok_od: item.rok_od,
+          rok_do: item.rok_do,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
+    },
     
   };

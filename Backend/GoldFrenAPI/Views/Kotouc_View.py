@@ -9,7 +9,8 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from GoldFrenAPI.utils.utils import (
     get_pagination,
     get_pagination_urls,
-    get_total_count_with_params                     
+    get_total_count_with_params,
+    get_total_count,                
 )
 from GoldFrenAPI.Services.Kotouc_Service import (
     get_kotouce as get_all_kotouce,
@@ -37,13 +38,28 @@ def get_kotouce(request):
         # If limit is set to 0 return all adapters
         if limit == 0:
             kotouce_objects = get_all_kotouce(states=states)
-            kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
-            return JsonResponse(kotouce, status=200, safe=False)
+            if kotouce_objects:
+                kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
+                return JsonResponse({
+                        "count": len(kotouce),
+                        "data": kotouce
+                    }, status=200)
+                
+        # Get destickas count
+        total_kotouce = get_total_count("d_kotouce", states=states)
         
-        # If limit is set to a number, return paginated adapters
+        # If limit is set to a number, return paginated destickas
         kotouce_objects = get_all_kotouce(limit=limit, page=page, states=states)
         kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
-        return JsonResponse(kotouce, status=200, safe=False)
+        
+        # Construct next and previous page URLs
+        next_url, prev_url = get_pagination_urls(request, limit, page, total_kotouce)
+        return JsonResponse({
+            "count": total_kotouce,
+            "next": next_url,
+            "previous": prev_url,
+            "data": kotouce
+        }, status=200)
     
     # Handle pagination errors
     except ValueError:

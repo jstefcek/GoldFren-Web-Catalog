@@ -3,15 +3,15 @@ import DataGrid from "../components/DataGrid/DataGrid"
 import { useTranslation } from 'react-i18next';
 const serverUrl = import.meta.env.VITE_API_URL;
 
-function Brzdice() {
+function Kotouce() {
   const { t } = useTranslation();
 
   return (
     <div className="container mx-auto">
-      <h1 className="text-4xl font-bold mb-4 ml-6 text-left mt-8">{t('brzdice_title')}</h1>
-      <DataGrid category="brzdice" apiUrl={`${serverUrl}/api/goldfren/internal/brzdice?limit=0`} />
+      <h1 className="text-4xl font-bold mb-4 ml-6 text-left mt-8">{t('kotouce_title')}</h1>
+      <DataGrid category="kotouce" apiUrl={`${serverUrl}/api/goldfren/internal/kotouce?limit=0`} />
     </div>
   );
 }
 
-export default Brzdice;
+export default Kotouce;

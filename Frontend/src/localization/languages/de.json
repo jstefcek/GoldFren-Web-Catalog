@@ -15,10 +15,12 @@
     "searchTitle": "GOLDfren-Katalog durchsuchen",
     "adapter_title": "GOLDfren Bremsadapter",
     "desticky_title": "GOLDfren Beläge",
+    "kotouce_title": "Brzdové kotouče GOLDfren",
     "footer_created": "Erstellt von",
     "brake_pad_title": "Brzdová destička GOLDfren",
     "caliper_title": "Brzdový třmen GOLDfren",
     "adapter_detail_title": "Brzdový adaptér GOLDfren",
+    "kotouc_title": "Brzdový kotouč GOLDfren",
     "back_to_list": "Zpět na ",
     "category": {
       "motorbike": "Motorrad",
@@ -77,6 +79,11 @@
       "volume": "Objem [cm3]",
       "year_from": "Rok výroby od",
       "year_to": "Rok výroby do",
-      "position": "Pozice dílu"
+      "position": "Pozice dílu",
+      "outer_diameter": "Vnější průměr [mm]",
+      "pitch_diameter": "Roztečový průměr [mm]",
+      "inside_diameter": "Vnitřní průměr [mm]",
+      "thickness": "Tloušťka [mm]",
+      "note": "Poznámka"
     }
 }

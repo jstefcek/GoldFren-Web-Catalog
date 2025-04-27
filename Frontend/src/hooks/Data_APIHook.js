@@ -15,11 +15,13 @@ export const fetchData = async (category, apiUrl) => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const result = await response.json();
+      console.log(result)
       
       // Use category-specific transformers if available
       const transformer = dataTransformers[category];
       if (transformer) {
         let result_data = transformer(result)
+        console.log(result_data)
         return result_data;
       }
       

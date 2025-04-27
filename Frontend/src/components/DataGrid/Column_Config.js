@@ -73,4 +73,51 @@ export const columnsConfig = {
     {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
   ],
 
+  // Kotouce web column config
+  kotouce: [
+    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "typ", label: "datagrid.type", sortable: true, filterable: true,},
+    {key: "vnejsi_prumer", label: "datagrid.outer_diameter", sortable: true, filterable: true,},
+    {key: "roztecny_prumer", label: "datagrid.pitch_diameter", sortable: true, filterable: true,},
+    {key: "vnitrni_prumer", label: "datagrid.inside_diameter", sortable: true, filterable: true,},
+    {key: "tloustka", label: "datagrid.thickness", sortable: true, filterable: true,},
+    {key: "konkurence_branking", label: "Braking", sortable: true, filterable: true,},
+    {key: "konkurence_ngbrakes", label: "NGBrakes", sortable: true, filterable: true,},
+    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+  ],
+
+  // Kotouc vozidla web column config
+  kotouc_vozidla: [
+    {key: "vyrobce", label: "datagrid.manufacturer", sortable: true, filterable: true },
+    {key: "kategorie", label: "datagrid.category", sortable: true, filterable: true },
+    {key: "subkategorie", label: "datagrid.subcategory", sortable: true, filterable: true },
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "objem", label: "datagrid.volume", sortable: true, filterable: true },
+    {key: "rok_od", label: "datagrid.year_from", sortable: true, filterable: true },
+    {key: "rok_do", label: "datagrid.year_to", sortable: true, filterable: true },
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+  ],
+
+  // Hadicky web column config
+  hadicky: [
+    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+  ],
+
+  // Hadicka vozidla web column config
+  hadicka_vozidla: [
+    {key: "vyrobce", label: "datagrid.manufacturer", sortable: true, filterable: true },
+    {key: "kategorie", label: "datagrid.category", sortable: true, filterable: true },
+    {key: "subkategorie", label: "datagrid.subcategory", sortable: true, filterable: true },
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "objem", label: "datagrid.volume", sortable: true, filterable: true },
+    {key: "rok_od", label: "datagrid.year_from", sortable: true, filterable: true },
+    {key: "rok_do", label: "datagrid.year_to", sortable: true, filterable: true },
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+  ],
+
 };
