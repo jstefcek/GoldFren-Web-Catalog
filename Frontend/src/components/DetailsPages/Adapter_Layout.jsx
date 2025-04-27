@@ -100,7 +100,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
   }
 
   return (
-    <div className="p-4 md:p-4 max-w-screen-xl mx-auto mb-8">
+    <div className="p-4 md:p-4 w-full mb-8">
       {/* Top navigation strip */}
       <NavigationStrip
         to="/adaptery"

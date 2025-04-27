@@ -77,7 +77,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
   // Handle error or invalid ID
   if (error || !isValidId) {
     return (
-      <div className="p-6 max-w-screen-xl mx-auto">
+      <div className="p-6 w-full mb-8">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 flex items-start">
           <AlertCircle className="h-6 w-6 text-red-600 mr-4 flex-shrink-0 mt-1" />
           <div>
