@@ -18,6 +18,7 @@
     "brzdice_title": "Brzdové třmeny GOLDfren",
     "footer_created": "Vytvořil",
     "brake_pad_title": "Brzdová destička GOLDfren",
+    "caliper_title": "Brzdový třmen GOLDfren",
     "back_to_list": "Zpět na ",
     "category": {
       "motorbike": "Motorka",
@@ -68,6 +69,7 @@
       "no_compatibility": "Žádná kompatibilita",
       "no_material": "Informace o materiálu nejsou k dispozici",
       "no_drawing": "Žádný dostupný výkres",
+      "no_image": "Žádný dostupný obrázek",
       "manufacturer": "Výrobce",
       "category": "Kategorie vozidla",
       "subcategory": "Subkategorie",

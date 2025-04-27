@@ -159,11 +159,12 @@ def get_vozidla_for_brzdic_view(request):
         # If limit is set to 0 return all adapters
         if limit == 0:
             brzdice_objects = get_vozidla_for_brzdic(brzdic_id=brzdic_id)
-            adapters = [brzdic.to_dict() for brzdic in brzdice_objects]
-            return JsonResponse({
-                "count": len(adapters),
-                "data": adapters
-            }, status=200)
+            if brzdice_objects:
+                brzdic = [brzdic.to_dict() for brzdic in brzdice_objects]
+                return JsonResponse({
+                    "count": len(brzdic),
+                    "data": brzdic
+                }, status=200)
         
         # Get vozidla for the brzdic
         brzdice_objects = get_vozidla_for_brzdic(limit=limit, page=page, states=states, brzdic_id=brzdic_id)

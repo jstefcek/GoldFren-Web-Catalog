@@ -105,7 +105,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
   const displayedOemNumbers = showAllOem ? oemNumbers : oemNumbers.slice(0, 10);
 
   return (
-    <div className="p-4 md:p-4 max-w-screen-xl mx-auto">
+    <div className="p-4 md:p-4 max-w-screen-xl mx-auto mb-8">
       {/* Top navigation strip */}
       <NavigationStrip
         to="/desticky"

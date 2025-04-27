@@ -34,6 +34,42 @@ export const dataTransformers = {
       }
       return [];
     },
+
+    // Brzdice detail transformed data
+    brzdic_detail: (data) => {
+      if (data) {
+        return {
+          ...data,
+          id: data.kod,
+          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/brzdice/image/" + data.obrazek : null,
+          vektor: data.vektor ? "http://localhost/GoldFren_Media/brzdice/vector/" + data.vektor : null,
+          cislo_dilu: data.cislo_dilu,
+          typ_uchyceni: data.typ_uchyceni,
+          pocet_pistku: data.pocet_pistku,
+          popis: data.popis,
+        };
+      }
+      return {};
+    },
+
+    // Brzdic vozidla transformed data
+    brzdic_vozidla: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          vyrobce: item.vyrobce,
+          kategorie: item.kategorie,
+          subkategorie: item.subkategorie,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+          objem: item.objem,
+          rok_od: item.rok_od,
+          rok_do: item.rok_do,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
+    },
     
     // Desticky transformed data
     desticky: (data) => {

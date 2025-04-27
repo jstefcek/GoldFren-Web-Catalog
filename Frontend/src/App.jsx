@@ -5,6 +5,7 @@ import Adaptery from "./pages/Adaptery";
 import Desticky from "./pages/Desticky";
 import Desticka_Detail from "./pages/DetailPages/Desticka_Detail"
 import Brzdice from "./pages/Brzdice";
+import Brzdic_Detail from "./pages/DetailPages/Brzdic_Detail";
 import "/src/localization/language_setup";
 import Footer from "./layouts/Footer"
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/desticky" element={<Desticky />} />
           <Route path="/desticky/:id" element={<Desticka_Detail />} />
           <Route path="/brzdice" element={<Brzdice />} />
+          <Route path="/brzdice/:id" element={<Brzdic_Detail />} />
         </Routes>
       </main>
       <Footer />

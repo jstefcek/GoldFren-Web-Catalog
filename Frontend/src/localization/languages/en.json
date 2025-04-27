@@ -17,6 +17,7 @@
   "desticky_title": "GOLDfren brake pads",
   "footer_created": "Created by",
   "brake_pad_title": "Brake pad GOLDfren",
+  "caliper_title": "Brake caliper GOLDfren",
   "back_to_list": "Back to ",
   "category": {
     "motorbike": "Motorbike",
@@ -67,6 +68,7 @@
     "no_compatibility": "No compatibility found",
     "no_material": "No material information available",
     "no_drawing": "No CAD drawing available",
+    "no_image": "No image available",
     "manufacturer": "Manufacturer",
     "category": "Vehicle category",
     "subcategory": "Subcategory",

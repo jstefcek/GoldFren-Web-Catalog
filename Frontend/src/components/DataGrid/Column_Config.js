@@ -20,6 +20,18 @@ export const columnsConfig = {
     {key: "popis", label: "datagrid.description", sortable: true, filterable: true },
   ],
 
+  // Brzdic vozidla web column config
+  brzdic_vozidla: [
+    {key: "vyrobce", label: "datagrid.manufacturer", sortable: true, filterable: true },
+    {key: "kategorie", label: "datagrid.category", sortable: true, filterable: true },
+    {key: "subkategorie", label: "datagrid.subcategory", sortable: true, filterable: true },
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "objem", label: "datagrid.volume", sortable: true, filterable: true },
+    {key: "rok_od", label: "datagrid.year_from", sortable: true, filterable: true },
+    {key: "rok_do", label: "datagrid.year_to", sortable: true, filterable: true },
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+  ],
+
   // Desticky web column config
   desticky: [
     {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
