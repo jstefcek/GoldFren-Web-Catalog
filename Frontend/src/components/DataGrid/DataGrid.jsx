@@ -382,7 +382,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                             <img
                               src={row[col.key]}
                               alt={category + " vektor"}
-                              className="max-w-[160px] h-auto rounded object-contain"
+                              className="max-w-[160px] max-h-[120px] h-auto rounded object-contain"
                               loading="lazy"
                             />
                           </a>

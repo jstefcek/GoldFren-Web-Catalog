@@ -132,7 +132,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                   <img
                     src={adapterData.image}
                     alt={`Caliper ${displayData(adapterData.cislo_dilu)}`}
-                    className="w-full h-auto object-contain rounded shadow-sm cursor-pointer"
+                    className="w-full h-48 object-contain rounded shadow-sm cursor-pointer"
                   />
                 </a>
               ) : (
@@ -156,7 +156,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                     alt={`Brake pad technical drawing ${displayData(
                       adapterData.cislo_dilu
                     )}`}
-                    className="w-full h-auto object-contain rounded shadow-sm"
+                    className="w-full h-48 object-contain rounded shadow-sm"
                   />
                 </div>
               ) : (

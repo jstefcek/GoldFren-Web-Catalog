@@ -151,7 +151,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                   <img
                     src={padData.vektor}
                     alt={`Brake pad technical drawing ${displayData(padData.cislo_dilu)}`}
-                    className="w-full h-auto object-contain rounded shadow-sm"
+                    className="w-full h-48 object-contain rounded shadow-sm"
                   />
                 </div>
               ) : (
