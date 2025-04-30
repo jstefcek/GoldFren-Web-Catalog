@@ -10,6 +10,7 @@ import { fetchData } from "../../hooks/Data_APIHook";
 import { useTranslation } from "react-i18next";
 import { NavigationStrip } from "../ui/Custom_NavigationStrip";
 import DataGrid from "../DataGrid/DataGrid";
+import DetailImage from "../ui/Custom_DetailImage";
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function BrakePadDetail({ category = "", apiUrl = null }) {
@@ -120,52 +121,22 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Image */}
             <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="text-lg font-medium mb-2">
-                {t("datagrid.picture")}
-              </h3>
-              {kotoucData.image ? (
-                <a
-                  href={kotoucData.image}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src={kotoucData.image}
-                    alt={`Caliper ${displayData(kotoucData.cislo_dilu)}`}
-                    className="w-full h-48 object-contain rounded shadow-sm cursor-pointer"
-                  />
-                </a>
-              ) : (
-                <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded">
-                  <p className="text-gray-500">
-                    {t("datagrid.no_image") || "No image available"}
-                  </p>
-                </div>
-              )}
+              <DetailImage
+                title={t("datagrid.picture")}
+                imageUrl={kotoucData.image}
+                altText={`Brake disc image for ${displayData(kotoucData.cislo_dilu)}`}
+                noImageText={t("datagrid.no_image") || "No image available"}
+              />
             </div>
 
             {/* Technical Drawing */}
             <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="text-lg font-medium mb-2">
-                {t("datagrid.vektor")}
-              </h3>
-              {kotoucData.vektor ? (
-                <div className="w-full flex justify-center">
-                  <img
-                    src={kotoucData.vektor}
-                    alt={`Brake pad technical drawing ${displayData(
-                      kotoucData.cislo_dilu
-                    )}`}
-                    className="w-full h-48 object-contain rounded shadow-sm p-4"
-                  />
-                </div>
-              ) : (
-                <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded">
-                  <p className="text-gray-500">
-                    {t("datagrid.no_drawing") || "No drawing available"}
-                  </p>
-                </div>
-              )}
+              <DetailImage
+                title={t("datagrid.vektor")}
+                imageUrl={kotoucData.vektor}
+                altText={`Brake disc technical image for ${displayData(kotoucData.cislo_dilu)}`}
+                noImageText={t("datagrid.no_image") || "No image available"}
+              />
             </div>
           </div>
         </div>
@@ -180,7 +151,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
             
               {/* Type */}
               <div>
-                <h3 className="text-lg font-medium mb-2">
+                <h3 className="text-lg font-medium mb-4">
                   {t("datagrid.type")}
                 </h3>
                 <p className="text-gray-700">
@@ -190,7 +161,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
               {/* Note */}
               <div>
-                <h3 className="text-lg font-medium mb-2">
+                <h3 className="text-lg font-medium mb-4">
                   {t("datagrid.note")}
                 </h3>
                 <p className="text-gray-700">
@@ -203,7 +174,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
         </div>
 
         {/* Competition details */}
-        <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-6">
+        <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-8">
           <div className="bg-gray-50 p-4 rounded-md">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             

@@ -10,6 +10,7 @@ import { fetchData } from "../../hooks/Data_APIHook";
 import { useTranslation } from "react-i18next";
 import { NavigationStrip } from "../ui/Custom_NavigationStrip";
 import DataGrid from "../DataGrid/DataGrid";
+import DetailImage from "../ui/Custom_DetailImage";
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function BrakePadDetail({ category = "", apiUrl = null }) {
@@ -120,52 +121,22 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Image */}
             <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="text-lg font-medium mb-3">
-                {t("datagrid.picture")}
-              </h3>
-              {adapterData.image ? (
-                <a
-                  href={adapterData.image}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src={adapterData.image}
-                    alt={`Caliper ${displayData(adapterData.cislo_dilu)}`}
-                    className="w-full h-48 object-contain rounded shadow-sm cursor-pointer"
-                  />
-                </a>
-              ) : (
-                <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded">
-                  <p className="text-gray-500">
-                    {t("datagrid.no_image") || "No image available"}
-                  </p>
-                </div>
-              )}
+              <DetailImage
+                title={t("datagrid.picture")}
+                imageUrl={adapterData.image}
+                altText={`Caliper image for ${displayData(adapterData.cislo_dilu)}`}
+                noImageText={t("datagrid.no_image") || "No image available"}
+              />
             </div>
 
             {/* Technical Drawing */}
             <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="text-lg font-medium mb-3">
-                {t("datagrid.vektor")}
-              </h3>
-              {adapterData.vektor ? (
-                <div className="w-full flex justify-center">
-                  <img
-                    src={adapterData.vektor}
-                    alt={`Brake pad technical drawing ${displayData(
-                      adapterData.cislo_dilu
-                    )}`}
-                    className="w-full h-48 object-contain rounded shadow-sm"
-                  />
-                </div>
-              ) : (
-                <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded">
-                  <p className="text-gray-500">
-                    {t("datagrid.no_drawing") || "No drawing available"}
-                  </p>
-                </div>
-              )}
+              <DetailImage
+                title={t("datagrid.vektor")}
+                imageUrl={adapterData.vektor}
+                altText={`Caliper technical image for ${displayData(adapterData.cislo_dilu)}`}
+                noImageText={t("datagrid.no_image") || "No image available"}
+              />
             </div>
           </div>
         </div>
@@ -178,7 +149,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
           <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-6">
             {/* Diameter section */}
             <div>
-              <h3 className="text-lg font-medium mb-3">
+              <h3 className="text-lg font-medium mb-4">
                 {t("datagrid.diameter")}
               </h3>
               <p className="text-gray-700">
@@ -188,7 +159,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
             {/* Attachment type section */}
             <div>
-              <h3 className="text-lg font-medium mb-3">
+              <h3 className="text-lg font-medium mb-4">
                 {t("datagrid.attached_type")}
               </h3>
               <p className="text-gray-700">
@@ -198,7 +169,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
             {/* Piston number count */}
             <div>
-              <h3 className="text-lg font-medium mb-3">
+              <h3 className="text-lg font-medium mb-4">
                 {t("datagrid.pistku_count")}
               </h3>
               <p className="text-gray-700">
@@ -210,7 +181,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       </div>
 
       {/* Vehicle Compatibility Section */}
-      <div className="rounded-lg shadow border border-gray-200 bg-white p-6">
+      <div className="rounded-lg shadow border border-gray-200 bg-white p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <h2 className="text-xl font-semibold text-gray-700">
             {t("datagrid.compatible_vehicles")}
