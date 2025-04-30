@@ -18,7 +18,7 @@ const DetailImage = ({ title, imageUrl, altText, noImageText }) => {
           />
         </a>
       ) : (
-        <div className="w-full h-32 flex flex-col items-center justify-center bg-gray-100 rounded space-y-2">
+        <div className="w-full h-64 flex flex-col items-center justify-center bg-gray-100 rounded space-y-2">
             <ImageOff className="w-8 h-8 text-gray-400 mb-4" />
             <p className="text-gray-500">{noImageText}</p>
         </div>

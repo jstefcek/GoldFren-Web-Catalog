@@ -127,7 +127,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Image */}
-            <div className="bg-gray-50 p-4 rounded-md">
+            <div className="bg-gray-50 p-4 rounded-md ">
               <DetailImage
                 title={t("datagrid.picture")}
                 imageUrl={padData.image}
