@@ -145,13 +145,13 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       {/* Third section */}
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
         {/* Product details */}
-        <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-6">
+        <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-8">
           <div className="bg-gray-50 p-4 rounded-md">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
               {/* Type */}
               <div>
-                <h3 className="text-lg font-medium mb-4">
+                <h3 className="text-lg font-medium mb-2">
                   {t("datagrid.type")}
                 </h3>
                 <p className="text-gray-700">
@@ -161,7 +161,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
               {/* Note */}
               <div>
-                <h3 className="text-lg font-medium mb-4">
+                <h3 className="text-lg font-medium mb-2">
                   {t("datagrid.note")}
                 </h3>
                 <p className="text-gray-700">

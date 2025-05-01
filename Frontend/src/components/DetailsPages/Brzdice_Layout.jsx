@@ -145,7 +145,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       {/* Second section */}
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
         {/* Image and vector drawing */}
-        <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-6">
+        <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Attachment type section */}
             <div>

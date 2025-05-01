@@ -123,7 +123,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
         
         {/* Left column with image and vector drawing */}
-        <div className="lg:w-5/7 rounded-lg shadow border border-gray-200 bg-white p-6">
+        <div className="lg:w-5/7 rounded-lg shadow border border-gray-200 bg-white p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Image */}
@@ -149,7 +149,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
         </div>
 
         {/* Right column with OEM numbers - fixed height with scroll */}
-        <div className="lg:w-2/7 rounded-lg shadow border border-gray-200 bg-white p-6 flex flex-col">
+        <div className="lg:w-2/7 rounded-lg shadow border border-gray-200 bg-white p-8 flex flex-col">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
             {t("datagrid.oem_cisla")}
           </h2>
