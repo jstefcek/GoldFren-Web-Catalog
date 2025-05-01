@@ -115,8 +115,8 @@ def brzdice_publication(brzdic_id, publikovat):
 def get_filtered_brzdice(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, typ_uchyceni 
-    FROM v_brzdice_detail
+    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, pocet_pistku, typ_uchyceni 
+    FROM v_vozidlo_brzdic
     """
     params = []
     filter_condition = []

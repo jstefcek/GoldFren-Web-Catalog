@@ -114,7 +114,7 @@ def get_filtered_hadicky(limit: int = None, page: int = None, states: bool = Fal
     # Prepare SQL query and add kod
     query = """
     SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, poznamka, pozice
-    FROM v_hadicky_detail
+    FROM v_vozidlo_hadicky
     """
     params = []
     filter_condition = []

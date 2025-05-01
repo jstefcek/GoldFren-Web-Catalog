@@ -2,7 +2,7 @@
 
 # Imports
 from datetime import datetime
-from GoldFrenAPI.Models.Pumpy import Pumpa
+from GoldFrenAPI.Models.Pumpy import Pumpa, VozidloPumpa
 from GoldFrenAPI.Services.Service_utils import (
     set_publication_state, 
     get_item_by_id,
@@ -18,8 +18,9 @@ from GoldFrenAPI.utils.utils import (
 def get_pumpy(limit: int = None, page: int = None, states: bool = False):
     # Get all items from the database
     query = """
-        SELECT *
-        FROM v_pumpy_detail"""
+            SELECT *
+            FROM v_pumpy_detail
+            """
     query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
     query += " ORDER BY cislo_dilu ASC"
     records = get_records(sql_query=query, limit=limit, page=page)
@@ -110,3 +111,90 @@ def create_pumpa(data: dict):
 def pumpa_publication(pumpa_id, publikovat):
     state = set_publication_state(sql_table="d_pumpa", publikovat=publikovat, item_id=pumpa_id)
     return state
+
+# Find specific pumpy by given parameters
+def get_filtered_pumpy(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT DISTINCT kod, sortiment, kategorie, obrazek, vektor, cislo_dilu, typ, popis, poznamka, pozice
+    FROM v_vozidla_pumpa
+    """
+    params = []
+    filter_condition = []
+
+    # Apply publication filter 
+    filter_condition.append("publikovat in (0,1)" if states else "Publikovat = 1")
+    filter_condition, params = prepare_sql_filters(filters=filters, filter_condition=filter_condition, params=params)
+
+    # Append filters to base query
+    if filter_condition:
+        query += " WHERE " + " AND ".join(filter_condition)
+    
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+    
+    # Prepare data and return if someting found
+    pumpy = []
+    for record in records:
+        pumpa = {
+            "kod": record["kod"],
+            "cislo_dilu": record["cislo_dilu"],
+            "obrazek": record["obrazek"],
+            "vektor": record["vektor"],
+            "typ": record["typ"],
+            "poznamka": record["poznamka"],
+            "pozice": record["pozice"]
+        }
+        pumpy.append(pumpa)
+    
+    # Return list of matching pumpy dictionaries
+    return pumpy if pumpy else None
+
+# Get vozidla for specific pumpa
+def get_vozidla_for_pumpa(limit: int = None, page: int = None, states: bool = False, pumpa_id: int = None):
+    # Prepare SQL query and add kod
+    query = """
+    SELECT *
+    FROM v_vozidla_pumpa
+    WHERE kod = %s
+    """
+    params = [pumpa_id]
+    query += " AND publikovat in (0,1)" if states else " AND Publikovat = 1"
+    query += " ORDER BY vyrobce ASC, oznaceni_vozidla ASC"
+    
+    # Execute query and get records
+    records = get_records(sql_query=query, params=params, limit=limit, page=page)
+    if not records:
+        return None
+
+    prislusenstvi = []
+    for record in records:
+        obj_prislusenstvi = VozidloPumpa(
+            kod=record["kod"],
+            cislo_dilu=record["cislo_dilu"],
+            kategorie=record["kategorie"],
+            subkategorie=record["subkategorie"],
+            vyrobce=record["vyrobce"],
+            vozidlo=record["vozidlo"],
+            oznaceni_vozidla=record["oznaceni_vozidla"],
+            typ_vozidla=record["typ_vozidla"],
+            objem=float(record["objem"]) if record["objem"] is not None else None,
+            obrazek=record["obrazek"],
+            vektor=record["vektor"],
+            prumer=float(record["prumer"]) if record["prumer"] is not None else None,
+            popis=record["popis"],
+            poznamka=record["poznamka"],
+            typ=record["typ"],
+            rok_od=record["rok_od"],
+            rok_do=record["rok_do"],
+            pozice=record["pozice"],
+            publikovat=bool(record["publikovat"])
+        )
+
+        # Append prislusenstvi object to list
+        prislusenstvi.append(obj_prislusenstvi)
+        
+    # Return list of matching prislusenstvi objects
+    return prislusenstvi if prislusenstvi else None

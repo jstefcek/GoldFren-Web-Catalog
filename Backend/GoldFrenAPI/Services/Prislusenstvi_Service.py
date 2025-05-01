@@ -115,7 +115,7 @@ def prislusenstvi_publication(prislusenstvi_id, publikovat):
 def get_filtered_prislusenstvi(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT DISTINCT kod, sortiment, kategorie, obrazek, vektor, cislo_dilu, typ, popis, poznamka 
+    SELECT kod, obrazek, vektor, cislo_dilu, typ, popis, poznamka 
     FROM v_prislusenstvi_detail
     """
     params = []
@@ -143,8 +143,8 @@ def get_filtered_prislusenstvi(limit: int = None, page: int = None, states: bool
             "obrazek": record["obrazek"],
             "vektor": record["vektor"],
             "typ": record["typ"],
-            "poznamka": record["poznamka"],
-            "pozice": record["pozice"]
+            "popis": record["popis"],
+            "poznamka": record["poznamka"]
         }
         prislusentsvi.append(obj_prislusenstvi)
     

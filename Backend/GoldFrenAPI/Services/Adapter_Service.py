@@ -137,8 +137,8 @@ def adapter_publication(adapter_id: int, publikovat: int):
 def get_filtered_adapters(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT kod, cislo_dilu, obrazek, vektor, pozice, prumer, typ_uchyceni, roztec_brzdic
-    FROM v_adapter_detail
+    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, prumer, typ_uchyceni, roztec_brzdic
+    FROM v_vozidlo_adapter
     """
     params = []
     filter_condition = []
