@@ -423,6 +423,7 @@ limit 18446744073709551615;
 -- Create view for vozidlo pumpy data
 CREATE OR REPLACE VIEW v_vozidlo_pumpa AS
 select
+	vpd.kod,
 	vpd.cislo_dilu as cislo_dilu,
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,
@@ -489,6 +490,7 @@ limit 18446744073709551615;
 -- Create view for vozidlo prislusenstvi data
 CREATE OR REPLACE VIEW v_vozidlo_prislusenstvi AS
 select
+	vpd.kod,
 	vpd.cislo_dilu as cislo_dilu,
 	ka.nazev as kategorie,
 	sk.nazev as subkategorie,

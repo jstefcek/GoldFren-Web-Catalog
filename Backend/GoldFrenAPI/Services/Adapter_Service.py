@@ -17,7 +17,8 @@ def get_adapters(limit: int = None, page: int = None, states: bool = False):
     # Get all items from the database
     query = """
         SELECT *
-        FROM v_adapter_detail"""
+        FROM v_adapter_detail
+        """
     query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
     records = get_records(sql_query=query, limit=limit, page=page)
     adapters = []
@@ -136,8 +137,8 @@ def adapter_publication(adapter_id: int, publikovat: int):
 def get_filtered_adapters(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, pozice, prumer, typ_uchyceni, roztec_brzdic
-    FROM v_vozidlo_adapter
+    SELECT kod, cislo_dilu, obrazek, vektor, pozice, prumer, typ_uchyceni, roztec_brzdic
+    FROM v_adapter_detail
     """
     params = []
     filter_condition = []

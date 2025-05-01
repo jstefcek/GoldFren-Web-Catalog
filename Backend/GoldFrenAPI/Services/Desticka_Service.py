@@ -204,10 +204,10 @@ def desticka_publication(desticka_id: int, publikovat: int):
 def get_filtered_desticky(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, material, konkurence_sbs, konkurence_ebc, konkurence_ferodo, 
+    SELECT kod, cislo_dilu, obrazek, vektor, material, konkurence_sbs, konkurence_ebc, konkurence_ferodo, 
     konkurence_a2z, konkurence_rapco, konkurence_grove, konkurence_cleveland, konkurence_matco, 
     oem_cisla, pozice
-    FROM v_vozidlo_desticka
+    FROM v_desticka_detail
     """
     params = []
     filter_condition = []

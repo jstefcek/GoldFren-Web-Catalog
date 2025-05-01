@@ -5,16 +5,24 @@ from datetime import datetime
 from GoldFrenAPI.Models.Pumpy import Pumpa
 from GoldFrenAPI.Services.Service_utils import (
     set_publication_state, 
-    get_all_items,
     get_item_by_id,
     execute_update,
-    insert_record
+    insert_record,
+    get_records
+)
+from GoldFrenAPI.utils.utils import (
+    prepare_sql_filters
 )
 
 # Function to get all pumpy from database
 def get_pumpy(limit: int = None, page: int = None, states: bool = False):
     # Get all items from the database
-    records = get_all_items(sql_view="v_pumpy_detail", limit=limit, page=page, states=states)
+    query = """
+        SELECT *
+        FROM v_pumpy_detail"""
+    query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+    query += " ORDER BY cislo_dilu ASC"
+    records = get_records(sql_query=query, limit=limit, page=page)
     pumpy = []
     
     # Iterate through records

@@ -18,7 +18,8 @@ class Pumpa():
         return self.__dict__
     
 class VozidloPumpa():
-    def __init__(self, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, prumer, obrazek, vektor, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+    def __init__(self, kod, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, prumer, obrazek, vektor, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
+        self.kod = kod
         self.cislo_dilu = cislo_dilu
         self.kategorie = kategorie
         self.subkategorie = subkategorie
