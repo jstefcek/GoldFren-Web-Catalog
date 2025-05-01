@@ -106,7 +106,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       <NavigationStrip
         to="/kotouce"
         label={t("back_to_list") || "Back to list"}
-        description={t("datagrid.kotouce_title")}
+        description="datagrid.kotouce_title"
       />
 
       {/* Page title */}

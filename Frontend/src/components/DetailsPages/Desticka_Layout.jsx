@@ -111,7 +111,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       <NavigationStrip
         to="/desticky"
         label={t('back_to_list') || 'Back to list'}
-        description={t("datagrid.desticky_title")}
+        description="datagrid.desticky_title"
       />
 
       {/* Page title */}

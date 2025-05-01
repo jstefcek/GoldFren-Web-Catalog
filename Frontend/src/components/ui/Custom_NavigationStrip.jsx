@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 // NavigationStrip component
 export function NavigationStrip({ to = "", label = "", description = "" }) {
@@ -11,6 +12,8 @@ export function NavigationStrip({ to = "", label = "", description = "" }) {
     }
   };
 
+  const { t } = useTranslation();
+
   return (
     <nav aria-label="Breadcrumb" className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm mb-4">
       <div className="w-full px-4 md:px-6 py-3 flex items-center space-x-3 p-4">
@@ -20,7 +23,7 @@ export function NavigationStrip({ to = "", label = "", description = "" }) {
         >
           <ArrowLeft className="h-4 w-4 mr-2" aria-hidden="true" />
           <span className="font-xs truncate">
-            {label}{description && ` ${description}`}
+            {label} {t(description)}
           </span>
         </button>
       </div>
