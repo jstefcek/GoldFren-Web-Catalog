@@ -178,13 +178,13 @@ def get_vozidla_for_kotouc_view(request):
             vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
         
             # Get filtered kotouc count
-            total_destickas = get_total_count_with_params("SELECT * FROM v_vozidlo_kotouc",
+            total_kotouce = get_total_count_with_params("SELECT * FROM v_vozidlo_kotouc",
                                                         states=states, filters={"kod": kotouc_id})
             
             # Construct next and previous page URLs
-            next_url, prev_url = get_pagination_urls(request, limit, page, total_destickas)
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_kotouce)
             return JsonResponse({
-                "count": total_destickas,
+                "count": total_kotouce,
                 "next": next_url,
                 "previous": prev_url,
                 "data": vozidla

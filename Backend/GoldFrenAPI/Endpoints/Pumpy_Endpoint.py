@@ -5,7 +5,9 @@ from GoldFrenAPI.Views.Pumpy_View import (
     get_pumpa_by_id,
     update_pumpa_view,
     create_pumpa_view,
-    pumpa_publication_view
+    pumpa_publication_view,
+    get_vozidla_for_pumpa_view,
+    get_filtered_pumpa_view
 )
 
 # URL patterns
@@ -15,4 +17,6 @@ urlpatterns = [
     path("update/<int:pumpa_id>", update_pumpa_view, name="update_pumpa"),
     path("create", create_pumpa_view, name="create_pumpa"),  
     path("publication/<int:pumpa_id>", pumpa_publication_view, name="pumpa_publication"),
+    path("filter", get_filtered_pumpa_view, name="get_filtered_pumpa_view"),
+    path("vozidla", get_vozidla_for_pumpa_view, name="get_vozidla_for_pumpa_view"),
 ]

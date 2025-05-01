@@ -472,6 +472,8 @@ select
 	vpd.prumer,
 	vpd.obrazek,
 	vpd.vektor,
+	vpd.popis,
+	vpd.poznamka,
 	vz.oznaceni as specialni_oznaceni,
 	vz.rok_od,
 	vz.rok_do,

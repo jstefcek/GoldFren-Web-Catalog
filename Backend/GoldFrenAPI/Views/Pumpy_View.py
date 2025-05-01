@@ -9,14 +9,17 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from GoldFrenAPI.utils.utils import (
     get_pagination,
     get_total_count,
-    get_pagination_urls
+    get_pagination_urls,
+    get_total_count_with_params
 )
 from GoldFrenAPI.Services.Pumpy_Service import (
     get_pumpy as get_all_pumpy,
     get_pumpa,
     update_pumpa,
     create_pumpa,
-    pumpa_publication
+    pumpa_publication,
+    get_filtered_pumpy,
+    get_vozidla_for_pumpa
 )
 
 # Function to get all pumpy
@@ -35,11 +38,12 @@ def get_pumpy(request):
         # If limit is set to 0 return all pumpy
         if limit == 0:
             pumpy_objects = get_all_pumpy(states=states)
-            pumpy = [pumpa.to_dict() for pumpa in pumpy_objects]
-            return JsonResponse({
-                "count": len(pumpy),
-                "data": pumpy
-            }, status=200)
+            if pumpy_objects:
+                pumpy = [pumpa.to_dict() for pumpa in pumpy_objects]
+                return JsonResponse({
+                    "count": len(pumpy),
+                    "data": pumpy
+                }, status=200)
         
         # Get pumpy count
         total_pumpy = get_total_count("d_pumpa", states=states)
@@ -72,6 +76,116 @@ def get_pumpa_by_id(request, pumpa_id):
     if pumpa:
         return JsonResponse(pumpa.to_dict(), status=200)
     return JsonResponse({"error": "Pumpa not found"}, status=404)
+
+# Function to return pumpa that match specific parameters
+@api_view(['GET'])
+def get_filtered_pumpa_view(request):
+    """
+    This function returns pumpa that match specific parameters.
+    """
+    try:    
+        # Get parameters from request
+        prumer_min = request.GET.get("prumer_min", None)
+        prumer_max = request.GET.get("prumer_max", None)
+        pozice = request.GET.get("pozice", None)
+        
+        # Store params to dict
+        filters = {
+            "prumer": (prumer_min, prumer_max),
+            "pozice": pozice
+        }
+        
+        # Get pagination parameters from request 
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+    
+        # If limit is set to 0 return all pumpy
+        if limit == 0:
+            pumpy_objects = get_filtered_pumpy(states=states, filters=filters)
+            if pumpy_objects:
+                pumpy = [pumpa for pumpa in pumpy_objects]
+                return JsonResponse({
+                    "count": len(pumpy),
+                    "data": pumpy
+                }, status=200)
+        
+        # If limit is set to a number, return paginated pumpy
+        pumpy_objects = get_filtered_pumpy(limit=limit, page=page, states=states, filters=filters)
+        if pumpy_objects:
+            pumpy = [pumpa for pumpa in pumpy_objects]
+            
+            # Get filtered pumpy count
+            total_pumpy = get_total_count_with_params("""SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, prumer, typ, pozice
+                                                            FROM v_vozidlo_pumpa""", 
+                                                        states=states, filters=filters)
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_pumpy)
+            return JsonResponse({
+                "count": total_pumpy,
+                "next": next_url,
+                "previous": prev_url,
+                "data": pumpy
+            }, status=200)
+        else:
+            return JsonResponse({"error": "No pumpy has been found.."}, status=404)
+
+    # Handle pagination errors
+    except ValueError:
+        return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
+
+# Function to get vozidla for a specific pumpa
+@api_view(['GET'])
+def get_vozidla_for_pumpa_view(request):
+    """
+    This function returns vozidla for a specific pumpa.
+    """
+    try:
+        # Get parameters from request
+        pumpa_id = request.GET.get("pumpa_id", None)
+        if not pumpa_id:
+            return JsonResponse({"error": "Missing pumpa_id parameter"}, status=400)
+        
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+        
+        # If limit is set to 0 return all pumpa
+        if limit == 0:
+            vozidla_objects = get_vozidla_for_pumpa(pumpa_id=pumpa_id)
+            if vozidla_objects:
+                vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
+                return JsonResponse({
+                    "count": len(vozidla),
+                    "data": vozidla
+                }, status=200)
+        
+        # Get vozidla for the pumpa
+        vozidla_objects = get_vozidla_for_pumpa(limit=limit, page=page, states=states, pumpa_id=pumpa_id)
+        if vozidla_objects:
+            vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
+        
+            # Get filtered kotouc count
+            total_pumpy = get_total_count_with_params("SELECT * FROM v_vozidlo_pumpa",
+                                                        states=states, filters={"kod": pumpa_id})
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_pumpy)
+            return JsonResponse({
+                "count": total_pumpy,
+                "next": next_url,
+                "previous": prev_url,
+                "data": vozidla
+            }, status=200)
+            
+        return JsonResponse({"error": "No vozidla found for this kotouc"}, status=404)
+    
+    except Exception as ex:
+        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
 
 # Function to update an pumpa
 @api_view(['PUT'])

@@ -35,11 +35,12 @@ def get_prislusenstvi(request):
         # If limit is set to 0 return all prislusenstvi
         if limit == 0:
             prislusenstvi_objects = get_all_prislusenstvi(states=states)
-            prislusenstvi = [prislusenstvi.to_dict() for prislusenstvi in prislusenstvi_objects]
-            return JsonResponse({
-                "count": len(prislusenstvi),
-                "data": prislusenstvi
-            }, status=200)
+            if prislusenstvi_objects:
+                prislusenstvi = [prislusenstvi.to_dict() for prislusenstvi in prislusenstvi_objects]
+                return JsonResponse({
+                    "count": len(prislusenstvi),
+                    "data": prislusenstvi
+                }, status=200)
         
         # Get prislusenstvi count
         total_prislusenstvi = get_total_count("d_prislusenstvi", states=states)
