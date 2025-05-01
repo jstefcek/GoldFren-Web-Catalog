@@ -106,7 +106,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       <NavigationStrip
         to="/adaptery"
         label={t("back_to_list") || "Back to list"}
-        description="GOLDfren brzdové adaptéry"
+        description={t("datagrid.adapter_title")}
       />
 
       {/* Page title */}

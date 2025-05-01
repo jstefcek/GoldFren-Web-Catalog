@@ -9,6 +9,8 @@ import Brzdice from "./pages/Brzdice";
 import Brzdic_Detail from "./pages/DetailPages/Brzdic_Detail";
 import Kotouce from "./pages/Kotouce";
 import Kotouc_Detail from "./pages/DetailPages/Kotouc_Detail";
+import Hadicky from "./pages/Hadicky";
+import Hadicka_Detail from "./pages/DetailPages/Hadicka_Detail";
 import "/src/localization/language_setup";
 import Footer from "./layouts/Footer"
 
@@ -27,6 +29,8 @@ function App() {
           <Route path="/brzdice/:id" element={<Brzdic_Detail />} />
           <Route path="/kotouce" element={<Kotouce />} />
           <Route path="/kotouce/:id" element={<Kotouc_Detail />} />
+          <Route path="/hadicky" element={<Hadicky />} />
+          <Route path="/hadicky/:id" element={<Hadicka_Detail />} />
         </Routes>
       </main>
       <Footer />

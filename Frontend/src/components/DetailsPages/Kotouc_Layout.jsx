@@ -104,9 +104,9 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
     <div className="p-4 md:p-4 w-full mb-8">
       {/* Top navigation strip */}
       <NavigationStrip
-        to="/adaptery"
+        to="/kotouce"
         label={t("back_to_list") || "Back to list"}
-        description="GOLDfren brzdové kotouče"
+        description={t("datagrid.kotouce_title")}
       />
 
       {/* Page title */}

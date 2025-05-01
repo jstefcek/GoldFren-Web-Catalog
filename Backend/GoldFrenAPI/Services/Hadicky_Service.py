@@ -21,6 +21,7 @@ def get_hadicky(limit: int = None, page: int = None, states: bool = False):
         SELECT *
         FROM v_hadicky_detail"""
     query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+    query += " ORDER BY cislo_dilu ASC"
     records = get_records(sql_query=query, limit=limit, page=page)
     hadicky = []
     

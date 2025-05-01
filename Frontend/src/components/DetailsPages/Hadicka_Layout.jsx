@@ -14,7 +14,7 @@ import DetailImage from "../ui/Custom_DetailImage";
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function BrakePadDetail({ category = "", apiUrl = null }) {
-  // Get the ID from the URL (would work with React Router)
+  // Get the ID from the URL
   const id = window.location.pathname.split("/").pop();
 
   // Validate that ID is a number
@@ -22,7 +22,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
   // State for controlling vehicle compatibility loading
   const [showVehicles, setShowVehicles] = useState(false);
-  const [brzdiceData, setBrzdiceData] = useState({});
+  const [hadickaData, setHadickaData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { t } = useTranslation();
@@ -39,13 +39,12 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       setLoading(true);
       try {
         const result = await fetchData(category, apiUrl + id);
-        console.log("API Result:", result);
-        setBrzdiceData(result || {});
+        setHadickaData(result || {});
         setLoading(false);
       } catch (error) {
         console.error("Error loading data:", error);
         setError(t("error.loading_failed") || "Failed to load data");
-        setBrzdiceData({});
+        setHadickaData({});
         setLoading(false);
       }
     };
@@ -78,7 +77,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
   // Handle error or invalid ID
   if (error || !isValidId) {
     return (
-      <div className="p-6 max-w-screen-xl mx-auto">
+      <div className="p-6 w-full mb-8">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 flex items-start">
           <AlertCircle className="h-6 w-6 text-red-600 mr-4 flex-shrink-0 mt-1" />
           <div>
@@ -104,14 +103,14 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
     <div className="p-4 md:p-4 w-full mb-8">
       {/* Top navigation strip */}
       <NavigationStrip
-        to="/brzdice"
+        to="/hadicky"
         label={t("back_to_list") || "Back to list"}
-        description={t("datagrid.brzdice_title")}
+        description={t("datagrid.hadicky_title")}
       />
 
       {/* Page title */}
       <h1 className="text-3xl font-bold text-gray-800 mb-4 mt-8">
-        {t("caliper_title")} - {displayData(brzdiceData.cislo_dilu)}
+        {t("kotouc_title")} - {displayData(hadickaData.cislo_dilu)}
       </h1>
 
       {/* Top sections in a grid */}
@@ -123,8 +122,8 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
             <div className="bg-gray-50 p-4 rounded-md">
               <DetailImage
                 title={t("datagrid.picture")}
-                imageUrl={brzdiceData.image}
-                altText={`Brake image for ${displayData(brzdiceData.cislo_dilu)}`}
+                imageUrl={hadickaData.image}
+                altText={`Brake disc image for ${displayData(hadickaData.cislo_dilu)}`}
                 noImageText={t("datagrid.no_image") || "No image available"}
               />
             </div>
@@ -133,8 +132,8 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
             <div className="bg-gray-50 p-4 rounded-md">
               <DetailImage
                 title={t("datagrid.vektor")}
-                imageUrl={brzdiceData.vektor}
-                altText={`Brake image for ${displayData(brzdiceData.cislo_dilu)}`}
+                imageUrl={hadickaData.vektor}
+                altText={`Brake disc technical image for ${displayData(hadickaData.cislo_dilu)}`}
                 noImageText={t("datagrid.no_image") || "No image available"}
               />
             </div>
@@ -142,36 +141,31 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
         </div>
       </div>
 
-      {/* Second section */}
+      {/* Third section */}
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
-        {/* Image and vector drawing */}
+        {/* Product details */}
         <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Attachment type section */}
-            <div>
-              <h3 className="text-lg font-medium mb-4">
-                {t("datagrid.attached_type")}
-              </h3>
-              <p className="text-gray-700">
-                {displayData(brzdiceData.typ_uchyceni)}
-              </p>
-            </div>
+          <div className="bg-gray-50 p-4 rounded-md">
+            <div className="grid grid-cols-1 gap-6">
 
-            {/* Piston number count */}
-            <div>
-              <h3 className="text-lg font-medium mb-4">
-                {t("datagrid.pistku_count")}
-              </h3>
-              <p className="text-gray-700">
-                {displayData(brzdiceData.pocet_pistku)}
-              </p>
+              {/* Note */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.note")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.poznamka)}
+                </p>
+              </div>
+              
             </div>
           </div>
         </div>
+
       </div>
 
       {/* Vehicle Compatibility Section */}
-      <div className="rounded-lg shadow border border-gray-200 bg-white p-8">
+      <div className="rounded-lg shadow border border-gray-200 bg-white p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <h2 className="text-xl font-semibold text-gray-700">
             {t("datagrid.compatible_vehicles")}
@@ -193,7 +187,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
           <div className="mt-4">
             <DataGrid
               category="brzdic_vozidla"
-              apiUrl={`${serverUrl}/api/goldfren/internal/brzdice/vozidla?limit=0&brzdic_id=${brzdiceData.id}`}
+              apiUrl={`${serverUrl}/api/goldfren/internal/hadicky/vozidla?limit=0&hadicka_id=${hadickaData.id}`}
             />
           </div>
         ) : (
