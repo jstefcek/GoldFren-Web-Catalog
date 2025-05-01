@@ -9,14 +9,17 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from GoldFrenAPI.utils.utils import (
     get_pagination,
     get_total_count,
-    get_pagination_urls
+    get_pagination_urls,
+    get_total_count_with_params
 )
 from GoldFrenAPI.Services.Prislusenstvi_Service import (
     get_prislusenstvi as get_all_prislusenstvi,
     get_one_prislusenstvi,
     update_prislusenstvi,
     create_prislusenstvi,
-    prislusenstvi_publication
+    prislusenstvi_publication,
+    get_filtered_prislusenstvi,
+    get_vozidla_for_prislusenstvi
 )
 
 # Function to get all prislusenstvi
@@ -73,6 +76,114 @@ def get_prislusenstvi_by_id(request, prislusenstvi_id):
     if prislusenstvi:
         return JsonResponse(prislusenstvi.to_dict(), status=200)
     return JsonResponse({"error": "Prislusenstvi not found"}, status=404)
+
+# Function to return prislusenstvi that match specific parameters
+@api_view(['GET'])
+def get_filtered_prislusenstvi_view(request):
+    """
+    This function returns prislusenstvi that match specific parameters.
+    """
+    try:    
+        # Get parameters from request
+        typ = request.GET.get("typ", None)
+        
+        # Store params to dict
+        filters = {
+            "typ": typ
+        }
+        
+        # Get pagination parameters from request 
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+    
+        # If limit is set to 0 return all prislusenstvi
+        if limit == 0:
+            prislusenstvi_objects = get_filtered_prislusenstvi(states=states, filters=filters)
+            if prislusenstvi_objects:
+                all_prislusenstvi = [prislusenstvi for prislusenstvi in prislusenstvi_objects]
+                return JsonResponse({
+                    "count": len(all_prislusenstvi),
+                    "data": all_prislusenstvi
+                }, status=200)
+        
+        # If limit is set to a number, return paginated prislusenstvi
+        prislusenstvi_objects = get_filtered_prislusenstvi(limit=limit, page=page, states=states, filters=filters)
+        if prislusenstvi_objects:
+            all_prislusenstvi = [prislusenstvi for prislusenstvi in prislusenstvi_objects]
+            
+            # Get filtered prislusenstvi count
+            total_prislusenstvi = get_filtered_prislusenstvi("""SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, typ, poznamka, popis, pozice
+                                                            FROM v_vozidlo_prislusenstvi
+                                                            """, 
+                                                        states=states, filters=filters)
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_prislusenstvi)
+            return JsonResponse({
+                "count": total_prislusenstvi,
+                "next": next_url,
+                "previous": prev_url,
+                "data": all_prislusenstvi
+            }, status=200)
+        else:
+            return JsonResponse({"error": "No prislusenstvi has been found.."}, status=404)
+
+    # Handle pagination errors
+    except ValueError:
+        return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
+
+# Function to get vozidla for a specific prislusenstvi
+@api_view(['GET'])
+def get_vozidla_for_prislusenstvi_view(request):
+    """
+    This function returns vozidla for a specific prislusenstvi.
+    """
+    try:
+        # Get parameters from request
+        prislusenstvi_id = request.GET.get("prislusenstvi_id", None)
+        if not prislusenstvi_id:
+            return JsonResponse({"error": "Missing prislusenstvi_id parameter"}, status=400)
+        
+        # Get pagination parameters from request
+        limit, page = get_pagination(request)
+        
+        # Try to get state parameter from request
+        states = bool(request.GET.get("states", False))
+        
+        # If limit is set to 0 return all prislusenstvi
+        if limit == 0:
+            vozidla_objects = get_vozidla_for_prislusenstvi(prislusenstvi_id=prislusenstvi_id)
+            if vozidla_objects:
+                vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
+                return JsonResponse({
+                    "count": len(vozidla),
+                    "data": vozidla
+                }, status=200)
+        
+        # Get vozidla for the prislusenstvi
+        vozidla_objects = get_vozidla_for_prislusenstvi(limit=limit, page=page, states=states, kotouc_id=prislusenstvi_id)
+        if vozidla_objects:
+            vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
+        
+            # Get filtered prislusenstvi count
+            total_kotouce = get_total_count_with_params("SELECT * FROM v_vozidlo_prislusenstvi",
+                                                        states=states, filters={"kod": prislusenstvi_id})
+            
+            # Construct next and previous page URLs
+            next_url, prev_url = get_pagination_urls(request, limit, page, total_kotouce)
+            return JsonResponse({
+                "count": total_kotouce,
+                "next": next_url,
+                "previous": prev_url,
+                "data": vozidla
+            }, status=200)
+            
+        return JsonResponse({"error": "No vozidla found for this prislusenstvi"}, status=404)
+    
+    except Exception as ex:
+        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
 
 # Function to update an prislusenstvi
 @api_view(['PUT'])
