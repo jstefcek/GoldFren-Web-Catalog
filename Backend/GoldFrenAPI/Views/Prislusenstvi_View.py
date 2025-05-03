@@ -163,7 +163,7 @@ def get_vozidla_for_prislusenstvi_view(request):
                 }, status=200)
         
         # Get vozidla for the prislusenstvi
-        vozidla_objects = get_vozidla_for_prislusenstvi(limit=limit, page=page, states=states, kotouc_id=prislusenstvi_id)
+        vozidla_objects = get_vozidla_for_prislusenstvi(limit=limit, page=page, states=states, prislusenstvi_id=prislusenstvi_id)
         if vozidla_objects:
             vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
         
