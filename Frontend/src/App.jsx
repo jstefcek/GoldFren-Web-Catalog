@@ -15,6 +15,7 @@ import Pumpy from "./pages/Pumpy";
 import Pumpa_Detail from "./pages/DetailPages/Pumpa_Detail";
 import Prislusenstvi from "./pages/Prislusenstvi";
 import Prislusenstvi_Detail from "./pages/DetailPages/Prislusenstvi_Detail";
+import Contact from "./pages/Contact";
 import "/src/localization/language_setup";
 import Footer from "./layouts/Footer"
 
@@ -39,6 +40,7 @@ function App() {
           <Route path="/pumpy/:id" element={<Pumpa_Detail />} />
           <Route path="/prislusenstvi" element={<Prislusenstvi />} />
           <Route path="/prislusenstvi/:id" element={<Prislusenstvi_Detail />} />
+          <Route path="/kontakt" element={<Contact />} />
         </Routes>
       </main>
       <Footer />
