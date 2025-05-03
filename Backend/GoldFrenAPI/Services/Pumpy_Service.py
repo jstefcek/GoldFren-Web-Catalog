@@ -116,8 +116,8 @@ def pumpa_publication(pumpa_id, publikovat):
 def get_filtered_pumpy(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT DISTINCT kod, sortiment, kategorie, obrazek, vektor, cislo_dilu, typ, popis, poznamka, pozice
-    FROM v_vozidla_pumpa
+    SELECT DISTINCT kod, obrazek, vektor, cislo_dilu, typ, prumer, popis, poznamka, pozice
+    FROM v_vozidlo_pumpa
     """
     params = []
     filter_condition = []
@@ -144,6 +144,7 @@ def get_filtered_pumpy(limit: int = None, page: int = None, states: bool = False
             "obrazek": record["obrazek"],
             "vektor": record["vektor"],
             "typ": record["typ"],
+            "prumer": float(record["prumer"]) if record["prumer"] is not None else None,
             "poznamka": record["poznamka"],
             "pozice": record["pozice"]
         }
@@ -157,7 +158,7 @@ def get_vozidla_for_pumpa(limit: int = None, page: int = None, states: bool = Fa
     # Prepare SQL query and add kod
     query = """
     SELECT *
-    FROM v_vozidla_pumpa
+    FROM v_vozidlo_pumpa
     WHERE kod = %s
     """
     params = [pumpa_id]
@@ -179,14 +180,14 @@ def get_vozidla_for_pumpa(limit: int = None, page: int = None, states: bool = Fa
             vyrobce=record["vyrobce"],
             vozidlo=record["vozidlo"],
             oznaceni_vozidla=record["oznaceni_vozidla"],
-            typ_vozidla=record["typ_vozidla"],
+            typ=record["typ"],
             objem=float(record["objem"]) if record["objem"] is not None else None,
             obrazek=record["obrazek"],
             vektor=record["vektor"],
             prumer=float(record["prumer"]) if record["prumer"] is not None else None,
             popis=record["popis"],
             poznamka=record["poznamka"],
-            typ=record["typ"],
+            specialni_oznaceni=record["specialni_oznaceni"],
             rok_od=record["rok_od"],
             rok_do=record["rok_do"],
             pozice=record["pozice"],

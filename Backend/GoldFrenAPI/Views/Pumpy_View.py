@@ -182,7 +182,7 @@ def get_vozidla_for_pumpa_view(request):
                 "data": vozidla
             }, status=200)
             
-        return JsonResponse({"error": "No vozidla found for this kotouc"}, status=404)
+        return JsonResponse({"error": "No vozidla found for this pumpa"}, status=404)
     
     except Exception as ex:
         return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
