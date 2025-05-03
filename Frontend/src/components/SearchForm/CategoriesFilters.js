@@ -156,26 +156,64 @@ export const filterConfigs = {
   ],
   plane: [
     {
-      name: "manufacturer",
-      label: "Manufacturer",
-      placeholder: "e.g. Cessna",
-      type: "input",
+      name: "vyrobce",
+      label: "search.manufacturer_plane",
+      placeholder: "search.manufacturer_plane_placeholder",
+      type: "select",
+      options: [],
+      api: "/api/goldfren/internal/vozidla/vyrobce",
+      api_params: ["kategorie_kod"]
     },
-    { name: "model", label: "Model", placeholder: "e.g. 172", type: "input" },
+    {
+      name: "objem",
+      label: "search.motor_volume",
+      placeholder: "search.motor_volume_placeholder",
+      type: "select",
+      options: [],
+      dependsOn: "vyrobce",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod" ]
+    },
+    {
+      name: "model",
+      label: "search.plane_model",
+      placeholder: "search.plane_model_placeholder",
+      type: "select",
+      options: [],
+      dependsOn: "objem",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
+    },
+    {
+      name: "year",
+      label: "search.year_manufactured",
+      placeholder: "search.year_manufactured_placeholder",
+      type: "select",
+      optional: true,
+      dependsOn: "model",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
+    },
   ],
   industry: [
     {
-      name: "application",
-      label: "Application",
-      placeholder: "e.g. Conveyor",
-      type: "input",
+      name: "vyrobce",
+      label: "search.manufacturer_industry",
+      placeholder: "search.manufacturer_industry_placeholder",
+      type: "select",
+      options: [],
+      api: "/api/goldfren/internal/vozidla/vyrobce",
+      api_params: ["kategorie_kod"]
     },
     {
-      name: "material",
-      label: "Material",
-      placeholder: "e.g. Steel",
+      name: "model",
+      label: "search.industry_model",
+      placeholder: "search.industry_model_placeholder",
       type: "select",
-      options: ["Steel", "Aluminium"],
+      options: [],
+      dependsOn: "vyrobce",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod" ]
     },
   ],
   pad: [
