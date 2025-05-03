@@ -3,66 +3,17 @@ import { categories } from "./Categories";
 import { filterConfigs } from "./CategoriesFilters";
 import { CustomSelect } from "./ui/CustomSelect";
 import { CustomRangeSlider } from "./ui/CustomRange";
+import { Button } from "./ui/CustomButton";
+import { Tooltip } from "./ui/CustomTooltip";
+import { Card } from "./ui/CustomCard";
 import i18next from 'i18next';
-
-// Use for card component
-export const Card = ({ className = "", children }) => (
-  <div className={`bg-white border rounded-2xl shadow-xl ${className}`}>
-    {children}
-  </div>
-);
-
-// Used for button component
-export const Button = ({
-  variant = "default",
-  size = "md",
-  active = false,
-  className = "",
-  children,
-  ...props
-}) => {
-  const base =
-    "inline-flex items-center justify-center font-medium select-none transition focus:outline-none cursor-pointer";
-  const variantStyles = {
-    default: "text-gray-700 hover:bg-gray-100 focus:ring-2 focus:ring-gray-300",
-    ghost: "text-gray-700 hover:bg-gray-200",
-  };
-  const sizeStyles = {
-    md: "h-12 px-6",
-    icon: "h-20 w-20 p-0",
-  };
-  const activeStyles = active ? "bg-zinc-300" : "";
-
-  return (
-    <button
-      className={`${base} ${variantStyles[variant]} ${sizeStyles[size]} ${activeStyles} ${className}`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
-
-// Used for tooltip menu
-export const Tooltip = ({ label, children }) => (
-  <div className="group relative flex flex-col items-center">
-    {children}
-    <div className="absolute bottom-full mb-2 hidden group-hover:flex z-20">
-      <span className="relative bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap shadow-lg before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-4 before:border-transparent before:border-t-gray-800">
-        {label}
-      </span>
-    </div>
-  </div>
-);
 
 // Setup icon name and icon size
 const CategoryIcon = ({ name }) => (
   <img src={`/icons/${name}.svg`} alt={name} className="h-18 w-18" />
 );
 
-/* --------------------------------------------------------------------------
-  MAIN COMPONENT
----------------------------------------------------------------------------*/
+// Main component
 export default function CategorySearch() {
   const [selectedCat, setSelectedCat] = useState(categories[0].key);
   const [formState, setFormState] = useState({});
