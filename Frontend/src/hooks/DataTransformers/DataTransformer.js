@@ -294,5 +294,111 @@ export const dataTransformers = {
       }
       return [];
     },
+
+    // Pumpy transformed data
+    pumpy: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/pumpy/image/" + item.obrazek : null,
+          vektor: item.vektor ? "http://localhost/GoldFren_Media/pumpy/vector/" + item.vektor : null,
+          cislo_dilu: item.cislo_dilu,
+          prumer: item.prumer,
+          popis: item.popis,
+          poznamka: item.poznamka,
+        }));
+      }
+      return [];
+    },
+
+    // Pumpa detail transformed data
+    pumpa_detail: (data) => {
+      if (data) {
+        return {
+          ...data,
+          id: data.kod,
+          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/pumpy/image/" + data.obrazek : null,
+          vektor: data.vektor ? "http://localhost/GoldFren_Media/pumpy/vector/" + data.vektor : null,
+          cislo_dilu: data.cislo_dilu,
+          prumer: data.prumer,
+          popis: data.popis,
+          poznamka: data.poznamka,
+        };
+      }
+      return {};
+    },
+
+    // Pumpa vozidla transformed data
+    pumpa_vozidla: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          vyrobce: item.vyrobce,
+          kategorie: item.kategorie,
+          subkategorie: item.subkategorie,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+          objem: item.objem,
+          rok_od: item.rok_od,
+          rok_do: item.rok_do,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
+    },
+
+    // Prislusenstvi transformed data
+    prislusenstvi: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/prislusenstvi/image/" + item.obrazek : null,
+          vektor: item.vektor ? "http://localhost/GoldFren_Media/prislusenstvi/vector/" + item.vektor : null,
+          cislo_dilu: item.cislo_dilu,
+          typ: item.typ,
+          popis: item.popis,
+          poznamka: item.poznamka,
+        }));
+      }
+      return [];
+    },
+
+    // Prislusenstvi detail transformed data
+    prislusenstvi_detail: (data) => {
+      if (data) {
+        return {
+          ...data,
+          id: data.kod,
+          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/prislusenstvi/image/" + data.obrazek : null,
+          vektor: data.vektor ? "http://localhost/GoldFren_Media/prislusenstvi/vector/" + data.vektor : null,
+          cislo_dilu: data.cislo_dilu,
+          typ: data.typ,
+          popis: data.popis,
+          poznamka: data.poznamka,
+        };
+      }
+      return {};
+    },
+
+    // Prislusenstvi vozidla transformed data
+    prislusenstvi_vozidla: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          vyrobce: item.vyrobce,
+          kategorie: item.kategorie,
+          subkategorie: item.subkategorie,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+          objem: item.objem,
+          rok_od: item.rok_od,
+          rok_do: item.rok_do,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
+    },
     
   };

@@ -1,3 +1,5 @@
+import Prislusenstvi from "../../pages/Prislusenstvi";
+
 export const columnsConfig = {
   // Adaptery web column config
   adaptery: [
@@ -110,6 +112,49 @@ export const columnsConfig = {
 
   // Hadicka vozidla web column config
   hadicka_vozidla: [
+    {key: "vyrobce", label: "datagrid.manufacturer", sortable: true, filterable: true },
+    {key: "kategorie", label: "datagrid.category", sortable: true, filterable: true },
+    {key: "subkategorie", label: "datagrid.subcategory", sortable: true, filterable: true },
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "objem", label: "datagrid.volume", sortable: true, filterable: true },
+    {key: "rok_od", label: "datagrid.year_from", sortable: true, filterable: true },
+    {key: "rok_do", label: "datagrid.year_to", sortable: true, filterable: true },
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+  ],
+
+  // Pumpy web column config
+  pumpy: [
+    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "prumer", label: "datagrid.diameter", sortable: true, filterable: true,},
+    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+  ],
+
+  // Pumpy vozidla web column config
+  pumpa_vozidla: [
+    {key: "vyrobce", label: "datagrid.manufacturer", sortable: true, filterable: true },
+    {key: "kategorie", label: "datagrid.category", sortable: true, filterable: true },
+    {key: "subkategorie", label: "datagrid.subcategory", sortable: true, filterable: true },
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "objem", label: "datagrid.volume", sortable: true, filterable: true },
+    {key: "rok_od", label: "datagrid.year_from", sortable: true, filterable: true },
+    {key: "rok_do", label: "datagrid.year_to", sortable: true, filterable: true },
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+  ],
+
+  // Prislusenstvi web column config
+  prislusenstvi: [
+    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "typ", label: "datagrid.type", sortable: true, filterable: true,},
+    {key: "popis", label: "datagrid.description", sortable: true, filterable: true,},
+    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+  ],
+
+  // Prislusenstvi vozidla web column config
+  prislusenstvi_vozidla: [
     {key: "vyrobce", label: "datagrid.manufacturer", sortable: true, filterable: true },
     {key: "kategorie", label: "datagrid.category", sortable: true, filterable: true },
     {key: "subkategorie", label: "datagrid.subcategory", sortable: true, filterable: true },

@@ -22,7 +22,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
   // State for controlling vehicle compatibility loading
   const [showVehicles, setShowVehicles] = useState(false);
-  const [hadickaData, setHadickaData] = useState({});
+  const [pumpaData, setPumpaData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { t } = useTranslation();
@@ -39,12 +39,12 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       setLoading(true);
       try {
         const result = await fetchData(category, apiUrl + id);
-        setHadickaData(result || {});
+        setPumpaData(result || {});
         setLoading(false);
       } catch (error) {
         console.error("Error loading data:", error);
         setError(t("error.loading_failed") || "Failed to load data");
-        setHadickaData({});
+        setPumpaData({});
         setLoading(false);
       }
     };
@@ -103,14 +103,14 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
     <div className="p-4 md:p-4 w-full mb-8">
       {/* Top navigation strip */}
       <NavigationStrip
-        to="/hadicky"
+        to="/pumpy"
         label={t("back_to_list") || "Back to list"}
-        description="hadicky_title"
+        description="pumpy_title"
       />
 
       {/* Page title */}
       <h1 className="text-3xl font-bold text-gray-800 mb-4 mt-8">
-        {t("hadicka_title")} - {displayData(hadickaData.cislo_dilu)}
+        {t("pumpa_title")} - {displayData(pumpaData.cislo_dilu)}
       </h1>
 
       {/* Top sections in a grid */}
@@ -122,8 +122,8 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
             <div className="bg-gray-50 p-4 rounded-md">
               <DetailImage
                 title={t("datagrid.picture")}
-                imageUrl={hadickaData.image}
-                altText={`Brake disc image for ${displayData(hadickaData.cislo_dilu)}`}
+                imageUrl={pumpaData.image}
+                altText={`Brake disc image for ${displayData(pumpaData.cislo_dilu)}`}
                 noImageText={t("datagrid.no_image") || "No image available"}
               />
             </div>
@@ -132,8 +132,8 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
             <div className="bg-gray-50 p-4 rounded-md">
               <DetailImage
                 title={t("datagrid.vektor")}
-                imageUrl={hadickaData.vektor}
-                altText={`Brake disc technical image for ${displayData(hadickaData.cislo_dilu)}`}
+                imageUrl={pumpaData.vektor}
+                altText={`Brake disc technical image for ${displayData(pumpaData.cislo_dilu)}`}
                 noImageText={t("datagrid.no_image") || "No image available"}
               />
             </div>
@@ -146,7 +146,17 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
         {/* Product details */}
         <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-8">
           <div className="bg-gray-50 p-4 rounded-md">
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 grid-cols-2 gap-6">
+              
+              {/* Diameter */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.diameter")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(pumpaData.prumer)}
+                </p>
+              </div>
 
               {/* Note */}
               <div>
@@ -154,7 +164,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                   {t("datagrid.note")}
                 </h3>
                 <p className="text-gray-700">
-                  {displayData(hadickaData.poznamka)}
+                  {displayData(pumpaData.poznamka)}
                 </p>
               </div>
               
@@ -186,8 +196,8 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
         {showVehicles ? (
           <div className="mt-4">
             <DataGrid
-              category="hadicka_vozidla"
-              apiUrl={`${serverUrl}/api/goldfren/internal/hadicky/vozidla?limit=0&hadicka_id=${hadickaData.id}`}
+              category="pumpa_vozidla"
+              apiUrl={`${serverUrl}/api/goldfren/internal/pumpy/vozidla?limit=0&pumpa_id=${pumpaData.id}`}
             />
           </div>
         ) : (

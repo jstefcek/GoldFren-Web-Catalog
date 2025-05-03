@@ -11,6 +11,10 @@ import Kotouce from "./pages/Kotouce";
 import Kotouc_Detail from "./pages/DetailPages/Kotouc_Detail";
 import Hadicky from "./pages/Hadicky";
 import Hadicka_Detail from "./pages/DetailPages/Hadicka_Detail";
+import Pumpy from "./pages/Pumpy";
+import Pumpa_Detail from "./pages/DetailPages/Pumpa_Detail";
+import Prislusenstvi from "./pages/Prislusenstvi";
+import Prislusenstvi_Detail from "./pages/DetailPages/Prislusenstvi_Detail";
 import "/src/localization/language_setup";
 import Footer from "./layouts/Footer"
 
@@ -31,6 +35,10 @@ function App() {
           <Route path="/kotouce/:id" element={<Kotouc_Detail />} />
           <Route path="/hadicky" element={<Hadicky />} />
           <Route path="/hadicky/:id" element={<Hadicka_Detail />} />
+          <Route path="/pumpy" element={<Pumpy />} />
+          <Route path="/pumpy/:id" element={<Pumpa_Detail />} />
+          <Route path="/prislusenstvi" element={<Prislusenstvi />} />
+          <Route path="/prislusenstvi/:id" element={<Prislusenstvi_Detail />} />
         </Routes>
       </main>
       <Footer />
