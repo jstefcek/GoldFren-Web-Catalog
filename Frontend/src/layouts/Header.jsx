@@ -149,17 +149,15 @@ export default function Header() {
                 aria-expanded={languageMenuOpen}
                 aria-haspopup="true"
               >
-                <Globe className="h-5 w-5 mr-1" aria-hidden="true" />
+                <span className="text-lg mr-1">{currentLanguageInfo.flag}</span>
                 <span className="hidden md:inline mx-1">{currentLanguageInfo.name}</span>
-                <span className="md:hidden text-lg">{currentLanguageInfo.flag}</span>
                 <ChevronDown className={`h-4 w-4 ml-1 transition-transform duration-200 ${languageMenuOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {/* Desktop language menu (hover) */}
               <div className="hidden lg:flex items-center text-gray-700 hover:text-gray-600 px-2 py-1 rounded-md transition duration-150 focus:outline-none cursor-pointer">
-                <Globe className="h-5 w-5 mr-1" aria-hidden="true" />
+                <span className="text-lg mr-1">{currentLanguageInfo.flag}</span>
                 <span className="hidden md:inline mx-1">{currentLanguageInfo.name}</span>
-                <span className="md:hidden text-lg">{currentLanguageInfo.flag}</span>
                 <ChevronDown className="h-4 w-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
               </div>
 

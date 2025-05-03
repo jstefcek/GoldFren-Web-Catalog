@@ -3,6 +3,7 @@ import { categories } from "./Categories";
 import { filterConfigs } from "./CategoriesFilters";
 import { CustomSelect } from "./ui/CustomSelect";
 import { CustomRangeSlider } from "./ui/CustomRange";
+import i18next from 'i18next';
 
 // Use for card component
 export const Card = ({ className = "", children }) => (
@@ -197,13 +198,13 @@ export default function CategorySearch() {
             type="submit"
             className="w-32 bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-600 rounded-xl"
           >
-            Vyhledat
+            {i18next.t("search.search")}
           </Button>
           <Button
             type="reset"
             className="w-32 border rounded-xl hover:bg-gray-300 hover:text-black"
           >
-            Resetovat
+            {i18next.t("search.reset")}
           </Button>
         </div>
       </form>

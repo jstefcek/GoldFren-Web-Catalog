@@ -3,96 +3,155 @@ export const filterConfigs = {
   motorbike: [
     {
       name: "vyrobce",
-      label: "Výrobce motocyklu",
-      placeholder: "Vyberte prosím výrobce",
+      label: "search.manufacturer_motorbike",
+      placeholder: "search.manufacturer_motorbike_placeholder",
       type: "select",
       options: [],
       api: "/api/goldfren/internal/vozidla/vyrobce",
-      api_params: [ "kategorie_kod"]
+      api_params: ["kategorie_kod"]
     },
     {
       name: "objem",
-      label: "Zdvihový objem",
-      placeholder: "Vyberte prosím zdvihový objem",
+      label: "search.motor_volume",
+      placeholder: "search.motor_volume_placeholder",
       type: "select",
       options: [],
       dependsOn: "vyrobce",
       api: "/api/goldfren/internal/vozidla/filter",
-      api_params: [ "kategorie_kod", "vyrobce_kod" ]
+      api_params: ["kategorie_kod", "vyrobce_kod" ]
     },
     {
       name: "model",
-      label: "Model motocyklu",
-      placeholder: "Vyberte prosím model",
+      label: "search.motorbike_model",
+      placeholder: "search.motorbike_model_placeholder",
       type: "select",
       options: [],
       dependsOn: "objem",
       api: "/api/goldfren/internal/vozidla/filter",
-      api_params: [ "kategorie_kod", "vyrobce_kod", "objem" ]
+      api_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
     },
     {
       name: "year",
-      label: "Rok výroby",
-      placeholder: "Zadejte prosím rok výroby",
-      type: "text",
+      label: "search.year_manufactured",
+      placeholder: "search.year_manufactured_placeholder",
+      type: "select",
       optional: true,
       dependsOn: "model",
       api: "/api/goldfren/internal/vozidla/filter",
-      api_params: [ "kategorie_kod", "vyrobce_kod", "objem", "rok_vyroby" ]
+      api_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
     },
   ],
   car: [
     {
-      name: "manufacturer",
-      label: "Manufacturer",
-      placeholder: "Please select the manufacturer",
+      name: "vyrobce",
+      label: "search.manufacturer_car",
+      placeholder: "search.manufacturer_car_placeholder",
       type: "select",
-      options: ["Audi", "BMW", "Tesla"],
+      options: [],
+      api: "/api/goldfren/internal/vozidla/vyrobce",
+      api_params: ["kategorie_kod"]
+    },
+    {
+      name: "objem",
+      label: "search.motor_volume",
+      placeholder: "search.motor_volume_placeholder",
+      type: "select",
+      options: [],
+      dependsOn: "vyrobce",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod" ]
     },
     {
       name: "model",
-      label: "Model",
-      placeholder: "Please select the model",
+      label: "search.car_model",
+      placeholder: "search.car_model_placeholder",
       type: "select",
       options: [],
+      dependsOn: "objem",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
     },
     {
       name: "year",
-      label: "Year of production",
-      placeholder: "Please select the year of production",
-      type: "number",
+      label: "search.year_manufactured",
+      placeholder: "search.year_manufactured_placeholder",
+      type: "select",
+      optional: true,
+      dependsOn: "model",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
     },
   ],
   kart: [
     {
-      name: "engine",
-      label: "Engine",
-      placeholder: "Type of engine",
-      type: "input",
+      name: "vyrobce",
+      label: "search.manufacturer_kart",
+      placeholder: "search.manufacturer_kart_placeholder",
+      type: "select",
+      options: [],
+      api: "/api/goldfren/internal/vozidla/vyrobce",
+      api_params: ["kategorie_kod"]
+    },
+    {
+      name: "objem",
+      label: "search.motor_volume",
+      placeholder: "search.motor_volume_placeholder",
+      type: "select",
+      options: [],
+      dependsOn: "vyrobce",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod" ]
+    },
+    {
+      name: "model",
+      label: "search.kart_model",
+      placeholder: "search.kart_model_placeholder",
+      type: "select",
+      options: [],
+      dependsOn: "objem",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
     },
     {
       name: "year",
-      label: "Year",
-      placeholder: "e.g. 2021",
-      type: "range-slider",
-      minValue: 0,
-      maxValue: 200,
-      step: 1,
+      label: "search.year_manufactured",
+      placeholder: "search.year_manufactured_placeholder",
+      type: "select",
+      optional: true,
+      dependsOn: "model",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
     },
   ],
   bike: [
     {
-      name: "type",
-      label: "Type",
-      placeholder: "Mountain, Road…",
+      name: "vyrobce",
+      label: "search.manufacturer_bike",
+      placeholder: "search.manufacturer_bike_placeholder",
       type: "select",
-      options: ["Road", "Mountain", "Hybrid"],
+      options: [],
+      api: "/api/goldfren/internal/vozidla/vyrobce",
+      api_params: ["kategorie_kod"]
     },
     {
-      name: "frame",
-      label: "Frame size",
-      placeholder: "e.g. 56 cm",
-      type: "input",
+      name: "model",
+      label: "search.bike_model",
+      placeholder: "search.bike_model_placeholder",
+      type: "select",
+      options: [],
+      dependsOn: "vyrobce",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod" ]
+    },
+    {
+      name: "year",
+      label: "search.year_manufactured",
+      placeholder: "search.year_manufactured_placeholder",
+      type: "select",
+      optional: true,
+      dependsOn: "model",
+      api: "/api/goldfren/internal/vozidla/filter",
+      api_params: ["kategorie_kod", "vyrobce_kod", "model" ]
     },
   ],
   plane: [

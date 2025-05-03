@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Search } from "lucide-react"; // Search icon added here
+import { ChevronDown, Search } from "lucide-react";
+import i18next from 'i18next';
 
 export const CustomSelect = ({
   label,
@@ -47,7 +48,7 @@ export const CustomSelect = ({
   return (
     <div className="flex flex-col gap-1 relative" ref={wrapperRef}>
       <label htmlFor={name} className="font-sm text-medium text-gray-800">
-        {label}
+        {i18next.t(label)}
       </label>
 
       {/* Button / field */}
@@ -60,7 +61,7 @@ export const CustomSelect = ({
         } ${disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""}`}
         disabled={disabled}
       >
-        {value || placeholder}
+        {value || i18next.t(placeholder)}
         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
       </button>
 
@@ -75,7 +76,7 @@ export const CustomSelect = ({
             <input
               type="text"
               className="w-full px-3 py-2 pr-10 border-b border-gray-200 focus:outline-none placeholder-gray-400 text-black"
-              placeholder={placeholder}
+              placeholder={i18next.t(placeholder)}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
