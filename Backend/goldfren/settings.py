@@ -32,7 +32,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     'goldfren_frontend',
     'goldfren_nginx',
-    'catalog.goldfren.cz',  
+    'catalog.goldfren.cz',
+    '159.69.120.169',
 ]
 
 # Application definition

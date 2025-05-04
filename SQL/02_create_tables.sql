@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS `d_brzdice` (
   `cislo_dilu` varchar(255) DEFAULT NULL COMMENT 'Cislo dilu brzdice',
   `popis` varchar(255) DEFAULT NULL COMMENT 'Popis brzdice',
   `typ_uchyceni` varchar(10) DEFAULT NULL COMMENT 'Typ uchyceni brzdice',
+  `pocet_pistku` int DEFAULT NULL COMMENT 'Pocet pistku brzdice',
   `poznamka` text COMMENT 'Poznamka k brzdicu',
   `publikovat` int DEFAULT NULL COMMENT 'Zda se ma adapter publikovat',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Cas posledni aktualizace',
