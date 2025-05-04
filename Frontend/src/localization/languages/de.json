@@ -69,7 +69,39 @@
     "industry_model": "Industriemodell",
     "industry_model_placeholder": "Bitte Modell wählen",
     "search": "Suchen",
-    "reset": "Zurücksetzen"
+    "reset": "Zurücksetzen",
+    "required_fields": "* Požadované pole",
+    "adapter": {
+      "position": "Pozice adaptéru",
+      "position_placeholder": "Vyberte prosím pozici adaptéru",
+      "diameter": "Průměr adaptéru [mm]",
+      "attachment": "Typ uchycení brzdiče",
+      "bolt_spacing": "Rozteč šroubů pro brzdiče [mm]"
+    },
+    "discs": {
+      "outside_diameter": "Vnější průměr kotouče [mm]",
+      "pitch_diameter": "Roztečný průměr kotouče [mm]",
+      "inner_diameter": "Vnitřní průměr kotouče [mm]",
+      "thickness": "Tloušťka kotouče [mm]",
+      "type": "Typ kotouče",
+      "type_placeholder": "Vyberte prosím typ kotouče"
+    },
+    "pad": {
+      "competitor": "Brzdová destička konkurence",
+      "competitor_placeholder": "Vyberte prosím brzdovou destičku konkurence",
+      "material": "Materiál brzdové destičky",
+      "material_placeholder": "Vyberte prosím materiál brzodové destičky",
+      "oem_numbers": "OEM výrobní čísla",
+      "oem_numbers_placeholder": "Vyberte prosím OEM výrobní čísla"
+    },
+    "caliper": {
+      "position": "Pozice brzdového třmenu",
+      "position_placeholder": "Vyberte prosím pozici brzdového třmenu",
+      "piston_count": "Počet pístků",
+      "piston_count_placeholder": "Vyberte prosím počet pístků",
+      "attachment_type": "Typ uchycení brzdového třmenu",
+      "attachment_type_placeholder": "Vyberte prosím typ uchycení brzdového třmenu"
+    }
   },
   "datagrid": {
     "page": "Seite",

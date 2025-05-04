@@ -8,6 +8,7 @@ export const CustomSelect = ({
   value,
   onChange,
   options = [],
+  optional = false,
   placeholder = "Vyberte...",
   disabled = false,
 }) => {
@@ -48,7 +49,12 @@ export const CustomSelect = ({
   return (
     <div className="flex flex-col gap-1 relative" ref={wrapperRef}>
       <label htmlFor={name} className="font-sm text-medium text-gray-800">
-        {i18next.t(label)}
+        {i18next.t(label)} 
+          {!optional && (
+            <span className="font-sm text-medium text-red-800">
+            *
+            </span>
+          )}
       </label>
 
       {/* Button / field */}
@@ -68,7 +74,7 @@ export const CustomSelect = ({
       {/* Dropdown */}
       {open && !disabled && (
         <div
-          className="absolute z-10 w-full bg-white border rounded-lg shadow-xl overflow-hidden"
+          className="absolute z-50 w-full bg-white border rounded-lg shadow-xl overflow-hidden"
           style={{ top: dropdownTop }}
         >
           {/* Search input with search icon */}

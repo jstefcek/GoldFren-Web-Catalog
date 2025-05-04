@@ -69,7 +69,39 @@
       "industry_model": "Industry vehicle model",
       "industry_model_placeholder": "Please choose industry vehicle model",
       "search": "Search",
-      "reset": "Reset"
+      "reset": "Reset",
+      "required_fields": "* Required fields",
+      "adapter": {
+        "position": "Adapter position",
+        "position_placeholder": "Please choose adapter position",
+        "diameter": "Adapter diameter [mm]",
+        "attachment": "Brake attachment type",
+        "bolt_spacing": "Brake bolt spacing [mm]"
+      },
+      "discs": {
+        "outside_diameter": "Disc outside diameter [mm]",
+        "pitch_diameter": "Disc pitch diameter [mm]",
+        "inner_diameter": "Disc inside diameter [mm]",
+        "thickness": "Disc thickness [mm]",
+        "type": "Disc type",
+        "type_placeholder": "Please choose disc type"
+      },
+      "pad": {
+        "competitor": "Brake pad competitor",
+        "competitor_placeholder": "Please choose brake pad competitor",
+        "material": "Brake pad material",
+        "material_placeholder": "Please choose brake pad material",
+        "oem_numbers": "OEM production numbers",
+        "oem_numbers_placeholder": "Please choose OEM production numbers"
+      },
+      "caliper": {
+        "position": "Position of brake caliper",
+        "position_placeholder": "Please choose brake caliper position",
+        "piston_count": "Piston count",
+        "piston_count_placeholder": "Please choose piston count",
+        "attachment_type": "Attachment type of brake caliper",
+        "attachment_type_placeholder": "Please choose brake caliper attachment type"
+      }
     },
   "datagrid": {
     "page": "page",

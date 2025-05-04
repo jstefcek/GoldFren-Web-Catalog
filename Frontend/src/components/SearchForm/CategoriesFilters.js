@@ -7,8 +7,8 @@ export const filterConfigs = {
       placeholder: "search.manufacturer_motorbike_placeholder",
       type: "select",
       options: [],
-      api: "/api/goldfren/internal/vozidla/vyrobce",
-      api_params: ["kategorie_kod"]
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI_params: ["kategorie_kod"]
     },
     {
       name: "objem",
@@ -17,8 +17,9 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOn: "vyrobce",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
     },
     {
       name: "model",
@@ -27,8 +28,9 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOn: "objem",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
     },
     {
       name: "year",
@@ -37,8 +39,9 @@ export const filterConfigs = {
       type: "select",
       optional: true,
       dependsOn: "model",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
     },
   ],
   car: [
@@ -48,8 +51,9 @@ export const filterConfigs = {
       placeholder: "search.manufacturer_car_placeholder",
       type: "select",
       options: [],
-      api: "/api/goldfren/internal/vozidla/vyrobce",
-      api_params: ["kategorie_kod"]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI_params: ["kategorie_kod"]
     },
     {
       name: "objem",
@@ -58,8 +62,9 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOn: "vyrobce",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
     },
     {
       name: "model",
@@ -68,8 +73,9 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOn: "objem",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
     },
     {
       name: "year",
@@ -78,8 +84,9 @@ export const filterConfigs = {
       type: "select",
       optional: true,
       dependsOn: "model",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
     },
   ],
   kart: [
@@ -89,8 +96,9 @@ export const filterConfigs = {
       placeholder: "search.manufacturer_kart_placeholder",
       type: "select",
       options: [],
-      api: "/api/goldfren/internal/vozidla/vyrobce",
-      api_params: ["kategorie_kod"]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI_params: ["kategorie_kod"]
     },
     {
       name: "objem",
@@ -99,8 +107,9 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOn: "vyrobce",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
     },
     {
       name: "model",
@@ -109,8 +118,9 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOn: "objem",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
     },
     {
       name: "year",
@@ -119,8 +129,9 @@ export const filterConfigs = {
       type: "select",
       optional: true,
       dependsOn: "model",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
     },
   ],
   bike: [
@@ -130,8 +141,9 @@ export const filterConfigs = {
       placeholder: "search.manufacturer_bike_placeholder",
       type: "select",
       options: [],
-      api: "/api/goldfren/internal/vozidla/vyrobce",
-      api_params: ["kategorie_kod"]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI_params: ["kategorie_kod"]
     },
     {
       name: "model",
@@ -140,8 +152,9 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOn: "vyrobce",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
     },
     {
       name: "year",
@@ -150,8 +163,9 @@ export const filterConfigs = {
       type: "select",
       optional: true,
       dependsOn: "model",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod", "model" ]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "model" ]
     },
   ],
   plane: [
@@ -161,8 +175,9 @@ export const filterConfigs = {
       placeholder: "search.manufacturer_plane_placeholder",
       type: "select",
       options: [],
-      api: "/api/goldfren/internal/vozidla/vyrobce",
-      api_params: ["kategorie_kod"]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI_params: ["kategorie_kod"]
     },
     {
       name: "objem",
@@ -170,9 +185,10 @@ export const filterConfigs = {
       placeholder: "search.motor_volume_placeholder",
       type: "select",
       options: [],
+      dependsOnShow: true,
       dependsOn: "vyrobce",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod" ]
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
     },
     {
       name: "model",
@@ -180,9 +196,10 @@ export const filterConfigs = {
       placeholder: "search.plane_model_placeholder",
       type: "select",
       options: [],
+      dependsOnShow: true,
       dependsOn: "objem",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
     },
     {
       name: "year",
@@ -190,9 +207,10 @@ export const filterConfigs = {
       placeholder: "search.year_manufactured_placeholder",
       type: "select",
       optional: true,
+      dependsOnShow: true,
       dependsOn: "model",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
     },
   ],
   industry: [
@@ -202,8 +220,9 @@ export const filterConfigs = {
       placeholder: "search.manufacturer_industry_placeholder",
       type: "select",
       options: [],
-      api: "/api/goldfren/internal/vozidla/vyrobce",
-      api_params: ["kategorie_kod"]
+      dependsOnShow: true,
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI_params: ["kategorie_kod"]
     },
     {
       name: "model",
@@ -211,49 +230,143 @@ export const filterConfigs = {
       placeholder: "search.industry_model_placeholder",
       type: "select",
       options: [],
+      dependsOnShow: true,
       dependsOn: "vyrobce",
-      api: "/api/goldfren/internal/vozidla/filter",
-      api_params: ["kategorie_kod", "vyrobce_kod" ]
+      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
     },
   ],
   pad: [
     {
-      name: "compound",
-      label: "Compound",
-      placeholder: "e.g. S33",
-      type: "select",
-      options: ["S33", "AD"],
-    },
-  ],
-  brake: [
-    {
-      name: "diameter",
-      label: "Diameter (mm)",
-      placeholder: "e.g. 320",
-      type: "number",
+      name: "konkurence",
+      label: "search.pad.competitor",
+      placeholder: "search.pad.competitor_placeholder",
+      type: "text",
+      optional: true,
     },
     {
       name: "material",
-      label: "Material",
-      placeholder: "Steel",
+      label: "search.pad.material",
+      placeholder: "search.pad.material_placeholder",
+      type: "text",
+      optional: true,
+    },
+    {
+      name: "oem_cisla",
+      label: "search.pad.oem_numbers",
+      placeholder: "search.pad.oem_numbers_placeholder",
+      type: "text",
+      optional: true,
+    },
+  ],
+  caliper: [
+    {
+      name: "pozice",
+      label: "search.caliper.position",
+      placeholder: "search.caliper.position_placeholder",
       type: "select",
-      options: ["Steel", "Carbon"],
+      optional: true,
+      options: ["FL caliper", "FR caliper", "RL caliper", "RR caliper"],
+    },
+    {
+      name: "pocet_pistku",
+      label: "search.caliper.piston_count",
+      type: "range-slider",
+      minValue: 0,
+      maxValue: 20,
+      step: 1,
+      optional: true,
+    },
+    {
+      name: "typ_uchyceni",
+      label: "search.caliper.attachment_type",
+      placeholder: "search.caliper.attachment_type_placeholder",
+      type: "select",
+      optional: true,
+      options: ["Axis", "Radial"],
     },
   ],
   adapter: [
     {
-      name: "mount",
-      label: "Mount type",
-      placeholder: "e.g. Post",
-      type: "input",
+      name: "pozice",
+      label: "search.adapter.position",
+      placeholder: "search.adapter.position_placeholder",
+      type: "select",
+      optional: true,
+      options: ["FL adapter", "FR adapter", "RL adapter", "RR adapter"],
+    },
+    {
+      name: "prumer",
+      label: "search.adapter.diameter",
+      type: "range-slider",
+      minValue: 0,
+      maxValue: 200,
+      step: 1,
+      optional: true,
+    },
+    {
+      name: "uchyceni",
+      label: "search.adapter.attachment",
+      placeholder: "Please select brake adapter attachment",
+      type: "select",
+      options: ["Axis", "Radial"],
+      optional: true,
+    },
+    {
+      name: "roztec",
+      label: "search.adapter.bolt_spacing",
+      type: "range-slider",
+      minValue: 0,
+      maxValue: 200,
+      step: 1,
+      dependsOn: "uchyceni",
+      dependsOnValue: "Radial",
     },
   ],
   disc: [
     {
-      name: "diameter",
-      label: "Diameter (mm)",
-      placeholder: "e.g. 203",
-      type: "number",
+      name: "vnejsi_prumer",
+      label: "search.discs.outside_diameter",
+      type: "range-slider",
+      minValue: 0,
+      maxValue: 200,
+      step: 1,
+      dependsOnShow: true,
+    },
+    {
+      name: "roztecny_prumer",
+      label: "search.discs.pitch_diameter",
+      type: "range-slider",
+      minValue: 0,
+      maxValue: 200,
+      step: 1,
+      dependsOnShow: true,
+    },
+    {
+      name: "vnitrni_prumer",
+      label: "search.discs.inner_diameter",
+      type: "range-slider",
+      minValue: 0,
+      maxValue: 200,
+      step: 1,
+      dependsOnShow: true,
+    },
+    {
+      name: "tloustka",
+      label: "search.discs.thickness",
+      type: "range-slider",
+      minValue: 0,
+      maxValue: 200,
+      step: 1,
+      dependsOnShow: true,
+    },
+    {
+      name: "typ",
+      label: "search.discs.type",
+      placeholder: "search.discs.type_placeholder",
+      type: "select",
+      options: ["OEM", "Oversize"],
+      optional: true,
     },
   ],
 };
