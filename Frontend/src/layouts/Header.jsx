@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Globe, Menu, X, ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSortimentOpen, setMobileSortimentOpen] = useState(false);
-  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const { t, i18n } = useTranslation();
   const [currentLanguage, setCurrentLanguage] = useState("cs");
+  const mobileMenuRef = useRef(null);
   
   // Set current language from i18n
   useEffect(() => {
@@ -55,16 +55,14 @@ export default function Header() {
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    setLanguageMenuOpen(false);
+    // No need to close language menu as it's now handled within mobile menu
   };
 
   const toggleMobileSortiment = () => {
     setMobileSortimentOpen(!mobileSortimentOpen);
   };
 
-  const toggleLanguageMenu = () => {
-    setLanguageMenuOpen(!languageMenuOpen);
-  };
+  // No longer needed since language menu is now only in mobile menu
 
   const currentLanguageInfo = languages.find(lang => lang.code === currentLanguage) || languages[0];
   
@@ -86,7 +84,7 @@ export default function Header() {
             </a>
           </div>
 
-          {/* Main Menu */}
+          {/* Main Menu - Desktop Only */}
           <nav className="hidden lg:flex items-center justify-center flex-1">
             <ul className="flex space-x-8">
               {menuItems.map((item) => (
@@ -138,35 +136,19 @@ export default function Header() {
             </ul>
           </nav>
 
-          {/* Right side menu - Language selector and Login */}
+          {/* Right side menu - Language selector (Desktop) and Login */}
           <div className="flex items-center space-x-2">
             
-            {/* Language Selector */}
-            <div className="relative group">
-              <button
-                onClick={toggleLanguageMenu}
-                className="flex items-center text-gray-700 hover:text-gray-600 px-2 py-1 rounded-md transition duration-150 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 lg:hidden"
-                aria-expanded={languageMenuOpen}
-                aria-haspopup="true"
-              >
-                <span className="text-lg mr-1">{currentLanguageInfo.flag}</span>
-                <span className="hidden md:inline mx-1">{currentLanguageInfo.name}</span>
-                <ChevronDown className={`h-4 w-4 ml-1 transition-transform duration-200 ${languageMenuOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {/* Desktop language menu (hover) */}
-              <div className="hidden lg:flex items-center text-gray-700 hover:text-gray-600 px-2 py-1 rounded-md transition duration-150 focus:outline-none cursor-pointer">
+            {/* Language Selector - Desktop Only */}
+            <div className="relative hidden lg:block group">
+              <div className="flex items-center text-gray-700 hover:text-gray-600 px-2 py-1 rounded-md transition duration-150 focus:outline-none cursor-pointer">
                 <span className="text-lg mr-1">{currentLanguageInfo.flag}</span>
                 <span className="hidden md:inline mx-1">{currentLanguageInfo.name}</span>
                 <ChevronDown className="h-4 w-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
               </div>
 
               {/* Language dropdown */}
-              <div
-                className={`absolute right-0 mt-1 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 transition-all duration-200 
-                  lg:opacity-0 lg:invisible lg:group-hover:opacity-100 lg:group-hover:visible lg:transform lg:group-hover:translate-y-0 lg:-translate-y-2
-                  ${languageMenuOpen ? "opacity-100 visible transform translate-y-0" : "opacity-0 invisible transform -translate-y-2"}`}
-              >
+              <div className="absolute right-0 mt-1 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2">
                 <ul className="py-1" role="menu" aria-orientation="vertical">
                   {languages.map((lang) => (
                     <li key={lang.code} role="none">
@@ -190,7 +172,7 @@ export default function Header() {
             {/* Login Button */}
             <a
               href="/login"
-              className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-md text-sm font-medium transition duration-150 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
             >
               {t("login")}
             </a>
@@ -198,7 +180,7 @@ export default function Header() {
             {/* Mobile menu button */}
             <button
               type="button"
-              className="lg:hidden text-gray-700 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
+              className="lg:hidden text-gray-700 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 p-1 rounded-md"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-menu"
@@ -217,58 +199,89 @@ export default function Header() {
       </div>
 
       {/* Mobile Menu */}
-      <div
-        id="mobile-menu"
-        className={`lg:hidden transition-all duration-300 overflow-hidden ${
-          mobileMenuOpen ? "max-h-96" : "max-h-0"
-        }`}
-      >
-        <nav className="px-2 pt-2 pb-3 space-y-1 bg-white">
-          {menuItems.map((item) => (
-            <div key={item.name}>
-              {item.submenu ? (
-                <div>
+      {mobileMenuOpen && (
+        <div 
+          ref={mobileMenuRef}
+          id="mobile-menu" 
+          className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-white z-40 overflow-y-auto shadow-lg"
+        >
+          <nav className="px-2 pt-2 pb-20 space-y-1">
+            {/* Mobile Language Selector */}
+            <div className="border-b border-gray-200 pb-3 mb-2">
+              <div className="flex items-center px-3 py-2">
+                <Globe className="h-5 w-5 text-gray-500 mr-2" />
+                <p className="text-sm font-medium text-gray-500">{t("selectLanguage")}</p>
+              </div>
+              <div className="mt-1">
+                {languages.map((lang) => (
                   <button
-                    onClick={toggleMobileSortiment}
-                    className="w-full flex items-center justify-between text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:text-gray-600 hover:bg-gray-50 transition duration-150"
-                    aria-expanded={mobileSortimentOpen}
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className={`w-full text-left px-3 py-2 flex items-center gap-x-3 rounded-md
+                      ${currentLanguage === lang.code ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'} 
+                      transition duration-150`}
                   >
-                    {item.name}
-                    {mobileSortimentOpen ? (
-                      <ChevronUp className="h-4 w-4" aria-hidden="true" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                    <span className="text-lg">{lang.flag}</span>
+                    <span>{lang.name}</span>
+                    {currentLanguage === lang.code && (
+                      <span className="ml-auto text-green-600">✓</span>
                     )}
                   </button>
-
-                  <div
-                    className={`pl-4 space-y-1 mt-1 transition-all duration-300 overflow-hidden ${
-                      mobileSortimentOpen ? "max-h-96" : "max-h-0"
-                    }`}
-                  >
-                    {item.submenu.map((subitem) => (
-                      <a
-                        key={subitem.name}
-                        href={subitem.path}
-                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50 transition duration-150"
-                      >
-                        {subitem.name}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <a
-                  href={item.path}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50 transition duration-150"
-                >
-                  {item.name}
-                </a>
-              )}
+                ))}
+              </div>
             </div>
-          ))}
-        </nav>
-      </div>
+            
+            {/* Navigation Menu Items */}
+            {menuItems.map((item) => (
+              <div key={item.name}>
+                {item.submenu ? (
+                  <div>
+                    <button
+                      onClick={toggleMobileSortiment}
+                      className="w-full flex items-center justify-between text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:text-gray-900 hover:bg-gray-50 transition duration-150"
+                      aria-expanded={mobileSortimentOpen}
+                    >
+                      <span>{item.name}</span>
+                      <div className={`h-5 w-5 rounded-full flex items-center justify-center transition-colors duration-200 ${mobileSortimentOpen ? 'bg-gray-200' : ''}`}>
+                        {mobileSortimentOpen ? (
+                          <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                        )}
+                      </div>
+                    </button>
+
+                                          <div
+                      className={`transition-all duration-300 overflow-hidden ${
+                        mobileSortimentOpen ? "max-h-96" : "max-h-0"
+                      }`}
+                    >
+                      <div className="pl-4 space-y-1 mt-1 bg-gray-50 rounded-md mx-2">
+                        {item.submenu.map((subitem) => (
+                          <a
+                            key={subitem.name}
+                            href={subitem.path}
+                            className="block px-3 py-2 rounded-md text-base text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition duration-150"
+                          >
+                            {subitem.name}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <a
+                    href={item.path}
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition duration-150"
+                  >
+                    {item.name}
+                  </a>
+                )}
+              </div>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
