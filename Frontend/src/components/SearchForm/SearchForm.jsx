@@ -49,13 +49,19 @@ export default function CategorySearch() {
       .filter(Boolean)
       .join(" ");
 
-  const shouldShowField = (field) => {
-    if (!field.dependsOn) return true;
-    if (field.dependsOnShow === false) return false;
-    if (field.dependsOnShow === true) return true;
-    if (!field.dependsOnValue) return !!formState[field.dependsOn];
-    return formState[field.dependsOn] === field.dependsOnValue;
-  };
+    const shouldShowField = (field) => {
+      if (!field.dependsOn) return true;
+      
+      if (field.dependsOnShow === false) return false;
+      
+      if (field.dependsOnShow === true) return true;
+      
+      if (!field.dependsOnValue) {
+        return !!formState[field.dependsOn];
+      }
+      
+      return formState[field.dependsOn] === field.dependsOnValue;
+    };
 
   return (
     <Card className="max-w-2xl mx-4 sm:mx-auto p-6 sm:p-6 border-gray-200 shadow-lg mb-12">
@@ -104,7 +110,10 @@ export default function CategorySearch() {
             step,
           } = field;
 
-          const isDisabled = dependsOn && !formState[dependsOn];
+          const isDisabled =
+            dependsOn &&
+            (formState[dependsOn] === undefined ||
+              (dependsOnValue !== undefined && formState[dependsOn] !== dependsOnValue));
 
           const commonProps = {
             name,
@@ -182,7 +191,7 @@ export default function CategorySearch() {
                   <input
                     type="text"
                     id={name}
-                    {...commonProps}
+                    placeholder={i18next.t("search.pad.competitor_placeholder")}
                     className={getInputClass(isDisabled, !!formState[name])}
                   />
                 </div>
