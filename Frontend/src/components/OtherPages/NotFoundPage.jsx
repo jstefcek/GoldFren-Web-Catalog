@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 
 export default function NotFoundPage() {
-  // Animation for the brake disc
+  // Animation
   const [rotation, setRotation] = useState(0);
   
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function NotFoundPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-start justify-center px-4 pt-24 pb-12">
+    <div className="min-h-screen flex items-start justify-center px-4 pt-24 pb-8">
       <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="bg-red-600 h-2 w-full"></div>
         

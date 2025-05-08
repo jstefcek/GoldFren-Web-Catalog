@@ -47,14 +47,14 @@ export const CustomSelect = ({
   };
 
   return (
-    <div className="flex flex-col gap-1 relative" ref={wrapperRef}>
-      <label htmlFor={name} className="font-sm text-medium text-gray-800">
+    <div className="flex flex-col gap-1 relative text-sm md:text-base" ref={wrapperRef}>
+      <label htmlFor={name} className="font-medium text-gray-800">
         {i18next.t(label)} 
-          {!optional && (
-            <span className="font-sm text-medium text-red-800">
-              &nbsp;*
-            </span>
-          )}
+        {!optional && (
+          <span className="text-red-800">
+            &nbsp;*
+          </span>
+        )}
       </label>
 
       {/* Button / field */}
@@ -64,7 +64,7 @@ export const CustomSelect = ({
         onClick={() => !disabled && setOpen(!open)}
         className={`relative border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600 placeholder-gray-400 text-left w-full ${
           value ? "text-black" : "text-gray-400"
-        } ${disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""}`}
+        } ${disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""} text-sm md:text-base`}
         disabled={disabled}
       >
         {value || i18next.t(placeholder)}
@@ -74,14 +74,14 @@ export const CustomSelect = ({
       {/* Dropdown */}
       {open && !disabled && (
         <div
-          className="absolute z-50 w-full bg-white border rounded-lg shadow-xl overflow-hidden"
+          className="absolute z-50 w-full bg-white border rounded-lg shadow-xl overflow-hidden text-sm md:text-base"
           style={{ top: dropdownTop }}
         >
           {/* Search input with search icon */}
           <div className="relative">
             <input
               type="text"
-              className="w-full px-3 py-2 pr-10 border-b border-gray-200 focus:outline-none placeholder-gray-400 text-black"
+              className="w-full px-3 py-2 pr-10 border-b border-gray-200 focus:outline-none placeholder-gray-400 text-black text-sm md:text-base"
               placeholder={i18next.t(placeholder)}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -90,7 +90,7 @@ export const CustomSelect = ({
           </div>
 
           {/* List of options */}
-          <ul className="max-h-48 overflow-auto text-sm">
+          <ul className="max-h-48 overflow-auto">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <li

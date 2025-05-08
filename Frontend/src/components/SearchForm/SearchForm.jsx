@@ -184,15 +184,18 @@ export default function CategorySearch() {
             default:
               return (
                 <div key={name} className="flex flex-col gap-1">
-                  <label htmlFor={name} className="text-sm font-medium text-gray-800">
+                  <label
+                    htmlFor={name}
+                    className="text-sm md:text-base font-medium text-gray-800"
+                  >
                     {i18next.t ? i18next.t(label) : label}
                     {!optional && <span className="text-red-600"> *</span>}
                   </label>
                   <input
                     type="text"
                     id={name}
-                    placeholder={i18next.t("search.pad.competitor_placeholder")}
-                    className={getInputClass(isDisabled, !!formState[name])}
+                    placeholder={i18next.t(placeholder)}
+                    className={`${getInputClass(isDisabled, !!formState[name])} text-sm md:text-base text-gray-800`}
                   />
                 </div>
               );
@@ -200,7 +203,7 @@ export default function CategorySearch() {
         })}
 
         {/* REQUIRED FIELDS - text */}
-        <p className="text-xs text-red-800 -mt-3">
+        <p className="text-xs font-small text-red-800 -mt-3">
           {i18next.t ? i18next.t("search.required_fields") : "* Required fields"}
         </p>
 

@@ -24,6 +24,7 @@ export const CustomRangeSlider = ({
   useEffect(() => {
     setLocalMin(valueMin ?? min);
     setLocalMax(valueMax ?? max);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetSignal]);
 
   // Determine if the component should be active based on dependencies
@@ -126,15 +127,19 @@ export const CustomRangeSlider = ({
   };
 
   return (
-    <div className="flex flex-col gap-1 w-full" {...otherProps}>
+    <div className="flex flex-col gap-1 w-full text-sm md:text-base" {...otherProps}>
       <div className="flex justify-between items-center">
+        {/* Label text */}
         <label className="font-sm text-medium text-gray-800">
           {label && i18next.t ? i18next.t(label) : label}
         </label>
-        <div className="flex gap-3 items-center">
+
+        {/* Input containers with number selected by range sliders */}
+        <div className="flex gap-2 items-center sm:gap-3">
+          {/* Min value container */}
           <input
             type="number"
-            className={`w-16 border border-gray-800 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-red-600 ${
+            className={`w-14 sm:w-16 border border-gray-800 rounded-md px-1.5 py-1 text-center text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-600 ${
               isDisabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""
             }`}
             value={formatValue(localMin)}
@@ -145,10 +150,12 @@ export const CustomRangeSlider = ({
             disabled={isDisabled}
             aria-label={`Minimum ${label} value`}
           />
-          <span className="text-gray-400">-</span>
+          <span className="text-gray-400 text-sm sm:text-base">-</span>
+          
+          {/* Max value container */}
           <input
             type="number"
-            className={`w-16 border rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-red-600 ${
+            className={`w-14 sm:w-16 border border-gray-800 rounded-md px-1.5 py-1 text-center text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-red-600 ${
               isDisabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""
             }`}
             value={formatValue(localMax)}
@@ -257,7 +264,7 @@ export const CustomRangeSlider = ({
       </div>
 
       {/* Min-max labels */}
-      <div className="flex justify-between mt-1 text-xs text-gray-500">
+      <div className="flex justify-between mt-1 text-xs md:text-sm text-gray-500">
         <span>{formatValue(min)}</span>
         <span>{formatValue(max)}</span>
       </div>

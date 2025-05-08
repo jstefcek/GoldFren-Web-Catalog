@@ -3,7 +3,7 @@ import NotFoundPage from '../components/OtherPages/NotFoundPage';
 
 function NotFound() {
   return (
-    <div className="container mx-auto mb-8">
+    <div className="container mx-auto mb-4">
       <NotFoundPage />
     </div>
   );
