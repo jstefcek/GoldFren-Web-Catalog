@@ -1,3 +1,5 @@
+const serverUrl = import.meta.env.VITE_API_URL;
+
 export const dataTransformers = {
     // Adaptery transformed data
     adaptery: (data) => {
@@ -5,8 +7,8 @@ export const dataTransformers = {
         return data.data.map(item => ({
           ...item,
           id: item.kod,
-          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/adaptery/image/" + item.obrazek : null,
-          vektor: item.vektor ? "http://localhost/GoldFren_Media/adaptery/vector/" + item.vektor : null,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/adaptery/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/adaptery/vector/` + item.vektor : null,
           cislo_dilu: item.cislo_dilu,
           typ: item.typ,
           prumer: item.prumer,
@@ -24,8 +26,8 @@ export const dataTransformers = {
         return {
           ...data,
           id: data.kod,
-          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/adaptery/image/" + data.obrazek : null,
-          vektor: data.vektor ? "http://localhost/GoldFren_Media/adaptery/vector/" + data.vektor : null,
+          obrazek: data.obrazek ? `${serverUrl}/GoldFren_Media/adaptery/image/` + data.obrazek : null,
+          vektor: data.vektor ? `${serverUrl}/GoldFren_Media/adaptery/vector/` + data.vektor : null,
           cislo_dilu: data.cislo_dilu,
           typ: data.typ,
           prumer: data.prumer,
@@ -62,8 +64,8 @@ export const dataTransformers = {
         return data.data.map(item => ({
           ...item,
           id: item.kod,
-          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/brzdice/image/" + item.obrazek : null,
-          vektor: item.vektor ? "http://localhost/GoldFren_Media/brzdice/vector/" + item.vektor : null,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/brzdice/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/brzdice/vector/` + item.vektor : null,
           cislo_dilu: item.cislo_dilu,
           typ_uchyceni: item.typ_uchyceni,
           pocet_pistku: item.pocet_pistku,
@@ -79,8 +81,8 @@ export const dataTransformers = {
         return {
           ...data,
           id: data.kod,
-          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/brzdice/image/" + data.obrazek : null,
-          vektor: data.vektor ? "http://localhost/GoldFren_Media/brzdice/vector/" + data.vektor : null,
+          obrazek: data.obrazek ? `${serverUrl}/GoldFren_Media/brzdice/image/` + data.obrazek : null,
+          vektor: data.vektor ? `${serverUrl}/GoldFren_Media/brzdice/vector/` + data.vektor : null,
           cislo_dilu: data.cislo_dilu,
           typ_uchyceni: data.typ_uchyceni,
           pocet_pistku: data.pocet_pistku,
@@ -115,8 +117,8 @@ export const dataTransformers = {
         return data.data.map(item => ({
           ...item,
           id: item.kod,
-          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/desticky/image/" + item.obrazek : null,
-          vektor: item.vektor ? "http://localhost/GoldFren_Media/desticky/vector/" + item.vektor : null,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/desticky/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/desticky/vector/` + item.vektor : null,
           cislo_dilu: item.cislo_dilu,
           typ: item.typ,
           material_text: item.material_text,
@@ -142,8 +144,8 @@ export const dataTransformers = {
         return {
           ...data,
           id: data.kod,
-          image: data.obrazek ? "http://localhost/GoldFren_Media/desticky/image/" + data.obrazek : null,
-          vektor: data.vektor ? "http://localhost/GoldFren_Media/desticky/vector/" + data.vektor : null,
+          image: data.obrazek ? `${serverUrl}/GoldFren_Media/desticky/image/` + data.obrazek : null,
+          vektor: data.vektor ? `${serverUrl}/GoldFren_Media/desticky/vector/` + data.vektor : null,
           cislo_dilu: data.cislo_dilu,
           typ: data.typ,
           material: data.material_text,
@@ -189,8 +191,8 @@ export const dataTransformers = {
         return data.data.map(item => ({
           ...item,
           id: item.kod,
-          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/kotouce/image/" + item.obrazek : null,
-          vektor: item.vektor ? "http://localhost/GoldFren_Media/kotouce/vector/" + item.vektor : null,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/kotouce/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/kotouce/vector/` + item.vektor : null,
           cislo_dilu: item.cislo_dilu,
           typ: item.typ,
           vnejsi_prumer: item.od,
@@ -211,8 +213,8 @@ export const dataTransformers = {
         return {
           ...data,
           id: data.kod,
-          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/kotouce/image/" + data.obrazek : null,
-          vektor: data.vektor ? "http://localhost/GoldFren_Media/kotouce/vector/" + data.vektor : null,
+          obrazek: data.obrazek ? `${serverUrl}/GoldFren_Media/kotouce/image/` + data.obrazek : null,
+          vektor: data.vektor ? `${serverUrl}/GoldFren_Media/kotouce/vector/` + data.vektor : null,
           cislo_dilu: data.cislo_dilu,
           typ: data.typ,
           vnejsi_prumer: data.od,
@@ -252,8 +254,8 @@ export const dataTransformers = {
         return data.data.map(item => ({
           ...item,
           id: item.kod,
-          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/hadicky/image/" + item.obrazek : null,
-          vektor: item.vektor ? "http://localhost/GoldFren_Media/hadicky/vector/" + item.vektor : null,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/hadicky/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/hadicky/vector/` + item.vektor : null,
           cislo_dilu: item.cislo_dilu,
           poznamka: item.poznamka,
         }));
@@ -267,8 +269,8 @@ export const dataTransformers = {
         return {
           ...data,
           id: data.kod,
-          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/hadicky/image/" + data.obrazek : null,
-          vektor: data.vektor ? "http://localhost/GoldFren_Media/hadicyk/vector/" + data.vektor : null,
+          obrazek: data.obrazek ? `${serverUrl}/GoldFren_Media/hadicky/image/` + data.obrazek : null,
+          vektor: data.vektor ? `${serverUrl}/GoldFren_Media/hadicyk/vector/` + data.vektor : null,
           cislo_dilu: data.cislo_dilu,
           poznamka: data.poznamka,
         };
@@ -301,8 +303,8 @@ export const dataTransformers = {
         return data.data.map(item => ({
           ...item,
           id: item.kod,
-          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/pumpy/image/" + item.obrazek : null,
-          vektor: item.vektor ? "http://localhost/GoldFren_Media/pumpy/vector/" + item.vektor : null,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/pumpy/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/pumpy/vector/` + item.vektor : null,
           cislo_dilu: item.cislo_dilu,
           prumer: item.prumer,
           popis: item.popis,
@@ -318,8 +320,8 @@ export const dataTransformers = {
         return {
           ...data,
           id: data.kod,
-          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/pumpy/image/" + data.obrazek : null,
-          vektor: data.vektor ? "http://localhost/GoldFren_Media/pumpy/vector/" + data.vektor : null,
+          obrazek: data.obrazek ? `${serverUrl}/GoldFren_Media/pumpy/image/` + data.obrazek : null,
+          vektor: data.vektor ? `${serverUrl}/GoldFren_Media/pumpy/vector/` + data.vektor : null,
           cislo_dilu: data.cislo_dilu,
           prumer: data.prumer,
           popis: data.popis,
@@ -354,8 +356,8 @@ export const dataTransformers = {
         return data.data.map(item => ({
           ...item,
           id: item.kod,
-          obrazek: item.obrazek ? "http://localhost/GoldFren_Media/prislusenstvi/image/" + item.obrazek : null,
-          vektor: item.vektor ? "http://localhost/GoldFren_Media/prislusenstvi/vector/" + item.vektor : null,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/prislusenstvi/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/prislusenstvi/vector/` + item.vektor : null,
           cislo_dilu: item.cislo_dilu,
           typ: item.typ,
           popis: item.popis,
@@ -371,8 +373,8 @@ export const dataTransformers = {
         return {
           ...data,
           id: data.kod,
-          obrazek: data.obrazek ? "http://localhost/GoldFren_Media/prislusenstvi/image/" + data.obrazek : null,
-          vektor: data.vektor ? "http://localhost/GoldFren_Media/prislusenstvi/vector/" + data.vektor : null,
+          obrazek: data.obrazek ? `${serverUrl}/GoldFren_Media/prislusenstvi/image/` + data.obrazek : null,
+          vektor: data.vektor ? `${serverUrl}/GoldFren_Media/prislusenstvi/vector/` + data.vektor : null,
           cislo_dilu: data.cislo_dilu,
           typ: data.typ,
           popis: data.popis,

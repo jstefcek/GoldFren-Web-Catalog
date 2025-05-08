@@ -52,7 +52,7 @@ export const CustomSelect = ({
         {i18next.t(label)} 
           {!optional && (
             <span className="font-sm text-medium text-red-800">
-            *
+              &nbsp;*
             </span>
           )}
       </label>
