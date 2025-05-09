@@ -204,9 +204,9 @@ def desticka_publication(desticka_id: int, publikovat: int):
 def get_filtered_desticky(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, material, konkurence_sbs, konkurence_ebc, konkurence_ferodo, 
+    SELECT kod, cislo_dilu, obrazek, vektor, material, konkurence_sbs, konkurence_ebc, konkurence_ferodo, 
     konkurence_a2z, konkurence_rapco, konkurence_grove, konkurence_cleveland, konkurence_matco, 
-    oem_cisla, pozice
+    oem_cisla, GROUP_CONCAT(DISTINCT pozice ORDER BY pozice SEPARATOR ', ') AS pozice
     FROM v_vozidlo_desticka
     """
     params = []
@@ -219,6 +219,10 @@ def get_filtered_desticky(limit: int = None, page: int = None, states: bool = Fa
     # Append filters to base query
     if filter_condition:
         query += " WHERE " + " AND ".join(filter_condition)
+    
+    # Add GROUP BY clause
+    query += """ GROUP BY kod, cislo_dilu, obrazek, vektor, material, konkurence_sbs, konkurence_ebc, konkurence_ferodo, 
+    konkurence_a2z, konkurence_rapco, konkurence_grove, konkurence_cleveland, konkurence_matco, oem_cisla"""
     
     # Execute query and get records
     records = get_records(sql_query=query, params=params, limit=limit, page=page)

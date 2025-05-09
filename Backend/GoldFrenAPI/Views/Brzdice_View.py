@@ -86,8 +86,8 @@ def get_filtered_brzdice_view(request):
         # Get parameters from request
         pozice = request.GET.get("pozice", None)
         uchyceni = request.GET.get("uchyceni", None)
-        pistku_min = request.GET.get("pistku_min", None)
-        pistku_max = request.GET.get("pistku_max", None)
+        pistku_min = request.GET.get("pocet_pistku_min", None)
+        pistku_max = request.GET.get("pocet_pistku_max", None)
         
         # Checks if parameters are provided
         if not pozice:

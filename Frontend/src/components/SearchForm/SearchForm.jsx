@@ -24,6 +24,8 @@ export default function CategorySearch({ isSearchComplete }) {
   const [formState, setFormState] = useState({});
   const [resetSignal, setResetSignal] = useState(false);
   const [missingFields, setMissingFields] = useState([]);
+  const currentCategory = categories.find((cat) => cat.key === selectedCat);
+  const categoryType = currentCategory?.type || "unknown";
 
   // Get the filter configuration for the selected category
   const fields = filterConfigs[selectedCat] || [];
@@ -33,7 +35,7 @@ export default function CategorySearch({ isSearchComplete }) {
     setFormState((prev) => ({
       ...prev,
       [name]: e.target.value,
-      ...(e.target.vozidlo_kod && { ["vozidlo_kod"]: e.target.vozidlo_kod })
+      ...(e.target.vozidlo_kod && { ["vozidlo_kod"]: e.target.vozidlo_kod }),
     }));
 
   // Handle reset button click
@@ -41,16 +43,17 @@ export default function CategorySearch({ isSearchComplete }) {
     setFormState({});
     setResetSignal(!resetSignal);
     setMissingFields([]);
+    isSearchComplete(null)
   };
 
   // Handle form submission and validate required fields
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     const visibleFields = fields.filter(shouldShowField);
     const requiredFields = visibleFields.filter((f) => !f.optional);
     const optionalFields = visibleFields.filter((f) => f.optional);
-  
+
     // Validate required fields
     const missing = requiredFields
       .filter(({ name, type }) => {
@@ -60,23 +63,27 @@ export default function CategorySearch({ isSearchComplete }) {
         return value === undefined || value === null || value === "";
       })
       .map((f) => f.label);
-  
+
     // Determine if at least one optional field has meaningful input
-    const atLeastOneOptionalFilled = optionalFields.some(({ name, type, minValue, maxValue }) => {
-      if (type === "range-slider") {
-        const minVal = formState[`${name}_min`];
-        const maxVal = formState[`${name}_max`];
-        // Only consider filled if values differ from defaults
-        return (
-          (minVal !== undefined && minVal !== minValue) ||
-          (maxVal !== undefined && maxVal !== maxValue)
-        );
-      } else {
-        const val = formState[name];
-        return val !== undefined && val !== null && val.toString().trim() !== "";
+    const atLeastOneOptionalFilled = optionalFields.some(
+      ({ name, type, minValue, maxValue }) => {
+        if (type === "range-slider") {
+          const minVal = formState[`${name}_min`];
+          const maxVal = formState[`${name}_max`];
+          // Only consider filled if values differ from defaults
+          return (
+            (minVal !== undefined && minVal !== minValue) ||
+            (maxVal !== undefined && maxVal !== maxValue)
+          );
+        } else {
+          const val = formState[name];
+          return (
+            val !== undefined && val !== null && val.toString().trim() !== ""
+          );
+        }
       }
-    });
-  
+    );
+
     // Handle validation errors
     if (
       missing.length > 0 ||
@@ -85,20 +92,39 @@ export default function CategorySearch({ isSearchComplete }) {
       setMissingFields(
         missing.length > 0
           ? missing
-          : [i18next.t("search.at_least_one_required") || "Please fill at least one filter."]
+          : [
+              i18next.t("search.at_least_one_required") ||
+                "Please fill at least one filter.",
+            ]
       );
       return;
     }
-  
-    // Success: reset errors
+
+    // If everything is valid, proceed with the search and reset missing fields
     setMissingFields([]);
-  
-    // Return `vozidlo_kod` to parent (if needed)
+
+    // Return values to parent component based on category type
     const vozidloKod = formState.vozidlo_kod || null;
-    if (isSearchComplete && vozidloKod) {
-      isSearchComplete(vozidloKod);
+    if (isSearchComplete) {
+      if (categoryType === "vehicle") {
+        isSearchComplete({
+          category: selectedCat,
+          type: "vehicle",
+          vozidlo_kod: vozidloKod,
+          api: currentCategory.api || null,
+          filters: { ...formState },
+        });
+      } else {
+        isSearchComplete({
+          category: selectedCat,
+          type: "sortiment",
+          api: currentCategory.api || null,
+          page_category: currentCategory.page_category || null,
+          filters: { ...formState },
+        });
+      }
     }
-  
+
     console.table({ category: selectedCat, ...formState });
   };
 
@@ -116,15 +142,15 @@ export default function CategorySearch({ isSearchComplete }) {
   // Function to determine if a field should be shown based on its dependencies
   const shouldShowField = (field) => {
     if (!field.dependsOn) return true;
-    
+
     if (field.dependsOnShow === false) return false;
-    
+
     if (field.dependsOnShow === true) return true;
-    
+
     if (!field.dependsOnValue) {
       return !!formState[field.dependsOn];
     }
-    
+
     return formState[field.dependsOn] === field.dependsOnValue;
   };
 
@@ -182,7 +208,8 @@ export default function CategorySearch({ isSearchComplete }) {
           const isDisabled =
             dependsOn &&
             (formState[dependsOn] === undefined ||
-              (dependsOnValue !== undefined && formState[dependsOn] !== dependsOnValue));
+              (dependsOnValue !== undefined &&
+                formState[dependsOn] !== dependsOnValue));
 
           // Common properties for input types
           const commonProps = {
@@ -198,13 +225,15 @@ export default function CategorySearch({ isSearchComplete }) {
             dependsOnShow,
           };
 
-          {/* FILTER FORM - Select component */}
+          {
+            /* FILTER FORM - Select component */
+          }
           switch (type) {
             case "select":
               return (
-                <CustomSelect 
+                <CustomSelect
                   key={name}
-                  {...commonProps} 
+                  {...commonProps}
                   options={options}
                   getDataAPI={getDataAPI}
                   getDataAPI_params={getDataAPI_params}
@@ -212,7 +241,7 @@ export default function CategorySearch({ isSearchComplete }) {
                   selectedCat={selectedCat}
                 />
               );
-            
+
             /* FILTER FORM - Range slider component */
             case "range-slider":
               return (
@@ -240,12 +269,15 @@ export default function CategorySearch({ isSearchComplete }) {
                   }
                 />
               );
-            
+
             /* FILTER FORM - Number component */
             case "number":
               return (
                 <div key={name} className="flex flex-col gap-1">
-                  <label htmlFor={name} className="text-sm font-medium text-gray-800">
+                  <label
+                    htmlFor={name}
+                    className="text-sm font-medium text-gray-800"
+                  >
                     {i18next.t ? i18next.t(label) : label}
                     {!optional && <span className="text-red-600"> *</span>}
                   </label>
@@ -260,7 +292,7 @@ export default function CategorySearch({ isSearchComplete }) {
                   />
                 </div>
               );
-            
+
             /* FILTER FORM - Text component */
             default:
               return (
@@ -277,7 +309,10 @@ export default function CategorySearch({ isSearchComplete }) {
                     id={name}
                     onChange={handleChange(name)}
                     placeholder={i18next.t(placeholder)}
-                    className={`${getInputClass(isDisabled, !!formState[name])} text-sm md:text-base text-gray-800`}
+                    className={`${getInputClass(
+                      isDisabled,
+                      !!formState[name]
+                    )} text-sm md:text-base text-gray-800`}
                   />
                 </div>
               );
@@ -286,7 +321,9 @@ export default function CategorySearch({ isSearchComplete }) {
 
         {/* REQUIRED FIELDS - text */}
         <p className="text-xs font-small text-red-800 -mt-3">
-          {i18next.t ? i18next.t("search.required_fields") : "* Required fields"}
+          {i18next.t
+            ? i18next.t("search.required_fields")
+            : "* Required fields"}
         </p>
 
         {/* MISSING FIELDS - text */}
@@ -297,7 +334,11 @@ export default function CategorySearch({ isSearchComplete }) {
               : "Please select all required fields (*) before searching..."}
             <ul className="list-disc list-inside mt-1 font-normal">
               {missingFields.map((label, idx) => (
-                <li key={idx}>{i18next.t ? i18next.t("search.fill_required_text") + i18next.t(label) : label}</li>
+                <li key={idx}>
+                  {i18next.t
+                    ? i18next.t("search.fill_required_text") + i18next.t(label)
+                    : label}
+                </li>
               ))}
             </ul>
           </div>

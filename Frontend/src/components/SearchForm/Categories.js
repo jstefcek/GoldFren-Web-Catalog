@@ -1,5 +1,4 @@
 import i18next from "i18next";
-const serverUrl = import.meta.env.VITE_API_URL;
 
 // Categories for filtering
 export const categories = [
@@ -9,7 +8,7 @@ export const categories = [
     icon: "motorbike",
     type: "vehicle",
     id: 1,
-    api: `${serverUrl}/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
+    api: `/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
   },
   {
     key: "car",
@@ -17,7 +16,7 @@ export const categories = [
     icon: "car",
     type: "vehicle",
     id: 2,
-    api: `${serverUrl}/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
+    api: `/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
   },
   {
     key: "kart",
@@ -25,7 +24,7 @@ export const categories = [
     icon: "kart",
     type: "vehicle",
     id: 6,
-    api: `${serverUrl}/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
+    api: `/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
   },
   {
     key: "bike",
@@ -33,7 +32,7 @@ export const categories = [
     icon: "bike",
     type: "vehicle",
     id: 3,
-    api: `${serverUrl}/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
+    api: `/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
   },
   {
     key: "plane",
@@ -41,7 +40,7 @@ export const categories = [
     icon: "plane",
     type: "vehicle",
     id: 4,
-    api: `${serverUrl}/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
+    api: `/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
   },
   {
     key: "industry",
@@ -49,7 +48,7 @@ export const categories = [
     icon: "industry",
     type: "vehicle",
     id: 5,
-    api: `${serverUrl}/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
+    api: `/api/goldfren/internal/vozidla/sortiment?vozidlo_kod=`,
   },
   {
     key: "pad",
@@ -57,7 +56,8 @@ export const categories = [
     icon: "pad",
     type: "sortiment",
     id: 1,
-    api: `${serverUrl}/api/goldfren/internal/desticky/filter?limit=0`,
+    api: `/api/goldfren/internal/desticky/filter?limit=0`,
+    page_category: "desticky",
   },
   {
     key: "caliper",
@@ -65,7 +65,8 @@ export const categories = [
     icon: "caliper",
     type: "sortiment",
     id: 3,
-    api: `${serverUrl}/api/goldfren/internal/brzdice/filter?limit=0`,
+    api: `/api/goldfren/internal/brzdice/filter?limit=0`,
+    page_category: "brzdice",
   },
   {
     key: "adapter",
@@ -73,7 +74,7 @@ export const categories = [
     icon: "adapter",
     type: "sortiment",
     id: 6,
-    api: `${serverUrl}/api/goldfren/internal/adaptery/filter?limit=0`,
+    api: `/api/goldfren/internal/adaptery/filter?limit=0`,
   },
   {
     key: "disc",
@@ -81,6 +82,6 @@ export const categories = [
     icon: "disc",
     type: "sortiment",
     id: 2,
-    api: `${serverUrl}/api/goldfren/internal/kotouce/filter?limit=0`,
+    api: `/api/goldfren/internal/kotouce/filter?limit=0`,
   },
 ];

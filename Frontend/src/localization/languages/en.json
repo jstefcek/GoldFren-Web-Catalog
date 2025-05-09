@@ -11,6 +11,7 @@
   "hadicky": "Hoses",
   "kotouce": "Discs",
   "pumpy": "Pumps",
+  "not_found": "Nothing found",
   "prislusenstvi": "Accessories",
   "searchTitle": "Search Goldfren catalog",
   "adapter_title": "GOLDfren brake adapters",
@@ -76,6 +77,7 @@
       "at_least_one_required": "at least one of the fields",
       "fill_required_text": "Please fill in ",
       "adapter": {
+        "title": "Found GOLDfren brake adapters",
         "position": "Adapter position",
         "position_placeholder": "Please choose adapter position",
         "diameter": "Adapter diameter [mm]",
@@ -83,6 +85,7 @@
         "bolt_spacing": "Brake bolt spacing [mm]"
       },
       "discs": {
+        "title": "Found GOLDfren brake discs",
         "outside_diameter": "Disc outside diameter [mm]",
         "pitch_diameter": "Disc pitch diameter [mm]",
         "inner_diameter": "Disc inside diameter [mm]",
@@ -91,6 +94,7 @@
         "type_placeholder": "Please choose disc type"
       },
       "pad": {
+        "title": "Found GOLDfren brake pads",
         "competitor": "Brake pad competitor",
         "competitor_placeholder": "Please choose brake pad competitor",
         "material": "Brake pad material",
@@ -99,6 +103,7 @@
         "oem_numbers_placeholder": "Please choose OEM production numbers"
       },
       "caliper": {
+        "title": "Found GOLDfren brake calipers",
         "position": "Position of brake caliper",
         "position_placeholder": "Please choose brake caliper position",
         "piston_count": "Piston count",

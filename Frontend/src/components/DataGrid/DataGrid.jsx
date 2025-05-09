@@ -20,7 +20,7 @@ import { exportToExcel } from "./functions/ExportExcel";
 import { PrintData } from "./functions/ExportPrint";
 import { TextTruncate } from "./ui/Custom_TextTruncate";
 
-export default function DataGrid({ category = "", apiUrl = null }) {
+export default function DataGrid({ category = "", apiCategory=null, apiUrl = null, filters = {} }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -31,16 +31,20 @@ export default function DataGrid({ category = "", apiUrl = null }) {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
-  const columns = columnsConfig[category] || [];
+  const resolvedCategory = apiCategory || category;
+  const columns = columnsConfig[resolvedCategory] || [];
+  
 
   // Call API to get data
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-
+  
       try {
-        // Use the fetchCategoryData helper to get data for the specific category
-        const result = await fetchData(category, apiUrl);
+        const queryParams = new URLSearchParams(filters).toString();
+        const fullUrl = queryParams ? `${apiUrl}&${queryParams}` : apiUrl;
+  
+        const result = await fetchData(resolvedCategory, fullUrl);
         setData(result);
       } catch (error) {
         console.error("Error loading data:", error);
@@ -49,11 +53,11 @@ export default function DataGrid({ category = "", apiUrl = null }) {
         setIsLoading(false);
       }
     };
-
-    if (category) {
+  
+    if (resolvedCategory && apiUrl) {
       loadData();
     }
-  }, [category, apiUrl]);
+  }, [resolvedCategory, apiUrl, JSON.stringify(filters)]);
 
   // Sorting type ASC or DESC
   const handleSort = (colKey) => {

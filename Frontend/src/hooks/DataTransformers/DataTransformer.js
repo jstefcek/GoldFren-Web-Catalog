@@ -402,5 +402,51 @@ export const dataTransformers = {
       }
       return [];
     },
+
+    // Pad transformed data
+    pad: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/desticky/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/desticky/vector/` + item.vektor : null,
+          cislo_dilu: item.cislo_dilu,
+          typ: item.typ,
+          material_text: item.material,
+          oem_cisla: item.oem_cisla,
+          obchodni_nazev: item.obchodni_nazev,
+          // Konurence
+          konkurence_sbs: item.konkurence_sbs,
+          konkurence_ebs: item.konkurence_ebs,
+          konkurence_ferodo: item.konkurence_ferodo,
+          konkurence_a2z: item.konkurence_a2z,
+          konkurence_rapco: item.konkurence_rapco,
+          konkurence_grove: item.konkurence_grove,
+          konkurence_cleveland: item.konkurence_konkurence_cleveland,
+          konkurence_matco: item.konkurence_matco,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
+    },
+
+    // Caliper transformed data 
+    caliper: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/brzdice/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/brzdice/vector/` + item.vektor : null,
+          cislo_dilu: item.cislo_dilu,
+          typ_uchyceni: item.typ_uchyceni,
+          pocet_pistku: item.pocet_pistku,
+          popis: item.popis,
+          pozice: item.pozice
+        }));
+      }
+      return [];
+    },
     
   };
