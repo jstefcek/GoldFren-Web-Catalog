@@ -19,7 +19,7 @@ const CategoryIcon = ({ name }) => (
   />
 );
 
-export default function CategorySearch() {
+export default function CategorySearch({ isSearchComplete }) {
   const [selectedCat, setSelectedCat] = useState(categories[0].key);
   const [formState, setFormState] = useState({});
   const [resetSignal, setResetSignal] = useState(false);
@@ -49,16 +49,56 @@ export default function CategorySearch() {
   
     const visibleFields = fields.filter(shouldShowField);
     const requiredFields = visibleFields.filter((f) => !f.optional);
+    const optionalFields = visibleFields.filter((f) => f.optional);
+  
+    // Validate required fields
     const missing = requiredFields
-      .filter(({ name }) => !formState[name])
+      .filter(({ name, type }) => {
+        if (type === "range-slider") return false;
+        const value = formState[name];
+        if (typeof value === "string") return value.trim() === "";
+        return value === undefined || value === null || value === "";
+      })
       .map((f) => f.label);
   
-    if (missing.length > 0) {
-      setMissingFields(missing);
+    // Determine if at least one optional field has meaningful input
+    const atLeastOneOptionalFilled = optionalFields.some(({ name, type, minValue, maxValue }) => {
+      if (type === "range-slider") {
+        const minVal = formState[`${name}_min`];
+        const maxVal = formState[`${name}_max`];
+        // Only consider filled if values differ from defaults
+        return (
+          (minVal !== undefined && minVal !== minValue) ||
+          (maxVal !== undefined && maxVal !== maxValue)
+        );
+      } else {
+        const val = formState[name];
+        return val !== undefined && val !== null && val.toString().trim() !== "";
+      }
+    });
+  
+    // Handle validation errors
+    if (
+      missing.length > 0 ||
+      (requiredFields.length === 0 && !atLeastOneOptionalFilled)
+    ) {
+      setMissingFields(
+        missing.length > 0
+          ? missing
+          : [i18next.t("search.at_least_one_required") || "Please fill at least one filter."]
+      );
       return;
     }
   
-    setMissingFields([]); 
+    // Success: reset errors
+    setMissingFields([]);
+  
+    // Return `vozidlo_kod` to parent (if needed)
+    const vozidloKod = formState.vozidlo_kod || null;
+    if (isSearchComplete && vozidloKod) {
+      isSearchComplete(vozidloKod);
+    }
+  
     console.table({ category: selectedCat, ...formState });
   };
 
@@ -103,6 +143,7 @@ export default function CategorySearch() {
                 onClick={() => {
                   setSelectedCat(key);
                   setFormState({});
+                  setMissingFields([]);
                 }}
                 aria-label={label}
               >
@@ -212,6 +253,7 @@ export default function CategorySearch() {
                     type="number"
                     id={name}
                     label={label}
+                    onChange={handleChange(name)}
                     placeholder={i18next.t(placeholder)}
                     disabled={isDisabled}
                     className={getInputClass(isDisabled, !!formState[name])}
@@ -233,6 +275,7 @@ export default function CategorySearch() {
                   <input
                     type="text"
                     id={name}
+                    onChange={handleChange(name)}
                     placeholder={i18next.t(placeholder)}
                     className={`${getInputClass(isDisabled, !!formState[name])} text-sm md:text-base text-gray-800`}
                   />
@@ -248,13 +291,13 @@ export default function CategorySearch() {
 
         {/* MISSING FIELDS - text */}
         {missingFields.length > 0 && (
-          <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg border border-red-300 text-sm md:text-base">
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg border border-red-300 font-bold text-sm md:text-base">
             {i18next.t
               ? i18next.t("search.required_fields_warning")
               : "Please select all required fields (*) before searching..."}
-            <ul className="list-disc list-inside mt-1">
+            <ul className="list-disc list-inside mt-1 font-normal">
               {missingFields.map((label, idx) => (
-                <li key={idx}>{i18next.t ? i18next.t(label) : label}</li>
+                <li key={idx}>{i18next.t ? i18next.t("search.fill_required_text") + i18next.t(label) : label}</li>
               ))}
             </ul>
           </div>

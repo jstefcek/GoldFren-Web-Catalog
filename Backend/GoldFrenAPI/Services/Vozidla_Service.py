@@ -1,5 +1,6 @@
 # Business logic for the Vyrobce Service
 
+
 # Imports
 from datetime import datetime
 from GoldFrenAPI.Models.Vyrobce import Vyrobce
@@ -103,13 +104,15 @@ def get_vozidlo_sortiment_all(vozidlo_id):
         "prislusenstvi": ("v_vozidlo_prislusenstvi", VozidloPrislusenstvi),
         "pumpa": ("v_vozidlo_pumpa", VozidloPumpa),
     }
-
+    # Initialize result dictionary
     result = {}
 
+    # Iterate through views and fetch records
     for key, (view_name, model_class) in views.items():
         sql_query = f"SELECT * FROM {view_name} WHERE vozidlo = %s"
         raw_records = get_filtered_records(sql_query, [vozidlo_id])
         
+        # If records are found, create model instances and add to result
         if raw_records:
             items = [model_class(**record).to_dict() for record in raw_records]
             result[key] = {
@@ -117,4 +120,5 @@ def get_vozidlo_sortiment_all(vozidlo_id):
                 "items": items
             }
 
+    # If any records are found, return the result
     return result if result else None

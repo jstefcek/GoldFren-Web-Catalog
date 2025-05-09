@@ -73,7 +73,9 @@
       "search": "Vyhledat",
       "reset": "Resetovat",
       "required_fields": "* Požadované pole",
-      "required_fields_warning": "Vyplňte prosím všechna požadovaná pole",
+      "required_fields_warning": "Pro vyhledaní je potřeba splnit následující podmínky:",
+      "at_least_one_required": "alespoň jedno z polí",
+      "fill_required_text": "Vyplňte prosím ",
       "adapter": {
         "position": "Pozice adaptéru",
         "position_placeholder": "Vyberte prosím pozici adaptéru",

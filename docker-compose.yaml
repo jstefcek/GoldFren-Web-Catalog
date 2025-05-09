@@ -7,7 +7,7 @@ services:
       dockerfile: Backend/DockerFile
     container_name: goldfren_backend
     environment:
-      - DEBUG=1
+      - DEBUG=${DEBUG}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DATABASE_URL=mysql://${MYSQL_ROOT_USER}:${MYSQL_ROOT_PASSWORD}@${MYSQL_HOSTNAME}/${MYSQL_CORE_DATABASE}
       - ALLOWED_HOSTS=localhost
@@ -23,10 +23,10 @@ services:
       - mynetwork
     healthcheck:
       test: ["CMD", "python", "manage.py", "check"]
-      interval: 5s
-      timeout: 5s
+      interval: 10s
+      timeout: 10s
       retries: 20
-      start_period: 10s
+      start_period: 30s
 
   # Frontend service (React)
   # This service is used to run the React frontend application

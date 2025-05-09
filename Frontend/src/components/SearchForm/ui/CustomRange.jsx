@@ -126,6 +126,18 @@ export const CustomRangeSlider = ({
     }
   };
 
+  useEffect(() => {
+    if (!disabled) {
+      onChangeMin(localMin);
+    }
+  }, [localMin]);
+  
+  useEffect(() => {
+    if (!disabled) {
+      onChangeMax(localMax);
+    }
+  }, [localMax]);
+
   return (
     <div className="flex flex-col gap-1 w-full text-sm md:text-base" {...otherProps}>
       <div className="flex justify-between items-center">

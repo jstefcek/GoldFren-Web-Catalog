@@ -26,7 +26,13 @@ export const CustomSelect = ({
   const buttonRef = useRef(null);
 
   // Filter options based on search term
-  const filteredOptions = dynamicOptions.filter((o) =>
+  const allOptions = getDataAPI
+  ? dynamicOptions
+  : options.map((opt) =>
+      typeof opt === "object" ? opt : { value: opt, label: opt }
+    );
+
+  const filteredOptions = allOptions.filter((o) =>
     o.label?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -52,8 +58,8 @@ export const CustomSelect = ({
 
   // Handle option selection
   const handleSelect = (val) => {
-    const selectedOption = dynamicOptions.find((opt) => opt.value === val);
-    
+    const selectedOption = allOptions.find((opt) => opt.value === val);
+  
     onChange({ 
       target: { 
         name,
@@ -69,10 +75,13 @@ export const CustomSelect = ({
   // Get static data when API isnt provided
   useEffect(() => {
     if (!getDataAPI && options.length > 0) {
-      setDynamicOptions(options.map(opt => ({
-        value: opt,
-        label: opt
-      })));
+      setDynamicOptions(
+        options.map((opt) =>
+          typeof opt === "object"
+            ? opt
+            : { value: opt, label: opt }
+        )
+      );
     }
   }, [options, getDataAPI]);
 
@@ -139,7 +148,7 @@ export const CustomSelect = ({
         } ${disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""} text-sm md:text-base`}
         disabled={disabled}
       >
-        {dynamicOptions.find(opt => opt.value === value)?.label || i18next.t(placeholder)}
+        {allOptions.find(opt => opt.value === value)?.label || i18next.t(placeholder)}
         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
       </button>
 

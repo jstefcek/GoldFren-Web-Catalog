@@ -156,18 +156,15 @@ export default function DataGrid({ category = "", apiUrl = null }) {
       <div className="flex flex-col md:flex-row md:flex-wrap gap-4 justify-between mb-6 items-start md:items-center">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
           <div className="relative w-full sm:w-64">
-            {/* ICON - Search icon */}
-            <Search
-              className="absolute left-3 top-2.5 text-gray-400"
-              size={18}
-            />
-
+            
             {/* INPUT - Search input */}
+            <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+
             <Input
               placeholder={t("datagrid.search_placeholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="pl-10 h-10 text-sm sm:text-base focus:ring-2 focus:ring-red-500 focus:border-red-500"
               aria-label="Search data"
             />
           </div>
@@ -177,9 +174,10 @@ export default function DataGrid({ category = "", apiUrl = null }) {
             <Button
               variant="outline"
               onClick={handleReset}
-              className="flex gap-1 items-center cursor-pointer border-gray-300 hover:bg-gray-50"
+              className="h-10 text-sm sm:text-base flex gap-1 items-center border border-gray-300 hover:bg-gray-50 px-3"
             >
-              <X size={16} /> {t("datagrid.reset")}
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              {t("datagrid.reset")}
             </Button>
           )}
         </div>
@@ -192,43 +190,44 @@ export default function DataGrid({ category = "", apiUrl = null }) {
               </span>
             )}
             {selectedRows.length > 0 && (
-              <div className="flex gap-1">
+              <div className="flex flex-wrap gap-2 sm:gap-1 items-center">
                 {/* BTN - Export to Excel */}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleExportToExcel}
-                  className="flex items-center gap-1 text-green-600 border-green-200 hover:bg-green-50 cursor-pointer"
+                  className="h-10 px-3 text-xs sm:text-sm flex items-center gap-1 text-green-600 border-green-200 hover:bg-green-50 cursor-pointer"
                   title="Export to Excel"
                 >
-                  <FileSpreadsheet size={16} />
+                  <FileSpreadsheet className="w-4 h-4 sm:w-6 sm:h-6" />
                   <span className="hidden sm:inline">Excel</span>
                 </Button>
-
+              
                 {/* BTN - Export to CSV */}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleExportToCSV}
-                  className="flex items-center gap-1 text-blue-600 border-blue-200 hover:bg-sky-50 cursor-pointer"
+                  className="h-10 px-3 text-xs sm:text-sm flex items-center gap-1 text-blue-600 border-blue-200 hover:bg-sky-50 cursor-pointer"
                   title="Export to CSV"
                 >
-                  <FileText size={16} />
+                  <FileText className="w-4 h-4 sm:w-6 sm:h-6" />
                   <span className="hidden sm:inline">CSV</span>
                 </Button>
-
+              
                 {/* BTN - Print selected data */}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handlePrint}
-                  className="flex items-center gap-1 text-purple-600 border-purple-200 hover:bg-purple-50 cursor-pointer"
+                  className="h-10 px-3 text-xs sm:text-sm flex items-center gap-1 text-purple-600 border-purple-200 hover:bg-purple-50 cursor-pointer"
                   title="Print data"
                 >
-                  <Printer size={16} />
+                  <Printer className="w-4 h-4 sm:w-6 sm:h-6" />
                   <span className="hidden sm:inline">Print</span>
                 </Button>
-              </div>
+            </div>
+            
             )}
           </div>
 
@@ -353,40 +352,46 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                     </div>
                   </td>
 
+                  {/* Columns - Setting */}
                   {columns.map((col) => (
-                    <td key={col.key} className="px-4 py-3 text-gray-700">
+                    <td
+                      key={col.key}
+                      className="px-2 sm:px-4 py-2 sm:py-3 text-gray-700 text-xs sm:text-sm"
+                    >
                       {col.type === "image" && row[col.key] ? (
                         <div className="flex justify-center">
                           <a
                             href={row[col.key]}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
+                            className="transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
                           >
                             <img
                               src={row[col.key]}
-                              alt={category + " image"}
-                              className="max-w-[160px] h-auto rounded shadow object-contain"
+                              alt={`${category} image`}
+                              className="max-w-[100px] sm:max-w-[160px] max-h-[80px] sm:max-h-[120px] h-auto rounded shadow object-contain"
                               loading="lazy"
                             />
                           </a>
                         </div>
+
                       ) : col.type === "vector" && row[col.key] ? (
                         <div className="flex justify-center">
                           <a
                             href={row[col.key]}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
+                            className="transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
                           >
                             <img
                               src={row[col.key]}
-                              alt={category + " vektor"}
-                              className="max-w-[160px] max-h-[120px] h-auto rounded object-contain"
+                              alt={`${category} vektor`}
+                              className="max-w-[100px] sm:max-w-[160px] max-h-[80px] sm:max-h-[120px] h-auto rounded object-contain"
                               loading="lazy"
                             />
                           </a>
                         </div>
+
                       ) : col.link ? (
                         <a
                           href={`/${category}/${row.id || row.kod}`}
@@ -394,22 +399,21 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                         >
                           {row[col.key] ?? `${category}/${row.id || row.kod}`}
                         </a>
+
                       ) : col.useTruncation ? (
                         <TextTruncate
                           text={row[col.key]}
                           maxRows={col.maxRows || 3}
                         />
+
                       ) : (
-                        <span
-                          className={
-                            row[col.key] === null ? "text-gray-400" : ""
-                          }
-                        >
+                        <span className={row[col.key] === null ? "text-gray-400" : ""}>
                           {row[col.key] ?? "—"}
                         </span>
                       )}
                     </td>
                   ))}
+
                 </tr>
               ))}
             </tbody>
@@ -417,6 +421,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
         )}
       </div>
 
+      {/* Pagination */}
       <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
         <div className="text-sm text-gray-500 order-2 sm:order-1">
           {filtered.length > 0 ? (
@@ -439,13 +444,14 @@ export default function DataGrid({ category = "", apiUrl = null }) {
           )}
         </div>
 
+        {/* Total pages */}
         {totalPages > 1 && (
           <div className="flex items-center gap-1 order-1 sm:order-2">
             <Button
               variant="outline"
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
               aria-label="Previous page"
             >
               <ChevronLeft size={16} />
@@ -462,8 +468,8 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                       onClick={() => setCurrentPage(page)}
                       className={
                         page === currentPage
-                          ? "bg-red-600 hover:bg-red-700 text-white"
-                          : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                          ? "bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm"
+                          : "border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
                       }
                       aria-label={`Page ${page}`}
                       aria-current={page === currentPage ? "page" : undefined}
@@ -484,8 +490,8 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                           onClick={() => setCurrentPage(page)}
                           className={
                             page === currentPage
-                              ? "bg-red-600 hover:bg-red-700 text-white"
-                              : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                              ? "bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm"
+                              : "border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
                           }
                           aria-label={`Page ${page}`}
                           aria-current={
@@ -495,11 +501,11 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                           {page}
                         </Button>
                       ))}
-                      <span className="px-2 text-gray-500">...</span>
+                      <span className="px-2 text-gray-500 mt-1">...</span>
                       <Button
                         variant="outline"
                         onClick={() => setCurrentPage(totalPages)}
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
                         aria-label={`Page ${totalPages}`}
                       >
                         {totalPages}
@@ -510,12 +516,12 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                       <Button
                         variant="outline"
                         onClick={() => setCurrentPage(1)}
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
                         aria-label="Page 1"
                       >
                         1
                       </Button>
-                      <span className="px-2 text-gray-500">...</span>
+                      <span className="px-2 text-gray-500 mt-1">...</span>
                       {[totalPages - 2, totalPages - 1, totalPages].map(
                         (page) => (
                           <Button
@@ -526,8 +532,8 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                             onClick={() => setCurrentPage(page)}
                             className={
                               page === currentPage
-                                ? "bg-red-600 hover:bg-red-700 text-white"
-                                : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                                ? "bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm"
+                                : "border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
                             }
                             aria-label={`Page ${page}`}
                             aria-current={
@@ -544,7 +550,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                       <Button
                         variant="outline"
                         onClick={() => setCurrentPage(1)}
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
                         aria-label="Page 1"
                       >
                         1
@@ -560,8 +566,8 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                             onClick={() => setCurrentPage(page)}
                             className={
                               page === currentPage
-                                ? "bg-red-600 hover:bg-red-700 text-white"
-                                : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                                ? "bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm"
+                                : "border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
                             }
                             aria-label={`Page ${page}`}
                             aria-current={
@@ -576,7 +582,7 @@ export default function DataGrid({ category = "", apiUrl = null }) {
                       <Button
                         variant="outline"
                         onClick={() => setCurrentPage(totalPages)}
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
                         aria-label={`Page ${totalPages}`}
                       >
                         {totalPages}
@@ -587,13 +593,14 @@ export default function DataGrid({ category = "", apiUrl = null }) {
               )}
             </div>
 
+            {/* BTN - Next page */}
             <Button
               variant="outline"
               onClick={() =>
                 setCurrentPage((prev) => Math.min(totalPages, prev + 1))
               }
               disabled={currentPage === totalPages}
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm"
               aria-label="Next page"
             >
               <ChevronRight size={16} />

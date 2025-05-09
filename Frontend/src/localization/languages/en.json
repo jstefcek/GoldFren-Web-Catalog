@@ -72,7 +72,9 @@
       "search": "Search",
       "reset": "Reset",
       "required_fields": "* Required fields",
-      "required_fields_warning": "Please fill in all required fields",
+      "required_fields_warning": "To search, the following conditions must be met:",
+      "at_least_one_required": "at least one of the fields",
+      "fill_required_text": "Please fill in ",
       "adapter": {
         "position": "Adapter position",
         "position_placeholder": "Please choose adapter position",
