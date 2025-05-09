@@ -24,21 +24,30 @@ export default function CategorySearch() {
   const [formState, setFormState] = useState({});
   const [resetSignal, setResetSignal] = useState(false);
 
+  // Get the filter configuration for the selected category
   const fields = filterConfigs[selectedCat] || [];
 
+  // Handle input changes
   const handleChange = (name) => (e) =>
-    setFormState((prev) => ({ ...prev, [name]: e.target.value }));
+    setFormState((prev) => ({
+      ...prev,
+      [name]: e.target.value,
+      ...(e.target.vozidlo_kod && { ["vozidlo_kod"]: e.target.vozidlo_kod })
+    }));
 
+  // Handle reset button click
   const handleReset = () => {
     setFormState({});
     setResetSignal(!resetSignal);
   };
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     console.table({ category: selectedCat, ...formState });
   };
 
+  // Function to get the input class based on state
   const getInputClass = (isDisabled, hasValue) =>
     [
       "w-full border rounded-lg px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600",
@@ -49,19 +58,20 @@ export default function CategorySearch() {
       .filter(Boolean)
       .join(" ");
 
-    const shouldShowField = (field) => {
-      if (!field.dependsOn) return true;
-      
-      if (field.dependsOnShow === false) return false;
-      
-      if (field.dependsOnShow === true) return true;
-      
-      if (!field.dependsOnValue) {
-        return !!formState[field.dependsOn];
-      }
-      
-      return formState[field.dependsOn] === field.dependsOnValue;
-    };
+  // Function to determine if a field should be shown based on its dependencies
+  const shouldShowField = (field) => {
+    if (!field.dependsOn) return true;
+    
+    if (field.dependsOnShow === false) return false;
+    
+    if (field.dependsOnShow === true) return true;
+    
+    if (!field.dependsOnValue) {
+      return !!formState[field.dependsOn];
+    }
+    
+    return formState[field.dependsOn] === field.dependsOnValue;
+  };
 
   return (
     <Card className="max-w-2xl mx-4 sm:mx-auto p-6 sm:p-6 border-gray-200 shadow-lg mb-12">
@@ -108,13 +118,17 @@ export default function CategorySearch() {
             minValue,
             maxValue,
             step,
+            getDataAPI,
+            getDataAPI_params,
           } = field;
 
+          // Check if the field should be disabled based on its dependencies
           const isDisabled =
             dependsOn &&
             (formState[dependsOn] === undefined ||
               (dependsOnValue !== undefined && formState[dependsOn] !== dependsOnValue));
 
+          // Common properties for input types
           const commonProps = {
             name,
             label,
@@ -132,7 +146,15 @@ export default function CategorySearch() {
           switch (type) {
             case "select":
               return (
-                <CustomSelect key={name} {...commonProps} options={options} />
+                <CustomSelect 
+                  key={name}
+                  {...commonProps} 
+                  options={options}
+                  getDataAPI={getDataAPI}
+                  getDataAPI_params={getDataAPI_params}
+                  formState={formState}
+                  selectedCat={selectedCat}
+                />
               );
             
             /* FILTER FORM - Range slider component */
@@ -174,7 +196,9 @@ export default function CategorySearch() {
                   <input
                     type="number"
                     id={name}
-                    {...commonProps}
+                    label={label}
+                    placeholder={i18next.t(placeholder)}
+                    disabled={isDisabled}
                     className={getInputClass(isDisabled, !!formState[name])}
                   />
                 </div>
@@ -207,7 +231,7 @@ export default function CategorySearch() {
           {i18next.t ? i18next.t("search.required_fields") : "* Required fields"}
         </p>
 
-        {/* ACTION BUTTONS */}
+        {/* ACTION BUTTONS - part */}
         <div className="flex flex-col sm:flex-row items-stretch gap-4 pt-2">
           <Button
             type="submit"

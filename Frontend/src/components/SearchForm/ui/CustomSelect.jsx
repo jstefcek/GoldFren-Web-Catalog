@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import i18next from 'i18next';
+import { fetchAPI } from "../../../hooks/SearchForm_APIHook";
 
 export const CustomSelect = ({
   label,
@@ -11,17 +12,25 @@ export const CustomSelect = ({
   optional = false,
   placeholder = "Vyberte...",
   disabled = false,
+  getDataAPI = null,
+  getDataAPI_params = [],
+  formState = {},
+  selectedCat = null,
 }) => {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [dropdownTop, setDropdownTop] = useState(0);
+  const [dynamicOptions, setDynamicOptions] = useState([]);
+  const [loadedKey, setLoadedKey] = useState("");
   const wrapperRef = useRef(null);
   const buttonRef = useRef(null);
 
-  const filteredOptions = options.filter((o) =>
-    o.toString().toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter options based on search term
+  const filteredOptions = dynamicOptions.filter((o) =>
+    o.label?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -33,6 +42,7 @@ export const CustomSelect = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Set dropdown position based on button height
   useEffect(() => {
     if (open && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
@@ -40,14 +50,76 @@ export const CustomSelect = ({
     }
   }, [open]);
 
+  // Handle option selection
   const handleSelect = (val) => {
-    onChange({ target: { value: val } });
+    const selectedOption = dynamicOptions.find((opt) => opt.value === val);
+    
+    onChange({ 
+      target: { 
+        name,
+        value: val,
+        vozidlo_kod: selectedOption?.vozidlo_kod 
+      }
+    });
+  
     setOpen(false);
     setSearchTerm("");
   };
 
+  // Get static data when API isnt provided
+  useEffect(() => {
+    if (!getDataAPI && options.length > 0) {
+      setDynamicOptions(options.map(opt => ({
+        value: opt,
+        label: opt
+      })));
+    }
+  }, [options, getDataAPI]);
+
+  // Fetch data from API if getDataAPI is provided
+  const fetchData = async () => {
+    if (!getDataAPI) return;
+
+    try {
+      const params = getDataAPI_params.map((key) => formState[key] ?? "");
+      const transformed = await fetchAPI(
+        getDataAPI,
+        getDataAPI_params,
+        params,
+        {},
+        name,
+        selectedCat
+      );
+      setDynamicOptions(transformed);
+    } catch (err) {
+      console.error("Failed to fetch options:", err);
+    }
+  };
+
+  // Reset dynamic options when selected category changes
+  useEffect(() => {
+    setDynamicOptions([]);
+    setLoadedKey("");
+  }, [selectedCat]);
+
+  // Fetch data when component mounts or when dependencies change
+  useEffect(() => {
+    if (!open || !getDataAPI) return;
+  
+    // Build key based on params and category
+    const keyParams = getDataAPI_params.map((p) => formState[p] ?? "").join("|");
+    const currentKey = `${getDataAPI}-${selectedCat}-${keyParams}`;
+  
+    // If category changed or param values changed, reload
+    if (loadedKey !== currentKey) {
+      fetchData();
+      setLoadedKey(currentKey);
+    }
+  }, [open, getDataAPI, getDataAPI_params, formState, selectedCat]);
+
   return (
     <div className="flex flex-col gap-1 relative text-sm md:text-base" ref={wrapperRef}>
+      {/* Label text */}
       <label htmlFor={name} className="font-medium text-gray-800">
         {i18next.t(label)} 
         {!optional && (
@@ -67,7 +139,7 @@ export const CustomSelect = ({
         } ${disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""} text-sm md:text-base`}
         disabled={disabled}
       >
-        {value || i18next.t(placeholder)}
+        {dynamicOptions.find(opt => opt.value === value)?.label || i18next.t(placeholder)}
         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
       </button>
 
@@ -94,13 +166,13 @@ export const CustomSelect = ({
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <li
-                  key={option}
-                  onClick={() => handleSelect(option)}
+                  key={option.value}
+                  onClick={() => handleSelect(option.value)}
                   className={`px-3 py-2 cursor-pointer hover:bg-red-100 ${
                     option === value ? "bg-red-50 font-medium" : ""
                   }`}
                 >
-                  {option.toString()}
+                  {option.label}
                 </li>
               ))
             ) : (

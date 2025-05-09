@@ -1,7 +1,18 @@
+import { transformers } from "./DataTransformers/SearchDataTransformer";
+import { categories } from "../components/SearchForm/Categories";
 const serverUrl = import.meta.env.VITE_API_URL;
 
-export async function fetchAPI(api_url, api_params = [], params = [], options = {}) {
+export async function fetchAPI(api_url, api_params = [], params = [], options = {}, name = "", categoryID = []) {
   try {
+    // Specific case for kategorie kod
+    if (api_params.includes("kategorie_kod") && categoryID) {
+    const category = categories.find((cat) => cat.key === categoryID);
+      if (category) {
+        const index = api_params.indexOf("kategorie_kod");
+        params[index] = category.id;
+      }
+    }
+
     // Validate parameters
     if (api_params.length !== params.length) {
       console.error("Parameter mismatch:");
@@ -30,7 +41,9 @@ export async function fetchAPI(api_url, api_params = [], params = [], options = 
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
-    return await response.json();
+    const rawData = await response.json();
+    const transformer = transformers[name] || transformers.default;
+    return transformer(rawData);
 
   } catch (error) {
     // If error then logs it

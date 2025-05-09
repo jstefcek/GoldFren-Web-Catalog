@@ -7,7 +7,7 @@ export const filterConfigs = {
       placeholder: "search.manufacturer_motorbike_placeholder",
       type: "select",
       options: [],
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI: "/api/goldfren/internal/vozidla/vyrobce",
       getDataAPI_params: ["kategorie_kod"]
     },
     {
@@ -18,8 +18,8 @@ export const filterConfigs = {
       options: [],
       dependsOn: "vyrobce",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce" ]
     },
     {
       name: "model",
@@ -29,8 +29,8 @@ export const filterConfigs = {
       options: [],
       dependsOn: "objem",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce", "objem" ]
     },
     {
       name: "year",
@@ -40,8 +40,8 @@ export const filterConfigs = {
       optional: true,
       dependsOn: "model",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce", "objem", "model" ]
     },
   ],
   car: [
@@ -52,7 +52,7 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI: "/api/goldfren/internal/vozidla/vyrobce",
       getDataAPI_params: ["kategorie_kod"]
     },
     {
@@ -63,8 +63,8 @@ export const filterConfigs = {
       options: [],
       dependsOn: "vyrobce",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce" ]
     },
     {
       name: "model",
@@ -74,8 +74,8 @@ export const filterConfigs = {
       options: [],
       dependsOn: "objem",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce", "objem" ]
     },
     {
       name: "year",
@@ -85,8 +85,8 @@ export const filterConfigs = {
       optional: true,
       dependsOn: "model",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce", "objem", "model" ]
     },
   ],
   kart: [
@@ -97,7 +97,7 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI: "/api/goldfren/internal/vozidla/vyrobce",
       getDataAPI_params: ["kategorie_kod"]
     },
     {
@@ -108,8 +108,8 @@ export const filterConfigs = {
       options: [],
       dependsOn: "vyrobce",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce" ]
     },
     {
       name: "model",
@@ -119,8 +119,8 @@ export const filterConfigs = {
       options: [],
       dependsOn: "objem",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce", "objem" ]
     },
     {
       name: "year",
@@ -130,8 +130,8 @@ export const filterConfigs = {
       optional: true,
       dependsOn: "model",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce", "objem", "model" ]
     },
   ],
   bike: [
@@ -142,7 +142,7 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI: "/api/goldfren/internal/vozidla/vyrobce",
       getDataAPI_params: ["kategorie_kod"]
     },
     {
@@ -153,8 +153,8 @@ export const filterConfigs = {
       options: [],
       dependsOn: "vyrobce",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce" ]
     },
     {
       name: "year",
@@ -164,8 +164,8 @@ export const filterConfigs = {
       optional: true,
       dependsOn: "model",
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "model" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce", "model" ]
     },
   ],
   plane: [
@@ -176,7 +176,7 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI: "/api/goldfren/internal/vozidla/vyrobce",
       getDataAPI_params: ["kategorie_kod"]
     },
     {
@@ -187,8 +187,8 @@ export const filterConfigs = {
       options: [],
       dependsOnShow: true,
       dependsOn: "vyrobce",
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce" ]
     },
     {
       name: "model",
@@ -198,8 +198,8 @@ export const filterConfigs = {
       options: [],
       dependsOnShow: true,
       dependsOn: "objem",
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce", "objem" ]
     },
     {
       name: "year",
@@ -209,8 +209,8 @@ export const filterConfigs = {
       optional: true,
       dependsOnShow: true,
       dependsOn: "model",
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod", "objem", "model" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce", "objem", "model" ]
     },
   ],
   industry: [
@@ -221,7 +221,7 @@ export const filterConfigs = {
       type: "select",
       options: [],
       dependsOnShow: true,
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/vyrobce",
+      getDataAPI: "/api/goldfren/internal/vozidla/vyrobce",
       getDataAPI_params: ["kategorie_kod"]
     },
     {
@@ -232,8 +232,8 @@ export const filterConfigs = {
       options: [],
       dependsOnShow: true,
       dependsOn: "vyrobce",
-      getDataAPI: "/getDataAPI/goldfren/internal/vozidla/filter",
-      getDataAPI_params: ["kategorie_kod", "vyrobce_kod" ]
+      getDataAPI: "/api/goldfren/internal/vozidla/filter",
+      getDataAPI_params: ["kategorie_kod", "vyrobce" ]
     },
   ],
   pad: [

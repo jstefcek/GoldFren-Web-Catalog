@@ -37,7 +37,7 @@ def get_vyrobce_names(request):
 def get_vozidlo_filtered_view(request):
     # Get the parameters from the request
     kategorie_kod = request.GET.get("kategorie_kod")
-    vyrobce_kod = request.GET.get("vyrobce_kod")
+    vyrobce_kod = request.GET.get("vyrobce")
     objem = request.GET.get("objem")
     model = request.GET.get("model")
     rok_vyroby = request.GET.get("rok_vyroby")
