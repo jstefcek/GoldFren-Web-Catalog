@@ -11,7 +11,7 @@ function Home() {
   // Function to handle the completion of the search
   const isSearchComplete = (data) => {
     setSearchData(data);
-    console.log("VozidloKod is: ", data);
+    console.log("Data is: ", data);
   };
 
   return (
@@ -28,15 +28,20 @@ function Home() {
           // Check if the type is vehicle
           ? (
             <div>
-              <h2 className="text-2xl font-bold mt-8 mb-4 text-left ml-4">{searchData.filters.model}</h2>
+              <h2 className="text-3xl font-bold mt-4 mb-4 text-left ml-4 mr-4">
+                {searchData.filters.model}
+              </h2>
               
             </div>
           )
 
-          // If not its sortiment type <DataGrid category={searchData.category} apiUrl={serverUrl + searchData.api}/>
+          // If not, its sortiment type <DataGrid category={searchData.category} apiUrl={serverUrl + searchData.api}/>
           : (
             <div>
-              <h2 className="text-2xl font-bold mt-8 mb-4 text-left ml-4">{t(`search.` + searchData.category.toString() + `.title`)}</h2>
+              <h2 className="text-3xl font-bold mt-4 mb-4 text-left ml-4 mr-4">
+                {t(`search.` + searchData.category.toString() + `.title`)}
+              </h2>
+
               <DataGrid
                 category={searchData.page_category}
                 apiCategory={searchData.category}
