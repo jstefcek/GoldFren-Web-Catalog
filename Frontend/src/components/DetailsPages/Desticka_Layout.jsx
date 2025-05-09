@@ -269,15 +269,15 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       </div>
 
       {/* Vehicle Compatibility Section */}
-      <div className="rounded-lg shadow border border-gray-200 bg-white p-6">
+      <div className="rounded-lg shadow border border-gray-200 bg-white p-2 sm:p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-          <h2 className="text-xl font-semibold text-gray-700">
+          <h2 className="text-xl font-semibold text-gray-700 mt-4 ml-4">
             {t("datagrid.compatible_vehicles")}
           </h2>
           {!showVehicles && (
             <button
               onClick={() => setShowVehicles(true)}
-              className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors flex items-center gap-2"
+              className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors flex items-center gap-2 ml-4"
               disabled={!isValidId}
             >
               <span>{t("datagrid.load_vehicles") || "Load Compatible Vehicles"}</span>
@@ -290,7 +290,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
             <DataGrid category="desticka_vozidla" apiUrl={`${serverUrl}/api/goldfren/internal/desticky/vozidla?limit=0&desticka_id=${padData.id}`} />
           </div>
         ) : (
-          <div className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-md">
+          <div className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-md m-4">
             <div className="flex items-center mb-4">
               <Car className="h-8 w-8 mr-4 text-gray-500" />
               <Bike className="h-8 w-8 mr-4 text-gray-500" />

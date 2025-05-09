@@ -125,7 +125,7 @@ def kotouc_publication(kotouc_id: int, publikovat: int):
 def get_filtered_kotouce(limit: int = None, page: int = None, states: bool = False, filters: dict = None):
     # Prepare SQL query and add kod
     query = """
-    SELECT kod, cislo_dilu, obrazek, vektor, vnejsi_prumer, roztecny_prumer, vnitrni_prumer, tloustka, typ, pozice
+    SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, vnejsi_prumer, roztecny_prumer, vnitrni_prumer, tloustka, typ, pozice
     FROM v_vozidlo_kotouc
     """
     params = []

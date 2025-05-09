@@ -75,6 +75,7 @@ export const categories = [
     type: "sortiment",
     id: 6,
     api: `/api/goldfren/internal/adaptery/filter?limit=0`,
+    page_category: "adaptery",
   },
   {
     key: "disc",
@@ -83,5 +84,6 @@ export const categories = [
     type: "sortiment",
     id: 2,
     api: `/api/goldfren/internal/kotouce/filter?limit=0`,
+    page_category: "kotouce",
   },
 ];

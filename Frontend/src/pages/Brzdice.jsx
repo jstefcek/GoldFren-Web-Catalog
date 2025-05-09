@@ -8,7 +8,7 @@ function Brzdice() {
 
   return (
     <div className="container mx-auto">
-      <h1 className="text-4xl font-bold mb-4 ml-6 text-left mt-8">{t('brzdice_title')}</h1>
+      <h1 className="text-4xl font-bold mb-4 ml-4 sm:ml-6 text-left mt-8">{t('brzdice_title')}</h1>
       <DataGrid category="brzdice" apiUrl={`${serverUrl}/api/goldfren/internal/brzdice?limit=0`} />
     </div>
   );

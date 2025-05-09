@@ -448,5 +448,47 @@ export const dataTransformers = {
       }
       return [];
     },
+
+    // Adapter transformed data
+    adapter: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          obrazek: item.obrazek ? `${serverUrl}/GoldFren_Media/adaptery/image/` + item.obrazek : null,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/adaptery/vector/` + item.vektor : null,
+          cislo_dilu: item.cislo_dilu,
+          typ: item.typ,
+          prumer: item.prumer,
+          popis: item.popis,
+          typ_uchyceni: item.typ_uchyceni,
+          roztec_brzdice: item.roztec_brzdice,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
+    },
+
+    // Disc transformed data
+    disc: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          vektor: item.vektor ? `${serverUrl}/GoldFren_Media/kotouce/vector/` + item.vektor : null,
+          cislo_dilu: item.cislo_dilu,
+          typ: item.typ,
+          vnejsi_prumer: item.od,
+          roztecny_prumer: item.hd,
+          vnitrni_prumer: item.id,
+          tloustka: item.thk,
+          konkurence_branking: item.konkurence_branking,
+          konkurence_ngbrakes: item.konkurence_ngbrakes,
+          poznamka: item.poznamka,
+          pozice: item.pozice,
+        }));
+      }
+      return [];
+    },
     
   };

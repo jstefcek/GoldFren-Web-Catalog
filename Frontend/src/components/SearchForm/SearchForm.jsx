@@ -170,6 +170,7 @@ export default function CategorySearch({ isSearchComplete }) {
                   setSelectedCat(key);
                   setFormState({});
                   setMissingFields([]);
+                  isSearchComplete(null);
                 }}
                 aria-label={label}
               >
