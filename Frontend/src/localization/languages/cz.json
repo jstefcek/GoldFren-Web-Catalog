@@ -73,6 +73,7 @@
       "search": "Vyhledat",
       "reset": "Resetovat",
       "required_fields": "* Požadované pole",
+      "required_fields_warning": "Vyplňte prosím všechna požadovaná pole",
       "adapter": {
         "position": "Pozice adaptéru",
         "position_placeholder": "Vyberte prosím pozici adaptéru",

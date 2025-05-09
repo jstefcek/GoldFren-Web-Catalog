@@ -72,6 +72,7 @@
       "search": "Search",
       "reset": "Reset",
       "required_fields": "* Required fields",
+      "required_fields_warning": "Please fill in all required fields",
       "adapter": {
         "position": "Adapter position",
         "position_placeholder": "Please choose adapter position",

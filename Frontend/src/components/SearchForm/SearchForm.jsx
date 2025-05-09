@@ -23,6 +23,7 @@ export default function CategorySearch() {
   const [selectedCat, setSelectedCat] = useState(categories[0].key);
   const [formState, setFormState] = useState({});
   const [resetSignal, setResetSignal] = useState(false);
+  const [missingFields, setMissingFields] = useState([]);
 
   // Get the filter configuration for the selected category
   const fields = filterConfigs[selectedCat] || [];
@@ -39,11 +40,25 @@ export default function CategorySearch() {
   const handleReset = () => {
     setFormState({});
     setResetSignal(!resetSignal);
+    setMissingFields([]);
   };
 
-  // Handle form submission
+  // Handle form submission and validate required fields
   const handleSubmit = (e) => {
     e.preventDefault();
+  
+    const visibleFields = fields.filter(shouldShowField);
+    const requiredFields = visibleFields.filter((f) => !f.optional);
+    const missing = requiredFields
+      .filter(({ name }) => !formState[name])
+      .map((f) => f.label);
+  
+    if (missing.length > 0) {
+      setMissingFields(missing);
+      return;
+    }
+  
+    setMissingFields([]); 
     console.table({ category: selectedCat, ...formState });
   };
 
@@ -230,6 +245,20 @@ export default function CategorySearch() {
         <p className="text-xs font-small text-red-800 -mt-3">
           {i18next.t ? i18next.t("search.required_fields") : "* Required fields"}
         </p>
+
+        {/* MISSING FIELDS - text */}
+        {missingFields.length > 0 && (
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg border border-red-300 text-sm md:text-base">
+            {i18next.t
+              ? i18next.t("search.required_fields_warning")
+              : "Please select all required fields (*) before searching..."}
+            <ul className="list-disc list-inside mt-1">
+              {missingFields.map((label, idx) => (
+                <li key={idx}>{i18next.t ? i18next.t(label) : label}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* ACTION BUTTONS - part */}
         <div className="flex flex-col sm:flex-row items-stretch gap-4 pt-2">
