@@ -126,7 +126,7 @@ def get_filtered_kotouce(limit: int = None, page: int = None, states: bool = Fal
     # Prepare SQL query and add kod
     query = """
     SELECT kod, cislo_dilu, obrazek, vektor, vnejsi_prumer, roztecny_prumer, vnitrni_prumer, tloustka, typ, pozice
-    FROM v_vozidla_kotouc
+    FROM v_vozidlo_kotouc
     """
     params = []
     filter_condition = []
