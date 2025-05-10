@@ -100,7 +100,7 @@ def get_filtered_kotouc_view(request):
             "roztecny_prumer": (roztecny_prumer_min, roztecny_prumer_max),
             "vnitrni_prumer": (vnitrni_prumer_min, vnitrni_prumer_max),
             "tloustka": (tloustka_min, tloustka_max),
-            "typ": typ
+            "typ": typ if typ else None
         }
         
         # Get pagination parameters from request 

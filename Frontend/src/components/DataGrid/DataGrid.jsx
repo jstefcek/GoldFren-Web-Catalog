@@ -373,7 +373,7 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
                             <img
                               src={row[col.key]}
                               alt={`${category} image`}
-                              className="max-w-[100px] sm:max-w-[160px] max-h-[80px] sm:max-h-[120px] h-auto rounded shadow object-contain"
+                              className="max-w-[80px] sm:max-w-[120px] max-h-[60px] sm:max-h-[100px] rounded shadow object-contain"
                               loading="lazy"
                             />
                           </a>
@@ -390,7 +390,7 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
                             <img
                               src={row[col.key]}
                               alt={`${category} vektor`}
-                              className="max-w-[100px] sm:max-w-[160px] max-h-[80px] sm:max-h-[120px] h-auto rounded object-contain"
+                              className="max-w-[80px] sm:max-w-[120px] max-h-[60px] sm:max-h-[100px] rounded object-contain"
                               loading="lazy"
                             />
                           </a>

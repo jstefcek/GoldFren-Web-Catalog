@@ -478,13 +478,10 @@ export const dataTransformers = {
           vektor: item.vektor ? `${serverUrl}/GoldFren_Media/kotouce/vector/` + item.vektor : null,
           cislo_dilu: item.cislo_dilu,
           typ: item.typ,
-          vnejsi_prumer: item.od,
-          roztecny_prumer: item.hd,
-          vnitrni_prumer: item.id,
-          tloustka: item.thk,
-          konkurence_branking: item.konkurence_branking,
-          konkurence_ngbrakes: item.konkurence_ngbrakes,
-          poznamka: item.poznamka,
+          vnejsi_prumer: item.vnejsi_prumer,
+          roztecny_prumer: item.roztecny_prumer,
+          vnitrni_prumer: item.vnitrni_prumer,
+          tloustka: item.tloustka,
           pozice: item.pozice,
         }));
       }

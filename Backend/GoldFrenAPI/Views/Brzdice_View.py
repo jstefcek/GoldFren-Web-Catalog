@@ -89,14 +89,10 @@ def get_filtered_brzdice_view(request):
         pistku_min = request.GET.get("pocet_pistku_min", None)
         pistku_max = request.GET.get("pocet_pistku_max", None)
         
-        # Checks if parameters are provided
-        if not pozice:
-            return JsonResponse({"error": "pozice parameter is required"}, status=400)
-        
         # Store params to dict
         filters = {
-            "pozice": pozice,
-            "typ_uchyceni": uchyceni,
+            "pozice": pozice if pozice else None,
+            "typ_uchyceni": uchyceni if uchyceni else None,
             "pocet_pistku": (pistku_min, pistku_max)
         }
         

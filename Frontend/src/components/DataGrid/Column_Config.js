@@ -167,6 +167,7 @@ export const columnsConfig = {
 
   // Home page search column config - pad
   pad: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true,},
     {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
     {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
@@ -180,22 +181,22 @@ export const columnsConfig = {
     {key: "konkurence_grove", label: "Grove", sortable: true, filterable: true,},
     {key: "konkurence_cleveland", label: "Cleveland", sortable: true, filterable: true,},
     {key: "konkurence_matco", label: "Matco", sortable: true, filterable:true,},
-    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true,},
   ],
 
   // Home page search column config - caliper
   caliper: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
     {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
     {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true },
     {key: "typ_uchyceni", label: "datagrid.attached_type", sortable: true, filterable: true },
     {key: "pocet_pistku", label: "datagrid.pistku_count", sortable: true, filterable: true },
     {key: "popis", label: "datagrid.description", sortable: true, filterable: true },
-    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
   ],
 
   // Home page search column config - adapter
   adapter: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
     {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
     {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true },
@@ -203,11 +204,11 @@ export const columnsConfig = {
     {key: "prumer",label: "datagrid.diameter", sortable: true, filterable: true },
     {key: "typ_uchyceni", label: "datagrid.attached_type", sortable: true, filterable: true },
     {key: "roztec_brzdice", label: "datagrid.brakepad_spacing", sortable: true, filterable: true },
-    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
   ],
 
   // Home page search column config - disc
   disc: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
     {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
     {key: "typ", label: "datagrid.type", sortable: true, filterable: true,},
@@ -215,10 +216,6 @@ export const columnsConfig = {
     {key: "roztecny_prumer", label: "datagrid.pitch_diameter", sortable: true, filterable: true,},
     {key: "vnitrni_prumer", label: "datagrid.inside_diameter", sortable: true, filterable: true,},
     {key: "tloustka", label: "datagrid.thickness", sortable: true, filterable: true,},
-    {key: "konkurence_branking", label: "Braking", sortable: true, filterable: true,},
-    {key: "konkurence_ngbrakes", label: "NGBrakes", sortable: true, filterable: true,},
-    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
-    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
   ],
 
 };

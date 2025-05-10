@@ -1,4 +1,4 @@
-# Adapter RestAPI view definiton
+## Adapter RestAPI view definiton
 
 # Imports
 import json
@@ -91,18 +91,18 @@ def get_filtered_adapters_view(request):
         roztec_max = request.GET.get("roztec_max", None)
         
         # Checks if parameters are provided
-        if not pozice:
-            return JsonResponse({"error": "pozice parameter is required"}, status=400)
-        if not prumer_min:
-            return JsonResponse({"error": "prumer_min parameter is required"}, status=400)
-        if not prumer_max:
-            return JsonResponse({"error": "prumer_max parameter is required"}, status=400)
+        #if not pozice:
+        #    return JsonResponse({"error": "pozice parameter is required"}, status=400)
+        #if not prumer_min:
+        #    return JsonResponse({"error": "prumer_min parameter is required"}, status=400)
+        #if not prumer_max:
+        #    return JsonResponse({"error": "prumer_max parameter is required"}, status=400)
         
         # Store params to dict
         filters = {
-            "pozice": pozice,
+            "pozice": pozice if pozice else None,
             "prumer": (prumer_min, prumer_max),
-            "typ_uchyceni": uchyceni,
+            "typ_uchyceni": uchyceni if uchyceni else None,
             "roztec_brzdic": (roztec_min, roztec_max)
         }
         

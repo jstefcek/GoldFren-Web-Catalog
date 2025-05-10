@@ -66,14 +66,14 @@ export default function CategorySearch({ isSearchComplete }) {
 
     // Determine if at least one optional field has meaningful input
     const atLeastOneOptionalFilled = optionalFields.some(
-      ({ name, type, minValue, maxValue }) => {
+      ({ name, type }) => {
         if (type === "range-slider") {
           const minVal = formState[`${name}_min`];
           const maxVal = formState[`${name}_max`];
           // Only consider filled if values differ from defaults
           return (
-            (minVal !== undefined && minVal !== minValue) ||
-            (maxVal !== undefined && maxVal !== maxValue)
+            (minVal !== undefined) ||
+            (maxVal !== undefined)
           );
         } else {
           const val = formState[name];
@@ -103,8 +103,10 @@ export default function CategorySearch({ isSearchComplete }) {
     // If everything is valid, proceed with the search and reset missing fields
     setMissingFields([]);
 
-    // Return values to parent component based on category type
+    // Check for vozidlo_kod
     const vozidloKod = formState.vozidlo_kod || null;
+    
+    // Is search is complete return the results
     if (isSearchComplete) {
       if (categoryType === "vehicle") {
         isSearchComplete({
