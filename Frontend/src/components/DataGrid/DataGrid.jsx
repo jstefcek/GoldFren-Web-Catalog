@@ -20,7 +20,7 @@ import { exportToExcel } from "./functions/ExportExcel";
 import { PrintData } from "./functions/ExportPrint";
 import { TextTruncate } from "./ui/Custom_TextTruncate";
 
-export default function DataGrid({ category = "", apiCategory=null, apiUrl = null, filters = {} }) {
+export default function DataGrid({ category = "", apiCategory=null, apiUrl = null, filters = {}, apiData = null, listAll = false, }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -31,31 +31,37 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
+  // If api category isnt defined choose category insteed
   const resolvedCategory = apiCategory || category;
   const columns = columnsConfig[resolvedCategory] || [];
-  
 
-  // Call API to get data
+  // Call API to get data or set data from already call API
   useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-  
-      try {
-        const queryParams = new URLSearchParams(filters).toString();
-        const fullUrl = queryParams ? `${apiUrl}&${queryParams}` : apiUrl;
-  
-        const result = await fetchData(resolvedCategory, fullUrl);
-        setData(result);
-      } catch (error) {
-        console.error("Error loading data:", error);
-        setData([]);
-      } finally {
-        setIsLoading(false);
+    if (apiUrl) {
+      const loadData = async () => {
+        setIsLoading(true);
+    
+        try {
+          const queryParams = new URLSearchParams(filters).toString();
+          const fullUrl = queryParams ? `${apiUrl}&${queryParams}` : apiUrl;
+    
+          const result = await fetchData(resolvedCategory, fullUrl);
+          setData(result);
+        } catch (error) {
+          console.error("Error loading data:", error);
+          setData([]);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+    
+      if (resolvedCategory && apiUrl) {
+        loadData();
       }
-    };
-  
-    if (resolvedCategory && apiUrl) {
-      loadData();
+    } else {
+      // Set already fetchData
+      setData(apiData || []);
+      setIsLoading(false);
     }
   }, [resolvedCategory, apiUrl, JSON.stringify(filters)]);
 
@@ -124,14 +130,14 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
 
   // Calculate total pages
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
-  const paged = sorted.slice(
+  const paged = listAll ? sorted : sorted.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
   // Get selected items data for export/print
   const getSelectedItemsData = () => {
-    return data.filter((item) => selectedRows.includes(item.id || item.kod));
+    return data.filter((item) => selectedRows.includes(item.cislo_dilu || item.id || item.kod));
   };
 
   // Print data to Excel
@@ -235,10 +241,9 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
             )}
           </div>
 
+          {!listAll && (
           <div className="flex items-center gap-2 ml-2">
             <SlidersHorizontal className="text-gray-500" size={18} />
-
-            {/* SELECT - Number of items on page selector */}
             <select
               className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
               value={pageSize}
@@ -256,6 +261,7 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
               ))}
             </select>
           </div>
+        )}
         </div>
       </div>
 
@@ -302,7 +308,7 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
                           setSelectedRows([]);
                         } else {
                           setSelectedRows(
-                            paged.map((row) => row.id || row.kod)
+                            paged.map((row) => row.cislo_dilu || row.id || row.kod)
                           );
                         }
                       }}
@@ -339,19 +345,19 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
             <tbody>
               {paged.map((row) => (
                 <tr
-                  key={row.id || row.kod}
+                  key={row.cislo_dilu || row.id || row.kod}
                   className={`border-t hover:bg-gray-50 transition-colors ${
-                    selectedRows.includes(row.id || row.kod) ? "bg-red-50" : ""
+                    selectedRows.includes(row.cislo_dilu || row.id || row.kod) ? "bg-red-50" : ""
                   }`}
                 >
                   <td className="px-2 py-3">
                     <div className="flex justify-center">
                       <input
                         type="checkbox"
-                        checked={selectedRows.includes(row.id || row.kod)}
-                        onChange={() => handleSelectRow(row.id || row.kod)}
+                        checked={selectedRows.includes(row.cislo_dilu || row.id || row.kod)}
+                        onChange={() => handleSelectRow(row.cislo_dilu || row.id || row.kod)}
                         className="rounded border-gray-300 text-red-600 focus:ring-red-500"
-                        aria-label={`Select row ${row.id || row.kod}`}
+                        aria-label={`Select row ${row.cislo_dilu || row.id || row.kod}`}
                       />
                     </div>
                   </td>
@@ -426,9 +432,13 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
-        <div className="text-sm text-gray-500 order-2 sm:order-1">
-          {filtered.length > 0 ? (
+      <div className="text-sm text-gray-500 order-2 sm:order-1 mt-4">
+        {filtered.length > 0 ? (
+          listAll ? (
+            <>
+              {t("datagrid.all_entries")}: <span className="font-bold">{filtered.length}</span>
+            </>
+          ) : (
             <>
               {t("datagrid.showing")}{" "}
               {Math.min((currentPage - 1) * pageSize + 1, filtered.length)}{" "}
@@ -443,14 +453,14 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
                 </span>
               )}
             </>
-          ) : (
-            <>{t("datagrid.nothing_to_display")}</>
-          )}
-        </div>
+          )
+        ) : (
+          <>{t("datagrid.nothing_to_display")}</>
+        )}
 
         {/* Total pages */}
-        {totalPages > 1 && (
-          <div className="flex items-center gap-1 order-1 sm:order-2">
+        {!listAll && totalPages > 1 && (
+          <div className="flex items-center gap-1 order-1 sm:order-2 mt-4">
             <Button
               variant="outline"
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}

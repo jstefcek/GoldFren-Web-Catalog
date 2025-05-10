@@ -163,7 +163,8 @@
       "pitch_diameter": "Roztečný průměr [mm]",
       "inside_diameter": "Vnitřní průměr [mm]",
       "thickness": "Tloušťka [mm]",
-      "note": "Poznámka"
+      "note": "Poznámka",
+      "all_entries": "Vyhledáno položek"
     },
     "error": {
       "loading_failed": "Načítání selhalo",

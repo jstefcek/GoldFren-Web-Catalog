@@ -162,6 +162,7 @@
     "pitch_diameter": "Pitch diameter [mm]",
     "inside_diameter": "Inner diameter [mm]",
     "thickness": "Thickness [mm]",
-    "note": "Note"
+    "note": "Note",
+    "all_entries": "Searched items"
   }
 }  

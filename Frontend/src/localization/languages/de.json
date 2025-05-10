@@ -162,6 +162,7 @@
     "pitch_diameter": "Teilkreisdurchmesser [mm]",
     "inside_diameter": "Innendurchmesser [mm]",
     "thickness": "Dicke [mm]",
-    "note": "Hinweis"
+    "note": "Hinweis",
+    "all_entries": "Gesuchte Artikel"
   }
 }

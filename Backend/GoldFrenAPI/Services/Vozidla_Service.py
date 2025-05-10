@@ -96,13 +96,13 @@ def get_vozidlo_sortiment_all(vozidlo_id):
     Load sortiment data for specific vozidlo id 
     """
     views = {
-        "adapter": ("v_vozidlo_adapter", VozidloAdapter),
-        "desticka": ("v_vozidlo_desticka", VozidloDesticka),
-        "brzdic": ("v_vozidlo_brzdic", VozidloBrzdic),
-        "hadicka": ("v_vozidlo_hadicka", VozidloHadicka),
-        "kotouc": ("v_vozidlo_kotouc", VozidloKotouc),
+        "adaptery": ("v_vozidlo_adapter", VozidloAdapter),
+        "desticky": ("v_vozidlo_desticka", VozidloDesticka),
+        "brzdice": ("v_vozidlo_brzdic", VozidloBrzdic),
+        "hadicky": ("v_vozidlo_hadicka", VozidloHadicka),
+        "kotouce": ("v_vozidlo_kotouc", VozidloKotouc),
         "prislusenstvi": ("v_vozidlo_prislusenstvi", VozidloPrislusenstvi),
-        "pumpa": ("v_vozidlo_pumpa", VozidloPumpa),
+        "pumpy": ("v_vozidlo_pumpa", VozidloPumpa),
     }
     # Initialize result dictionary
     result = {}

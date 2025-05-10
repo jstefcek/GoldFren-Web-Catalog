@@ -218,4 +218,34 @@ export const columnsConfig = {
     {key: "tloustka", label: "datagrid.thickness", sortable: true, filterable: true,},
   ],
 
+  // Home page search column config - desticky vozidla
+  desticky_home: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true,},
+    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "material_text", label: "datagrid.material_text", sortable: true, filterable: true,},
+    {key: "oem_cisla", label: "datagrid.oem_cisla", sortable: true, filterable: true, maxRows: 3, useTruncation: true,},
+    {key: "konkurence_sbs", label: "SBS", sortable: true, filterable: true,},
+    {key: "konkurence_ebs", label: "EBS", sortable: true, filterable: true,},
+    {key: "konkurence_ferodo", label: "Ferodo", sortable: true, filterable: true,},
+    {key: "konkurence_a2z", label: "A2Z", sortable: true, filterable: true,},
+    {key: "konkurence_rapco", label: "Rapco", sortable: true, filterable: true,},
+    {key: "konkurence_grove", label: "Grove", sortable: true, filterable: true,},
+    {key: "konkurence_cleveland", label: "Cleveland", sortable: true, filterable: true,},
+    {key: "konkurence_matco", label: "Matco", sortable: true, filterable:true,},
+  ],
+
+  // Home page search column config - desticky vozidla
+  kotouce_home: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "typ", label: "datagrid.type", sortable: true, filterable: true,},
+    {key: "vnejsi_prumer", label: "datagrid.outer_diameter", sortable: true, filterable: true,},
+    {key: "roztecny_prumer", label: "datagrid.pitch_diameter", sortable: true, filterable: true,},
+    {key: "vnitrni_prumer", label: "datagrid.inside_diameter", sortable: true, filterable: true,},
+    {key: "tloustka", label: "datagrid.thickness", sortable: true, filterable: true,},
+  ],
+
 };
