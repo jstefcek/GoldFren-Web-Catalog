@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { categories } from "./Categories";
 import { filterConfigs } from "./CategoriesFilters";
 import { CustomSelect } from "./ui/CustomSelect";
@@ -28,7 +28,55 @@ export default function CategorySearch({ isSearchComplete }) {
   const categoryType = currentCategory?.type || "unknown";
 
   // Get the filter configuration for the selected category
-  const fields = filterConfigs[selectedCat] || [];
+  const fields = React.useMemo(() => filterConfigs[selectedCat] || [], [selectedCat]);
+
+  // Function to determine if a field should be shown based on its dependencies
+  const shouldShowField = React.useCallback(
+    (field) => {
+      if (!field.dependsOn) return true;
+
+      if (field.dependsOnShow === false) return false;
+
+      if (field.dependsOnShow === true) return true;
+
+      if (!field.dependsOnValue) {
+        return !!formState[field.dependsOn];
+      }
+
+      return formState[field.dependsOn] === field.dependsOnValue;
+    },
+    [formState]
+  );
+
+  // Set defualt value if the range slider is initialize
+  useEffect(() => {
+    const initialRangeValues = {};
+    
+    // If range should be shown give him init values
+    fields
+      .filter((field) => field.type === "range-slider" && shouldShowField(field))
+      .forEach((field) => {
+        const name = field.name;
+        
+        // Check for min value
+        if (formState[`${name}_min`] === undefined) {
+          initialRangeValues[`${name}_min`] = field.minValue;
+        }
+        
+        // Check for max value
+        if (formState[`${name}_max`] === undefined) {
+          initialRangeValues[`${name}_max`] = field.maxValue;
+        }
+      });
+      
+    // If the ranges are set then continue
+    if (Object.keys(initialRangeValues).length > 0) {
+      setFormState((prev) => ({
+        ...prev,
+        ...initialRangeValues,
+      }));
+    }
+  }, [selectedCat, fields, formState, shouldShowField]);
 
   // Handle input changes
   const handleChange = (name) => (e) =>
@@ -70,6 +118,7 @@ export default function CategorySearch({ isSearchComplete }) {
         if (type === "range-slider") {
           const minVal = formState[`${name}_min`];
           const maxVal = formState[`${name}_max`];
+          
           // Only consider filled if values differ from defaults
           return (
             (minVal !== undefined) ||
@@ -140,21 +189,6 @@ export default function CategorySearch({ isSearchComplete }) {
     ]
       .filter(Boolean)
       .join(" ");
-
-  // Function to determine if a field should be shown based on its dependencies
-  const shouldShowField = (field) => {
-    if (!field.dependsOn) return true;
-
-    if (field.dependsOnShow === false) return false;
-
-    if (field.dependsOnShow === true) return true;
-
-    if (!field.dependsOnValue) {
-      return !!formState[field.dependsOn];
-    }
-
-    return formState[field.dependsOn] === field.dependsOnValue;
-  };
 
   return (
     <Card className="max-w-2xl mx-4 sm:mx-auto p-6 sm:p-6 border-gray-200 shadow-lg mb-12">
@@ -257,7 +291,6 @@ export default function CategorySearch({ isSearchComplete }) {
                   valueMin={formState[`${name}_min`] ?? minValue}
                   valueMax={formState[`${name}_max`] ?? maxValue}
                   disabled={isDisabled}
-                  resetSignal={resetSignal}
                   onChangeMin={(value) =>
                     setFormState((prev) => ({
                       ...prev,
