@@ -18,9 +18,18 @@ import Prislusenstvi_Detail from "./pages/DetailPages/Prislusenstvi_Detail";
 //import Contact from "./pages/Contact";
 import "/src/localization/language_setup";
 import NotFound from "./pages/NotFoundPage";
-import Footer from "./layouts/Footer"
+import Footer from "./layouts/Footer";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 function App() {
+  const { t } = useTranslation();
+
+  // HTML title based on language selected
+  useEffect(() => {
+    document.title = t("site_title");
+  }, [t]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

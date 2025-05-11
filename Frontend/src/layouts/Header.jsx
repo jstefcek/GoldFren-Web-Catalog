@@ -1,34 +1,36 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Globe, Menu, X, ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link, useLocation } from "react-router-dom";
 
-export default function Header() {
+function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSortimentOpen, setMobileSortimentOpen] = useState(false);
   const { t, i18n } = useTranslation();
-  const [currentLanguage, setCurrentLanguage] = useState("cs");
   const mobileMenuRef = useRef(null);
-  
-  // Set current language from i18n
-  useEffect(() => {
-    if (i18n.language) {
-      setCurrentLanguage(i18n.language);
-    }
-  }, [i18n.language]);
+  const location = useLocation();
 
-  // Close mobile menu when screen size changes to desktop
+  // Close mobile menu on screen resize to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
         setMobileMenuOpen(false);
       }
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Menu items definition
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setMobileSortimentOpen(false);
+  }, [location.pathname]);
+
+  const handleLanguageChange = useCallback((lng) => {
+    i18n.changeLanguage(lng);
+  }, [i18n]);
+
   const menuItems = [
     { name: t("home"), path: "/" },
     {
@@ -46,34 +48,22 @@ export default function Header() {
     { name: t("kontakt"), path: "/kontakt" },
   ];
 
-  // Languages configuration
   const languages = [
     { code: "cs", name: "Česky", flag: "🇨🇿" },
     { code: "en", name: "English", flag: "🇬🇧" },
     { code: "de", name: "Deutsch", flag: "🇩🇪" },
   ];
 
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-    // No need to close language menu as it's now handled within mobile menu
-  };
+  const currentLanguageInfo = languages.find(lang => lang.code === i18n.language) || languages[0];
 
-  const toggleMobileSortiment = () => {
-    setMobileSortimentOpen(!mobileSortimentOpen);
-  };
-
-  // No longer needed since language menu is now only in mobile menu
-
-  const currentLanguageInfo = languages.find(lang => lang.code === currentLanguage) || languages[0];
-  
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          
+
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="/" className="flex items-center">
+            <Link to="/" className="flex items-center">
               <img
                 src="/logo/goldfren-logo.svg"
                 alt="GoldFren Logo"
@@ -81,84 +71,70 @@ export default function Header() {
                 width="120"
                 height="32"
               />
-            </a>
+            </Link>
           </div>
 
-          {/* Main Menu - Desktop Only */}
+          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center justify-center flex-1">
             <ul className="flex space-x-8">
               {menuItems.map((item) => (
-                <li
-                  key={item.name}
-                  className={`relative group ${item.submenu ? 'dropdown' : ''}`}
-                >
+                <li key={item.name} className={`relative group ${item.submenu ? "dropdown" : ""}`}>
                   {item.submenu ? (
                     <>
-                      <a
-                        href="#"
-                        className="flex items-center text-gray-700 px-3 py-2 rounded-md hover:text-gray-600 hover:bg-gray-50 transition duration-150 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
-                        aria-haspopup="true"
+                      <button
                         onClick={(e) => e.preventDefault()}
+                        className="flex items-center text-gray-700 px-3 py-2 rounded-md hover:text-gray-600 hover:bg-gray-50 transition"
+                        aria-haspopup="true"
                       >
                         {item.name}
-                        <ChevronDown className="h-4 w-4 ml-1 group-hover:rotate-180 transition-transform duration-200" aria-hidden="true" />
-                      </a>
-
-                      {/* Submenu dropdown on hover */}
-                      <div
-                        className="absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2"
-                      >
-                        <ul className="py-1" role="menu" aria-orientation="vertical">
+                        <ChevronDown className="h-4 w-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
+                      </button>
+                      <div className="absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-200">
+                        <ul className="py-1">
                           {item.submenu.map((subitem) => (
-                            <li key={subitem.name} role="none">
-                              <a
-                                href={subitem.path}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-600 transition duration-150"
-                                role="menuitem"
+                            <li key={subitem.name}>
+                              <Link
+                                to={subitem.path}
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-600 transition"
                               >
                                 {subitem.name}
-                              </a>
+                              </Link>
                             </li>
                           ))}
                         </ul>
                       </div>
                     </>
                   ) : (
-                    <a
-                      href={item.path}
-                      className="flex items-center text-gray-700 px-3 py-2 rounded-md hover:text-gray-600 hover:bg-gray-50 transition duration-150 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
+                    <Link
+                      to={item.path}
+                      className="flex items-center text-gray-700 px-3 py-2 rounded-md hover:text-gray-600 hover:bg-gray-50 transition"
                     >
                       {item.name}
-                    </a>
+                    </Link>
                   )}
                 </li>
               ))}
             </ul>
           </nav>
 
-          {/* Right side menu - Language selector (Desktop) and Login */}
+          {/* Right Side: Language + Login + Mobile Toggle */}
           <div className="flex items-center space-x-2">
-            
-            {/* Language Selector - Desktop Only */}
+            {/* Language Selector */}
             <div className="relative hidden lg:block group">
-              <div className="flex items-center text-gray-700 hover:text-gray-600 px-2 py-1 rounded-md transition duration-150 focus:outline-none cursor-pointer">
+              <div className="flex items-center text-gray-700 hover:text-gray-600 px-2 py-1 rounded-md cursor-pointer">
                 <span className="text-lg mr-1">{currentLanguageInfo.flag}</span>
                 <span className="hidden md:inline mx-1">{currentLanguageInfo.name}</span>
                 <ChevronDown className="h-4 w-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
               </div>
-
-              {/* Language dropdown */}
-              <div className="absolute right-0 mt-1 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2">
-                <ul className="py-1" role="menu" aria-orientation="vertical">
+              <div className="absolute right-0 mt-1 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-200">
+                <ul className="py-1">
                   {languages.map((lang) => (
-                    <li key={lang.code} role="none">
+                    <li key={lang.code}>
                       <button
-                        onClick={() => changeLanguage(lang.code)}
-                        className={`w-full text-left px-4 py-2 text-sm flex items-center gap-x-3 
-                          ${currentLanguage === lang.code ? 'bg-gray-50 text-gray-600' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-600 cursor-pointer'} 
-                          transition duration-150`}
-                        role="menuitem"
-                        aria-current={currentLanguage === lang.code ? 'true' : undefined}
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className={`w-full text-left px-4 py-2 text-sm flex items-center gap-x-3 ${
+                          i18n.language === lang.code ? "bg-gray-50 text-gray-600" : "text-gray-700 hover:bg-gray-100 hover:text-gray-600"
+                        } transition`}
                       >
                         <span className="text-lg">{lang.flag}</span>
                         <span>{lang.name}</span>
@@ -169,15 +145,15 @@ export default function Header() {
               </div>
             </div>
 
-            {/* Login Button */}
-            <a
-              href="/login"
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
+            {/* Login */}
+            <Link
+              to="/login"
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
             >
               {t("login")}
-            </a>
+            </Link>
 
-            {/* Mobile menu button */}
+            {/* Mobile Toggle */}
             <button
               type="button"
               className="lg:hidden text-gray-700 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 p-1 rounded-md"
@@ -185,14 +161,8 @@ export default function Header() {
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-menu"
             >
-              <span className="sr-only">
-                {mobileMenuOpen ? "Close menu" : "Open menu"}
-              </span>
-              {mobileMenuOpen ? (
-                <X className="block h-6 w-6" aria-hidden="true" />
-              ) : (
-                <Menu className="block h-6 w-6" aria-hidden="true" />
-              )}
+              <span className="sr-only">{mobileMenuOpen ? "Close menu" : "Open menu"}</span>
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
@@ -200,11 +170,7 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div 
-          ref={mobileMenuRef}
-          id="mobile-menu" 
-          className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-white z-40 overflow-y-auto shadow-lg"
-        >
+        <div ref={mobileMenuRef} id="mobile-menu" className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-white z-40 overflow-y-auto shadow-lg">
           <nav className="px-2 pt-2 pb-20 space-y-1">
             {/* Mobile Language Selector */}
             <div className="border-b border-gray-200 pb-3 mb-2">
@@ -216,66 +182,55 @@ export default function Header() {
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
-                    onClick={() => changeLanguage(lang.code)}
-                    className={`w-full text-left px-3 py-2 flex items-center gap-x-3 rounded-md
-                      ${currentLanguage === lang.code ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'} 
-                      transition duration-150`}
+                    onClick={() => handleLanguageChange(lang.code)}
+                    className={`w-full text-left px-3 py-2 flex items-center gap-x-3 rounded-md ${
+                      i18n.language === lang.code ? "bg-gray-100 text-gray-900 font-medium" : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    } transition`}
                   >
                     <span className="text-lg">{lang.flag}</span>
                     <span>{lang.name}</span>
-                    {currentLanguage === lang.code && (
-                      <span className="ml-auto text-green-600">✓</span>
-                    )}
+                    {i18n.language === lang.code && <span className="ml-auto text-green-600">✓</span>}
                   </button>
                 ))}
               </div>
             </div>
-            
-            {/* Navigation Menu Items */}
+
+            {/* Mobile Navigation */}
             {menuItems.map((item) => (
               <div key={item.name}>
                 {item.submenu ? (
-                  <div>
+                  <>
                     <button
-                      onClick={toggleMobileSortiment}
-                      className="w-full flex items-center justify-between text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:text-gray-900 hover:bg-gray-50 transition duration-150"
+                      onClick={() => setMobileSortimentOpen(!mobileSortimentOpen)}
+                      className="w-full flex items-center justify-between text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:text-gray-900 hover:bg-gray-50 transition"
                       aria-expanded={mobileSortimentOpen}
                     >
                       <span>{item.name}</span>
-                      <div className={`h-5 w-5 rounded-full flex items-center justify-center transition-colors duration-200 ${mobileSortimentOpen ? 'bg-gray-200' : ''}`}>
-                        {mobileSortimentOpen ? (
-                          <ChevronUp className="h-4 w-4" aria-hidden="true" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                        )}
+                      <div className={`h-5 w-5 rounded-full flex items-center justify-center transition-colors ${mobileSortimentOpen ? "bg-gray-200" : ""}`}>
+                        {mobileSortimentOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </div>
                     </button>
-
-                                          <div
-                      className={`transition-all duration-300 overflow-hidden ${
-                        mobileSortimentOpen ? "max-h-96" : "max-h-0"
-                      }`}
-                    >
+                    <div className={`transition-all duration-300 overflow-hidden ${mobileSortimentOpen ? "max-h-96" : "max-h-0"}`}>
                       <div className="pl-4 space-y-1 mt-1 bg-gray-50 rounded-md mx-2">
                         {item.submenu.map((subitem) => (
-                          <a
+                          <Link
                             key={subitem.name}
-                            href={subitem.path}
-                            className="block px-3 py-2 rounded-md text-base text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition duration-150"
+                            to={subitem.path}
+                            className="block px-3 py-2 rounded-md text-base text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition"
                           >
                             {subitem.name}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     </div>
-                  </div>
+                  </>
                 ) : (
-                  <a
-                    href={item.path}
-                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition duration-150"
+                  <Link
+                    to={item.path}
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition"
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 )}
               </div>
             ))}
@@ -285,3 +240,5 @@ export default function Header() {
     </header>
   );
 }
+
+export default React.memo(Header);
