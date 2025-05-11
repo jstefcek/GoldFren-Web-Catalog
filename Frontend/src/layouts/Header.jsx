@@ -27,10 +27,12 @@ function Header() {
     setMobileSortimentOpen(false);
   }, [location.pathname]);
 
+  // Change language
   const handleLanguageChange = useCallback((lng) => {
     i18n.changeLanguage(lng);
   }, [i18n]);
 
+  // Menu items
   const menuItems = [
     { name: t("home"), path: "/" },
     {
@@ -48,12 +50,14 @@ function Header() {
     { name: t("kontakt"), path: "/kontakt" },
   ];
 
+  // Languages
   const languages = [
-    { code: "cs", name: "Česky", flag: "🇨🇿" },
-    { code: "en", name: "English", flag: "🇬🇧" },
-    { code: "de", name: "Deutsch", flag: "🇩🇪" },
+    { code: "cs", name: "Česky", flagIcon: "/icons/czech.svg" },
+    { code: "en", name: "English", flagIcon: "/icons/english.svg" },
+    { code: "de", name: "Deutsch", flagIcon: "/icons/german.svg" },
   ];
 
+  // Current language setuped
   const currentLanguageInfo = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   return (
@@ -122,7 +126,7 @@ function Header() {
             {/* Language Selector */}
             <div className="relative hidden lg:block group">
               <div className="flex items-center text-gray-700 hover:text-gray-600 px-2 py-1 rounded-md cursor-pointer">
-                <span className="text-lg mr-1">{currentLanguageInfo.flag}</span>
+                <img src={currentLanguageInfo.flagIcon} alt={currentLanguageInfo.code} className="h-5 w-5 mr-2" />
                 <span className="hidden md:inline mx-1">{currentLanguageInfo.name}</span>
                 <ChevronDown className="h-4 w-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
               </div>
@@ -136,7 +140,7 @@ function Header() {
                           i18n.language === lang.code ? "bg-gray-50 text-gray-600" : "text-gray-700 hover:bg-gray-100 hover:text-gray-600"
                         } transition`}
                       >
-                        <span className="text-lg">{lang.flag}</span>
+                        <img src={lang.flagIcon} alt={lang.code} className="h-5 w-5" />
                         <span>{lang.name}</span>
                       </button>
                     </li>
@@ -184,12 +188,16 @@ function Header() {
                     key={lang.code}
                     onClick={() => handleLanguageChange(lang.code)}
                     className={`w-full text-left px-3 py-2 flex items-center gap-x-3 rounded-md ${
-                      i18n.language === lang.code ? "bg-gray-100 text-gray-900 font-medium" : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                      i18n.language === lang.code
+                        ? "bg-gray-100 text-gray-900 font-medium"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     } transition`}
                   >
-                    <span className="text-lg">{lang.flag}</span>
+                    <img src={lang.flagIcon} alt={lang.code} className="h-5 w-5" />
                     <span>{lang.name}</span>
-                    {i18n.language === lang.code && <span className="ml-auto text-green-600">✓</span>}
+                    {i18n.language === lang.code && (
+                      <span className="ml-auto text-green-600">✓</span>
+                    )}
                   </button>
                 ))}
               </div>
