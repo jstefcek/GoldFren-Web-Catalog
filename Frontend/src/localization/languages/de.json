@@ -72,44 +72,44 @@
     "industry_model_placeholder": "Bitte Modell wählen",
     "search": "Suchen",
     "reset": "Zurücksetzen",
-    "required_fields": "* Požadované pole",
-    "required_fields_warning": "Pro vyhledaní je potřeba splnit následující podmínky:",
-    "at_least_one_required": "alespoň jedno z polí",
-    "fill_required_text": "Vyplňte prosím ",
+    "required_fields": "* Erforderliches Feld",
+    "required_fields_warning": "Für die Suche müssen die folgenden Bedingungen erfüllt sein:",
+    "at_least_one_required": "mindestens eines der Felder",
+    "fill_required_text": "Bitte ausfüllen ",
     "adapter": {
-      "title": "Nalezené brzdové adaptéry GOLDfren",
-      "position": "Pozice adaptéru",
-      "position_placeholder": "Vyberte prosím pozici adaptéru",
-      "diameter": "Průměr adaptéru [mm]",
-      "attachment": "Typ uchycení brzdiče",
-      "bolt_spacing": "Rozteč šroubů pro brzdiče [mm]"
+      "title": "Bremsenadapter GOLDfren gefunden",
+      "position": "Position des Adapters",
+      "position_placeholder": "Bitte wählen Sie die Position des Adapters",
+      "diameter": "Durchmesser des Adapters [mm]",
+      "attachment": "Befestigungsart der Bremse",
+      "bolt_spacing": "Bolzenabstand für Bremsen [mm]"
     },
     "discs": {
-      "title": "Nalezené brzdové kotouče GOLDfren",
-      "outside_diameter": "Vnější průměr kotouče [mm]",
-      "pitch_diameter": "Roztečný průměr kotouče [mm]",
-      "inner_diameter": "Vnitřní průměr kotouče [mm]",
-      "thickness": "Tloušťka kotouče [mm]",
-      "type": "Typ kotouče",
-      "type_placeholder": "Vyberte prosím typ kotouče"
+      "title": "GOLDfren Bremsscheiben gefunden",
+      "outside_diameter": "Außendurchmesser der Scheibe [mm]",
+      "pitch_diameter": "Teilungsdurchmesser [mm]",
+      "inner_diameter": "Innendurchmesser der Scheibe [mm]",
+      "thickness": "Raddicke [mm]",
+      "type": "Typ der Scheibe",
+      "type_placeholder": "Bitte Disc-Typ auswählen"
     },
     "pad": {
-      "title": "Nalezené brzdové destičky GOLDfren",
-      "competitor": "Brzdová destička konkurence",
-      "competitor_placeholder": "Vyberte prosím brzdovou destičku konkurence",
-      "material": "Materiál brzdové destičky",
-      "material_placeholder": "Vyberte prosím materiál brzodové destičky",
-      "oem_numbers": "OEM výrobní čísla",
-      "oem_numbers_placeholder": "Vyberte prosím OEM výrobní čísla"
+      "title": "Bremsbeläge GOLDfren gefunden",
+      "competitor": "Wettbewerb der Bremsbeläge",
+      "competitor_placeholder": "Bitte wählen Sie einen Bremsbelag eines Wettbewerbers",
+      "material": "Material der Bremsbeläge",
+      "material_placeholder": "Bitte wählen Sie Bremsbelagmaterial",
+      "oem_numbers": "OEM-Seriennummern",
+      "oem_numbers_placeholder": "Bitte wählen Sie OEM-Seriennummern"
     },
     "caliper": {
-      "title": "Nalezené brzdové třmeny GOLDfren",
-      "position": "Pozice brzdového třmenu",
-      "position_placeholder": "Vyberte prosím pozici brzdového třmenu",
-      "piston_count": "Počet pístků",
-      "piston_count_placeholder": "Vyberte prosím počet pístků",
-      "attachment_type": "Typ uchycení brzdového třmenu",
-      "attachment_type_placeholder": "Vyberte prosím typ uchycení brzdového třmenu"
+      "title": "Bremssattel GOLDfren gefunden",
+      "position": "Position des Bremssattels",
+      "position_placeholder": "Bitte wählen Sie die Position des Bremssattels",
+      "piston_count": "Anzahl der Kolben",
+      "piston_count_placeholder": "Bitte wählen Sie die Anzahl der Kolben",
+      "attachment_type": "Befestigungsart des Bremssattels",
+      "attachment_type_placeholder": "Bitte wählen Sie die Montageart"
     }
   },
   "datagrid": {
