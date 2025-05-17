@@ -1,2 +1,34 @@
 # GoldFren Web Catalog
- GoldFren Web Catalog refactoring to Python + Django Framework + React.js 19
+
+Together with my client, we decided to completely redesign their company website to better showcase their catalog of products — including brake pads, adapters, and other brake-related accessories.
+
+This project involves both frontend and backend development, and is built using modern technologies.
+
+---
+
+## 🔧 Tech Stack
+
+- **Backend:** Django (Python 3.13.2)
+- **Frontend:** React.js (JavaScript)
+- **Database:** MySQL (8.41)
+- **Server:** Nginx
+- **Containerization:** Docker
+- **Hosting:** VPS with Ubuntu (Hetzner Cloud)
+
+---
+
+## 📌 Project Goals
+
+- Replace the old website (originally written in PHP, HTML, and CSS, with data stored in MySQL)
+- Provide fast filtering and search capabilities
+- Enable admin control over catalog content *(planned)*
+- Support multilingual content: Czech, German, and English
+- Deliver a clean and intuitive UX/UI for customers
+- Fully separate backend and frontend codebases
+- Provide public and private APIs for use beyond the main website
+
+---
+
+## 🚧 Work in Progress
+
+This project is currently under development and running on a private VPS for testing. We're actively fine-tuning all features in collaboration with the client.
