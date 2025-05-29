@@ -116,7 +116,7 @@
   },
   "datagrid": {
     "page": "stránce",
-    "search_placeholder": "Filtrovat výsledkami",
+    "search_placeholder": "Filtrovat výsledky",
     "reset": "Resetovat filtry",
     "picture": "Obrázek",
     "vektor": "Výkres",
