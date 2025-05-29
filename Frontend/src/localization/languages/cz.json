@@ -173,5 +173,17 @@
     "title": "Chyba při načítání výsledků",
     "invalid_id": "Neplatné ID produktu",
     "btn_go_back": "Zpět"
+  },
+  "contact": {
+    "czech_republic": "Česká republika",
+    "main_title": "Kontaktní údaje",
+    "contact_info": "Adresa závodu, korespondenční, fakturační a dodací adresa:",
+    "telephone": "Telefon:",
+    "email": "E-mail:",
+    "mobile": "Mobil:",
+    "opening_hours": "Otevírací doba:",
+    "opening_hours_text": "Pouze v pracovní dny – Pondělí až Pátek:",
+    "opening_hours_text_clock": "7.00 – 15.30 hod.",
+    "company_info": "Firemní údaje:"
   }
 }  

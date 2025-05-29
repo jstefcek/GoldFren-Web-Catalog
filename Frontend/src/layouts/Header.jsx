@@ -47,7 +47,7 @@ function Header() {
         { name: t("prislusenstvi"), path: "/prislusenstvi" },
       ],
     },
-    { name: t("kontakt"), path: "/kontakt" },
+    { name: t("kontakt"), path: "/contact" },
   ];
 
   // Languages

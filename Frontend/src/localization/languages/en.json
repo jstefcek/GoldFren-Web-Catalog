@@ -166,5 +166,17 @@
     "thickness": "Thickness [mm]",
     "note": "Note",
     "all_entries": "Searched items"
+  },
+  "contact": {
+    "czech_republic": "Czech Republic",
+    "main_title": "Contact information",
+    "contact_info": "Plant address, mailing, billing and shipping address:",
+    "telephone": "Telephone:",
+    "email": "E-mail:",
+    "mobile": "Mobile:",
+    "opening_hours": "Opening hours:",
+    "opening_hours_text": "Only working days – Monday to Friday:",
+    "opening_hours_text_clock": "7.00 am – 15.30 pm",
+    "company_info": "Company detials:"
   }
 }  
