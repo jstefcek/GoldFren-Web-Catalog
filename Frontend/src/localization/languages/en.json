@@ -178,5 +178,14 @@
     "opening_hours_text": "Only working days – Monday to Friday:",
     "opening_hours_text_clock": "7.00 am – 15.30 pm",
     "company_info": "Company detials:"
+  },
+  "login_screen": {
+    "username": "Username",
+    "username_placeholder": "Please enter username",
+    "password": "Password",
+    "password_placeholder": "Please enter password",
+    "login_button": "Login",
+    "back_button": "Back to home page",
+    "login_loading": "Logging in..."
   }
 }  

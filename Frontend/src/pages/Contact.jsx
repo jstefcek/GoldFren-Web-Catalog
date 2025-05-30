@@ -1,4 +1,3 @@
-import React from 'react';
 import ContactLayout from '../components/OtherPages/ContactPage';
 
 function Contact() {

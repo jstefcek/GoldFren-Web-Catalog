@@ -185,5 +185,14 @@
     "opening_hours_text": "Pouze v pracovní dny – Pondělí až Pátek:",
     "opening_hours_text_clock": "7.00 – 15.30 hod.",
     "company_info": "Firemní údaje:"
+  },
+  "login_screen": {
+    "username": "Uživatelské jméno",
+    "username_placeholder": "Zadejte prosím uživatelské jméno",
+    "password": "Heslo",
+    "password_placeholder": "Zadejte prosím heslo",
+    "login_button": "Přihlásit se",
+    "back_button": "Zpět na domovskou stránku",
+    "login_loading": "Přihlašování..."
   }
 }  

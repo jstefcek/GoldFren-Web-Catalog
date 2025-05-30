@@ -178,5 +178,14 @@
     "opening_hours_text": "Weekdays only - Monday to Friday:",
     "opening_hours_text_clock": "7. 00 am - 15.30 pm.",
     "company_info": "Angaben zum Unternehmen:"
- }
+ },
+ "login_screen": {
+    "username": "Benutzername",
+    "username_placeholder": "Bitte geben Sie Ihren Benutzernamen ein",
+    "password": "Passwort",
+    "password_placeholder": "Bitte geben Sie Ihr Passwort ein",
+    "login_button": "Anmelden",
+    "back_button": "Zurück zur Hauptseite",
+    "login_loading": "Anmelden..."
+  }
 }
