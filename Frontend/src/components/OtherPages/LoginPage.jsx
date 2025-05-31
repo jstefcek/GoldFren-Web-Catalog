@@ -15,8 +15,6 @@ export default function LoginLayout() {
     { code: "de", name: "Deutsch", flagIcon: "/icons/german.svg" },
   ];
 
-
-
   // Change language
   const handleLanguageChange = useCallback((lng) => {
     i18n.changeLanguage(lng);
@@ -139,7 +137,7 @@ export default function LoginLayout() {
             <Link to="/" className="w-full block">
               <button
                 type="button"
-                className="w-full bg-white text-gray-600 text-sm font-light py-3 px-4 rounded-md border border-gray-300 hover:bg-gray-50 hover:text-gray-800 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-300 cursor-pointer"
+                className="w-full bg-white text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-100 hover:text-black py-3 px-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-300 cursor-pointer"
               >
                 {t("login_screen.back_button")}
               </button>

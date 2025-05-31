@@ -356,7 +356,7 @@ export default function CategorySearch({ isSearchComplete }) {
         })}
 
         {/* REQUIRED FIELDS - text */}
-        <p className="text-xs font-small text-red-800 -mt-3">
+        <p className="text-xs font-normal text-red-800 -mt-3">
           {i18next.t
             ? i18next.t("search.required_fields")
             : "* Required fields"}

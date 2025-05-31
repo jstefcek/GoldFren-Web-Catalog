@@ -86,11 +86,7 @@ export default function Contact_Layout() {
                 <div className="w-full h-[400px] md:h-[700px] lg:h-[700px]">
                   <iframe
                     title="GOLD FREN s.r.o."
-                    className="w-full h-full rounded-lg"
-                    frameBorder="0"
-                    scrolling="no"
-                    marginHeight="0"
-                    marginWidth="0"
+                    className="w-full h-full rounded-lg border border-gray-300 shadow-md"
                     src="https://maps.google.com/maps?width=100%25&amp;height=700&amp;hl=en&amp;q=GOLD%20FREN%20s.r.o.+(GOLD%20FREN%20s.r.o.)&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
                     loading="lazy"
                   ></iframe>

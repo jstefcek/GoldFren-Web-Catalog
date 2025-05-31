@@ -28,7 +28,7 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFoundPage";
 import Login from "./pages/Login";
 
-// Layout Components
+// Main layout with header and footer
 const MainLayout = () => (
   <div className="min-h-screen flex flex-col">
     <Header />
@@ -39,7 +39,8 @@ const MainLayout = () => (
   </div>
 );
 
-const BareLayout = () => (
+// Login layout without header and footer
+const CleanLayout = () => (
   <div className="min-h-screen">
     <Outlet />
   </div>
@@ -48,6 +49,7 @@ const BareLayout = () => (
 function App() {
   const { t } = useTranslation();
 
+  // Set the page title based on translation
   useEffect(() => {
     document.title = t("site_title");
   }, [t]);
@@ -75,8 +77,8 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Route>
 
-      {/* Login screen route without header and footer*/}
-      <Route element={<BareLayout />}>
+      {/* Clean route without header and footer */}
+      <Route element={<CleanLayout />}>
         <Route path="/login" element={<Login />} />
       </Route>
     </Routes>
