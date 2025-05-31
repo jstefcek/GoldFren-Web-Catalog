@@ -101,7 +101,10 @@ function Home() {
             {transformedSortimentData && Object.entries(transformedSortimentData).map(([key, categoryData]) => (
               categoryData.items.length > 0 && (
                 <div key={key} className="mb-4">
+                  {/* Category title */}
                   <h3 className="text-2xl font-semibold capitalize mt-4 ml-4 mr-4">{t(key)}</h3>
+
+                  {/* Display the data with Datagrid component */}
                   <DataGrid
                     category={key}
                     apiCategory={key + "_home"}
@@ -116,9 +119,12 @@ function Home() {
           
           // If not vehicle search, show category data
           <div>
+            {/* Sortiment title */}
             <h2 ref={sortimentTitleRef} className="text-3xl font-bold mt-4 mb-4 text-left ml-4 mr-4">
               {t(`search.${searchData.category}.title`)}
             </h2>
+
+            {/* Display the data with Datagrid component */}
             <DataGrid
               category={searchData.page_category}
               apiCategory={searchData.category}
