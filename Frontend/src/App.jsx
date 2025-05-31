@@ -42,7 +42,9 @@ const MainLayout = () => (
 // Login layout without header and footer
 const CleanLayout = () => (
   <div className="min-h-screen">
-    <Outlet />
+    <main className="flex-grow">
+      <Outlet />
+    </main>
   </div>
 );
 
