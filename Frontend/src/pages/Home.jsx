@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import SearchForm from '../components/SearchForm/SearchForm';
 import { useTranslation } from 'react-i18next';
 import DataGrid from '../components/DataGrid/DataGrid';
@@ -9,25 +9,28 @@ const serverUrl = import.meta.env.VITE_API_URL;
 function Home() {
   const { t } = useTranslation();
   const [searchData, setSearchData] = useState(null);
+  const [isDataReady, setIsDataReady] = useState(false);
+  const vehicleTitleRef = useRef(null);
+  const sortimentTitleRef = useRef(null);
 
-  // Construct API path
+  // API URL for vehicle search data
   const searchDataAPI = (searchData?.type === "vehicle" && searchData?.vozidlo_kod && searchData?.api)
     ? `${serverUrl}${searchData.api}${searchData.vozidlo_kod}`
     : null;
 
-  // Fetch API
   const { data: sortimentData } = useCategoryResults(searchDataAPI);
 
-  // When search is complete continue
+  // Check if search is complete
   const isSearchComplete = (data) => {
     setSearchData(data);
+    setIsDataReady(false); // Reset before new load
     console.log("Data is:", data);
   };
 
-  // Transformed data
+  // Transform sortiment data to include full image URLs
   const transformedSortimentData = useMemo(() => {
     if (!sortimentData) return {};
-  
+
     return Object.fromEntries(
       Object.entries(sortimentData).map(([key, categoryData]) => [
         key,
@@ -42,26 +45,59 @@ function Home() {
       ])
     );
   }, [sortimentData]);
-  
+
+  // Detect when data is ready atleast one category has items
+  useEffect(() => {
+    if (searchData?.type === "vehicle" && transformedSortimentData) {
+      const hasItems = Object.values(transformedSortimentData).some(category => category.items.length > 0);
+      if (hasItems) {
+        setIsDataReady(true);
+      }
+    } else {
+      setIsDataReady(true);
+    }
+  }, [transformedSortimentData, searchData]);
+
+  // Scroll to the h2 title when data is ready
+  useEffect(() => {
+    if (!isDataReady) return;
+
+    // Header offset for fixed header
+    const headerOffset = 80;
+
+    // Choose the target element where to scroll
+    const targetElement = vehicleTitleRef.current || sortimentTitleRef.current;
+    if (!targetElement) return;
+
+    // Get the position
+    const elementPosition = targetElement.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+    // Scroll to the position with smooth animation
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth"
+    });
+  }, [isDataReady]);
 
   return (
     <div className="container mx-auto">
-      {/* Home title */}
       <h1 className="text-3xl font-bold mb-8 text-center mt-8">{t('searchTitle')}</h1>
 
       {/* Search form component */}
       <SearchForm isSearchComplete={isSearchComplete} />
 
-      {/* Hide vozidlo or sortiment title until search is complete */}
       {searchData && (
         searchData.type === "vehicle" && searchData.vozidlo_kod ? (
           <div>
-            {/* Show sortiment data for categories */}
-            <h2 className="text-3xl font-bold mt-4 text-left ml-4 mr-4">
-              {searchData.filters.model}
-            </h2>
+            {/* Vehicel title */}
+            {isDataReady && (
+              <h2 ref={vehicleTitleRef} className="text-3xl font-bold mt-4 text-left ml-4 mr-4">
+                {searchData.filters.model}
+              </h2>
+            )}
 
-            {/* Show sortiment data for categories */}
+            {/* Show sortiment data */}
             {transformedSortimentData && Object.entries(transformedSortimentData).map(([key, categoryData]) => (
               categoryData.items.length > 0 && (
                 <div key={key} className="mb-4">
@@ -77,13 +113,12 @@ function Home() {
             ))}
           </div>
         ) : (
+          
+          // If not vehicle search, show category data
           <div>
-            {/* Show sortiment title */}
-            <h2 className="text-3xl font-bold mt-4 mb-4 text-left ml-4 mr-4">
+            <h2 ref={sortimentTitleRef} className="text-3xl font-bold mt-4 mb-4 text-left ml-4 mr-4">
               {t(`search.${searchData.category}.title`)}
             </h2>
-
-            {/* Show sortiment values inside datagrid */}
             <DataGrid
               category={searchData.page_category}
               apiCategory={searchData.category}
