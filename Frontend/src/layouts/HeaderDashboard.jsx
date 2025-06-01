@@ -1,26 +1,10 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   Menu, X, Home, Package, ChevronDown, ChevronRight, User,
-  ChevronLeft, Settings, Users, FileText, LogOut, Car
+  ChevronLeft, Settings, Users, ImportIcon, LogOut, Car
 } from "lucide-react";
 
-const Link = ({ to, children, onClick, className, title }) => (
-  <a
-    href={to}
-    onClick={(e) => {
-      e.preventDefault();
-      onClick && onClick();
-    }}
-    className={className}
-    title={title}
-  >
-    {children}
-  </a>
-);
-
-const useLocation = () => ({ pathname: "/admin/dashboard" });
-
-// Color for different menu items
 const colorThemes = {
   default: {
     text: "text-gray-700",
@@ -82,8 +66,8 @@ const navigationConfig = [
   },
   {
     id: "import",
-    label: "Načíst data",
-    icon: FileText,
+    label: "Import dat",
+    icon: ImportIcon,
     to: "/admin/import-data",
     type: "link"
   }
@@ -101,7 +85,7 @@ const bottomNavigation = [
     id: "account",
     label: "Můj účet",
     icon: User,
-    to: "account",
+    to: "/account",
     type: "link"
   },
   {
@@ -114,7 +98,7 @@ const bottomNavigation = [
   }
 ];
 
-const NavigationItem = ({ item, isCollapsed, onItemClick, isActive }) => {
+const NavigationItem = ({ item, isCollapsed, onItemClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const IconComponent = item.icon;
   const theme = colorThemes[item.colorTheme] || colorThemes.default;
@@ -128,7 +112,7 @@ const NavigationItem = ({ item, isCollapsed, onItemClick, isActive }) => {
     if (onItemClick) onItemClick();
   };
 
-  const getItemClasses = () => {
+  const getItemClasses = (isActive) => {
     const base = `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group cursor-pointer ${isCollapsed ? "lg:justify-center lg:px-2" : ""}`;
     return isActive ? `${base} ${theme.active} shadow-sm` : `${base} ${theme.text} ${theme.hoverBg} ${theme.hover}`;
   };
@@ -138,7 +122,7 @@ const NavigationItem = ({ item, isCollapsed, onItemClick, isActive }) => {
       <div className="mb-1">
         <button
           onClick={handleClick}
-          className={`w-full ${getItemClasses()}`}
+          className={`w-full ${getItemClasses(false)}`}
           title={isCollapsed ? item.label : ""}
           disabled={isCollapsed}
         >
@@ -153,28 +137,48 @@ const NavigationItem = ({ item, isCollapsed, onItemClick, isActive }) => {
           )}
         </button>
         {isOpen && (
-        <div
+          <div
             className={`mt-1 space-y-0.5 transition-[max-height] duration-300 ease-in-out overflow-hidden ${isCollapsed ? "ml-2" : "ml-8"}`}
             style={{ maxHeight: isOpen ? `${item.items.length * 40}px` : "0px" }}
-        >
+          >
             {item.items.map((subItem, idx) => (
-            <Link
+              <NavLink
                 key={idx}
                 to={subItem.to}
                 onClick={onItemClick}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 ${theme.hover}`}
                 title={isCollapsed ? subItem.label : ""}
-            >
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
+                    isActive ? `${theme.active} shadow-sm` : `${theme.text} ${theme.hoverBg} ${theme.hover}`
+                  }`
+                }
+              >
                 {subItem.iconPath ? (
-                <img src={subItem.iconPath} alt="" className="h-5 w-5" />
+                  <img src={subItem.iconPath} alt="" className="h-5 w-5" />
                 ) : (
-                subItem.icon && <subItem.icon className="h-5 w-5" />
+                  subItem.icon && <subItem.icon className="h-5 w-5" />
                 )}
                 {!isCollapsed && <span>{subItem.label}</span>}
-            </Link>
+              </NavLink>
             ))}
-        </div>
+          </div>
         )}
+      </div>
+    );
+  }
+
+  if (item.type === "link") {
+    return (
+      <div className="mb-1">
+        <NavLink
+          to={item.to}
+          onClick={onItemClick}
+          title={isCollapsed ? item.label : ""}
+          className={({ isActive }) => getItemClasses(isActive)}
+        >
+          <IconComponent className="h-5 w-5" />
+          {!isCollapsed && <span>{item.label}</span>}
+        </NavLink>
       </div>
     );
   }
@@ -183,7 +187,7 @@ const NavigationItem = ({ item, isCollapsed, onItemClick, isActive }) => {
     <div className="mb-1">
       <button
         onClick={handleClick}
-        className={`w-full ${getItemClasses()}`}
+        className={`w-full ${getItemClasses(false)}`}
         title={isCollapsed ? item.label : ""}
       >
         <IconComponent className="h-5 w-5" />
@@ -196,16 +200,13 @@ const NavigationItem = ({ item, isCollapsed, onItemClick, isActive }) => {
 const HeaderDashboard = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const location = useLocation();
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
-  const isActiveRoute = (path) => location.pathname === path;
 
   return (
     <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
-      {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 h-16 bg-white border-b border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3 h-full">
           <div className="flex items-center gap-3">
@@ -221,12 +222,10 @@ const HeaderDashboard = ({ children }) => {
         </div>
       </div>
 
-      {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={closeMobileMenu} />
       )}
 
-      {/* Sidebar */}
       <div className={`
         fixed lg:relative inset-y-0 left-0 z-50 h-screen
         bg-white border-r border-gray-200 shadow-lg
@@ -261,7 +260,6 @@ const HeaderDashboard = ({ children }) => {
                   item={item}
                   isCollapsed={isCollapsed}
                   onItemClick={closeMobileMenu}
-                  isActive={isActiveRoute(item.to)}
                 />
               ))}
             </div>
@@ -274,7 +272,6 @@ const HeaderDashboard = ({ children }) => {
                   item={item}
                   isCollapsed={isCollapsed}
                   onItemClick={closeMobileMenu}
-                  isActive={isActiveRoute(item.to)}
                 />
               ))}
             </div>
@@ -282,13 +279,11 @@ const HeaderDashboard = ({ children }) => {
         </nav>
       </div>
 
-      {/* Main Content */}
       <div className={`
         flex-1 transition-all duration-300 ease-in-out overflow-y-auto
-        ${isCollapsed ? "lg:ml-0" : "lg:ml-0"}
         pt-16 lg:pt-0
       `}>
-        <div className="p-6">
+        <div className="mt-8">
           {children}
         </div>
       </div>

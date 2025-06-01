@@ -29,7 +29,7 @@ import Prislusenstvi_Detail from "./pages/DetailPages/Prislusenstvi_Detail";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFoundPage";
 import Login from "./pages/Login";
-import Dashboard from "./pages/MainDashboard";
+import MainDashboard from "./pages/MainDashboard";
 
 // Main layout with header and footer
 const MainLayout = () => (
@@ -100,7 +100,12 @@ function App() {
 
       {/* Admin routes with dashboard header */}
       <Route element={<AdminLayout />}>
-        <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/admin/dashboard" element={<MainDashboard />} />
+        <Route path="/admin/users" element={<NotFound />} />
+        <Route path="/admin/import-data" element={<NotFound />} />
+        <Route path="/admin/settings" element={<NotFound />} />
+        <Route path="/account" element={<NotFound />} />
+        <Route path="/admin/edit/*" element={<NotFound />} />
       </Route>
 
     </Routes>
