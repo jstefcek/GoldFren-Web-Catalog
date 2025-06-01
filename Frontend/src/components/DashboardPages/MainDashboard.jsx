@@ -1,4 +1,26 @@
+import { useEffect, useState } from 'react';
+import {
+  ArrowDown, ArrowUp
+} from "lucide-react";
+
 export default function DashboardMain_Layout() {
+  const [isTodayBigger, setIsTodayBigger] = useState(false);
+  const [isMonthBigger, setIsMonthBigger] = useState(false);
+
+  // Check if today's visitors are bigger than yesterday's
+  useEffect(() => {
+    const todayVisitors = 87;
+    const yesterdayVisitors = 75;
+    setIsTodayBigger(todayVisitors > yesterdayVisitors);
+  }, []);
+
+  // Check if this month's visitors are bigger than last month
+  useEffect(() => {
+    const thisMonthVisitors = 3613;
+    const lastMonthVisitors = 3700; 
+    setIsMonthBigger(thisMonthVisitors > lastMonthVisitors);
+  }, []);
+
   return (
     <div className="min-h-auto px-4 sm:px-6 lg:px-8 bg-gray-50">
       {/* Main div with information */}
@@ -16,7 +38,14 @@ export default function DashboardMain_Layout() {
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
               Návštěvníků dnes
             </h3>
-            <p className="text-gray-700 text-[36px] font-black">87</p>
+            <p className="text-gray-700 text-[36px] font-black flex items-center gap-1">
+            87
+            {isTodayBigger ? (
+                <ArrowUp className="w-9 h-9 text-green-700" strokeWidth={4} />
+            ) : (       
+                <ArrowDown className="w-9 h-9 text-red-700" strokeWidth={4} />
+            )}
+            </p>
           </div>
 
           {/* Viewers this months */}
@@ -24,7 +53,14 @@ export default function DashboardMain_Layout() {
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
               Návštěvníků tento měsíc
             </h3>
-            <p className="text-gray-700 text-[36px] font-black">3613</p>
+            <p className="text-gray-700 text-[36px] font-black flex items-center gap-1">
+            3613
+            {isMonthBigger ? (
+                <ArrowUp className="w-9 h-9 text-green-700" strokeWidth={4} />
+            ) : (
+                <ArrowDown className="w-9 h-9 text-red-700" strokeWidth={4} />
+            )}
+            </p>
           </div>
 
           {/* Viewers location */}
