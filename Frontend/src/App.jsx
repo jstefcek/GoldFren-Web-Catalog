@@ -2,9 +2,11 @@ import { Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "/src/localization/language_setup";
+//import { GAnalytics } from "/src/utils/GoogleAnalytics";
 
 // Layouts
 import Header from "/src/layouts/Header";
+import HeaderDashboard from "/src/layouts/HeaderDashboard";
 import Footer from "/src/layouts/Footer";
 import { Outlet } from "react-router-dom";
 
@@ -27,6 +29,7 @@ import Prislusenstvi_Detail from "./pages/DetailPages/Prislusenstvi_Detail";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFoundPage";
 import Login from "./pages/Login";
+import Dashboard from "./pages/MainDashboard";
 
 // Main layout with header and footer
 const MainLayout = () => (
@@ -39,13 +42,20 @@ const MainLayout = () => (
   </div>
 );
 
-// Login layout without header and footer
+// Clean layout without header and footer
 const CleanLayout = () => (
   <div className="min-h-screen">
     <main className="flex-grow">
       <Outlet />
     </main>
   </div>
+);
+
+// Admin dashboard layout with header
+const AdminLayout = () => (
+  <HeaderDashboard>
+    <Outlet />
+  </HeaderDashboard>
 );
 
 function App() {
@@ -57,6 +67,10 @@ function App() {
   }, [t]);
 
   return (
+    <>
+    {/* Google Analytics tracking for every route change 
+    <GAnalytics /> */}
+
     <Routes>
       {/* Main routes with header and footer */}
       <Route element={<MainLayout />}>
@@ -83,7 +97,14 @@ function App() {
       <Route element={<CleanLayout />}>
         <Route path="/login" element={<Login />} />
       </Route>
+
+      {/* Admin routes with dashboard header */}
+      <Route element={<AdminLayout />}>
+        <Route path="/admin/dashboard" element={<Dashboard />} />
+      </Route>
+
     </Routes>
+    </>
   );
 }
 
