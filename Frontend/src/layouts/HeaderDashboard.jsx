@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   Menu, X, Home, Package, ChevronDown, ChevronRight, User,
-  ChevronLeft, Settings, Users, ImportIcon, LogOut, Car
+  ChevronLeft, Settings, Users, ImportIcon, LogOut, Car, Globe
 } from "lucide-react";
 
 const colorThemes = {
@@ -74,6 +74,13 @@ const navigationConfig = [
 ];
 
 const bottomNavigation = [
+  {
+    id: "homepage",
+    label: "Zpět na stránku",
+    icon: Globe,
+    to: "/",
+    type: "link"
+  },
   {
     id: "settings",
     label: "Nastavení",
