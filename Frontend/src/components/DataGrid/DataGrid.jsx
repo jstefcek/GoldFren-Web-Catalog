@@ -19,6 +19,7 @@ import { exportToCSV } from "./functions/ExportCSV";
 import { exportToExcel } from "./functions/ExportExcel";
 import { PrintData } from "./functions/ExportPrint";
 import { TextTruncate } from "./ui/Custom_TextTruncate";
+import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 
 export default function DataGrid({ category = "", apiCategory=null, apiUrl = null, filters = {}, apiData = null, listAll = false, }) {
   const [data, setData] = useState([]);
@@ -368,40 +369,13 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
                       key={col.key}
                       className="px-2 sm:px-4 py-2 sm:py-3 text-gray-700 text-xs sm:text-sm"
                     >
-                      {col.type === "image" && row[col.key] ? (
+                      {(col.type === "image" || col.type === "vector") && row[col.key] ? (
                         <div className="flex justify-center">
-                          <a
-                            href={row[col.key]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
-                          >
-                            <img
-                              src={row[col.key]}
-                              alt={`${category} image`}
-                              className="max-w-[80px] sm:max-w-[120px] max-h-[60px] sm:max-h-[100px] rounded shadow object-contain"
-                              loading="lazy"
-                            />
-                          </a>
+                          <CustomImageViewer
+                            src={row[col.key]}
+                            alt={`${category} ${col.type}`}
+                          />
                         </div>
-
-                      ) : col.type === "vector" && row[col.key] ? (
-                        <div className="flex justify-center">
-                          <a
-                            href={row[col.key]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
-                          >
-                            <img
-                              src={row[col.key]}
-                              alt={`${category} vektor`}
-                              className="max-w-[80px] sm:max-w-[120px] max-h-[60px] sm:max-h-[100px] rounded object-contain"
-                              loading="lazy"
-                            />
-                          </a>
-                        </div>
-
                       ) : col.link ? (
                         <a
                           href={`/${category}/${row.id || row.kod}`}

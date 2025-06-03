@@ -1,4 +1,3 @@
-import React from "react";
 import { ImageOff } from "lucide-react";
 
 const DetailImage = ({ title, imageUrl, altText, noImageText }) => {
