@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Car, Bike, Plane, AlertCircle, Loader2, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Car,
+  Bike,
+  Plane,
+  AlertCircle,
+  Loader2,
+  ArrowLeft,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { fetchData } from "../../hooks/Data_APIHook";
 import { useTranslation } from "react-i18next";
 import { NavigationStrip } from "../ui/Custom_NavigationStrip";
@@ -10,10 +19,10 @@ const serverUrl = import.meta.env.VITE_API_URL;
 export default function BrakePadDetail({ category = "", apiUrl = null }) {
   // Get the ID from the URL (would work with React Router)
   const id = window.location.pathname.split("/").pop();
-  
+
   // Validate that ID is a number
   const isValidId = !isNaN(id) && id.trim() !== "";
-  
+
   // State for controlling vehicle compatibility loading
   const [showVehicles, setShowVehicles] = useState(false);
   const [padData, setPadData] = useState({});
@@ -60,7 +69,10 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
   // Split OEM numbers or other comma-separated values safely
   const splitValues = (value) => {
     if (!value) return [];
-    return value.split(",").map(item => item.trim()).filter(Boolean);
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
   };
 
   // Handle loading state
@@ -68,7 +80,9 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
     return (
       <div className="flex flex-col items-center justify-center h-64">
         <Loader2 className="h-8 w-8 text-red-600 animate-spin mb-4" />
-        <p className="text-gray-700">{t("loading.data") || "Loading data..."}</p>
+        <p className="text-gray-700">
+          {t("loading.data") || "Loading data..."}
+        </p>
       </div>
     );
   }
@@ -83,8 +97,10 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
             <h2 className="text-lg font-medium text-red-700 mb-2">
               {t("error.title") || "Error"}
             </h2>
-            <p className="text-red-600">{error || t("error.invalid_id") || "Invalid product ID"}</p>
-            <button 
+            <p className="text-red-600">
+              {error || t("error.invalid_id") || "Invalid product ID"}
+            </p>
+            <button
               onClick={() => window.history.back()}
               className="mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors"
             >
@@ -98,10 +114,10 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
   // Get OEM numbers
   const oemNumbers = splitValues(padData.oem_cisla);
-  
+
   // Determine if we should show the show more/less button
   const shouldShowOemToggle = oemNumbers.length > 10;
-  
+
   // Limit OEM numbers displayed if showAllOem is false
   const displayedOemNumbers = showAllOem ? oemNumbers : oemNumbers.slice(0, 10);
 
@@ -110,7 +126,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
       {/* Top navigation strip */}
       <NavigationStrip
         to="/desticky"
-        label={t('back_to_list') || 'Back to list'}
+        label={t("back_to_list") || "Back to list"}
         description="desticky_title"
       />
 
@@ -121,30 +137,27 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
       {/* Top sections in a grid */}
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
-        
         {/* Left column with image and vector drawing */}
         <div className="lg:w-5/7 rounded-lg shadow border border-gray-200 bg-white p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
             {/* Image */}
-            <div className="bg-gray-50 p-4 rounded-md ">
-              <DetailImage
-                title={t("datagrid.picture")}
-                imageUrl={padData.image}
-                altText={`Brake pad image for ${displayData(padData.cislo_dilu)}`}
-                noImageText={t("datagrid.no_image") || "No image available"}
-              />
-            </div>
+
+            <DetailImage
+              title={t("datagrid.picture")}
+              imageUrl={padData.image}
+              altText={`Brake pad image for ${displayData(padData.cislo_dilu)}`}
+              noImageText={t("datagrid.no_image") || "No image available"}
+            />
 
             {/* Technical Drawing */}
-            <div className="bg-gray-50 p-4 rounded-md">
-              <DetailImage
-                title={t("datagrid.vektor")}
-                imageUrl={padData.vektor}
-                altText={`Brake pad technical image for ${displayData(padData.cislo_dilu)}`}
-                noImageText={t("datagrid.no_image") || "No image available"}
-              />
-            </div>
+            <DetailImage
+              title={t("datagrid.vektor")}
+              imageUrl={padData.vektor}
+              altText={`Brake pad technical image for ${displayData(
+                padData.cislo_dilu
+              )}`}
+              noImageText={t("datagrid.no_image") || "No image available"}
+            />
           </div>
         </div>
 
@@ -153,7 +166,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
             {t("datagrid.oem_cisla")}
           </h2>
-          
+
           {/* Scrollable container for OEM numbers */}
           <div className="flex-grow" style={{ height: "200px" }}>
             {oemNumbers.length > 0 ? (
@@ -168,9 +181,9 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                     </span>
                   ))}
                 </div>
-                
+
                 {shouldShowOemToggle && (
-                  <button 
+                  <button
                     onClick={() => setShowAllOem(!showAllOem)}
                     className="flex items-center justify-center w-full mt-4 py-2 text-sm text-blue-600 hover:text-blue-800 font-medium border border-blue-200 rounded-md hover:bg-blue-50 transition-colors"
                   >
@@ -182,7 +195,9 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                     ) : (
                       <>
                         <ChevronDown className="h-4 w-4 mr-1" />
-                        {t("datagrid.show_more", { count: oemNumbers.length - 10 }) || `Show ${oemNumbers.length - 10} more`}
+                        {t("datagrid.show_more", {
+                          count: oemNumbers.length - 10,
+                        }) || `Show ${oemNumbers.length - 10} more`}
                       </>
                     )}
                   </button>
@@ -190,7 +205,9 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
               </div>
             ) : (
               <div className="flex items-center justify-center h-full">
-                <span className="text-gray-500">{t("datagrid.no_oem") || "No OEM numbers available"}</span>
+                <span className="text-gray-500">
+                  {t("datagrid.no_oem") || "No OEM numbers available"}
+                </span>
               </div>
             )}
           </div>
@@ -199,14 +216,14 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
       {/* Bottom sections in a grid */}
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
-        
         {/* Compatibility table */}
         <div className="lg:w-4/5 rounded-lg shadow border border-gray-200 bg-white p-8">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
             {t("datagrid.compatibility_table")}
           </h2>
           <div className="overflow-x-auto">
-            {padData.konkurence && Object.keys(padData.konkurence).length > 0 ? (
+            {padData.konkurence &&
+            Object.keys(padData.konkurence).length > 0 ? (
               <table className="min-w-full text-sm text-left">
                 <thead className="bg-gray-50">
                   <tr>
@@ -230,7 +247,9 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                         </div>
                       </td>
                       <td className="px-6 py-3 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{displayData(code)}</div>
+                        <div className="text-sm text-gray-500">
+                          {displayData(code)}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -239,7 +258,8 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
             ) : (
               <div className="h-32 flex items-center justify-center bg-gray-50 rounded-md">
                 <p className="text-gray-500">
-                  {t("datagrid.no_compatibility") || "No compatibility data available"}
+                  {t("datagrid.no_compatibility") ||
+                    "No compatibility data available"}
                 </p>
               </div>
             )}
@@ -262,7 +282,10 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                 </span>
               ))
             ) : (
-              <span className="text-gray-500">{t("datagrid.no_material") || "No material information available"}</span>
+              <span className="text-gray-500">
+                {t("datagrid.no_material") ||
+                  "No material information available"}
+              </span>
             )}
           </div>
         </div>
@@ -280,14 +303,19 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
               className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors flex items-center gap-2 ml-4"
               disabled={!isValidId}
             >
-              <span>{t("datagrid.load_vehicles") || "Load Compatible Vehicles"}</span>
+              <span>
+                {t("datagrid.load_vehicles") || "Load Compatible Vehicles"}
+              </span>
             </button>
           )}
         </div>
 
         {showVehicles ? (
           <div className="mt-4">
-            <DataGrid category="desticka_vozidla" apiUrl={`${serverUrl}/api/goldfren/internal/desticky/vozidla?limit=0&desticka_id=${padData.id}`} />
+            <DataGrid
+              category="desticka_vozidla"
+              apiUrl={`${serverUrl}/api/goldfren/internal/desticky/vozidla?limit=0&desticka_id=${padData.id}`}
+            />
           </div>
         ) : (
           <div className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-md m-4">
@@ -297,7 +325,8 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
               <Plane className="h-8 w-8 text-gray-500" />
             </div>
             <p className="text-gray-500 text-center max-w-md">
-              {t("datagrid.vehicle_notload_text") || "Click the button above to load compatible vehicle information"}
+              {t("datagrid.vehicle_notload_text") ||
+                "Click the button above to load compatible vehicle information"}
             </p>
           </div>
         )}

@@ -9,7 +9,7 @@ const DetailImage = ({ title, imageUrl, altText, noImageText }) => {
         className="
           w-full h-64
           flex items-center justify-center
-          bg-gray-100
+          bg-gray-50
           p-4
           shadow-sm
           overflow-hidden

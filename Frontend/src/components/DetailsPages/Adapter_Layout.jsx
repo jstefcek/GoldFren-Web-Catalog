@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Car,
-  Bike,
-  Plane,
-  AlertCircle,
-  Loader2
-} from "lucide-react";
+import { Car, Bike, Plane, AlertCircle, Loader2 } from "lucide-react";
 import { fetchData } from "../../hooks/Data_APIHook";
 import { useTranslation } from "react-i18next";
 import { NavigationStrip } from "../ui/Custom_NavigationStrip";
@@ -120,24 +114,24 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
         <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Image */}
-            <div className="bg-gray-50 p-4 rounded-md">
-              <DetailImage
-                title={t("datagrid.picture")}
-                imageUrl={adapterData.image}
-                altText={`Caliper image for ${displayData(adapterData.cislo_dilu)}`}
-                noImageText={t("datagrid.no_image") || "No image available"}
-              />
-            </div>
+            <DetailImage
+              title={t("datagrid.picture")}
+              imageUrl={adapterData.image}
+              altText={`Caliper image for ${displayData(
+                adapterData.cislo_dilu
+              )}`}
+              noImageText={t("datagrid.no_image") || "No image available"}
+            />
 
             {/* Technical Drawing */}
-            <div className="bg-gray-50 p-4 rounded-md">
-              <DetailImage
-                title={t("datagrid.vektor")}
-                imageUrl={adapterData.vektor}
-                altText={`Caliper technical image for ${displayData(adapterData.cislo_dilu)}`}
-                noImageText={t("datagrid.no_image") || "No image available"}
-              />
-            </div>
+            <DetailImage
+              title={t("datagrid.vektor")}
+              imageUrl={adapterData.vektor}
+              altText={`Caliper technical image for ${displayData(
+                adapterData.cislo_dilu
+              )}`}
+              noImageText={t("datagrid.no_image") || "No image available"}
+            />
           </div>
         </div>
       </div>
@@ -152,9 +146,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
               <h3 className="text-lg font-medium mb-4">
                 {t("datagrid.diameter")}
               </h3>
-              <p className="text-gray-700">
-                {displayData(adapterData.prumer)} 
-              </p>
+              <p className="text-gray-700">{displayData(adapterData.prumer)}</p>
             </div>
 
             {/* Attachment type section */}
