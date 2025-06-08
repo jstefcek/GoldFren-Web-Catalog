@@ -24,7 +24,7 @@ export default function DashboardMain_Layout() {
   return (
     <div className="min-h-auto px-4 sm:px-6 lg:px-8 bg-gray-50">
       {/* Main div with information */}
-      <div className="bg-white rounded-lg shadow-sm p-8">
+      <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
         <h1 className="text-3xl font-bold text-gray-900">
           Přehled webu GOLDfren katalog
         </h1>
@@ -74,7 +74,7 @@ export default function DashboardMain_Layout() {
       </div>
 
       {/* Vehicle Div */}
-      <div className="bg-white rounded-lg shadow-sm p-8 mt-8">
+      <div className="bg-white rounded-lg shadow-sm p-8 mt-8 border border-gray-200">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Nejčastěji vyhledavané produkty
         </h2>
@@ -141,7 +141,7 @@ export default function DashboardMain_Layout() {
       </div>
 
       {/* Another div */}
-      <div className="bg-white rounded-lg shadow-sm p-8 mt-8">
+      <div className="bg-white rounded-lg shadow-sm p-8 mt-8 mb-8 border border-gray-200">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
             <h3 className="text-lg font-semibold text-blue-900 mb-2">

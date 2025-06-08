@@ -10,6 +10,9 @@ import HeaderDashboard from "/src/layouts/HeaderDashboard";
 import Footer from "/src/layouts/Footer";
 import { Outlet } from "react-router-dom";
 
+// Protected Route Component
+import ProtectedRoute from "./utils/ProtectedRoutes";
+
 // Pages
 import Home from "/src/pages/Home";
 import Adaptery from "./pages/Adaptery";
@@ -51,11 +54,13 @@ const CleanLayout = () => (
   </div>
 );
 
-// Admin dashboard layout with header
+// Admin dashboard layout with header + protected route
 const AdminLayout = () => (
-  <HeaderDashboard>
-    <Outlet />
-  </HeaderDashboard>
+  <ProtectedRoute>
+    <HeaderDashboard>
+      <Outlet />
+    </HeaderDashboard>
+  </ProtectedRoute>
 );
 
 function App() {

@@ -186,6 +186,7 @@
     "password_placeholder": "Please enter password",
     "login_button": "Login",
     "back_button": "Back to home page",
-    "login_loading": "Logging in..."
+    "login_loading": "Logging in...",
+    "login_error": "Login failed. Please check your login details."
   }
 }  

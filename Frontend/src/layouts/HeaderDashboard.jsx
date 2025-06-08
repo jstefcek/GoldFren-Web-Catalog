@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   Menu, X, Home, Package, ChevronDown, ChevronRight, User,
   ChevronLeft, Settings, Users, ImportIcon, LogOut, Car, Globe
@@ -70,38 +70,6 @@ const navigationConfig = [
     icon: ImportIcon,
     to: "/admin/import-data",
     type: "link"
-  }
-];
-
-const bottomNavigation = [
-  {
-    id: "homepage",
-    label: "Zpět na stránku",
-    icon: Globe,
-    to: "/",
-    type: "link"
-  },
-  {
-    id: "settings",
-    label: "Nastavení",
-    icon: Settings,
-    to: "/admin/settings",
-    type: "link"
-  },
-  {
-    id: "account",
-    label: "Můj účet",
-    icon: User,
-    to: "/account",
-    type: "link"
-  },
-  {
-    id: "logout",
-    label: "Odhlásit se",
-    icon: LogOut,
-    type: "button",
-    colorTheme: "red",
-    onClick: () => alert("Logout functionality would be implemented here")
   }
 ];
 
@@ -207,10 +175,59 @@ const NavigationItem = ({ item, isCollapsed, onItemClick }) => {
 const HeaderDashboard = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+
+  // Logout function inside the component where useNavigate works
+  const handleLogout = () => {
+    try {
+      // Clear session storage
+      sessionStorage.clear();
+      
+      // Redirect to homepage immediately
+      navigate('/');
+    } catch (error) {
+      // Still redirect even if there's an error clearing storage
+      console.error('Error during logout:', error);
+      navigate('/');
+    }
+  };
+
+  // Define bottomNavigation inside the component to access handleLogout
+  const bottomNavigation = [
+    {
+      id: "homepage",
+      label: "Zpět na stránku",
+      icon: Globe,
+      to: "/",
+      type: "link"
+    },
+    {
+      id: "settings",
+      label: "Nastavení",
+      icon: Settings,
+      to: "/admin/settings",
+      type: "link"
+    },
+    {
+      id: "account",
+      label: "Můj účet",
+      icon: User,
+      to: "/account",
+      type: "link"
+    },
+    {
+      id: "logout",
+      label: "Odhlásit se",
+      icon: LogOut,
+      type: "button",
+      colorTheme: "red",
+      onClick: handleLogout // Now this works properly
+    }
+  ];
 
   return (
     <div className="flex h-screen w-full bg-gray-50 overflow-hidden">

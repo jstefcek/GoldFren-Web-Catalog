@@ -1,12 +1,15 @@
 import { useState, useCallback } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function LoginLayout() {
   const { t, i18n } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Languages
   const languages = [
@@ -25,16 +28,51 @@ export default function LoginLayout() {
     setShowPassword(!showPassword);
   };
 
-  // Form submit handler
+  // Form submit handler (with Basic Auth, JWT storage, redirect)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Login form submitted");
+    setError(null);
+
+    // Get the username and password from the form
+    const formData = new FormData(e.target);
+    const username = formData.get("username");
+    const password = formData.get("password");
+
+    // Encode Basic Auth credentials
+    const credentials = btoa(`${username}:${password}`);
+
+    // Make the API request to authenticate
+    try {
+      const response = await fetch(serverUrl + "/api/auth/token/", {
+        method: "POST",
+        headers: {
+          "Authorization": `Basic ${credentials}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Check if the response is OK
+      if (!response.ok) {
+        throw new Error("Invalid credentials or server error.");
+      }
+
+      // Parse the response data
+      const data = await response.json();
+      
+      // Save the Data to sessionStorage
+      sessionStorage.setItem("user_logged_in", true);
+      sessionStorage.setItem("access_token", data.access);
+      sessionStorage.setItem("session_data", data);
+
+      // Redirect to dashboard
+      navigate("/admin/dashboard/");
+    } catch (err) {
+      setError(t("login_screen.login_error") || "Invalid username or password.");
+      console.error("Login error:", err);
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -104,6 +142,7 @@ export default function LoginLayout() {
                   onClick={togglePasswordVisibility}
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-pointer"
                   aria-label={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -113,6 +152,13 @@ export default function LoginLayout() {
                 </button>
               </div>
             </div>
+
+            {/* Error message */}
+            {error && (
+              <div className="bg-red-100 border border-red-400 rounded px-3 py-2 text-red-600 text-sm font-medium">
+                {error}
+              </div>
+            )}
 
             {/* Login button */}
             <button
@@ -126,7 +172,7 @@ export default function LoginLayout() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                    {t("login_screen.login_loading")}
+                  {t("login_screen.login_loading")}
                 </div>
               ) : (
                 t("login_screen.login_button")

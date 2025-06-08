@@ -186,6 +186,7 @@
     "password_placeholder": "Bitte geben Sie Ihr Passwort ein",
     "login_button": "Anmelden",
     "back_button": "Zurück zur Hauptseite",
-    "login_loading": "Anmelden..."
+    "login_loading": "Anmelden...",
+    "login_error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten."
   }
 }

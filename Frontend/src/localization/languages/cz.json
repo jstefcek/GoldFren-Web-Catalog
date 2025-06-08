@@ -193,6 +193,7 @@
     "password_placeholder": "Zadejte prosím heslo",
     "login_button": "Přihlásit se",
     "back_button": "Zpět na domovskou stránku",
-    "login_loading": "Přihlašování..."
+    "login_loading": "Přihlašování...",
+    "login_error": "Přihlášení se nezdařilo. Zkontrolujte své přihlašovací údaje."
   }
 }  
