@@ -14,7 +14,7 @@ export function NavigationStrip({ to = "", label = "", description = "" }) {
   const { t } = useTranslation();
 
   return (
-    <div className="w-full px-4 md:px-6 py-3 flex items-center space-x-3 p-4 border border-gray-200 rounded-lg shadow-md">
+    <div className="w-full px-4 mt-4 md:px-6 py-3 flex items-center space-x-3 p-4 border border-gray-200 rounded-lg shadow-md">
       <button
         onClick={handleClick}
         className="flex items-center text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors cursor-pointer"

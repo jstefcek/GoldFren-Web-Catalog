@@ -7,7 +7,7 @@ const DetailImage = ({ title, imageUrl, altText, noImageText }) => {
       <h3 className="text-lg md:text-xl font-semibold mb-4 text-gray-900">{title}</h3>
       <div
         className="
-          w-full h-64
+          w-full h-72
           flex items-center justify-center
           bg-gray-50
           p-4
@@ -19,7 +19,7 @@ const DetailImage = ({ title, imageUrl, altText, noImageText }) => {
           <CustomImageViewer
             src={imageUrl}
             alt={altText}
-            className="max-w-full max-h-56 object-contain block"
+            className="max-w-full max-h-64 object-contain block"
             fullSize
           />
         ) : (
