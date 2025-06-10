@@ -13,6 +13,7 @@ export const navigationConfig = [
     label: "Sortiment",
     icon: Package,
     type: "dropdown",
+    permissions: ["isInternal", "isActive"],
     items: [
       { label: "Adaptéry", to: "/admin/edit/adaptery", iconPath: "/icons/adapter.svg" },
       { label: "Brzdiče", to: "/admin/edit/brzdice", iconPath: "/icons/caliper.svg" },
@@ -28,6 +29,7 @@ export const navigationConfig = [
     label: "Vozidla",
     icon: Car,
     type: "dropdown",
+    permissions: ["isInternal", "isActive"],
     items: [
       { label: "Automobily", to: "/admin/edit/automobily", iconPath: "/icons/car.svg" },
       { label: "Motorcykly", to: "/admin/edit/motorcykly", iconPath: "/icons/motorbike.svg" },
@@ -42,6 +44,7 @@ export const navigationConfig = [
     label: "Uživatelé",
     icon: Users,
     to: "/admin/users",
+    permissions: ["isAdmin", "isActive"],
     type: "link"
   },
   {
@@ -49,6 +52,7 @@ export const navigationConfig = [
     label: "Import dat",
     icon: ImportIcon,
     to: "/admin/import-data",
+    permissions: ["isAdmin", "isActive"],
     type: "link"
   }
 ];

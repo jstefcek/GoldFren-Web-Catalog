@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  Menu, X, Home, Package, ChevronDown, ChevronRight, User,
-  ChevronLeft, Settings, Users, ImportIcon, LogOut, Car, Globe
+  Menu, X, ChevronDown, ChevronRight, User,
+  ChevronLeft, Settings, LogOut, Globe
 } from "lucide-react";
 import { colorThemes } from "./DashboardConfig/ColorThemes";
 import { navigationConfig } from "./DashboardConfig/topNavigationConfig";
