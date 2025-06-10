@@ -205,11 +205,7 @@ export default function LoginLayout() {
       try {
         sessionStorage.setItem("user_logged_in", "true");
         sessionStorage.setItem("access_token", data.access);
-        sessionStorage.setItem("session_data", JSON.stringify({
-          ...data,
-          loginTime: Date.now(),
-          expiresAt: data.expires_at || (Date.now() + 3600000) // 1 hour default
-        }));
+        sessionStorage.setItem("session_data", JSON.stringify(data));
 
         // Clear rate limiting on successful login
         rateLimiter.current.clear();
