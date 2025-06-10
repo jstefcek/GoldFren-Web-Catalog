@@ -1,5 +1,3 @@
-import Prislusenstvi from "../../pages/Prislusenstvi";
-
 export const columnsConfig = {
   // Adaptery web column config
   adaptery: [

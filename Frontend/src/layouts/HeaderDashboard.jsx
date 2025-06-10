@@ -4,74 +4,8 @@ import {
   Menu, X, Home, Package, ChevronDown, ChevronRight, User,
   ChevronLeft, Settings, Users, ImportIcon, LogOut, Car, Globe
 } from "lucide-react";
-
-const colorThemes = {
-  default: {
-    text: "text-gray-700",
-    hover: "hover:text-red-600",
-    active: "text-red-600 bg-red-50",
-    hoverBg: "hover:bg-gray-100"
-  },
-  red: {
-    text: "text-red-600",
-    hover: "hover:text-red-700",
-    active: "text-red-700 bg-red-100",
-    hoverBg: "hover:bg-red-50"
-  }
-};
-
-const navigationConfig = [
-  {
-    id: "dashboard",
-    label: "Přehled webu",
-    icon: Home,
-    to: "/admin/dashboard",
-    type: "link"
-  },
-  {
-    id: "sortiment",
-    label: "Sortiment",
-    icon: Package,
-    type: "dropdown",
-    items: [
-      { label: "Adaptéry", to: "/admin/edit/adaptery", iconPath: "/icons/adapter.svg" },
-      { label: "Brzdiče", to: "/admin/edit/brzdice", iconPath: "/icons/caliper.svg" },
-      { label: "Destičky", to: "/admin/edit/desticky", iconPath: "/icons/pad.svg" },
-      { label: "Kotouče", to: "/admin/edit/kotouce", iconPath: "/icons/disc.svg" },
-      { label: "Hadičky", to: "/admin/edit/hadicky", icon: Package },
-      { label: "Pumpy", to: "/admin/edit/pumpy", icon: Package },
-      { label: "Příslušenství", to: "/admin/edit/prislusenstvi", icon: Package }
-    ]
-  },
-  {
-    id: "vehicles",
-    label: "Vozidla",
-    icon: Car,
-    type: "dropdown",
-    items: [
-      { label: "Automobily", to: "/admin/edit/automobily", iconPath: "/icons/car.svg" },
-      { label: "Motorcykly", to: "/admin/edit/motorcykly", iconPath: "/icons/motorbike.svg" },
-      { label: "Motokáry", to: "/admin/edit/motokary", iconPath: "/icons/kart.svg" },
-      { label: "Jizndní kola", to: "/admin/edit/kola", iconPath: "/icons/bike.svg" },
-      { label: "Letadla", to: "/admin/edit/letadla", iconPath: "/icons/plane.svg" },
-      { label: "Průmysl", to: "/admin/edit/prumysl", iconPath: "/icons/industry.svg" }
-    ]
-  },
-  {
-    id: "users",
-    label: "Uživatelé",
-    icon: Users,
-    to: "/admin/users",
-    type: "link"
-  },
-  {
-    id: "import",
-    label: "Import dat",
-    icon: ImportIcon,
-    to: "/admin/import-data",
-    type: "link"
-  }
-];
+import { colorThemes } from "./DashboardConfig/ColorThemes";
+import { navigationConfig } from "./DashboardConfig/topNavigationConfig";
 
 const NavigationItem = ({ item, isCollapsed, onItemClick }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -196,7 +130,7 @@ const HeaderDashboard = ({ children }) => {
     }
   };
 
-  // Define bottomNavigation inside the component to access handleLogout
+  // Define bottomNavigation
   const bottomNavigation = [
     {
       id: "homepage",
@@ -225,7 +159,7 @@ const HeaderDashboard = ({ children }) => {
       icon: LogOut,
       type: "button",
       colorTheme: "red",
-      onClick: handleLogout // Now this works properly
+      onClick: handleLogout 
     }
   ];
 
@@ -269,7 +203,7 @@ const HeaderDashboard = ({ children }) => {
           )}
           <button
             onClick={toggleCollapse}
-            className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer"
           >
             {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
           </button>

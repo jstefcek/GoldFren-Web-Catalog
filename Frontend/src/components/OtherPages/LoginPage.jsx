@@ -1,15 +1,91 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
+
 const serverUrl = import.meta.env.VITE_API_URL;
+
+// Input validation utilities
+const validateInput = (input, type) => {
+  const sanitized = input.trim();
+  
+  if (type === 'username') {
+    // Allow alphanumeric, underscore, hyphen, dot
+    const usernameRegex = /^[a-zA-Z0-9._-]+$/;
+    return usernameRegex.test(sanitized) && sanitized.length >= 3 && sanitized.length <= 50;
+  }
+  
+  if (type === 'password') {
+    return sanitized.length >= 8 && sanitized.length <= 128;
+  }
+  
+  return false;
+};
+
+// Rate limiting utility
+class RateLimiter {
+  constructor(maxAttempts = 3, windowMs = 15 * 60 * 1000) { // 3 attempts per 15 minutes
+    this.maxAttempts = maxAttempts;
+    this.windowMs = windowMs;
+    this.attempts = this.getStoredAttempts();
+  }
+
+  getStoredAttempts() {
+    try {
+      const stored = sessionStorage.getItem('login_attempts');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  saveAttempts() {
+    try {
+      sessionStorage.setItem('login_attempts', JSON.stringify(this.attempts));
+    } catch {
+      // Handle storage errors gracefully
+    }
+  }
+
+  cleanupOldAttempts() {
+    const now = Date.now();
+    this.attempts = this.attempts.filter(attempt => now - attempt < this.windowMs);
+    this.saveAttempts();
+  }
+
+  isBlocked() {
+    this.cleanupOldAttempts();
+    return this.attempts.length >= this.maxAttempts;
+  }
+
+  recordAttempt() {
+    this.cleanupOldAttempts();
+    this.attempts.push(Date.now());
+    this.saveAttempts();
+  }
+
+  getRemainingTime() {
+    this.cleanupOldAttempts();
+    if (this.attempts.length === 0) return 0;
+    const oldestAttempt = Math.min(...this.attempts);
+    const remainingMs = this.windowMs - (Date.now() - oldestAttempt);
+    return Math.max(0, Math.ceil(remainingMs / 1000 / 60)); // minutes
+  }
+
+  clear() {
+    this.attempts = [];
+    sessionStorage.removeItem('login_attempts');
+  }
+}
 
 export default function LoginLayout() {
   const { t, i18n } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
   const navigate = useNavigate();
+  const rateLimiter = useRef(new RateLimiter());
 
   // Languages
   const languages = [
@@ -28,48 +104,137 @@ export default function LoginLayout() {
     setShowPassword(!showPassword);
   };
 
-  // Form submit handler (with Basic Auth, JWT storage, redirect)
+  // Input validation
+  const validateForm = (username, password) => {
+    const errors = {};
+    
+    if (!validateInput(username, 'username')) {
+      errors.username = t("login_screen.invalid_username") || "Username must be 3-50 characters and contain only letters, numbers, dots, hyphens, or underscores.";
+    }
+    
+    if (!validateInput(password, 'password')) {
+      errors.password = t("login_screen.invalid_password") || "Password must be 8-128 characters long.";
+    }
+    
+    return errors;
+  };
+
+  // Secure credential clearing
+  const clearSensitiveData = (formElement) => {
+    if (formElement) {
+      const passwordInput = formElement.querySelector('input[name="password"]');
+      if (passwordInput) {
+        passwordInput.value = '';
+      }
+    }
+  };
+
+  // Form submit handler with enhanced security
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    
+    // Clear previous errors
     setError(null);
+    setValidationErrors({});
 
-    // Get the username and password from the form
+    // Check rate limiting
+    if (rateLimiter.current.isBlocked()) {
+      const remainingTime = rateLimiter.current.getRemainingTime();
+      setError(
+        t("login_screen.rate_limit_error", { minutes: remainingTime }) || 
+        `Too many failed attempts. Please try again in ${remainingTime} minutes.`
+      );
+      return;
+    }
+
+    // Get form data
     const formData = new FormData(e.target);
-    const username = formData.get("username");
+    const username = formData.get("username")?.trim();
     const password = formData.get("password");
 
-    // Encode Basic Auth credentials
-    const credentials = btoa(`${username}:${password}`);
+    // Validate inputs
+    const errors = validateForm(username, password);
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
 
-    // Make the API request to authenticate
+    setIsLoading(true);
+
+    // Create timeout for request
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
     try {
-      const response = await fetch(serverUrl + "/api/auth/token/", {
+      // Encode credentials securely
+      const credentials = btoa(unescape(encodeURIComponent(`${username}:${password}`)));
+
+      // Make the API request
+      const response = await fetch(`${serverUrl}/api/auth/token/`, {
         method: "POST",
         headers: {
           "Authorization": `Basic ${credentials}`,
           "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest", // CSRF protection header
         },
+        signal: controller.signal,
+        credentials: 'same-origin', // Include cookies for CSRF token if used
       });
 
-      // Check if the response is OK
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        throw new Error("Invalid credentials or server error.");
+        // Record failed attempt for rate limiting
+        rateLimiter.current.recordAttempt();
+        
+        // Generic error message to prevent information leakage
+        throw new Error("Authentication failed");
       }
 
-      // Parse the response data
       const data = await response.json();
       
-      // Save the Data to sessionStorage
-      sessionStorage.setItem("user_logged_in", true);
-      sessionStorage.setItem("access_token", data.access);
-      sessionStorage.setItem("session_data", data);
+      // Validate response structure
+      if (!data.access || typeof data.access !== 'string') {
+        throw new Error("Invalid server response");
+      }
+
+      // Clear sensitive form data immediately
+      clearSensitiveData(e.target);
+
+      // Store auth data securely
+      try {
+        sessionStorage.setItem("user_logged_in", "true");
+        sessionStorage.setItem("access_token", data.access);
+        sessionStorage.setItem("session_data", JSON.stringify({
+          ...data,
+          loginTime: Date.now(),
+          expiresAt: data.expires_at || (Date.now() + 3600000) // 1 hour default
+        }));
+
+        // Clear rate limiting on successful login
+        rateLimiter.current.clear();
+      } catch (storageError) {
+        console.error("Storage error:", storageError);
+        throw new Error("Failed to store session data");
+      }
 
       // Redirect to dashboard
-      navigate("/admin/dashboard/");
+      navigate("/admin/dashboard/", { replace: true });
+
     } catch (err) {
-      setError(t("login_screen.login_error") || "Invalid username or password.");
-      console.error("Login error:", err);
+      clearTimeout(timeoutId);
+      clearSensitiveData(e.target);
+
+      if (err.name === 'AbortError') {
+        setError(t("login_screen.timeout_error") || "Request timed out. Please try again.");
+      } else {
+        setError(t("login_screen.login_error") || "Invalid username or password.");
+      }
+      
+      console.error("Login error:", {
+        message: err.message,
+        timestamp: new Date().toISOString()
+      });
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +266,7 @@ export default function LoginLayout() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
             {/* Username input field */}
             <div>
               <label
@@ -115,9 +280,18 @@ export default function LoginLayout() {
                 id="username"
                 name="username"
                 placeholder={t("login_screen.username_placeholder")}
+                autoComplete="username"
                 required
-                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200 font-light"
+                maxLength="50"
+                className={`w-full px-3 py-3 border rounded-md focus:outline-none focus:ring-2 transition-colors duration-200 font-light ${
+                  validationErrors.username 
+                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                    : 'border-gray-300 focus:ring-red-500 focus:border-red-500'
+                }`}
               />
+              {validationErrors.username && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.username}</p>
+              )}
             </div>
 
             {/* Password input field */}
@@ -134,8 +308,14 @@ export default function LoginLayout() {
                   id="password"
                   name="password"
                   placeholder={t("login_screen.password_placeholder")}
+                  autoComplete="current-password"
                   required
-                  className="w-full px-3 py-3 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200 font-light"
+                  maxLength="128"
+                  className={`w-full px-3 py-3 pr-10 border rounded-md focus:outline-none focus:ring-2 transition-colors duration-200 font-light ${
+                    validationErrors.password 
+                      ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-red-500 focus:border-red-500'
+                  }`}
                 />
                 <button
                   type="button"
@@ -145,25 +325,28 @@ export default function LoginLayout() {
                   tabIndex={-1}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
+                    <EyeOff className="h-6 w-6" />
                   ) : (
-                    <Eye className="h-5 w-5" />
+                    <Eye className="h-6 w-6" />
                   )}
                 </button>
               </div>
+              {validationErrors.password && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.password}</p>
+              )}
             </div>
 
             {/* Error message */}
-            {error && (
+            {error && rateLimiter.current.isBlocked() (
               <div className="bg-red-100 border border-red-400 rounded px-3 py-2 text-red-600 text-sm font-medium">
-                {error}
+                {error || t("login_screen.blocked_button")}
               </div>
             )}
 
             {/* Login button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || rateLimiter.current.isBlocked()}
               className="w-full bg-red-600 text-white text-lg font-semibold shadow-lg py-3 px-4 rounded-md hover:bg-red-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-600 disabled:hover:shadow-lg"
             >
               {isLoading ? (
@@ -174,6 +357,8 @@ export default function LoginLayout() {
                   </svg>
                   {t("login_screen.login_loading")}
                 </div>
+              ) : rateLimiter.current.isBlocked() ? (
+                `${t("login_screen.blocked_button") || "Blocked"} (${rateLimiter.current.getRemainingTime()}m)`
               ) : (
                 t("login_screen.login_button")
               )}
@@ -198,6 +383,7 @@ export default function LoginLayout() {
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
+                    type="button"
                     onClick={() => handleLanguageChange(lang.code)}
                     className={`flex items-center px-3 py-2 rounded-md border transition-all duration-200 ${
                       i18n.language === lang.code

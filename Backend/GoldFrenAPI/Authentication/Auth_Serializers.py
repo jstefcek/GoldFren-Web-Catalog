@@ -36,7 +36,10 @@ class GroupBasedTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'first_name': self.user.first_name,
                 'last_name': self.user.last_name,
                 'email': self.user.email,
-            }
+                'isAdmin': self.user.is_staff,
+                'isActive': self.user.is_active,
+                'isInternal': self.user.groups.filter(name="Internal").exists(),
+                }
         
         # Update the response data with our customized fields
         data.update(base_data)
