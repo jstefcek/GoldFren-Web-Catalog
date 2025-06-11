@@ -181,7 +181,7 @@ const HeaderDashboard = ({ children }) => {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={closeMobileMenu} />
+        <div className="lg:hidden fixed inset-0 z-40" onClick={closeMobileMenu} />
       )}
 
       <div className={`
