@@ -1,58 +1,31 @@
 import { useState } from "react";
+import { useAuth } from "../../services/authContext"; // Adjust this path to your setup
 import { ShieldCheck, Mail, User, Lock, Shield, AlertCircle, CheckCircle, X, Eye, EyeOff } from "lucide-react";
+
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function AccountLayout() {
-  // Retrieve session data from sessionStorage
-  const data = JSON.parse(sessionStorage.getItem("session_data") || "{}");
-  console.log("Account data:", data);
+  const { userInfo, logout } = useAuth();
 
-  // Parse user data from session storage
-  const user = {
-    firstName: data.user.first_name || "XNA",
-    lastName: data.user.last_name || "XNA",
-    email: data.user.email || "XNA",
-    isAdmin: data.user.isAdmin || false,
-    isActive: data.user.isActive || false,
-    isInternal: data.user.isInternal || false,
-    accessToken: data.access
-  };
+  const user = userInfo?.raw?.user || {};
+  const accessToken = userInfo?.raw?.access || "";
 
-  // Check if user data is valid
-  const [form, setForm] = useState({
-    current: "",
-    new: "",
-    confirm: "",
-  });
-
-  // Password visibility states
-  const [showPasswords, setShowPasswords] = useState({
-    current: false,
-    new: false,
-    confirm: false,
-  });
-
+  const [form, setForm] = useState({ current: "", new: "", confirm: "" });
+  const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
-  // Check if passwords match
   const passwordsMatch = form.new && form.confirm && form.new === form.confirm;
 
-  // Toggle password visibility
   const togglePasswordVisibility = (field) => {
-    setShowPasswords(prev => ({
-      ...prev,
-      [field]: !prev[field]
-    }));
+    setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
   };
 
-  // Clear all form fields
   const clearForm = () => {
     setForm({ current: "", new: "", confirm: "" });
   };
 
-  // Validate form inputs
   const validateForm = () => {
     if (!form.current.trim()) {
       setMessage({ type: "error", text: "Zadejte aktuální heslo" });
@@ -77,47 +50,40 @@ export default function AccountLayout() {
     return true;
   };
 
-  // Enhanced password change function
   const handlePassChange = async (oldPassword, newPassword) => {
-    console.log("Changing password for user: ", user.email);
     setIsLoading(true);
     setMessage({ type: "", text: "" });
 
     try {
-      // Make API request to change password
       const response = await fetch(`${serverUrl}/api/goldfren/auth/change_password/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${user.accessToken}`
+          "Authorization": `Bearer ${accessToken}`
         },
         body: JSON.stringify({
           old_password: oldPassword,
-          new_password: newPassword,
+          new_password: newPassword
         })
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        console.log("Password changed successfully:", result);
         setMessage({ type: "success", text: "Heslo bylo úspěšně změněno" });
         clearForm();
         setShowConfirmDialog(false);
-        return result;
+        logout(); // Force logout to re-login with new password
       } else {
-        console.error("Failed to change password:", response.statusText);
-        setMessage({ 
-          type: "error", 
+        setMessage({
+          type: "error",
           text: result.message || result.error || "Chyba při změně hesla"
         });
-        throw new Error(result.message || "Failed to change password");
       }
 
     } catch (error) {
       console.error("Error changing password:", error);
       setMessage({ type: "error", text: "Chyba připojení k serveru" });
-      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -126,35 +92,33 @@ export default function AccountLayout() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
-    
     if (validateForm()) {
       setShowConfirmDialog(true);
     }
   };
 
-  const handleConfirmPasswordChange = async () => {
-    try {
-      await handlePassChange(form.current, form.new);
-    } catch (error) {
-      // Error handling is done in handlePassChange
-      console.error("Error during password change:", error);
-    }
+  const handleConfirmPasswordChange = () => {
+    handlePassChange(form.current, form.new);
   };
 
-  const handleCloseMessage = () => {
-    setMessage({ type: "", text: "" });
-  };
-
+  const handleCloseMessage = () => setMessage({ type: "", text: "" });
   const handleCancel = () => {
     setShowConfirmDialog(false);
     clearForm();
   };
 
+  if (!userInfo?.loggedIn) {
+    return (
+      <div className="p-8 text-center text-gray-700">
+        <p className="text-xl">Nejste přihlášeni. Přihlaste se pro zobrazení účtu.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-auto px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-auto mx-auto mt-4">
-        
-        {/* Admin section */}
+
         {user.isAdmin && (
           <div className="bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-400 rounded-lg p-2 shadow mb-4 flex items-center gap-6">
             <ShieldCheck className="w-12 h-12 text-yellow-700" strokeWidth={2.5} />
@@ -168,25 +132,23 @@ export default function AccountLayout() {
           </div>
         )}
 
-        {/* Main account info */}
         <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200 mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-1">Přehled účtu</h1>
           <p className="text-gray-600 text-lg mb-4">Podrobnosti o vašem profilu</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
             <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
               <User className="w-8 h-8 text-red-700" />
               <div>
                 <div className="text-gray-700 font-medium">Křestní jméno</div>
-                <div className="text-gray-900 font-bold text-lg">{user.firstName}</div>
+                <div className="text-gray-900 font-bold text-lg">{user.first_name || "XNA"}</div>
               </div>
             </div>
 
             <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
               <User className="w-8 h-8 text-red-700" />
               <div>
-                <div className="text-gray-700 font-medium">Přijmení</div>
-                <div className="text-gray-900 font-bold text-lg">{user.lastName}</div>
+                <div className="text-gray-700 font-medium">Příjmení</div>
+                <div className="text-gray-900 font-bold text-lg">{user.last_name || "XNA"}</div>
               </div>
             </div>
 
@@ -194,7 +156,7 @@ export default function AccountLayout() {
               <Mail className="w-8 h-8 text-red-700" />
               <div>
                 <div className="text-gray-700 font-medium">E-mailová adresa</div>
-                <div className="text-gray-900 font-bold text-lg">{user.email}</div>
+                <div className="text-gray-900 font-bold text-lg">{user.email || "XNA"}</div>
               </div>
             </div>
 
@@ -202,18 +164,18 @@ export default function AccountLayout() {
               <Shield className="w-8 h-8 text-red-700" />
               <div>
                 <div className="text-gray-700 font-medium">Status účtu</div>
-                <div className="text-gray-900 font-bold text-lg">{user.isActive && (
-                  <span className="text-green-600">Aktivní</span>
-                ) || (
-                  <span className="text-red-800">Neaktivní</span>
-                )}</div>
+                <div className="text-gray-900 font-bold text-lg">
+                  {user.isActive ? (
+                    <span className="text-green-600">Aktivní</span>
+                  ) : (
+                    <span className="text-red-800">Neaktivní</span>
+                  )}
+                </div>
               </div>
             </div>
-
           </div>
         </div>
 
-        {/* Message display */}
         {message.text && (
           <div className={`mb-4 p-4 rounded-lg border flex items-center justify-between ${
             message.type === "success" 
@@ -228,114 +190,62 @@ export default function AccountLayout() {
               )}
               <span>{message.text}</span>
             </div>
-            <button 
-              onClick={handleCloseMessage}
-              className="text-gray-500 hover:text-gray-700"
-            >
+            <button onClick={handleCloseMessage} className="text-gray-500 hover:text-gray-700">
               <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* Password change section */}
         <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Změna hesla</h2>
           <p className="text-gray-600 mb-6">Níže můžete aktualizovat heslo k vašemu účtu.</p>
           <div className="grid grid-cols-1 gap-5 max-w-md">
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Vaše aktuální heslo
-              </label>
-              <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-gray-50">
-                <Lock className="w-5 h-5 text-gray-400" />
-                <input
-                  className="bg-transparent outline-none flex-1"
-                  type={showPasswords.current ? "text" : "password"}
-                  autoComplete="current-password"
-                  value={form.current}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, current: e.target.value }))
-                  }
-                  placeholder="Vložte aktuální heslo"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => togglePasswordVisibility('current')}
-                  className="text-gray-400 hover:text-gray-600"
-                  disabled={isLoading}
-                >
-                  {showPasswords.current ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Nové heslo
-              </label>
-              <div className={`flex items-center gap-2 rounded-lg px-3 py-2 bg-gray-50 border-2 transition-colors ${
-                form.confirm && form.new ? 
-                  (passwordsMatch ? 'border-green-400' : 'border-red-400') 
-                  : 'border-gray-200'
-              }`}>
-                <Lock className="w-5 h-5 text-gray-400" />
-                <input
-                  className="bg-transparent outline-none flex-1"
-                  type={showPasswords.new ? "text" : "password"}
-                  autoComplete="new-password"
-                  value={form.new}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, new: e.target.value }))
-                  }
-                  placeholder="Zadejte nové heslo (alespoň 6 znaků)"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => togglePasswordVisibility('new')}
-                  className="text-gray-400 hover:text-gray-600"
-                  disabled={isLoading}
-                >
-                  {showPasswords.new ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Potvrzení nového hesla
-              </label>
-              <div className={`flex items-center gap-2 rounded-lg px-3 py-2 bg-gray-50 border-2 transition-colors ${
-                form.confirm && form.new ? 
-                  (passwordsMatch ? 'border-green-400' : 'border-red-400') 
-                  : 'border-gray-200'
-              }`}>
-                <Lock className="w-5 h-5 text-gray-400" />
-                <input
-                  className="bg-transparent outline-none flex-1"
-                  type={showPasswords.confirm ? "text" : "password"}
-                  autoComplete="new-password"
-                  value={form.confirm}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, confirm: e.target.value }))
-                  }
-                  placeholder="Zadejte znovu nové heslo"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => togglePasswordVisibility('confirm')}
-                  className="text-gray-400 hover:text-gray-600"
-                  disabled={isLoading}
-                >
-                  {showPasswords.confirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-              {form.confirm && form.new && (
-                <div className={`text-sm mt-1 ${passwordsMatch ? 'text-green-600' : 'text-red-600'}`}>
-                  {passwordsMatch ? '✓ Hesla se shodují' : '✗ Hesla se neshodují'}
+            {["current", "new", "confirm"].map((field) => (
+              <div key={field}>
+                <label className="block text-gray-700 font-medium mb-1">
+                  {field === "current" ? "Vaše aktuální heslo" :
+                   field === "new" ? "Nové heslo" :
+                   "Potvrzení nového hesla"}
+                </label>
+                <div className={`flex items-center gap-2 rounded-lg px-3 py-2 bg-gray-50 ${
+                  field !== "current" && form.new && form.confirm ? 
+                    (passwordsMatch ? "border-2 border-green-400" : "border-2 border-red-400")
+                    : "border border-gray-200"
+                }`}>
+                  <Lock className="w-5 h-5 text-gray-400" />
+                  <input
+                    className="bg-transparent outline-none flex-1"
+                    type={showPasswords[field] ? "text" : "password"}
+                    autoComplete={field === "current" ? "current-password" : "new-password"}
+                    value={form[field]}
+                    onChange={(e) =>
+                      setForm(f => ({ ...f, [field]: e.target.value }))
+                    }
+                    placeholder={
+                      field === "current"
+                        ? "Vložte aktuální heslo"
+                        : field === "new"
+                        ? "Zadejte nové heslo (alespoň 6 znaků)"
+                        : "Zadejte znovu nové heslo"
+                    }
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility(field)}
+                    className="text-gray-400 hover:text-gray-600"
+                    disabled={isLoading}
+                  >
+                    {showPasswords[field] ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                 </div>
-              )}
-            </div>
+                {field === "confirm" && form.confirm && form.new && (
+                  <div className={`text-sm mt-1 ${passwordsMatch ? "text-green-600" : "text-red-600"}`}>
+                    {passwordsMatch ? "✓ Hesla se shodují" : "✗ Hesla se neshodují"}
+                  </div>
+                )}
+              </div>
+            ))}
             <button
               type="submit"
               disabled={isLoading}
@@ -351,10 +261,9 @@ export default function AccountLayout() {
           </div>
         </div>
 
-        {/* Confirmation Dialog */}
         {showConfirmDialog && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-mx mx-4 shadow-lg border border-gray-200">
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-lg border border-gray-200">
               <div className="flex items-center gap-3 mb-4">
                 <ShieldCheck className="w-6 h-6 text-yellow-600" />
                 <h3 className="text-lg font-bold text-gray-900">Potvrzení změny hesla</h3>

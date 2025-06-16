@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   Menu, X, ChevronDown, ChevronRight, User,
   ChevronLeft, Settings, LogOut, Globe
 } from "lucide-react";
 import { colorThemes } from "./DashboardConfig/ColorThemes";
 import { navigationConfig } from "./DashboardConfig/topNavigationConfig";
+import { useAuth } from "../services/authContext";
 
 const NavigationItem = ({ item, isCollapsed, onItemClick }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -109,25 +110,15 @@ const NavigationItem = ({ item, isCollapsed, onItemClick }) => {
 const HeaderDashboard = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
   // Logout function inside the component where useNavigate works
-  const handleLogout = () => {
-    try {
-      // Clear session storage
-      sessionStorage.clear();
-      
-      // Redirect to homepage immediately
-      navigate('/');
-    } catch (error) {
-      // Still redirect even if there's an error clearing storage
-      console.error('Error during logout:', error);
-      navigate('/');
-    }
+  const handleLogout = () => {         
+    logout();    
   };
 
   // Define bottomNavigation
@@ -159,7 +150,7 @@ const HeaderDashboard = ({ children }) => {
       icon: LogOut,
       type: "button",
       colorTheme: "red",
-      onClick: handleLogout 
+      onClick: handleLogout
     }
   ];
 

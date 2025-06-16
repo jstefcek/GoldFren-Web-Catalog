@@ -37,6 +37,9 @@ import Login from "./pages/Login";
 import MainDashboard from "./pages/AdminDashboard/MainDashboard";
 import Account from "./pages/AdminDashboard/Account";
 
+// Import authContext for user authentication
+import { AuthProvider } from './services/authContext';
+
 // Main layout with header and footer
 const MainLayout = () => (
   <div className="min-h-screen flex flex-col">
@@ -76,47 +79,51 @@ function App() {
 
   return (
     <>
-    {/* Google Analytics tracking for every route change 
-    <GAnalytics /> */}
+      <AuthProvider>
+        {/* Google Analytics tracking for every route change 
+        <GAnalytics /> */}
 
-    <Routes>
-      {/* Main routes with header and footer */}
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/adaptery" element={<Adaptery />} />
-        <Route path="/adaptery/:id" element={<Adapter_Detail />} />
-        <Route path="/desticky" element={<Desticky />} />
-        <Route path="/desticky/:id" element={<Desticka_Detail />} />
-        <Route path="/brzdice" element={<Brzdice />} />
-        <Route path="/brzdice/:id" element={<Brzdic_Detail />} />
-        <Route path="/kotouce" element={<Kotouce />} />
-        <Route path="/kotouce/:id" element={<Kotouc_Detail />} />
-        <Route path="/hadicky" element={<Hadicky />} />
-        <Route path="/hadicky/:id" element={<Hadicka_Detail />} />
-        <Route path="/pumpy" element={<Pumpy />} />
-        <Route path="/pumpy/:id" element={<Pumpa_Detail />} />
-        <Route path="/prislusenstvi" element={<Prislusenstvi />} />
-        <Route path="/prislusenstvi/:id" element={<Prislusenstvi_Detail />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="*" element={<NotFound />} />
-      </Route>
+        <Routes>
+          {/* Main routes with header and footer */}
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/adaptery" element={<Adaptery />} />
+            <Route path="/adaptery/:id" element={<Adapter_Detail />} />
+            <Route path="/desticky" element={<Desticky />} />
+            <Route path="/desticky/:id" element={<Desticka_Detail />} />
+            <Route path="/brzdice" element={<Brzdice />} />
+            <Route path="/brzdice/:id" element={<Brzdic_Detail />} />
+            <Route path="/kotouce" element={<Kotouce />} />
+            <Route path="/kotouce/:id" element={<Kotouc_Detail />} />
+            <Route path="/hadicky" element={<Hadicky />} />
+            <Route path="/hadicky/:id" element={<Hadicka_Detail />} />
+            <Route path="/pumpy" element={<Pumpy />} />
+            <Route path="/pumpy/:id" element={<Pumpa_Detail />} />
+            <Route path="/prislusenstvi" element={<Prislusenstvi />} />
+            <Route
+              path="/prislusenstvi/:id"
+              element={<Prislusenstvi_Detail />}
+            />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
 
-      {/* Clean route without header and footer */}
-      <Route element={<CleanLayout />}>
-        <Route path="/login" element={<Login />} />
-      </Route>
+          {/* Clean route without header and footer */}
+          <Route element={<CleanLayout />}>
+            <Route path="/login" element={<Login />} />
+          </Route>
 
-      {/* Admin routes with dashboard header */}
-      <Route element={<AdminLayout />}>
-        <Route path="/admin/dashboard" element={<MainDashboard />} />
-        <Route path="/admin/users" element={<NotFound />} />
-        <Route path="/admin/import-data" element={<NotFound />} />
-        <Route path="/admin/settings" element={<NotFound />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/admin/edit/*" element={<NotFound />} />
-      </Route>
-
-    </Routes>
+          {/* Admin routes with dashboard header */}
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<MainDashboard />} />
+            <Route path="/admin/users" element={<NotFound />} />
+            <Route path="/admin/import-data" element={<NotFound />} />
+            <Route path="/admin/settings" element={<NotFound />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/admin/edit/*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </>
   );
 }

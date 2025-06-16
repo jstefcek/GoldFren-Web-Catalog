@@ -1,16 +1,18 @@
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../services/authContext";
 
 const ProtectedRoute = ({ children }) => {
-  // Check if user is logged in by looking at sessionStorage
-  const isLoggedIn = sessionStorage.getItem("user_logged_in") === "true";
-  const accessToken = sessionStorage.getItem("access_token");
-  
-  // If not logged in or no access token, redirect to login
-  if (!isLoggedIn || !accessToken) {
+  const { userInfo } = useAuth();
+
+  // Check if user is logged in
+  const isLoggedIn = !!userInfo;
+
+  // If user is not logged in then redirect to login page
+  if (!isLoggedIn) {
+    console.warn("Access denied. User is not logged in or access token is missing.");
     return <Navigate to="/login" replace />;
   }
 
-  // If logged in, render the protected content
   return children;
 };
 

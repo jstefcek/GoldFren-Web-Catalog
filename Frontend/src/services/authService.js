@@ -69,6 +69,9 @@ export class AuthService {
         sessionStorage.setItem("user_logged_in", "true");
         sessionStorage.setItem("access_token", data.access);
         sessionStorage.setItem("session_data", JSON.stringify(data));
+
+        // Notify about user login state change
+        window.dispatchEvent(new Event("userLoginChange"));
     } catch (storageError) {
         console.error("Storage error:", storageError);
       throw new Error("Failed to store session data");

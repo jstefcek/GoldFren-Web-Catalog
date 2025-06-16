@@ -20,6 +20,7 @@ import { exportToExcel } from "./functions/ExportExcel";
 import { PrintData } from "./functions/ExportPrint";
 import { TextTruncate } from "./ui/Custom_TextTruncate";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
+import { Link } from "react-router-dom";
 
 export default function DataGrid({ category = "", apiCategory=null, apiUrl = null, filters = {}, apiData = null, listAll = false, }) {
   const [data, setData] = useState([]);
@@ -377,12 +378,12 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
                           />
                         </div>
                       ) : col.link ? (
-                        <a
-                          href={`/${category}/${row.id || row.kod}`}
+                        <Link
+                          to={`/${category}/${row.id || row.kod}`}
                           className="text-red-600 hover:text-red-800 font-medium cursor-pointer focus:outline-none focus:underline"
                         >
                           {row[col.key] ?? `${category}/${row.id || row.kod}`}
-                        </a>
+                        </Link>
 
                       ) : col.useTruncation ? (
                         <TextTruncate
