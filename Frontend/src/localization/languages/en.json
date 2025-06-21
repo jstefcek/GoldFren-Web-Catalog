@@ -187,6 +187,8 @@
     "login_button": "Login",
     "back_button": "Back to home page",
     "login_loading": "Logging in...",
-    "login_error": "Login failed. Please check your login details."
+    "login_error": "Login failed. Please check your login details.",
+    "server_error": "Server Error. Please try again later.",
+    "invalid_credentials": "Invalid login details. Check your username and password and try again."
   }
 }  

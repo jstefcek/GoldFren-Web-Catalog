@@ -197,6 +197,8 @@
     "login_error": "Přihlášení se nezdařilo. Zkontrolujte své přihlašovací údaje a opakujte přihlášení...",
     "timeout_error": "Přihlášení se nezdařilo. Zkontrolujte své přihlašovací údaje a opakujte přihlášení. Pokud problém přetrvává, kontaktujte nás.",
     "rate_limit_error": "Příliš mnoho pokusů o přihlášení. Zkuste to prosím znovu později za ",
-    "blocked_button": "Přihlášení blokováno "
+    "blocked_button": "Přihlášení blokováno ",
+    "server_error": "Chyba serveru. Zkuste to prosím znovu později.",
+    "invalid_credentials": "Neplatné přihlašovací údaje. Zkontrolujte své uživatelské jméno a heslo."
   }
 }  

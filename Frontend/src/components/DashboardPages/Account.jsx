@@ -301,7 +301,7 @@ export default function AccountLayout() {
                       field === "current"
                         ? "Vložte aktuální heslo"
                         : field === "new"
-                        ? "Zadejte nové heslo (alespoň 6 znaků)"
+                        ? "Zadejte nové heslo (alespoň 8 znaků)"
                         : "Zadejte znovu nové heslo"
                     }
                     disabled={isLoading}

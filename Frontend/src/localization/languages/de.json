@@ -187,6 +187,8 @@
     "login_button": "Anmelden",
     "back_button": "Zurück zur Hauptseite",
     "login_loading": "Anmelden...",
-    "login_error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten."
+    "login_error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.",
+    "server_error": "Server-Fehler. Bitte versuchen Sie es später noch einmal.",
+    "invalid_credentials": "Ungültige Anmeldedaten. Überprüfen Sie Ihren Benutzernamen und Ihr Passwort."
   }
 }
