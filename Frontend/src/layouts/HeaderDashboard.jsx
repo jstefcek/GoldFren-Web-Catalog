@@ -131,13 +131,6 @@ const HeaderDashboard = ({ children }) => {
       type: "link"
     },
     {
-      id: "settings",
-      label: "Nastavení",
-      icon: Settings,
-      to: "/admin/settings",
-      type: "link"
-    },
-    {
       id: "account",
       label: "Můj účet",
       icon: User,

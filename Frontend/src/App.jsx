@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "/src/localization/language_setup";
-//import { GAnalytics } from "/src/utils/GoogleAnalytics";
+import { GAnalytics } from "/src/utils/GoogleAnalytics";
 
 // Layouts
 import Header from "/src/layouts/Header";
@@ -80,8 +80,8 @@ function App() {
   return (
     <>
       <AuthProvider>
-        {/* Google Analytics tracking for every route change 
-        <GAnalytics /> */}
+        {/* Google Analytics tracking for every route change */}
+        <GAnalytics /> 
 
         <Routes>
           {/* Main routes with header and footer */}

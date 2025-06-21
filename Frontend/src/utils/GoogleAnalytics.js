@@ -10,6 +10,7 @@ ReactGA.initialize(GA_ID);
 export function GAnalytics() {
   const location = useLocation();
 
+  // Track page views on location change
   useEffect(() => {
     ReactGA.send({ hitType: "pageview", page: location.pathname });
   }, [location]);

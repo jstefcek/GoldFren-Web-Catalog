@@ -10,10 +10,15 @@ export function AuthProvider({ children }) {
     if (loggedIn) {
       const sessionDataRaw = sessionStorage.getItem("session_data");
       try {
+        // Parse the session data and extract user information
         const sessionData = JSON.parse(sessionDataRaw);
         const firstname = sessionData?.user?.first_name || "User";
         const surname = sessionData?.user?.last_name || "";
+        const username = sessionData?.user?.username || "";
+
+        // Set user information in the context
         setUserInfo({
+          username: username,
           displayName: `${firstname.charAt(0)}.${surname}`,
           fullName: `${firstname} ${surname}`,
           loggedIn: true,

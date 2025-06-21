@@ -33,6 +33,7 @@ class GroupBasedTokenObtainPairSerializer(TokenObtainPairSerializer):
         if group != "External":
             base_data['user'] = {
                 'id': self.user.id,
+                'username': self.user.username,
                 'first_name': self.user.first_name,
                 'last_name': self.user.last_name,
                 'email': self.user.email,

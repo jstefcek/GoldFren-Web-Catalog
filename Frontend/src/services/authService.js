@@ -50,21 +50,6 @@ export class AuthService {
     }
 
     try {
-        // Store session data securely
-        const sessionData = {
-            access: data.access,
-            timestamp: Date.now(),
-            expires: data.expiry_date || null,
-            user: {
-                first_name: data.first_name || null,
-                last_name: data.last_name || null,
-                email: data.email || null,
-                isAdmin: data.isAdmin || false,
-                isActive: data.isActive || true,
-                isInternal: data.isInternal || false,
-            }
-        };
-
         // Store in sessionStorage
         sessionStorage.setItem("user_logged_in", "true");
         sessionStorage.setItem("access_token", data.access);
@@ -78,7 +63,7 @@ export class AuthService {
     }
   }
 
-  // Log errors securely (without sensitive data)
+  // Log errors securely
   logError(err) {
     console.error("Login error:", {
       type: err.name,
