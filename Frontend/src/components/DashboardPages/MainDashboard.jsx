@@ -1,24 +1,41 @@
-import { useEffect, useState } from 'react';
-import {
-  ArrowDown, ArrowUp
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 
 export default function DashboardMain_Layout() {
-  const [isTodayBigger, setIsTodayBigger] = useState(false);
-  const [isMonthBigger, setIsMonthBigger] = useState(false);
+  // State to track percentage change
+  const [todaysChangePercentage, setTodaysChangePercentage] = useState(0);
+  const [monthlyChangePercentage, setMonthlyChangePercentage] = useState(0);
+
+  // Percentage change calculation
+  const calculatePercentageChange = (current, previous) => {
+    if (previous === 0) return 0;
+    return ((current - previous) / previous) * 100;
+  };
 
   // Check if today's visitors are bigger than yesterday's
   useEffect(() => {
     const todayVisitors = 87;
-    const yesterdayVisitors = 75;
-    setIsTodayBigger(todayVisitors > yesterdayVisitors);
+    const yesterdayVisitors = 120;
+
+    // Calculate percentage change for today
+    if (todayVisitors && yesterdayVisitors > 0) {
+      setTodaysChangePercentage(
+        calculatePercentageChange(todayVisitors, yesterdayVisitors)
+      );
+    }
   }, []);
 
   // Check if this month's visitors are bigger than last month
   useEffect(() => {
-    const thisMonthVisitors = 3613;
-    const lastMonthVisitors = 3700; 
-    setIsMonthBigger(thisMonthVisitors > lastMonthVisitors);
+    const thisMonthVisitors = 4313;
+    const lastMonthVisitors = 3705;
+
+    // Calculate percentage change for this month
+    if (thisMonthVisitors && lastMonthVisitors > 0) {
+      setMonthlyChangePercentage(
+        calculatePercentageChange(thisMonthVisitors, lastMonthVisitors)
+      );
+    }
   }, []);
 
   return (
@@ -39,12 +56,24 @@ export default function DashboardMain_Layout() {
               Návštěvníků dnes
             </h3>
             <p className="text-gray-700 text-[36px] font-black flex items-center gap-1">
-            87
-            {isTodayBigger ? (
-                <ArrowUp className="w-9 h-9 text-green-700" strokeWidth={4} />
-            ) : (       
-                <ArrowDown className="w-9 h-9 text-red-700" strokeWidth={4} />
-            )}
+              87
+              {todaysChangePercentage === 0 ? (
+                <Minus className="w-8 h-8 text-gray-400" strokeWidth={2} />
+              ) : todaysChangePercentage > 0 ? (
+                <div className="flex items-center">
+                  <ArrowUp className="w-9 h-9 text-green-700" strokeWidth={2} />
+                  <span className="text-green-700 font-light text-[32px]">
+                    {todaysChangePercentage.toFixed(0)}%
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <ArrowDown className="w-9 h-9 text-red-700" strokeWidth={2} />
+                  <span className="text-red-700 font-light text-[32px]">
+                    {Math.abs(todaysChangePercentage).toFixed(0)}%
+                  </span>
+                </div>
+              )}
             </p>
           </div>
 
@@ -54,12 +83,24 @@ export default function DashboardMain_Layout() {
               Návštěvníků tento měsíc
             </h3>
             <p className="text-gray-700 text-[36px] font-black flex items-center gap-1">
-            3613
-            {isMonthBigger ? (
-                <ArrowUp className="w-9 h-9 text-green-700" strokeWidth={4} />
-            ) : (
-                <ArrowDown className="w-9 h-9 text-red-700" strokeWidth={4} />
-            )}
+              4313
+              {monthlyChangePercentage === 0 ? (
+                <Minus className="w-8 h-8 text-gray-400" strokeWidth={2} />
+              ) : monthlyChangePercentage > 0 ? (
+                <div className="flex items-center">
+                  <ArrowUp className="w-9 h-9 text-green-700" strokeWidth={2} />
+                  <span className="text-green-700 font-light text-[32px]">
+                    {monthlyChangePercentage.toFixed(0)}%
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <ArrowDown className="w-9 h-9 text-red-700" strokeWidth={2} />
+                  <span className="text-red-700 font-light text-[32px]">
+                    {Math.abs(monthlyChangePercentage).toFixed(0)}%
+                  </span>
+                </div>
+              )}
             </p>
           </div>
 
@@ -80,7 +121,6 @@ export default function DashboardMain_Layout() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
           <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
             <h3 className="text-lg font-semibold text-blue-900 mb-2">
               Quick Stats
@@ -109,7 +149,7 @@ export default function DashboardMain_Layout() {
             <p className="text-red-700">Test div here</p>
           </div>
 
-            <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
+          <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
             <h3 className="text-lg font-semibold text-purple-900 mb-2">
               Notifications
             </h3>
@@ -136,7 +176,6 @@ export default function DashboardMain_Layout() {
               Dashboard statistics will appear here
             </p>
           </div>
-
         </div>
       </div>
 
