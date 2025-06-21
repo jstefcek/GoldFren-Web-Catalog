@@ -447,8 +447,8 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
             </Button>
 
             <div className="flex gap-1">
-              {totalPages <= 7 ? (
-                // Show all pages if 7 or fewer
+              {totalPages <= 5 ? (
+                // Show all pages if 5 or fewer
                 Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (page) => (
                     <Button

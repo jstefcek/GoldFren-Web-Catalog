@@ -355,6 +355,158 @@ function Header() {
             </button>
           </div>
         </div>
+
+        {/* Mobile menu fullscreen overlay */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-white" ref={mobileMenuRef}>
+            <div className="flex flex-col h-full">
+              {/* Header with close button */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <Link to="/" className="flex items-center">
+                  <img src="/logo/goldfren-logo.svg" alt="GoldFren Logo" className="h-8 w-auto" />
+                </Link>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-lg hover:bg-red-50 transition"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              {/* Menu content */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <div className="space-y-2">
+                  {menuItems.map((item) => (
+                    item.submenu ? (
+                      <div key={item.name}>
+                        <button
+                          onClick={() => setMobileSortimentOpen(!mobileSortimentOpen)}
+                          className={`w-full flex items-center justify-between px-4 py-3 rounded-lg font-medium transition ${
+                            hasActiveSubmenuItem(item.submenu)
+                              ? "bg-red-50 text-red-700"
+                              : "text-gray-700 hover:text-red-600 hover:bg-red-50"
+                          }`}
+                        >
+                          {item.name}
+                          {mobileSortimentOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                        </button>
+                        {mobileSortimentOpen && (
+                          <div className="ml-4 mt-2 space-y-1">
+                            {item.submenu.map((subitem) => (
+                              <Link
+                                key={subitem.name}
+                                to={subitem.path}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={`block px-4 py-3 rounded-lg font-medium transition ${
+                                  isActiveRoute(subitem.path)
+                                    ? "bg-red-50 text-red-700"
+                                    : "text-gray-600 hover:text-red-600 hover:bg-red-50"
+                                }`}
+                              >
+                                {subitem.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        key={item.name}
+                        to={item.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`block px-4 py-3 rounded-lg font-medium transition ${
+                          isActiveRoute(item.path)
+                            ? "bg-red-50 text-red-700"
+                            : "text-gray-700 hover:text-red-600 hover:bg-red-50"
+                        }`}
+                      >
+                        {item.name}
+                      </Link>
+                    )
+                  ))}
+
+                  {/* Mobile language menu */}
+                  <div className="pt-6 border-t border-gray-200">
+                    <div className="flex items-center mb-3 px-4">
+                      <Globe className="h-5 w-5 mr-2 text-gray-500" />
+                      <span className="font-medium text-gray-700">Jazyk</span>
+                    </div>
+                    <div className="space-y-1">
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => handleLanguageChange(lang.code)}
+                          className={`w-full flex items-center px-4 py-3 rounded-lg transition ${
+                            i18n.language === lang.code
+                              ? "bg-red-50 text-red-700"
+                              : "text-gray-600 hover:bg-red-50 hover:text-red-600"
+                          }`}
+                        >
+                          <img src={lang.flagIcon} alt={lang.code} className="h-5 w-5 mr-3" />
+                          {lang.name}
+                          {i18n.language === lang.code && <span className="ml-auto text-red-600">✓</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mobile user menu */}
+                  {userInfo && (
+                    <div className="pt-6 border-t border-gray-200">
+                      <div className="flex items-center mb-3 px-4">
+                        <User className="h-5 w-5 mr-2 text-red-600" />
+                        <span className="font-medium text-gray-700">{userInfo.fullName}</span>
+                      </div>
+                      <div className="space-y-1">
+                        <Link
+                          to="/admin/dashboard"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`flex items-center px-4 py-3 rounded-lg font-medium transition ${
+                            isActiveRoute("/admin")
+                              ? "bg-red-50 text-red-700"
+                              : "text-gray-600 hover:text-red-600 hover:bg-red-50"
+                          }`}
+                        >
+                          <MonitorCog className="h-5 w-5 mr-3" /> Administrace
+                        </Link>
+                        <Link
+                          to="/account"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`flex items-center px-4 py-3 rounded-lg font-medium transition ${
+                            isActiveRoute("/account")
+                              ? "bg-red-50 text-red-700"
+                              : "text-gray-600 hover:text-red-600 hover:bg-red-50"
+                          }`}
+                        >
+                          <User className="h-5 w-5 mr-3" /> Můj účet
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center px-4 py-3 rounded-lg font-medium text-red-600 hover:bg-red-50 transition"
+                        >
+                          <LogOut className="h-5 w-5 mr-3" /> Odhlásit se
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Login button for non-authenticated users */}
+                  {!userInfo && (
+                    <div className="pt-6 border-t border-gray-200">
+                      <Link
+                        to="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block w-full bg-red-600 text-white text-center px-4 py-3 rounded-lg font-medium hover:bg-red-700 transition"
+                      >
+                        {t("login")}
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
