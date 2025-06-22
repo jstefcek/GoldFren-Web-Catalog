@@ -12,8 +12,10 @@ import {
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../services/authContext";
+import { useMenuItemsConfig } from "./HeaderConfig/menuItemsConfig";
 
 function Header() {
+  // State management for various menu states
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSortimentOpen, setMobileSortimentOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -23,22 +25,27 @@ function Header() {
   const [langClicked, setLangClicked] = useState(false);
   const [userClicked, setUserClicked] = useState(false);
 
+  // Auth context to get user info and logout function
   const { userInfo, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Refs for menu elements to handle click outside events
   const userMenuRef = useRef(null);
   const langMenuRef = useRef(null);
   const sortimentMenuRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
+  // Refs for timeouts to handle menu close delays
   const sortimentCloseTimeout = useRef();
   const langCloseTimeout = useRef();
   const userCloseTimeout = useRef();
 
-  console.log("userInfo:", userInfo);
+  // Configuration for menu items
+  const menuItemsConfig = useMenuItemsConfig();
 
+  // Effect to close mobile menu on window resize
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -49,12 +56,14 @@ function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Effect to close mobile menu when navigating to a new route
   useEffect(() => {
     setMobileMenuOpen(false);
     setMobileSortimentOpen(false);
     setSortimentMenuOpen(false);
   }, [location.pathname]);
 
+  // Effect to handle clicks outside of the menus
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
@@ -77,6 +86,7 @@ function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Cleanup timeouts on component unmount
   useEffect(() => {
     return () => {
       clearTimeout(sortimentCloseTimeout.current);
@@ -118,6 +128,7 @@ function Header() {
     }, 200);
   };
 
+  // Function to handle language change
   const handleLanguageChange = useCallback(
     (lng) => {
       i18n.changeLanguage(lng);
@@ -128,6 +139,7 @@ function Header() {
     [i18n]
   );
 
+  // Function to handle logout
   const handleLogout = () => {
     sessionStorage.clear();
     logout();
@@ -137,31 +149,16 @@ function Header() {
     navigate("/");
   };
 
+  // Function to check if the current route matches the given path
   const isActiveRoute = (path) => {
     if (path === "/") return location.pathname === "/";
     return location.pathname.startsWith(path);
   };
 
+  // Function to check if any submenu item is active
   const hasActiveSubmenuItem = (submenu) => {
     return submenu.some((item) => isActiveRoute(item.path));
   };
-
-  const menuItems = [
-    { name: t("home"), path: "/" },
-    {
-      name: t("sortiment"),
-      submenu: [
-        { name: t("adaptery"), path: "/adaptery" },
-        { name: t("brzdice"), path: "/brzdice" },
-        { name: t("desticky"), path: "/desticky" },
-        { name: t("hadicky"), path: "/hadicky" },
-        { name: t("kotouce"), path: "/kotouce" },
-        { name: t("pumpy"), path: "/pumpy" },
-        { name: t("prislusenstvi"), path: "/prislusenstvi" },
-      ],
-    },
-    { name: t("kontakt"), path: "/contact" },
-  ];
 
   const languages = [
     { code: "cs", name: "Česky", flagIcon: "/icons/czech.svg" },
@@ -188,7 +185,7 @@ function Header() {
 
           <nav className="hidden lg:flex items-center justify-center flex-1">
             <ul className="flex space-x-2">
-              {menuItems.map((item) =>
+              {menuItemsConfig.map((item) =>
                 item.submenu ? (
                   <li
                     key={item.name}
@@ -451,7 +448,7 @@ function Header() {
               {/* Menu content */}
               <div className="flex-1 overflow-y-auto p-4">
                 <div className="space-y-2">
-                  {menuItems.map((item) =>
+                  {menuItemsConfig.map((item) =>
                     item.submenu ? (
                       <div key={item.name}>
                         <button
