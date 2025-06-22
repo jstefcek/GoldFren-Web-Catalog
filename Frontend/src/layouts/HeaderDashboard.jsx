@@ -1,151 +1,28 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
-import {
-  Menu, X, ChevronDown, ChevronRight, User,
-  ChevronLeft, Settings, LogOut, Globe
-} from "lucide-react";
-import { colorThemes } from "./DashboardConfig/ColorThemes";
+import { Menu, X, ChevronRight, ChevronLeft } from "lucide-react";
 import { navigationConfig } from "./DashboardConfig/topNavigationConfig";
+import { NavigationItem} from "./DashboardConfig/NavigationItem";
+import { bottomNavigation } from "./DashboardConfig/bottomNavigation";
 import { useAuth } from "../services/authContext";
 
-const NavigationItem = ({ item, isCollapsed, onItemClick }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const IconComponent = item.icon;
-  const theme = colorThemes[item.colorTheme] || colorThemes.default;
-
-  const handleClick = () => {
-    if (item.type === "dropdown" && !isCollapsed) {
-      setIsOpen(!isOpen);
-    } else if (item.type === "button" && item.onClick) {
-      item.onClick();
-    }
-    if (onItemClick) onItemClick();
-  };
-
-  const getItemClasses = (isActive) => {
-    const base = `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group cursor-pointer ${isCollapsed ? "lg:justify-center lg:px-2" : ""}`;
-    return isActive ? `${base} ${theme.active} shadow-sm` : `${base} ${theme.text} ${theme.hoverBg} ${theme.hover}`;
-  };
-
-  if (item.type === "dropdown") {
-    return (
-      <div className="mb-1">
-        <button
-          onClick={handleClick}
-          className={`w-full ${getItemClasses(false)}`}
-          title={isCollapsed ? item.label : ""}
-          disabled={isCollapsed}
-        >
-          <div className="flex items-center gap-3">
-            <IconComponent className="h-5 w-5" />
-            {!isCollapsed && <span>{item.label}</span>}
-          </div>
-          {!isCollapsed && (
-            <div className="ml-auto">
-              {isOpen ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
-            </div>
-          )}
-        </button>
-        {isOpen && (
-          <div
-            className={`mt-1 space-y-0.5 transition-[max-height] duration-300 ease-in-out overflow-hidden ${isCollapsed ? "ml-2" : "ml-8"}`}
-            style={{ maxHeight: isOpen ? `${item.items.length * 40}px` : "0px" }}
-          >
-            {item.items.map((subItem, idx) => (
-              <NavLink
-                key={idx}
-                to={subItem.to}
-                onClick={onItemClick}
-                title={isCollapsed ? subItem.label : ""}
-                className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
-                    isActive ? `${theme.active} shadow-sm` : `${theme.text} ${theme.hoverBg} ${theme.hover}`
-                  }`
-                }
-              >
-                {subItem.iconPath ? (
-                  <img src={subItem.iconPath} alt="" className="h-5 w-5" />
-                ) : (
-                  subItem.icon && <subItem.icon className="h-5 w-5" />
-                )}
-                {!isCollapsed && <span>{subItem.label}</span>}
-              </NavLink>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  if (item.type === "link") {
-    return (
-      <div className="mb-1">
-        <NavLink
-          to={item.to}
-          onClick={onItemClick}
-          title={isCollapsed ? item.label : ""}
-          className={({ isActive }) => getItemClasses(isActive)}
-        >
-          <IconComponent className="h-5 w-5" />
-          {!isCollapsed && <span>{item.label}</span>}
-        </NavLink>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mb-1">
-      <button
-        onClick={handleClick}
-        className={`w-full ${getItemClasses(false)}`}
-        title={isCollapsed ? item.label : ""}
-      >
-        <IconComponent className="h-5 w-5" />
-        {!isCollapsed && <span>{item.label}</span>}
-      </button>
-    </div>
-  );
-};
-
 const HeaderDashboard = ({ children }) => {
+  // States to manage mobile menu and sidebar collapse
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { logout } = useAuth();
 
+  // Handlers for toggling mobile menu and sidebar collapse
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
-  // Logout function inside the component where useNavigate works
-  const handleLogout = () => {         
-    logout();    
-  };
+  // Handle logout
+  const { logout } = useAuth();
 
-  // Define bottomNavigation
-  const bottomNavigation = [
-    {
-      id: "homepage",
-      label: "Zpět na stránku",
-      icon: Globe,
-      to: "/",
-      type: "link"
-    },
-    {
-      id: "account",
-      label: "Můj účet",
-      icon: User,
-      to: "/account",
-      type: "link"
-    },
-    {
-      id: "logout",
-      label: "Odhlásit se",
-      icon: LogOut,
-      type: "button",
-      colorTheme: "red",
-      onClick: handleLogout
-    }
-  ];
+  // Helper to handle logout + mobile menu close
+  const handleLogout = () => {
+    logout();
+    closeMobileMenu();
+  };
 
   return (
     <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
@@ -194,26 +71,29 @@ const HeaderDashboard = ({ children }) => {
         </div>
 
         <nav className="flex flex-col flex-1 min-h-0 overflow-hidden">
-          <div className="flex-1 py-4 overflow-y-auto">
+          <div className="flex-1 py-4 overflow-y-auto pb-24">
             <div className={`space-y-1 ${isCollapsed ? "lg:px-2" : "px-4"}`}>
               {navigationConfig.map((item) => (
                 <NavigationItem
                   key={item.id}
                   item={item}
                   isCollapsed={isCollapsed}
-                  onItemClick={closeMobileMenu}
+                  onLinkClick={closeMobileMenu} 
                 />
               ))}
             </div>
           </div>
-          <div className={`border-t border-gray-100 py-4 flex-shrink-0 ${isCollapsed ? "lg:px-2" : "px-4"}`}>
+          <div className={`border-t border-gray-100 py-4 flex-shrink-0 ${isCollapsed ? "lg:px-2" : "px-4"} pb-safe`}> 
             <div className="space-y-1">
               {bottomNavigation.map((item) => (
                 <NavigationItem
                   key={item.id}
-                  item={item}
+                  item={{
+                    ...item,
+                    onClick: item.id === "logout" ? handleLogout : item.onClick
+                  }}
                   isCollapsed={isCollapsed}
-                  onItemClick={closeMobileMenu}
+                  onLinkClick={closeMobileMenu}
                 />
               ))}
             </div>
