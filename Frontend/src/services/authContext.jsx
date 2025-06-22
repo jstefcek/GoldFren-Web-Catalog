@@ -22,6 +22,7 @@ export function AuthProvider({ children }) {
           displayName: `${firstname.charAt(0)}. ${surname}`,
           fullName: `${firstname} ${surname}`,
           loggedIn: true,
+          isAdmin: sessionData?.user?.isAdmin || false,
           raw: sessionData
         });
       } catch (err) {
