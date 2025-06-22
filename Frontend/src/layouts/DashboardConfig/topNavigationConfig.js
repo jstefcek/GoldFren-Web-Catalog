@@ -1,6 +1,6 @@
 import { Home, Package, Users, ImportIcon, Car } from "lucide-react";
 
-export const navigationConfig = [
+export const topNavigationConfig = [
   {
     id: "dashboard",
     label: "Přehled webu",

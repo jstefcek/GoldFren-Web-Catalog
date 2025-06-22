@@ -1,7 +1,9 @@
 import { colorThemes } from "./ColorThemes";
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
-const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
+export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const IconComponent = item.icon;
   const theme = colorThemes[item.colorTheme] || colorThemes.default;
@@ -82,7 +84,7 @@ const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
           title={isCollapsed ? item.label : ""}
           className={({ isActive }) => getItemClasses(isActive)}
         >
-          <IconComponent className="h-5 w-5" />
+          {IconComponent && <IconComponent className="h-5 w-5" />}
           {!isCollapsed && <span>{item.label}</span>}
         </NavLink>
       </div>
@@ -102,5 +104,3 @@ const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
     </div>
   );
 };
-
-export default NavigationItem;

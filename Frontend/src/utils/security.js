@@ -10,7 +10,7 @@ export const validateInput = (input, type) => {
     return usernameRegex.test(sanitized) && 
            sanitized.length >= 3 && 
            sanitized.length <= 50 &&
-           !sanitized.includes('..') && // Prevent directory traversal patterns
+           !sanitized.includes('..') &&
            !sanitized.startsWith('.') && 
            !sanitized.endsWith('.');
   }
@@ -19,7 +19,7 @@ export const validateInput = (input, type) => {
     // Enhanced password validation
     return sanitized.length >= 8 && 
            sanitized.length <= 128 &&
-           sanitized === input; // Ensure no trimming affected the password
+           sanitized === input;
   }
   
   return false;

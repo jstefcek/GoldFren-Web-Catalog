@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Menu, X, ChevronRight, ChevronLeft } from "lucide-react";
-import { navigationConfig } from "./DashboardConfig/topNavigationConfig";
+import { topNavigationConfig } from "./DashboardConfig/topNavigationConfig";
 import { NavigationItem} from "./DashboardConfig/NavigationItem";
-import { bottomNavigation } from "./DashboardConfig/bottomNavigation";
+import { bottomNavigationConfig } from "./DashboardConfig/bottomNavigationConfig";
 import { useAuth } from "../services/authContext";
 
 const HeaderDashboard = ({ children }) => {
@@ -73,7 +73,7 @@ const HeaderDashboard = ({ children }) => {
         <nav className="flex flex-col flex-1 min-h-0 overflow-hidden">
           <div className="flex-1 py-4 overflow-y-auto pb-24">
             <div className={`space-y-1 ${isCollapsed ? "lg:px-2" : "px-4"}`}>
-              {navigationConfig.map((item) => (
+              {topNavigationConfig.map((item) => (
                 <NavigationItem
                   key={item.id}
                   item={item}
@@ -85,7 +85,7 @@ const HeaderDashboard = ({ children }) => {
           </div>
           <div className={`border-t border-gray-100 py-4 flex-shrink-0 ${isCollapsed ? "lg:px-2" : "px-4"} pb-safe`}> 
             <div className="space-y-1">
-              {bottomNavigation.map((item) => (
+              {bottomNavigationConfig.map((item) => (
                 <NavigationItem
                   key={item.id}
                   item={{

@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
         // Set user information in the context
         setUserInfo({
           username: username,
-          displayName: `${firstname.charAt(0)}.${surname}`,
+          displayName: `${firstname.charAt(0)}. ${surname}`,
           fullName: `${firstname} ${surname}`,
           loggedIn: true,
           raw: sessionData
