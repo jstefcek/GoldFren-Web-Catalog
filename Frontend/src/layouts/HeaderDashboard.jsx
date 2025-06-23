@@ -15,8 +15,8 @@ const HeaderDashboard = ({ children }) => {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
-  // Handle logout
-  const { logout } = useAuth();
+  // Get user information and logout function
+  const { userInfo, logout } = useAuth();
 
   // Helper to handle logout + mobile menu close
   const handleLogout = () => {
@@ -71,18 +71,27 @@ const HeaderDashboard = ({ children }) => {
         </div>
 
         <nav className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          {/* Top Navigation */}
           <div className="flex-1 py-4 overflow-y-auto pb-24">
             <div className={`space-y-1 ${isCollapsed ? "lg:px-2" : "px-4"}`}>
-              {topNavigationConfig.map((item) => (
-                <NavigationItem
-                  key={item.id}
-                  item={item}
-                  isCollapsed={isCollapsed}
-                  onLinkClick={closeMobileMenu} 
-                />
+              {topNavigationConfig
+                // Filter items based on user permissions
+                .filter((item) => {
+                  if (!item.permissions) return true;
+                  return item.permissions.every((perm) => userInfo?.[perm]);
+                })
+                .map((item) => (
+                  <NavigationItem
+                    key={item.id}
+                    item={item}
+                    isCollapsed={isCollapsed}
+                    onLinkClick={closeMobileMenu}
+                  />
               ))}
             </div>
           </div>
+
+          {/* Bottom Navigation */}
           <div className={`border-t border-gray-100 py-4 flex-shrink-0 ${isCollapsed ? "lg:px-2" : "px-4"} pb-safe`}> 
             <div className="space-y-1">
               {bottomNavigationConfig.map((item) => (

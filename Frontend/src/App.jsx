@@ -118,7 +118,7 @@ function App() {
             <Route path="/admin/dashboard" element={<MainDashboard />} />
             <Route path="/admin/users" element={<NotFound />} />
             <Route path="/admin/import-data" element={<NotFound />} />
-            <Route path="/admin/settings" element={<NotFound />} />
+            <Route path="/admin/manufacturer" element={<NotFound />} />
             <Route path="/account" element={<Account />} />
             <Route path="/admin/edit/*" element={<NotFound />} />
           </Route>

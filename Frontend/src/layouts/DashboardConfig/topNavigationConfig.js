@@ -1,4 +1,6 @@
-import { Home, Package, Users, ImportIcon, Car } from "lucide-react";
+import { Home, Package, Users, 
+  ImportIcon, Car, PackageSearch
+} from "lucide-react";
 
 export const topNavigationConfig = [
   {
@@ -7,6 +9,14 @@ export const topNavigationConfig = [
     icon: Home,
     to: "/admin/dashboard",
     type: "link"
+  },
+  {
+    id: "sortiment-vyrobce",
+    label: "Sortiment pro Výrobce",
+    icon: PackageSearch,
+    type: "link",
+    to: "/admin/manufacturer",
+    permissions: ["isInternal", "isActive"],
   },
   {
     id: "sortiment",

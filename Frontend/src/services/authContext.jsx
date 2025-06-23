@@ -23,6 +23,8 @@ export function AuthProvider({ children }) {
           fullName: `${firstname} ${surname}`,
           loggedIn: true,
           isAdmin: sessionData?.user?.isAdmin || false,
+          isActive: sessionData?.user?.isActive || false,
+          isInternal: sessionData?.user?.isInternal || false,
           raw: sessionData
         });
       } catch (err) {
