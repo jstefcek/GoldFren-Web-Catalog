@@ -200,5 +200,13 @@
     "blocked_button": "Přihlášení blokováno ",
     "server_error": "Chyba serveru. Zkuste to prosím znovu později.",
     "invalid_credentials": "Neplatné přihlašovací údaje. Zkontrolujte své uživatelské jméno a heslo."
+  },
+  "header": {
+    "admin_page": "Administrace webu",
+    "admin_role": "Administrátor",
+    "basic_role": "Zaměstnanec",
+    "my_account": "Můj účet",
+    "logout": "Odhlásit se",
+    "language": "Jazyk"
   }
 }  

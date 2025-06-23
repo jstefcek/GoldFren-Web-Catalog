@@ -190,5 +190,13 @@
     "login_error": "Login failed. Please check your login details.",
     "server_error": "Server Error. Please try again later.",
     "invalid_credentials": "Invalid login details. Check your username and password and try again."
+  },
+  "header": {
+    "admin_page": "Web Administration",
+    "admin_role": "Admin",
+    "basic_role": "Employee",
+    "my_account": "My Account",
+    "logout": "Log Out",
+    "language": "Language"
   }
 }  

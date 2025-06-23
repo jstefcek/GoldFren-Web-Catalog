@@ -348,9 +348,13 @@ function Header() {
                       <li className="px-4 pt-2 font-bold text-xl text-gray-800">
                         {userInfo.fullName}
                       </li>
-                      {userInfo.isAdmin && (
+                      {userInfo.isAdmin ? (
                         <li className="px-4 pb-2 text-xs font-bold text-yellow-700">
-                          Admin
+                          {t("header.admin_role")}
+                        </li>
+                      ) : (
+                        <li className="px-4 pb-2 text-xs font-bold text-sky-700">
+                          {t("header.basic_role")}
                         </li>
                       )}
                       <li>
@@ -366,7 +370,8 @@ function Header() {
                               : "text-gray-700 hover:bg-red-50 hover:text-red-600"
                           }`}
                         >
-                          <MonitorCog className="h-4 w-4 mr-2" /> Administrace Webu
+                          <MonitorCog className="h-4 w-4 mr-2" />{" "}
+                          {t("header.admin_page")}
                         </Link>
                       </li>
                       <li>
@@ -382,7 +387,8 @@ function Header() {
                               : "text-gray-700 hover:bg-red-50 hover:text-red-600"
                           }`}
                         >
-                          <User className="h-4 w-4 mr-2" /> Můj účet
+                          <User className="h-4 w-4 mr-2" />{" "}
+                          {t("header.my_account")}
                         </Link>
                       </li>
                       <li className="border-t border-gray-100">
@@ -390,7 +396,8 @@ function Header() {
                           onClick={handleLogout}
                           className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center hover:bg-red-50 transition cursor-pointer"
                         >
-                          <LogOut className="h-4 w-4 mr-2" /> Odhlásit se
+                          <LogOut className="h-4 w-4 mr-2" />{" "}
+                          {t("header.logout")}
                         </button>
                       </li>
                     </ul>
@@ -507,7 +514,9 @@ function Header() {
                   <div className="pt-6 border-t border-gray-200">
                     <div className="flex items-center mb-3 px-4">
                       <Globe className="h-5 w-5 mr-2 text-gray-500" />
-                      <span className="font-medium text-gray-700">Jazyk</span>
+                      <span className="font-medium text-gray-700">
+                        {t("header.language")}
+                      </span>
                     </div>
                     <div className="space-y-1">
                       {languages.map((lang) => (
@@ -538,10 +547,21 @@ function Header() {
                   {userInfo && (
                     <div className="pt-6 border-t border-gray-200">
                       <div className="flex items-center mb-3 px-4">
-                        <User className="h-5 w-5 mr-2 text-red-600" />
-                        <span className="font-medium text-gray-700">
-                          {userInfo.fullName}
-                        </span>
+                        <User className="h-6 w-6 mr-2 text-red-600" />
+                        <div className="flex flex-col">
+                          <span className="font-bold text-xl text-gray-800">
+                            {userInfo.fullName}
+                          </span>
+                          {userInfo.isAdmin ? (
+                            <span className="text-xs font-bold text-yellow-700">
+                              {t("header.admin_role")}
+                            </span>
+                          ) : (
+                            <span className="text-xs font-bold text-blue-700">
+                              {t("header.basic_role")}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="space-y-1">
                         <Link
@@ -553,7 +573,8 @@ function Header() {
                               : "text-gray-600 hover:text-red-600 hover:bg-red-50"
                           }`}
                         >
-                          <MonitorCog className="h-5 w-5 mr-3" /> Administrace
+                          <MonitorCog className="h-5 w-5 mr-3" />{" "}
+                          {t("header.admin_page")}
                         </Link>
                         <Link
                           to="/account"
@@ -564,13 +585,15 @@ function Header() {
                               : "text-gray-600 hover:text-red-600 hover:bg-red-50"
                           }`}
                         >
-                          <User className="h-5 w-5 mr-3" /> Můj účet
+                          <User className="h-5 w-5 mr-3" />{" "}
+                          {t("header.my_account")}
                         </Link>
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center px-4 py-3 rounded-lg font-medium text-red-600 hover:bg-red-50 transition"
                         >
-                          <LogOut className="h-5 w-5 mr-3" /> Odhlásit se
+                          <LogOut className="h-5 w-5 mr-3" />{" "}
+                          {t("header.logout")}
                         </button>
                       </div>
                     </div>

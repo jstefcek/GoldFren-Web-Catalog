@@ -190,5 +190,13 @@
     "login_error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.",
     "server_error": "Server-Fehler. Bitte versuchen Sie es später noch einmal.",
     "invalid_credentials": "Ungültige Anmeldedaten. Überprüfen Sie Ihren Benutzernamen und Ihr Passwort."
+  },
+  "header": {
+    "admin_page": "Webadministration",
+    "admin_role": "Admin",
+    "basic_role": "Mitarbeiterin",
+    "my_account": "Mein Konto",
+    "logout": "Abmelden",
+    "language": "Sprache"
   }
 }
