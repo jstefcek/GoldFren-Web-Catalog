@@ -189,7 +189,8 @@
     "login_loading": "Logging in...",
     "login_error": "Login failed. Please check your login details.",
     "server_error": "Server Error. Please try again later.",
-    "invalid_credentials": "Invalid login details. Check your username and password and try again."
+    "invalid_credentials": "Invalid login details. Check your username and password and try again.",
+    "session_expired": "Your session has expired. Please log in again."
   },
   "header": {
     "admin_page": "Web Administration",

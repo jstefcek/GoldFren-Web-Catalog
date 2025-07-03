@@ -54,6 +54,7 @@ export class AuthService {
         sessionStorage.setItem("user_logged_in", "true");
         sessionStorage.setItem("access_token", data.access);
         sessionStorage.setItem("session_data", JSON.stringify(data));
+        sessionStorage.setItem("token_expire", data.expire);
 
         // Notify about user login state change
         window.dispatchEvent(new Event("userLoginChange"));

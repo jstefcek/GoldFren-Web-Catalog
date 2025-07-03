@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 // Components
 import LoginForm from "../OtherComponents/LoginForm";
@@ -20,6 +21,16 @@ export default function LoginLayout() {
   const navigate = useNavigate();
   const rateLimiter = useRef(new RateLimiter());
   const formRef = useRef(null);
+  const location = useLocation();
+
+  // Initialize form reference
+  useEffect(() => {
+    if (location.state?.message) {
+      setError(location.state.message);
+      // Clear the message after use
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // Cleanup on unmount
   useEffect(() => {
