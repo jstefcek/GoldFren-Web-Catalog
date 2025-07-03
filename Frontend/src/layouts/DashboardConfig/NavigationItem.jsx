@@ -25,6 +25,7 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
     return isActive ? `${base} ${theme.active} shadow-sm` : `${base} ${theme.text} ${theme.hoverBg} ${theme.hover}`;
   };
 
+  // Handle dropdown items
   if (item.type === "dropdown") {
     return (
       <div className="mb-1">
@@ -75,6 +76,7 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
     );
   }
 
+  // Handle link buttons
   if (item.type === "link") {
     return (
       <div className="mb-1">
