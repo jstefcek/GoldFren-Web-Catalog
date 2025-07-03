@@ -35,12 +35,12 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
           disabled={isCollapsed}
         >
           <div className="flex items-center gap-3">
-            <IconComponent className="h-5 w-5" />
-            {!isCollapsed && <span>{item.label}</span>}
+            <IconComponent className="h-4 w-4" />
+            {!isCollapsed && <span className="text-sm lg:text-sm">{item.label}</span>}
           </div>
           {!isCollapsed && (
             <div className="ml-auto">
-              {isOpen ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+              {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </div>
           )}
         </button>
@@ -62,11 +62,11 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
                 }
               >
                 {subItem.iconPath ? (
-                  <img src={subItem.iconPath} alt="" className="h-5 w-5" />
+                  <img src={subItem.iconPath} alt="" className="h-4 w-4" />
                 ) : (
-                  subItem.icon && <subItem.icon className="h-5 w-5" />
+                  subItem.icon && <subItem.icon className="h-4 w-4" />
                 )}
-                {!isCollapsed && <span>{subItem.label}</span>}
+                {!isCollapsed && <span className="text-sm lg:text-sm">{subItem.label}</span>}
               </NavLink>
             ))}
           </div>
@@ -84,8 +84,8 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
           title={isCollapsed ? item.label : ""}
           className={({ isActive }) => getItemClasses(isActive)}
         >
-          {IconComponent && <IconComponent className="h-5 w-5" />}
-          {!isCollapsed && <span>{item.label}</span>}
+          {IconComponent && <IconComponent className="h-4 w-4" />}
+          {!isCollapsed && <span className="text-sm lg:text-sm">{item.label}</span>}
         </NavLink>
       </div>
     );
@@ -98,8 +98,8 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
         className={`w-full ${getItemClasses(false)}`}
         title={isCollapsed ? item.label : ""}
       >
-        <IconComponent className="h-5 w-5" />
-        {!isCollapsed && <span>{item.label}</span>}
+        <IconComponent className="h-4 w-4" />
+        {!isCollapsed && <span className="text-sm lg:text-sm">{item.label}</span>}
       </button>
     </div>
   );
