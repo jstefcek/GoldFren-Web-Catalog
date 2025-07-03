@@ -16,11 +16,9 @@ import {
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function AccountLayout() {
-  const { userInfo, logout } = useAuth();
-
+  const { userInfo } = useAuth();
   const user = userInfo?.raw?.user || {};
   const accessToken = userInfo?.raw?.access || "";
-
   const [form, setForm] = useState({ current: "", new: "", confirm: "" });
   const [showPasswords, setShowPasswords] = useState({
     current: false,
@@ -37,10 +35,12 @@ export default function AccountLayout() {
     setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
+  // Clear form fields
   const clearForm = () => {
     setForm({ current: "", new: "", confirm: "" });
   };
 
+  // Validate form inputs
   const validateForm = () => {
     if (!form.current.trim()) {
       setMessage({ type: "error", text: "Zadejte aktuální heslo" });
@@ -71,6 +71,7 @@ export default function AccountLayout() {
     return true;
   };
 
+  // Handle password change request
   const handlePassChange = async (oldPassword, newPassword) => {
     setIsLoading(true);
     setMessage({ type: "", text: "" });
@@ -97,7 +98,6 @@ export default function AccountLayout() {
         setMessage({ type: "success", text: "Heslo bylo úspěšně změněno" });
         clearForm();
         setShowConfirmDialog(false);
-        logout(); // Force logout to re-login with new password
       } else {
         setMessage({
           type: "error",
@@ -348,7 +348,7 @@ export default function AccountLayout() {
         </div>
 
         {showConfirmDialog && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-sm">
             <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-lg border border-gray-200">
               <div className="flex items-center gap-3 mb-4">
                 <ShieldCheck className="w-6 h-6 text-yellow-600" />
@@ -371,7 +371,7 @@ export default function AccountLayout() {
                 <button
                   onClick={handleConfirmPasswordChange}
                   disabled={isLoading}
-                  className={`px-4 py-2 rounded-lg font-medium ${
+                  className={`px-4 py-2 rounded-lg font-medium cursor-pointer ${
                     isLoading
                       ? "bg-gray-400 cursor-not-allowed text-white"
                       : "bg-red-700 hover:bg-red-800 text-white"
