@@ -16,7 +16,7 @@ import {
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function AccountLayout() {
-  const { userInfo } = useAuth();
+  const { userInfo, logout } = useAuth();
   const user = userInfo?.raw?.user || {};
   const accessToken = userInfo?.raw?.access || "";
   const [form, setForm] = useState({ current: "", new: "", confirm: "" });
@@ -73,44 +73,53 @@ export default function AccountLayout() {
 
   // Handle password change request
   const handlePassChange = async (oldPassword, newPassword) => {
-    setIsLoading(true);
-    setMessage({ type: "", text: "" });
+  setIsLoading(true);
+  setMessage({ type: "", text: "" });
 
-    try {
-      const response = await fetch(
-        `${serverUrl}/api/goldfren/auth/change_password/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            old_password: oldPassword,
-            new_password: newPassword,
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setMessage({ type: "success", text: "Heslo bylo úspěšně změněno" });
-        clearForm();
-        setShowConfirmDialog(false);
-      } else {
-        setMessage({
-          type: "error",
-          text: result.message || result.error || "Chyba při změně hesla",
-        });
+  try {
+    const response = await fetch(
+      `${serverUrl}/api/goldfren/auth/change_password/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          old_password: oldPassword,
+          new_password: newPassword,
+        }),
       }
-    } catch (error) {
-      console.error("Error changing password:", error);
-      setMessage({ type: "error", text: "Chyba připojení k serveru" });
-    } finally {
-      setIsLoading(false);
+    );
+
+    const result = await response.json();
+
+    if (response.ok) {
+      // Password changed successfully - log out the user
+      setMessage({ type: "success", text: "Heslo bylo úspěšně změněno. Budete přesměrováni na přihlašovací stránku." });
+      
+      // Clear form and close dialog
+      clearForm();
+      setShowConfirmDialog(false);
+      
+      // Log out user after a short delay
+      setTimeout(() => {
+        logout("Heslo bylo úspěšně změněno. Přihlaste se prosím znovu s novým heslem.");
+      }, 2000);
+      
+    } else {
+      setMessage({
+        type: "error",
+        text: result.message || result.error || "Chyba při změně hesla",
+      });
     }
-  };
+  } catch (error) {
+    console.error("Error changing password:", error);
+    setMessage({ type: "error", text: "Chyba připojení k serveru" });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleSubmit = (e) => {
     e.preventDefault();

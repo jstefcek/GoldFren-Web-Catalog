@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
       logout(t("login_screen.session_expired"));
     } else {
       logoutTimerRef.current = setTimeout(() => {
-        logout();
+        logout(t("login_screen.session_expired"));
       }, delay);
     }
   };
