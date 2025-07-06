@@ -55,7 +55,12 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
                 key={idx}
                 to={subItem.to}
                 title={isCollapsed ? subItem.label : ""}
-                onClick={onLinkClick}
+                onClick={() => {
+                  // Prevent closing menu if just expanding dropdown
+                  if (onLinkClick && subItem.to) {
+                    onLinkClick();
+                  }
+                }}
                 className={({ isActive }) =>
                   `flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
                     isActive ? `${theme.active} shadow-sm` : `${theme.text} ${theme.hoverBg} ${theme.hover}`

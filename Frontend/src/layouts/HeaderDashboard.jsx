@@ -92,7 +92,7 @@ const HeaderDashboard = ({ children }) => {
           </div>
 
           {/* Bottom Navigation */}
-          <div className={`border-t border-gray-100 py-4 flex-shrink-0 ${isCollapsed ? "lg:px-2" : "px-4"} pb-safe`}> 
+          <div className={`border-t border-gray-100 py-4 flex-shrink-0 ${isCollapsed ? "lg:px-2" : "px-4"} pb-[env(safe-area-inset-bottom)]`}> 
             <div className="space-y-1">
               {bottomNavigationConfig.map((item) => (
                 <NavigationItem
