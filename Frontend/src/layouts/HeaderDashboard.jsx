@@ -101,7 +101,7 @@ const HeaderDashboard = ({ children }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto flex flex-col justify-between pb-[env(safe-area-inset-bottom)]">
+        <nav className="flex-1 overflow-y-auto flex flex-col justify-between">
           {/* Top Navigation */}
           <div className="py-4">
             <div className={`space-y-1 ${isCollapsed ? "lg:px-2" : "px-4"}`}>
@@ -123,7 +123,7 @@ const HeaderDashboard = ({ children }) => {
 
           {/* Bottom Navigation */}
           <div
-            className={`border-t border-gray-100 py-4 ${
+            className={`border-t border-gray-100 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] ${
               isCollapsed ? "lg:px-2" : "px-4"
             }`}
           >
