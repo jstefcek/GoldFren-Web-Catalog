@@ -64,6 +64,7 @@ const HeaderDashboard = ({ children }) => {
         fixed lg:relative inset-y-0 left-0 z-50 min-h-[100svh]
         bg-white border-r border-gray-200 shadow-lg
         transform transition-all duration-300 ease-in-out flex flex-col
+        pb-[env(safe-area-inset-bottom)]
         ${
           isMobileMenuOpen
             ? "translate-x-0 w-64"
@@ -101,7 +102,7 @@ const HeaderDashboard = ({ children }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto flex flex-col justify-between">
+        <nav className="flex-1 overflow-y-auto flex flex-col justify-between" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
           {/* Top Navigation */}
           <div className="py-4">
             <div className={`space-y-1 ${isCollapsed ? "lg:px-2" : "px-4"}`}>
@@ -123,7 +124,7 @@ const HeaderDashboard = ({ children }) => {
 
           {/* Bottom Navigation */}
           <div
-            className={`border-t border-gray-100 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] ${
+            className={`border-t border-gray-100 py-6 ${
               isCollapsed ? "lg:px-2" : "px-4"
             }`}
           >
