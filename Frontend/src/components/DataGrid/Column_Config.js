@@ -52,7 +52,7 @@ export const columnsConfig = {
     {key: "material_text", label: "datagrid.material_text", sortable: true, filterable: true,},
     {key: "oem_cisla", label: "datagrid.oem_cisla", sortable: true, filterable: true, maxRows: 3, useTruncation: true,},
     {key: "konkurence_sbs", label: "SBS", sortable: true, filterable: true,},
-    {key: "konkurence_ebs", label: "EBS", sortable: true, filterable: true,},
+    {key: "konkurence_ebc", label: "EBC", sortable: true, filterable: true,},
     {key: "konkurence_ferodo", label: "Ferodo", sortable: true, filterable: true,},
     {key: "konkurence_a2z", label: "A2Z", sortable: true, filterable: true,},
     {key: "konkurence_rapco", label: "Rapco", sortable: true, filterable: true,},

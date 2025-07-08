@@ -243,7 +243,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
                     >
                       <td className="px-6 py-3 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900 capitalize">
-                          {brand}
+                          {brand.toUpperCase()}
                         </div>
                       </td>
                       <td className="px-6 py-3 whitespace-nowrap">
