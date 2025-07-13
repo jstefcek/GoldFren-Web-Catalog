@@ -37,7 +37,6 @@ export const filterConfigs = {
       label: "search.year_manufactured",
       placeholder: "search.year_manufactured_placeholder",
       type: "select",
-      optional: true,
       dependsOn: "model",
       dependsOnShow: true,
       getDataAPI: "/api/goldfren/internal/vozidla/filter",

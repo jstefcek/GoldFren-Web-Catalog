@@ -418,7 +418,7 @@ export const dataTransformers = {
           obchodni_nazev: item.obchodni_nazev,
           // Konurence
           konkurence_sbs: item.konkurence_sbs,
-          konkurence_ebs: item.konkurence_ebs,
+          konkurence_ebc: item.konkurence_ebc,
           konkurence_ferodo: item.konkurence_ferodo,
           konkurence_a2z: item.konkurence_a2z,
           konkurence_rapco: item.konkurence_rapco,

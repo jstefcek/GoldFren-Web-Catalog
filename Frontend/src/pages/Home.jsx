@@ -23,7 +23,7 @@ function Home() {
   // Check if search is complete
   const isSearchComplete = (data) => {
     setSearchData(data);
-    setIsDataReady(false); // Reset before new load
+    setIsDataReady(false);
     console.log("Data is:", data);
   };
 
@@ -80,6 +80,20 @@ function Home() {
     });
   }, [isDataReady]);
 
+  // Helper to flatten filter values for API
+  const flattenFilters = (filters) => {
+    if (!filters) return {};
+    const result = {};
+    for (const [key, val] of Object.entries(filters)) {
+      if (val && typeof val === "object" && "value" in val) {
+        result[key] = val.value;
+      } else {
+        result[key] = val;
+      }
+    }
+    return result;
+  };
+
   return (
     <div className="container mx-auto">
       <h1 className="text-3xl font-bold mb-8 text-center mt-8">{t('searchTitle')}</h1>
@@ -92,9 +106,14 @@ function Home() {
           <div>
             {/* Vehicel title */}
             {isDataReady && (
+              <div>
               <h2 ref={vehicleTitleRef} className="text-3xl font-bold mt-4 text-left ml-4 mr-4">
-                {searchData.filters.model}
+                {searchData.filters.vyrobce?.label || searchData.filters.vyrobce} {searchData.filters.model?.label || searchData.filters.model}
               </h2>
+                <p className="font-light text-sm text-left ml-4 mr-4">
+                  {searchData.filters.year?.label || searchData.filters.year}
+                </p>
+              </div>
             )}
 
             {/* Show sortiment data */}
@@ -129,7 +148,7 @@ function Home() {
               category={searchData.page_category}
               apiCategory={searchData.category}
               apiUrl={serverUrl + searchData.api}
-              filters={searchData.filters}
+              filters={flattenFilters(searchData.filters)}
             />
           </div>
         )

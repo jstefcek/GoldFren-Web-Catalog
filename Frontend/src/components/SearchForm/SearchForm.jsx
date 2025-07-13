@@ -152,16 +152,15 @@ export default function CategorySearch({ isSearchComplete }) {
     // If everything is valid, proceed with the search and reset missing fields
     setMissingFields([]);
 
-    // Check for vozidlo_kod
-    const vozidloKod = formState.vozidlo_kod || null;
-    
     // Is search is complete return the results
     if (isSearchComplete) {
       if (categoryType === "vehicle") {
         isSearchComplete({
           category: selectedCat,
           type: "vehicle",
-          vozidlo_kod: vozidloKod,
+          vozidlo_kod: formState.vozidlo_kod || null,
+          vyrobce_name: formState.vyrobce?.label || null,
+          vyrobce: formState.vyrobce,
           api: currentCategory.api || null,
           filters: { ...formState },
         });
@@ -267,10 +266,12 @@ export default function CategorySearch({ isSearchComplete }) {
           }
           switch (type) {
             case "select":
+              // Default for other selects
               return (
                 <CustomSelect
                   key={name}
                   {...commonProps}
+                  value={formState[name] || ""}
                   options={options}
                   getDataAPI={getDataAPI}
                   getDataAPI_params={getDataAPI_params}

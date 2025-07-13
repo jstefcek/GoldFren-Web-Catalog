@@ -63,7 +63,7 @@ export const CustomSelect = ({
     onChange({ 
       target: { 
         name,
-        value: val,
+        value: selectedOption,
         vozidlo_kod: selectedOption?.vozidlo_kod 
       }
     });
@@ -90,7 +90,13 @@ export const CustomSelect = ({
     if (!getDataAPI) return;
 
     try {
-      const params = getDataAPI_params.map((key) => formState[key] ?? "");
+      const params = getDataAPI_params.map((key) => {
+        const val = formState[key];
+        if (val && typeof val === "object" && val.value !== undefined) {
+          return val.value;
+        }
+        return val ?? "";
+      });
       const transformed = await fetchAPI(
         getDataAPI,
         getDataAPI_params,
@@ -148,7 +154,9 @@ export const CustomSelect = ({
         } ${disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""} text-sm md:text-base`}
         disabled={disabled}
       >
-        {allOptions.find(opt => opt.value === value)?.label || i18next.t(placeholder)}
+        {typeof value === "object" && value !== null
+          ? value.label
+          : allOptions.find(opt => opt.value === value)?.label || i18next.t(placeholder)}
         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
       </button>
 
@@ -178,7 +186,11 @@ export const CustomSelect = ({
                   key={option.value}
                   onClick={() => handleSelect(option.value)}
                   className={`px-3 py-2 cursor-pointer hover:bg-red-100 ${
-                    option === value ? "bg-red-50 font-medium" : ""
+                    // FIX: Compare by value if value is object, else primitive
+                    (typeof value === "object" && value?.value === option.value) ||
+                    value === option.value
+                      ? "bg-red-50 font-medium"
+                      : ""
                   }`}
                 >
                   {option.label}
