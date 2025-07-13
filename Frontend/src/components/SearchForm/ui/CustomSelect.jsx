@@ -1,7 +1,19 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import i18next from 'i18next';
 import { fetchAPI } from "../../../hooks/SearchForm_APIHook";
+
+// Deduplicate by label with case-insensitive
+const useUniqueByLabel = (options) =>
+  useMemo(() => {
+    const seen = new Set();
+    return options.filter(({ label = "" }) => {
+      const key = label.toLowerCase().trim();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [options]);
 
 export const CustomSelect = ({
   label,
@@ -25,12 +37,15 @@ export const CustomSelect = ({
   const wrapperRef = useRef(null);
   const buttonRef = useRef(null);
 
-  // Filter options based on search term
-  const allOptions = getDataAPI
+  // Map options to standard format
+  const allOptionsRaw = getDataAPI
     ? dynamicOptions
     : options.map((opt) =>
         typeof opt === "object" ? opt : { value: opt, label: opt }
       );
+
+  // Deduplicate by label
+  const allOptions = useUniqueByLabel(allOptionsRaw);
 
   // Filter options by search
   const filteredOptions = allOptions.filter((o) =>
@@ -73,7 +88,7 @@ export const CustomSelect = ({
     setSearchTerm("");
   };
 
-  // Prepare static options
+  // Prepare static options on mount
   useEffect(() => {
     if (!getDataAPI && options.length > 0) {
       setDynamicOptions(
