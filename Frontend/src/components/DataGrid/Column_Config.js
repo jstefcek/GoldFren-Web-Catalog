@@ -255,4 +255,16 @@ export const columnsConfig = {
     {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
   ],
 
+  // Home page search column config - adaptery vozidla
+  adaptery_home: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true },
+    {key: "typ_adapter", label: "datagrid.type", sortable: true, filterable: true },
+    {key: "prumer",label: "datagrid.diameter", sortable: true, filterable: true },
+    {key: "typ_uchyceni", label: "datagrid.attached_type", sortable: true, filterable: true },
+    {key: "roztec_brzdice", label: "datagrid.brakepad_spacing", sortable: true, filterable: true },
+  ],
+
 };
