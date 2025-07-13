@@ -261,12 +261,9 @@ export default function CategorySearch({ isSearchComplete }) {
             dependsOnShow,
           };
 
-          {
-            /* FILTER FORM - Select component */
-          }
+          {/* FILTER FORM - Select component */}
           switch (type) {
             case "select":
-              // Default for other selects
               return (
                 <CustomSelect
                   key={name}

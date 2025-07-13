@@ -246,4 +246,13 @@ export const columnsConfig = {
     {key: "tloustka", label: "datagrid.thickness", sortable: true, filterable: true,},
   ],
 
+  // Home page search column config - hadicky vozidla
+  hadicky_home: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+  ],
+
 };

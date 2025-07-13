@@ -155,6 +155,7 @@ export const filterConfigs = {
       getDataAPI: "/api/goldfren/internal/vozidla/filter",
       getDataAPI_params: ["kategorie_kod", "vyrobce" ]
     },
+    /*
     {
       name: "year",
       label: "search.year_manufactured",
@@ -165,7 +166,7 @@ export const filterConfigs = {
       dependsOnShow: true,
       getDataAPI: "/api/goldfren/internal/vozidla/filter",
       getDataAPI_params: ["kategorie_kod", "vyrobce", "model" ]
-    },
+    }, */
   ],
   plane: [
     {
