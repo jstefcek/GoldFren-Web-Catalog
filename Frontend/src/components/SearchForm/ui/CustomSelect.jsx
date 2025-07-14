@@ -196,7 +196,7 @@ export const CustomSelect = ({
           className="absolute z-50 w-full bg-white border rounded-lg shadow-xl overflow-hidden text-sm md:text-base"
           style={{ top: dropdownTop }}
         >
-          <ul className="max-h-48 overflow-auto">
+          <ul className="max-h-70 overflow-auto">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <li
