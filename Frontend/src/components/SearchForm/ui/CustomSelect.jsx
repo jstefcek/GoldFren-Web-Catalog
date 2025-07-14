@@ -28,6 +28,7 @@ export const CustomSelect = ({
   getDataAPI_params = [],
   formState = {},
   selectedCat = null,
+  resetSignal = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -129,6 +130,16 @@ export const CustomSelect = ({
     setDynamicOptions([]);
     setLoadedKey("");
   }, [selectedCat]);
+
+  // Reset when resetSignal changes - dependent fields are reset
+  useEffect(() => {
+    if (resetSignal !== undefined) {
+      setDynamicOptions([]);
+      setLoadedKey("");
+      setSearchTerm("");
+      setOpen(false);
+    }
+  }, [resetSignal]);
 
   // Fetch options on open
   useEffect(() => {

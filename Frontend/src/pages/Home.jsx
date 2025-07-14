@@ -101,6 +101,7 @@ function Home() {
       {/* Search form component */}
       <SearchForm isSearchComplete={isSearchComplete} />
 
+      {/* Show search results when search is complete */}
       {searchData && (
         searchData.type === "vehicle" && searchData.vozidlo_kod ? (
           <div>

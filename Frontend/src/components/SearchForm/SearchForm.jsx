@@ -48,7 +48,42 @@ export default function CategorySearch({ isSearchComplete }) {
     [formState]
   );
 
-  // Set defualt value if the range slider is initialize
+  // Function to reset dependent fields
+  const resetDependentFields = React.useCallback(
+    (fieldName) => {
+      setFormState((prev) => {
+        const newState = { ...prev }; 
+        let shouldReset = false;
+        
+        fields.forEach((field) => {
+          // Start resetting once we've passed the changed field
+          if (field.name === fieldName) {
+            shouldReset = true;
+            return; 
+          }
+          
+          // Reset all subsequent fields that are part of the dependency chain
+          if (shouldReset && field.dependsOn) {
+            // For range sliders, reset both min and max values
+            if (field.type === "range-slider") {
+              delete newState[`${field.name}_min`];
+              delete newState[`${field.name}_max`];
+            } else {
+              delete newState[field.name];
+            }
+          }
+        });
+        
+        return newState;
+      });
+      
+      // Force reset signal to trigger re-render of dependent CustomSelect components
+      setResetSignal(prev => !prev);
+    },
+    [fields]
+  );
+
+  // Set default value if the range slider is initialized
   useEffect(() => {
     const initialRangeValues = {};
     
@@ -78,20 +113,32 @@ export default function CategorySearch({ isSearchComplete }) {
     }
   }, [selectedCat, fields, formState, shouldShowField]);
 
-  // Handle input changes
-  const handleChange = (name) => (e) =>
+  // Enhanced handle input changes with dependent field reset
+  const handleChange = (name) => (e) => {
+    const newValue = e.target.value;
+    const vozidloKod = e.target.vozidlo_kod;
+
+    // Reset dependent fields when this field changes
+    resetDependentFields(name);
+
     setFormState((prev) => ({
       ...prev,
-      [name]: e.target.value,
-      ...(e.target.vozidlo_kod && { ["vozidlo_kod"]: e.target.vozidlo_kod }),
+      [name]: newValue,
+      ...(vozidloKod && { ["vozidlo_kod"]: vozidloKod }),
     }));
+
+    // Clear missing fields when user starts typing/selecting
+    if (missingFields.length > 0) {
+      setMissingFields([]);
+    }
+  };
 
   // Handle reset button click
   const handleReset = () => {
     setFormState({});
     setResetSignal(!resetSignal);
     setMissingFields([]);
-    isSearchComplete(null)
+    isSearchComplete(null);
   };
 
   // Handle form submission and validate required fields
@@ -266,7 +313,7 @@ export default function CategorySearch({ isSearchComplete }) {
             case "select":
               return (
                 <CustomSelect
-                  key={name}
+                  key={`${name}-${resetSignal}`}
                   {...commonProps}
                   value={formState[name] || ""}
                   options={options}
@@ -274,6 +321,7 @@ export default function CategorySearch({ isSearchComplete }) {
                   getDataAPI_params={getDataAPI_params}
                   formState={formState}
                   selectedCat={selectedCat}
+                  resetSignal={resetSignal}
                 />
               );
 
