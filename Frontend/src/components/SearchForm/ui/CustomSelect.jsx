@@ -35,8 +35,10 @@ export const CustomSelect = ({
   const [dropdownTop, setDropdownTop] = useState(0);
   const [dynamicOptions, setDynamicOptions] = useState([]);
   const [loadedKey, setLoadedKey] = useState("");
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const wrapperRef = useRef(null);
   const buttonRef = useRef(null);
+  const inputRef = useRef(null);
 
   // Map options to standard format
   const allOptionsRaw = getDataAPI
@@ -59,6 +61,7 @@ export const CustomSelect = ({
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
         setOpen(false);
         setSearchTerm("");
+        setFocusedIndex(-1);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -72,6 +75,49 @@ export const CustomSelect = ({
       setDropdownTop(rect.height + 32);
     }
   }, [open]);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!open) return;
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setFocusedIndex(prev => 
+            prev < filteredOptions.length - 1 ? prev + 1 : 0
+          );
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setFocusedIndex(prev => 
+            prev > 0 ? prev - 1 : filteredOptions.length - 1
+          );
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (focusedIndex >= 0 && filteredOptions[focusedIndex]) {
+            handleSelect(filteredOptions[focusedIndex].value);
+          }
+          break;
+        case 'Escape':
+          e.preventDefault();
+          setOpen(false);
+          setSearchTerm("");
+          setFocusedIndex(-1);
+          inputRef.current?.blur();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, focusedIndex, filteredOptions]);
+
+  // Reset focused index when search changes
+  useEffect(() => {
+    setFocusedIndex(-1);
+  }, [searchTerm]);
 
   // Handle selection
   const handleSelect = (val) => {
@@ -87,6 +133,7 @@ export const CustomSelect = ({
 
     setOpen(false);
     setSearchTerm("");
+    setFocusedIndex(-1);
   };
 
   // Prepare static options on mount
@@ -138,6 +185,7 @@ export const CustomSelect = ({
       setLoadedKey("");
       setSearchTerm("");
       setOpen(false);
+      setFocusedIndex(-1);
     }
   }, [resetSignal]);
 
@@ -168,8 +216,9 @@ export const CustomSelect = ({
       {/* Input field with search */}
       <div className="relative" ref={buttonRef}>
         <input
+          ref={inputRef}
           type="text"
-          className={`w-full border rounded-lg px-3 py-2 pr-10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm md:text-base ${
+          className={`w-full border rounded-lg px-3 py-2 pr-10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm md:text-base transition-all duration-200 ${
             disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""
           } ${value ? "text-black" : "text-gray-700"}`}
           placeholder={i18next.t(placeholder)}
@@ -184,9 +233,11 @@ export const CustomSelect = ({
           disabled={disabled}
         />
         {open ? (
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none transition-all duration-200" />
         ) : (
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+          <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none transition-all duration-200 ${
+            open ? 'rotate-180' : ''
+          }`} />
         )}
       </div>
 
@@ -198,20 +249,26 @@ export const CustomSelect = ({
         >
           <ul className="max-h-70 overflow-auto">
             {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
-                <li
-                  key={option.value}
-                  onClick={() => handleSelect(option.value)}
-                  className={`px-3 py-2 cursor-pointer hover:bg-red-100 ${
-                    (typeof value === "object" && value?.value === option.value) ||
-                    value === option.value
-                      ? "bg-red-50 font-medium"
-                      : ""
-                  }`}
-                >
-                  {option.label}
-                </li>
-              ))
+              filteredOptions.map((option, index) => {
+                const isSelected = (typeof value === "object" && value?.value === option.value) || value === option.value;
+                const isFocused = index === focusedIndex;
+                
+                return (
+                  <li
+                    key={option.value}
+                    onClick={() => handleSelect(option.value)}
+                    className={`px-3 py-2 cursor-pointer transition-all duration-150 ease-in-out ${
+                      isSelected
+                        ? "bg-red-50 text-red-700 font-semibold border-l-4 border-red-700"
+                        : isFocused
+                        ? "bg-red-50 text-red-700"
+                        : "hover:bg-red-50 hover:text-red-700"
+                    }`}
+                  >
+                    {option.label}
+                  </li>
+                );
+              })
             ) : (
               <li className="px-3 py-2 text-gray-500">{i18next.t("not_found")}</li>
             )}
