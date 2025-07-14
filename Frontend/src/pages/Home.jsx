@@ -1,8 +1,9 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import SearchForm from '../components/SearchForm/SearchForm';
 import { useTranslation } from 'react-i18next';
 import DataGrid from '../components/DataGrid/DataGrid';
 import { useCategoryResults } from "../hooks/Categories_APIHook";
+import { trackVehicleSearch, trackSortimentSearch } from '../utils/GoogleAnalytics';
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -24,8 +25,26 @@ function Home() {
   const isSearchComplete = (data) => {
     setSearchData(data);
     setIsDataReady(false);
-    console.log("Data is:", data);
-  };
+
+    // Check if the data is for vehicle search or sortiment search
+    if (data?.type === "vehicle") {
+      // Extract vehicle search parameters
+      const vyrobce = data.filters?.vyrobce?.label;
+      const objem = data.filters?.objem?.label;
+      const model = data.filters?.model?.label;
+      const rok_vyroby = data.filters?.year?.label;
+
+      // Track vehicle search event
+      trackVehicleSearch({ vyrobce, objem, model, rok_vyroby });
+    }
+    else {
+      // For sortiment search, extract category
+      const category = data.page_category;
+      
+      // Track sortiment search event
+      trackSortimentSearch({ category });
+    }
+};
 
   // Transform sortiment data to include full image URLs
   const transformedSortimentData = useMemo(() => {

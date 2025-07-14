@@ -17,3 +17,20 @@ export function GAnalytics() {
 
   return null;
 }
+
+// Track vehicle search data
+export function trackVehicleSearch({ vyrobce, objem, model, rok_vyroby }) {
+  ReactGA.event("vehicle_search", {
+    vyrobce,
+    objem,
+    model,
+    rok_vyroby,
+  });
+}
+
+// Track sortiment search data
+export function trackSortimentSearch({ category}) {
+  ReactGA.event("sortiment_search", {
+    category,
+  });
+}
