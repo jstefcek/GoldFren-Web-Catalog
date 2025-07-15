@@ -89,7 +89,7 @@
     "disc": {
       "title": "Nalezené brzdové kotouče GOLDfren",
       "outside_diameter": "Vnější průměr kotouče [mm]",
-      "pitch_diameter": "Roztečný průměr kotouče [mm]",
+      "pitch_diameter": "Roztečný děr kotouče [mm]",
       "inner_diameter": "Vnitřní průměr kotouče [mm]",
       "thickness": "Tloušťka kotouče [mm]",
       "type": "Typ kotouče",

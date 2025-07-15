@@ -26,6 +26,9 @@ function Home() {
     setSearchData(data);
     setIsDataReady(false);
 
+    // If no data is provided, return early
+    if (!data) return;
+
     // Check if the data is for vehicle search or sortiment search
     if (data?.type === "vehicle") {
       // Extract vehicle search parameters
