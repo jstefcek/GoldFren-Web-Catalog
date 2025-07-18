@@ -25,13 +25,13 @@ export const topNavigationConfig = [
     type: "dropdown",
     permissions: ["isInternal", "isActive"],
     items: [
-      { label: "Adaptéry", to: "/admin/edit/adaptery", iconPath: "/icons/adapter.svg" },
-      { label: "Brzdiče", to: "/admin/edit/brzdice", iconPath: "/icons/caliper.svg" },
-      { label: "Destičky", to: "/admin/edit/desticky", iconPath: "/icons/pad.svg" },
-      { label: "Kotouče", to: "/admin/edit/kotouce", iconPath: "/icons/disc.svg" },
-      { label: "Hadičky", to: "/admin/edit/hadicky", icon: Package },
-      { label: "Pumpy", to: "/admin/edit/pumpy", icon: Package },
-      { label: "Příslušenství", to: "/admin/edit/prislusenstvi", icon: Package }
+      { label: "Adaptéry", to: "/admin/sortiment/adaptery", iconPath: "/icons/adapter.svg" },
+      { label: "Brzdiče", to: "/admin/sortiment/brzdice", iconPath: "/icons/caliper.svg" },
+      { label: "Destičky", to: "/admin/sortiment/desticky", iconPath: "/icons/pad.svg" },
+      { label: "Kotouče", to: "/admin/sortiment/kotouce", iconPath: "/icons/disc.svg" },
+      { label: "Hadičky", to: "/admin/sortiment/hadicky", icon: Package },
+      { label: "Pumpy", to: "/admin/sortiment/pumpy", icon: Package },
+      { label: "Příslušenství", to: "/admin/sortiment/prislusenstvi", icon: Package }
     ]
   },
   {
@@ -41,12 +41,12 @@ export const topNavigationConfig = [
     type: "dropdown",
     permissions: ["isInternal", "isActive"],
     items: [
-      { label: "Automobily", to: "/admin/edit/automobily", iconPath: "/icons/car.svg" },
-      { label: "Motorcykly", to: "/admin/edit/motorcykly", iconPath: "/icons/motorbike.svg" },
-      { label: "Motokáry", to: "/admin/edit/motokary", iconPath: "/icons/kart.svg" },
-      { label: "Jizndní kola", to: "/admin/edit/kola", iconPath: "/icons/bike.svg" },
-      { label: "Letadla", to: "/admin/edit/letadla", iconPath: "/icons/plane.svg" },
-      { label: "Průmysl", to: "/admin/edit/prumysl", iconPath: "/icons/industry.svg" }
+      { label: "Automobily", to: "/admin/vehicles/automobily", iconPath: "/icons/car.svg" },
+      { label: "Motorcykly", to: "/admin/vehicles/motorcykly", iconPath: "/icons/motorbike.svg" },
+      { label: "Motokáry", to: "/admin/vehicles/motokary", iconPath: "/icons/kart.svg" },
+      { label: "Jizndní kola", to: "/admin/vehicles/kola", iconPath: "/icons/bike.svg" },
+      { label: "Letadla", to: "/admin/vehicles/letadla", iconPath: "/icons/plane.svg" },
+      { label: "Průmysl", to: "/admin/vehicles/prumysl", iconPath: "/icons/industry.svg" }
     ]
   },
   {

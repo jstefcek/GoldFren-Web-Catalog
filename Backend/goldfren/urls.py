@@ -10,7 +10,7 @@ from GoldFrenAPI.Authentication.Auth_View import (
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('django-admin/', admin.site.urls),
     path('api/goldfren/internal/', include('GoldFrenAPI.urls')),
     path('api/auth/token/', Login_View.as_view(), name='token_obtain_pair'),
     path('api/goldfren/auth/register/', Register_User, name='Register_User'),

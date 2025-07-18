@@ -115,12 +115,24 @@ function App() {
 
           {/* Admin routes with dashboard header */}
           <Route element={<AdminLayout />}>
+            {/* Main Dashboard with statistics */}
             <Route path="/admin/dashboard" element={<MainDashboard />} />
+
+            {/* User Managment Section */}
             <Route path="/admin/users" element={<NotFound />} />
+
+            {/* Batch Import Data Section */}
             <Route path="/admin/import-data" element={<NotFound />} />
+
+            {/* Manufacturer Management Section */}
             <Route path="/admin/manufacturer" element={<NotFound />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/admin/edit/*" element={<NotFound />} />
+            
+            {/* Sortiment & Vehicle Manage Sections */}
+            <Route path="/admin/sortiment/*" element={<NotFound />} />
+            <Route path="/admin/vehicles/*" element={<NotFound />} />
+
+            {/* Account Management Section */}
+            <Route path="/admin/account" element={<Account />} />
           </Route>
         </Routes>
       </AuthProvider>
