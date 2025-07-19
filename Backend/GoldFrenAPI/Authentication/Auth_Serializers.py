@@ -115,3 +115,20 @@ class ChangePasswordSerializer(serializers.Serializer):
         user.set_password(self.validated_data['new_password'])
         user.save()
         return user
+    
+# Custom serializer to return user details for admin dashboard
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Returns user details including groups and validity status for display in admin dashboard
+    """
+    groups = serializers.SlugRelatedField(
+        many=True, slug_field='name', read_only=True
+    )
+    is_valid = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'groups', 'is_valid', 'date_joined', 'last_login']
+
+    def get_is_valid(self, obj):
+        return obj.is_active

@@ -100,7 +100,7 @@ export class AuthService {
       const headers = this.createHeaders(credentials);
 
       // Make the API request
-      const response = await fetch(`${serverUrl}/api/auth/token/`, {
+      const response = await fetch(`${serverUrl}/api/goldfren/internal/auth/`, {
         method: "POST",
         headers,
         signal: this.abortController.signal,

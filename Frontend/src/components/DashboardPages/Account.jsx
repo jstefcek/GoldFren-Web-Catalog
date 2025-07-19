@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../../services/authContext"; // Adjust this path to your setup
+import { useAuth } from "../../services/authContext";
 import {
   ShieldCheck,
   Mail,
@@ -78,7 +78,7 @@ export default function AccountLayout() {
 
   try {
     const response = await fetch(
-      `${serverUrl}/api/goldfren/auth/change_password/`,
+      `${serverUrl}/api/goldfren/internal/users/change_password/`,
       {
         method: "POST",
         headers: {

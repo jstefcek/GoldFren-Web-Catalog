@@ -12,4 +12,6 @@ urlpatterns = [
     path("pumpy/", include("GoldFrenAPI.Endpoints.Pumpy_Endpoint")),
     path("prislusenstvi/", include("GoldFrenAPI.Endpoints.Prislusenstvi_Endpoint")),
     path("vozidla/", include("GoldFrenAPI.Endpoints.Vozidla_Endpoint")),
+    path("users/", include("GoldFrenAPI.Endpoints.User_Endpoint")),
+    path("auth/", include("GoldFrenAPI.Endpoints.Auth_Endpoint")),
 ]

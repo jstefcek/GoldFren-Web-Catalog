@@ -8,6 +8,8 @@ from rest_framework import status
 from .Auth_Serializers import GroupBasedTokenObtainPairSerializer, RegisterUserSerializer, ChangePasswordSerializer
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
+from GoldFrenAPI.Authentication.Auth_Serializers import UserSerializer
+from django.contrib.auth.models import User
 
 class Login_View(TokenObtainPairView):
     serializer_class = GroupBasedTokenObtainPairSerializer
@@ -79,3 +81,14 @@ def change_user_password(request):
         return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser, IsAuthenticated])
+def get_users(request):
+    """
+    Returns a list of all users with their details for admin dashboard.
+    """
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
