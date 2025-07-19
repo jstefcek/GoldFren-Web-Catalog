@@ -165,7 +165,17 @@
     "inside_diameter": "Inner diameter [mm]",
     "thickness": "Thickness [mm]",
     "note": "Note",
-    "all_entries": "Searched items"
+    "all_entries": "Searched items",
+    "user": {
+      "username": "Username",
+      "email": "E-mail",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "is_valid": "Account Status",
+      "is_staff": "Administrator",
+      "date_joined": "Created",
+      "last_login": "Last Login"
+    }
   },
   "contact": {
     "czech_republic": "Czech Republic",
@@ -190,7 +200,9 @@
     "login_error": "Login failed. Please check your login details.",
     "server_error": "Server Error. Please try again later.",
     "invalid_credentials": "Invalid login details. Check your username and password and try again.",
-    "session_expired": "Your session has expired. Please log in again."
+    "session_expired": "Your session has expired. Please log in again.",
+    "invalid_username": "Invalid username. Please check your username and try again.",
+    "invalid_password": "Invalid password. Please check your password and try again."
   },
   "header": {
     "admin_page": "Web Administration",

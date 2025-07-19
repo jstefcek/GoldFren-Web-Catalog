@@ -165,7 +165,17 @@
     "inside_diameter": "Innendurchmesser [mm]",
     "thickness": "Dicke [mm]",
     "note": "Hinweis",
-    "all_entries": "Gesuchte Artikel"
+    "all_entries": "Gesuchte Artikel",
+    "user": {
+      "username": "Uživatelské jméno",
+      "email": "E-mail",
+      "first_name": "Jméno",
+      "last_name": "Příjmení",
+      "is_valid": "Status účtu",
+      "is_staff": "Administrátor",
+      "date_joined": "Vytvořeno",
+      "last_login": "Poslední přihlášení"
+    }
   },
   "contact": {
     "czech_republic": "Tschechische Republik",
@@ -190,7 +200,9 @@
     "login_error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.",
     "server_error": "Server-Fehler. Bitte versuchen Sie es später noch einmal.",
     "invalid_credentials": "Ungültige Anmeldedaten. Überprüfen Sie Ihren Benutzernamen und Ihr Passwort.",
-    "session_expired": "Ihre Sitzung ist beendet. Bitte melden Sie sich erneut an."
+    "session_expired": "Ihre Sitzung ist beendet. Bitte melden Sie sich erneut an.",
+    "invalid_username": "Ungültiger Benutzername. Überprüfen Sie Ihren Benutzernamen und versuchen Sie es erneut.",
+    "invalid_password": "Ungültiges Passwort. Überprüfen Sie Ihr Passwort."
   },
   "header": {
     "admin_page": "Webadministration",
