@@ -64,6 +64,10 @@ class GroupBasedTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['lifetime_seconds'] = lifetime_seconds
         token['group'] = group
         
+        # Update last login time
+        user.last_login = timezone.now()
+        user.save(update_fields=['last_login'])
+        
         # Return updated token
         return token
 
@@ -128,7 +132,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'groups', 'is_valid', 'date_joined', 'last_login']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'is_staff', 'groups', 'is_valid', 'date_joined', 'last_login']
 
     def get_is_valid(self, obj):
         return obj.is_active

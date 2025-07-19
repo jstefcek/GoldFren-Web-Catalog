@@ -270,13 +270,13 @@ export const columnsConfig = {
   // Admin page column config
   users: [
     {key: "is_valid", label: "datagrid.user.is_valid", sortable: true, filterable: true },
-    {key: "username", label: "datagrid.user.username", sortable: true, filterable: true },
+    {key: "username", label: "datagrid.user.username", sortable: true, filterable: true, link: true },
     {key: "first_name", label: "datagrid.user.first_name", sortable: true, filterable: true },
     {key: "last_name", label: "datagrid.user.last_name", sortable: true, filterable: true },
     {key: "email", label: "datagrid.user.email", sortable: true, filterable: true },
     {key: "is_staff", label: "datagrid.user.is_staff", sortable: true, filterable: true },
-    {key: "date_joined", label: "datagrid.user.date_joined", sortable: true, filterable: true },
-    {key: "last_login", label: "datagrid.user.last_login", sortable: true, filterable: true },
+    {key: "date_joined", label: "datagrid.user.date_joined", type: "date", sortable: true, filterable: true },
+    {key: "last_login", label: "datagrid.user.last_login", type: "date", sortable: true, filterable: true },
   ]
 
 };
