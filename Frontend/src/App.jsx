@@ -36,6 +36,7 @@ import Login from "./pages/Login";
 // Admin Dashboard
 import MainDashboard from "./pages/AdminDashboard/MainDashboard";
 import Account from "./pages/AdminDashboard/Account";
+import Users_Detail from "./pages/AdminDashboard/Users_Detail";
 
 // Import authContext for user authentication
 import { AuthProvider } from './services/authContext';
@@ -119,7 +120,7 @@ function App() {
             <Route path="/admin/dashboard" element={<MainDashboard />} />
 
             {/* User Managment Section */}
-            <Route path="/admin/users" element={<NotFound />} />
+            <Route path="/admin/users" element={<Users_Detail />} />
 
             {/* Batch Import Data Section */}
             <Route path="/admin/import-data" element={<NotFound />} />

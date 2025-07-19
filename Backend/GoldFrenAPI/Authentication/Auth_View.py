@@ -9,7 +9,7 @@ from .Auth_Serializers import GroupBasedTokenObtainPairSerializer, RegisterUserS
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from GoldFrenAPI.Authentication.Auth_Serializers import UserSerializer
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 class Login_View(TokenObtainPairView):
     serializer_class = GroupBasedTokenObtainPairSerializer
@@ -86,9 +86,20 @@ def change_user_password(request):
 @permission_classes([IsAdminUser, IsAuthenticated])
 def get_users(request):
     """
-    Returns a list of all users with their details for admin dashboard.
+    Returns a list of all users with their details.
+    Optional query param 'group' can filter users by group name.
+    Example: ?group=Internal or ?group=External
     """
-    users = User.objects.all()
+    group_name = request.query_params.get('group', None)
+
+    if group_name:
+        try:
+            group = Group.objects.get(name=group_name)
+            users = User.objects.filter(groups=group)
+        except Group.DoesNotExist:
+            return Response({"detail": f"Group '{group_name}' not found."}, status=status.HTTP_404_NOT_FOUND)
+    else:
+        users = User.objects.all()
+
     serializer = UserSerializer(users, many=True)
-    
     return Response(serializer.data, status=status.HTTP_200_OK)

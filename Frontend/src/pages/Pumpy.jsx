@@ -9,7 +9,9 @@ function Pumpy() {
   return (
     <div className="container mx-auto">
       <h1 className="text-4xl font-bold mb-4 ml-4 sm:ml-6 text-left mt-8">{t('pumpy_title')}</h1>
-      <DataGrid category="pumpy" apiUrl={`${serverUrl}/api/goldfren/internal/pumpy?limit=0`} />
+      <div className="p-4 md:p-6">
+        <DataGrid category="pumpy" apiUrl={`${serverUrl}/api/goldfren/internal/pumpy?limit=0`} />
+      </div>
     </div>
   );
 }

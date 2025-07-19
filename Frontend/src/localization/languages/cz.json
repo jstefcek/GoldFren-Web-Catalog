@@ -165,7 +165,17 @@
     "inside_diameter": "Vnitřní průměr [mm]",
     "thickness": "Tloušťka [mm]",
     "note": "Poznámka",
-    "all_entries": "Vyhledáno položek"
+    "all_entries": "Vyhledáno položek",
+    "user": {
+      "username": "Uživatelské jméno",
+      "email": "E-mail",
+      "first_name": "Jméno",
+      "last_name": "Příjmení",
+      "is_valid": "Status účtu",
+      "is_staff": "Administrátor",
+      "date_joined": "Vytvořeno",
+      "last_login": "Poslední přihlášení"
+    }
   },
   "error": {
     "loading_failed": "Načítání selhalo",
@@ -200,7 +210,9 @@
     "blocked_button": "Přihlášení blokováno ",
     "server_error": "Chyba serveru. Zkuste to prosím znovu později.",
     "invalid_credentials": "Neplatné přihlašovací údaje. Zkontrolujte své uživatelské jméno a heslo.",
-    "session_expired": "Vaše relace vypršela. Přihlaste se prosím znovu."
+    "session_expired": "Vaše relace vypršela. Přihlaste se prosím znovu.",
+    "invalid_username": "Neplatné uživatelské jméno. Zkontrolujte své uživatelské jméno a zkuste to znovu.",
+    "invalid_password": "Neplatné heslo. Zkontrolujte své heslo."
   },
   "header": {
     "admin_page": "Administrace webu",

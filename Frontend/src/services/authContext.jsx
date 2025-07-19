@@ -64,6 +64,7 @@ export function AuthProvider({ children }) {
           isAdmin: sessionData?.user?.isAdmin || false,
           isActive: sessionData?.user?.isActive || false,
           isInternal: sessionData?.user?.isInternal || false,
+          access_token: sessionData?.access || null,
           raw: sessionData
         });
 

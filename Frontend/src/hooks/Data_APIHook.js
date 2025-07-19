@@ -1,6 +1,6 @@
 import { dataTransformers } from "./DataTransformers/DataTransformer"
 
-export const fetchData = async (category, apiUrl) => {
+export const fetchData = async (category, apiUrl, headers = null) => {
     // If no API URL is provided, return empty data
     if (!apiUrl) {
       console.warn('No API URL provided for category:', category);
@@ -8,8 +8,15 @@ export const fetchData = async (category, apiUrl) => {
     }
   
     try {
+      // If headers are provided, include them in the fetch request
+      const options = {
+        headers: headers ? { ...headers, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' },
+      };
+
+      console.log(`Fetching data for category: ${category} from URL: ${apiUrl}`);
+
       // Fetch data from the API
-      const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl, options);
       
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

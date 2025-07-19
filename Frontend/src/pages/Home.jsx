@@ -147,12 +147,14 @@ function Home() {
                   <h3 className="text-2xl font-semibold capitalize mt-4 ml-4 mr-4">{t(key)}</h3>
 
                   {/* Display the data with Datagrid component */}
-                  <DataGrid
-                    category={key}
-                    apiCategory={key + "_home"}
-                    apiData={categoryData.items}
-                    listAll={true}
-                  />
+                  <div className="p-4 md:p-6">
+                    <DataGrid
+                      category={key}
+                      apiCategory={key + "_home"}
+                      apiData={categoryData.items}
+                      listAll={true}
+                    />
+                  </div>
                 </div>
               )
             ))}
@@ -167,12 +169,14 @@ function Home() {
             </h2>
 
             {/* Display the data with Datagrid component */}
-            <DataGrid
-              category={searchData.page_category}
-              apiCategory={searchData.category}
-              apiUrl={serverUrl + searchData.api}
-              filters={flattenFilters(searchData.filters)}
-            />
+            <div className="p-4 md:p-6">
+              <DataGrid
+                category={searchData.page_category}
+                apiCategory={searchData.category}
+                apiUrl={serverUrl + searchData.api}
+                filters={flattenFilters(searchData.filters)}
+              />
+            </div>
           </div>
         )
       )}
