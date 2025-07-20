@@ -202,7 +202,7 @@ export default function Users_Detail_Layout() {
         <h2 className="text-xl font-bold text-gray-900 mt-8">
           Přehled interních uživatelů
         </h2>
-        <div className="mt-4">
+        <div className="mt-2">
           <DataGrid_Admin
             category="users"
             apiUrl={`${serverUrl}/api/goldfren/internal/users/?group=Internal`}
@@ -210,13 +210,15 @@ export default function Users_Detail_Layout() {
             show_checkbox={false}
             listAll={true}
             refreshToken={refreshToken}
+            dialogMode={true}
+            dialogTitle="Detail uživatele"
           />
         </div>
 
         <h2 className="text-xl font-bold text-gray-900 mt-8">
           Přehled externích uživatelů
         </h2>
-        <div className="mt-4 mb-8">
+        <div className="mt-2 mb-8">
           <DataGrid_Admin
             category="users"
             apiUrl={`${serverUrl}/api/goldfren/internal/users/?group=External`}
@@ -224,6 +226,8 @@ export default function Users_Detail_Layout() {
             show_checkbox={false}
             listAll={true}
             refreshToken={refreshToken}
+            dialogMode={true}
+            dialogTitle="Detail uživatele"
           />
         </div>
       </div>

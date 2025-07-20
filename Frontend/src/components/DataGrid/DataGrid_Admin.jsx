@@ -28,6 +28,8 @@ export default function DataGrid_Admin({
   access_token = null,
   show_checkbox = true,
   refreshToken = null,
+  dialogMode = false,
+  dialogTitle = "Detail",
 }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -38,6 +40,8 @@ export default function DataGrid_Admin({
   const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogRow, setDialogRow] = useState(null);
 
   // If api category isnt defined choose category insteed
   const resolvedCategory = apiCategory || category;
@@ -338,12 +342,24 @@ export default function DataGrid_Admin({
                           />
                         </div>
                       ) : col.link ? (
-                        <Link
-                          to={`/${category}/${row.id || row.kod}`}
-                          className="text-red-600 hover:text-red-800 font-medium cursor-pointer focus:outline-none focus:underline"
-                        >
-                          {row[col.key] ?? `${category}/${row.id || row.kod}`}
-                        </Link>
+                        dialogMode ? (
+                          <span
+                            className="text-red-600 hover:text-red-800 font-medium cursor-pointer focus:outline-none focus:underline"
+                            onClick={() => {
+                              setDialogRow(row);
+                              setOpenDialog(true);
+                            }}
+                          >
+                            {row[col.key] ?? `${category}/${row.id || row.kod}`}
+                          </span>
+                        ) : (
+                          <Link
+                            to={`/${category}/${row.id || row.kod}`}
+                            className="text-red-600 hover:text-red-800 font-medium cursor-pointer focus:outline-none focus:underline"
+                          >
+                            {row[col.key] ?? `${category}/${row.id || row.kod}`}
+                          </Link>
+                        )
                       ) : col.useTruncation ? (
                         <TextTruncate
                           text={row[col.key]}
@@ -354,7 +370,10 @@ export default function DataGrid_Admin({
                           const value = row[col.key];
 
                           // Handle date values
-                          if (typeof value === "string" && col.type === "date") {
+                          if (
+                            typeof value === "string" &&
+                            col.type === "date"
+                          ) {
                             const date = new Date(value);
                             return date.toLocaleDateString("cs-CZ", {
                               year: "numeric",
@@ -373,9 +392,7 @@ export default function DataGrid_Admin({
                             const color = value
                               ? "text-green-500"
                               : "text-red-500";
-                            return (
-                              <Icon className={`w-6 h-6 ${color}`} />
-                            );
+                            return <Icon className={`w-6 h-6 ${color}`} />;
                           }
 
                           // Handle null, undefined, or empty values
@@ -588,6 +605,31 @@ export default function DataGrid_Admin({
             >
               <ChevronRight size={16} />
             </Button>
+          </div>
+        )}
+
+        {/* Dialog for detailed view */}
+        {dialogMode && openDialog && dialogRow && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center">
+            <div className="bg-white w-full max-w-2xl p-6 rounded-lg shadow-lg relative border border-gray-200">
+              <h2 className="text-2xl font-semibold mb-4 text-gray-900">{dialogTitle}</h2>
+              <button
+                className="absolute top-2 right-2 text-gray-900 hover:text-red-600 cursor-pointer"
+                onClick={() => setOpenDialog(false)}
+              >
+                <X size={24} />
+              </button>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                {columns.map((col) => (
+                  <div key={col.key}>
+                    <strong>{t(col.label)}:</strong>{" "}
+                    <span className="text-gray-700">
+                      {dialogRow[col.key]?.toString() || "—"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
