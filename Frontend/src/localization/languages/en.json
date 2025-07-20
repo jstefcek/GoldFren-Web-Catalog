@@ -171,7 +171,7 @@
       "email": "E-mail",
       "first_name": "First Name",
       "last_name": "Last Name",
-      "is_valid": "Account Status",
+      "is_valid": "Status",
       "is_staff": "Administrator",
       "date_joined": "Created",
       "last_login": "Last Login"

@@ -27,6 +27,7 @@ export default function DataGrid_Admin({
   listAll = false,
   access_token = null,
   show_checkbox = true,
+  refreshToken = null,
 }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -75,7 +76,7 @@ export default function DataGrid_Admin({
       setData(apiData || []);
       setIsLoading(false);
     }
-  }, [resolvedCategory, apiUrl, JSON.stringify(filters)]);
+  }, [resolvedCategory, apiUrl, JSON.stringify(filters), refreshToken]);
 
   // Sorting type ASC or DESC
   const handleSort = (colKey) => {
@@ -153,13 +154,13 @@ export default function DataGrid_Admin({
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
           <div className="relative w-full sm:w-64">
             {/* INPUT - Search input */}
-            <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+            <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 bg-white" />
 
             <Input
               placeholder={t("datagrid.search_placeholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 h-10 text-sm sm:text-base focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="pl-10 h-10 text-sm sm:text-base focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white"
               aria-label="Search data"
             />
           </div>
@@ -373,7 +374,7 @@ export default function DataGrid_Admin({
                               ? "text-green-500"
                               : "text-red-500";
                             return (
-                              <Icon className={`w-5 h-5 ${color} mx-auto`} />
+                              <Icon className={`w-6 h-6 ${color}`} />
                             );
                           }
 

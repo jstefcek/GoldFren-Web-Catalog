@@ -171,7 +171,7 @@
       "email": "E-mail",
       "first_name": "Jméno",
       "last_name": "Příjmení",
-      "is_valid": "Status účtu",
+      "is_valid": "Status",
       "is_staff": "Administrátor",
       "date_joined": "Vytvořeno",
       "last_login": "Poslední přihlášení"

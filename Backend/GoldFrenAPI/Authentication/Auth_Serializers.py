@@ -77,7 +77,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('username', 'password', 'first_name', 'last_name', 'email')
+        fields = ('username', 'password', 'first_name', 'last_name', 'email', 'is_staff')
     
     def create(self, validated_data):
         # Create a new user with the validated data
@@ -86,6 +86,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         # Add user to the 'Internal' group
         external_group = Group.objects.get(name='Internal')
         user.groups.add(external_group)
+        
+        # Add user to staff role if its specified
+        if validated_data.get('is_staff', False):
+            user.is_staff = True
         
         # Return user object
         return user

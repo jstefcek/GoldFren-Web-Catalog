@@ -167,14 +167,14 @@
     "note": "Hinweis",
     "all_entries": "Gesuchte Artikel",
     "user": {
-      "username": "Uživatelské jméno",
+      "username": "Benutzername",
       "email": "E-mail",
-      "first_name": "Jméno",
-      "last_name": "Příjmení",
-      "is_valid": "Status účtu",
-      "is_staff": "Administrátor",
-      "date_joined": "Vytvořeno",
-      "last_login": "Poslední přihlášení"
+      "first_name": "Vorname",
+      "last_name": "Nachname",
+      "is_valid": "Status",
+      "is_staff": "Administrator",
+      "date_joined": "Erstellt am",
+      "last_login": "Letzte Anmeldung"
     }
   },
   "contact": {
