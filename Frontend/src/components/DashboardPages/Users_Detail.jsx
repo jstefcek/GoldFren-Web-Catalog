@@ -331,7 +331,8 @@ export default function Users_Detail_Layout() {
           </div>
         </div>
       )}
-
+      
+      {/* Confirm Dialog */}
       {confirmData && (
         <ConfirmDialog
           title={confirmData.title}
@@ -341,6 +342,7 @@ export default function Users_Detail_Layout() {
         />
       )}
 
+      {/* Alert Dialog */}
       {alertData && (
         <AlertDialog
           title={alertData.title}
