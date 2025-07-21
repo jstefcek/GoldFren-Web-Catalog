@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import DataGrid_Admin from "../DataGrid/DataGrid_Admin";
 import { useAuth } from "../../services/authContext";
-import { Info, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { registration_config } from "./UserDetail_Config/Dialog_User_Registration";
 import ConfirmDialog from "../ui/Custom_ConfirmDialog";
 import AlertDialog from "../ui/Custom_AlertDialog";
@@ -52,9 +52,9 @@ export default function Users_Detail_Layout() {
   useEffect(() => {
     const autoUsername =
       form.firstName && form.lastName
-        ? `${removeDiacritics(form.firstName[0] || "").toLowerCase()}${removeDiacritics(
-            form.lastName
-          )
+        ? `${removeDiacritics(
+            form.firstName[0] || ""
+          ).toLowerCase()}${removeDiacritics(form.lastName)
             .toLowerCase()
             .replace(/\s/g, "")}`
         : "";
@@ -211,7 +211,7 @@ export default function Users_Detail_Layout() {
             listAll={true}
             refreshToken={refreshToken}
             dialogMode={true}
-            dialogTitle="Detail uživatele"
+            dialogTitle="Editace interního uživatele"
           />
         </div>
 
@@ -227,7 +227,7 @@ export default function Users_Detail_Layout() {
             listAll={true}
             refreshToken={refreshToken}
             dialogMode={true}
-            dialogTitle="Detail uživatele"
+            dialogTitle="Editace externího uživatele/aplikace"
           />
         </div>
       </div>
@@ -241,18 +241,13 @@ export default function Users_Detail_Layout() {
 
             <div className="space-y-4">
               {registration_config.columns.map(
-                ({ label, name, tooltip, placeholder, type }) => (
+                ({ label, name, placeholder, type }) => (
                   <div key={name} className="relative">
                     <label
                       htmlFor={name}
                       className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1"
                     >
                       {label}
-                      <span
-                        className="text-gray-400 hover:text-gray-600 transition cursor-help"
-                      >
-                        <Info className="w-4 h-4" title={tooltip} />
-                      </span>
                     </label>
 
                     <div className="relative">
@@ -335,7 +330,7 @@ export default function Users_Detail_Layout() {
           </div>
         </div>
       )}
-      
+
       {/* Confirm Dialog */}
       {confirmData && (
         <ConfirmDialog

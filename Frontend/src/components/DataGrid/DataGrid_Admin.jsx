@@ -17,6 +17,8 @@ import { fetchData } from "../../hooks/Data_APIHook";
 import { TextTruncate } from "./ui/Custom_TextTruncate";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 import { Link } from "react-router-dom";
+import CustomEditDialog from "../ui/Custom_EditDialog";
+import { formatDateLong } from "../../utils/utils";
 
 export default function DataGrid_Admin({
   category = "",
@@ -374,16 +376,9 @@ export default function DataGrid_Admin({
                             typeof value === "string" &&
                             col.type === "date"
                           ) {
-                            const date = new Date(value);
-                            return date.toLocaleDateString("cs-CZ", {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              second: "2-digit",
-                              timeZone: "Europe/Prague",
-                            });
+
+                            // Format to czech long date format
+                            return formatDateLong(value);
                           }
 
                           // Handle boolean values for icons
@@ -610,27 +605,13 @@ export default function DataGrid_Admin({
 
         {/* Dialog for detailed view */}
         {dialogMode && openDialog && dialogRow && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center">
-            <div className="bg-white w-full max-w-2xl p-6 rounded-lg shadow-lg relative border border-gray-200">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-900">{dialogTitle}</h2>
-              <button
-                className="absolute top-2 right-2 text-gray-900 hover:text-red-600 cursor-pointer"
-                onClick={() => setOpenDialog(false)}
-              >
-                <X size={24} />
-              </button>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                {columns.map((col) => (
-                  <div key={col.key}>
-                    <strong>{t(col.label)}:</strong>{" "}
-                    <span className="text-gray-700">
-                      {dialogRow[col.key]?.toString() || "—"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <CustomEditDialog
+            isOpen={dialogMode && openDialog}
+            onClose={() => setOpenDialog(false)}
+            dialogTitle={dialogTitle}
+            rowData={dialogRow}
+            category={"user"}
+          />
         )}
       </div>
     </div>
