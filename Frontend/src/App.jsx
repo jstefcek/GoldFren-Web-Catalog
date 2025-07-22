@@ -37,6 +37,8 @@ import Login from "./pages/Login";
 import MainDashboard from "./pages/AdminDashboard/MainDashboard";
 import Account from "./pages/AdminDashboard/Account";
 import Users_Detail from "./pages/AdminDashboard/Users_Detail";
+import Vehicle_Detail from "./pages/AdminDashboard/Vehicle_Detail";
+import Sortiment_Detail from "./pages/AdminDashboard/Sortiment_Detail";
 
 // Import authContext for user authentication
 import { AuthProvider } from './services/authContext';
@@ -129,8 +131,8 @@ function App() {
             <Route path="/admin/manufacturer" element={<NotFound />} />
             
             {/* Sortiment & Vehicle Manage Sections */}
-            <Route path="/admin/sortiment/*" element={<NotFound />} />
-            <Route path="/admin/vehicles/*" element={<NotFound />} />
+            <Route path="/admin/sortiment/*" element={<Sortiment_Detail />} />
+            <Route path="/admin/vehicles/*" element={<Vehicle_Detail />} />
 
             {/* Account Management Section */}
             <Route path="/admin/account" element={<Account />} />

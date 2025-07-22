@@ -12,7 +12,7 @@ export const topNavigationConfig = [
   },
   {
     id: "sortiment-vyrobce",
-    label: "Sortiment pro Výrobce",
+    label: "Sortiment Výrobce",
     icon: PackageSearch,
     type: "link",
     to: "/admin/manufacturer",
@@ -42,9 +42,9 @@ export const topNavigationConfig = [
     permissions: ["isInternal", "isActive"],
     items: [
       { label: "Automobily", to: "/admin/vehicles/automobily", iconPath: "/icons/car.svg" },
-      { label: "Motorcykly", to: "/admin/vehicles/motorcykly", iconPath: "/icons/motorbike.svg" },
+      { label: "Motocykly", to: "/admin/vehicles/motocykly", iconPath: "/icons/motorbike.svg" },
       { label: "Motokáry", to: "/admin/vehicles/motokary", iconPath: "/icons/kart.svg" },
-      { label: "Jizndní kola", to: "/admin/vehicles/kola", iconPath: "/icons/bike.svg" },
+      { label: "Jízndní kola", to: "/admin/vehicles/kola", iconPath: "/icons/bike.svg" },
       { label: "Letadla", to: "/admin/vehicles/letadla", iconPath: "/icons/plane.svg" },
       { label: "Průmysl", to: "/admin/vehicles/prumysl", iconPath: "/icons/industry.svg" }
     ]
