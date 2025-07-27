@@ -2,9 +2,10 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import ConfirmDialog from "../ui/Custom_ConfirmDialog";
-import { dialogColumnsConfig } from "../../config/EditDialog_Columns_Config";
+import { dialogColumnsConfig } from "../../config/EditDialog_ViewColumns_Config";
 import { formatDateLong } from "../../utils/utils";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
+import DetailImage from "../ui/Custom_DetailImage";
 
 export default function CustomEditDialog({
   isOpen,
@@ -12,6 +13,8 @@ export default function CustomEditDialog({
   dialogTitle,
   rowData,
   category,
+  access_token = null,
+  onSuccess = () => {},
 }) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({});
@@ -19,7 +22,7 @@ export default function CustomEditDialog({
   const config = dialogColumnsConfig[category];
   const [loaded, setLoaded] = useState(false);
 
-  // Init form data when dialog opens
+  // Initialize form data when dialog opens
   useEffect(() => {
     let timeout;
     if (isOpen && rowData) {
@@ -31,12 +34,11 @@ export default function CustomEditDialog({
     return () => clearTimeout(timeout);
   }, [isOpen, rowData]);
 
-  // If dialog is not open or no rowData or config, return null
   if (!isOpen || !rowData || !config || !loaded) return null;
 
   const { fields, primaryKey, editEndpoint } = config;
 
-  // Handle changes in form data
+  // Ensure primary key exists in rowData
   const handleChange = (key, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -49,23 +51,125 @@ export default function CustomEditDialog({
     try {
       const id = rowData[primaryKey];
       const response = await fetch(editEndpoint(id), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "PUT",
+        headers: !access_token
+          ? { "Content-Type": "application/json" }
+          : {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access_token}`,
+            },
         body: JSON.stringify(formData),
       });
 
+      console.log("Response: ", response);
+      console.log("Body: ", formData);
+
+      // Check if the response is successful
       if (!response.ok) throw new Error("Edit failed");
 
+      // Call onSuccess callback if provided and close the dialog
+      onSuccess();
       onClose();
     } catch (err) {
       alert(t("Error saving changes: ") + err.message);
     }
   };
 
+  // Render each field based on its type
+  const renderField = (col, value) => {
+    if (col.type === "button") {
+      return (
+        <BooleanToggleButton
+          value={!!value}
+          editable={col.editable}
+          onChange={(newVal) => handleChange(col.key, newVal)}
+          labels={col.buttonValue || { true: "Ano", false: "Ne" }}
+        />
+      );
+    }
+
+    if (col.editable) {
+      if (col.type === "select" && Array.isArray(col.value)) {
+        return (
+          <select
+            value={value || ""}
+            onChange={(e) => handleChange(col.key, e.target.value)}
+            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
+          >
+            <option value="" disabled>
+              {col.placeholder || t("Vyberte možnost")}
+            </option>
+            {col.value.map((option) => (
+              <option key={option.id} value={option.value}>
+                {t(option.label)}
+              </option>
+            ))}
+          </select>
+        );
+      }
+
+      if (col.dataType === "boolean") {
+        return (
+          <input
+            type="checkbox"
+            checked={!!value}
+            onChange={(e) => handleChange(col.key, e.target.checked)}
+            className="w-5 h-5 accent-red-600"
+          />
+        );
+      }
+
+      if (col.type === "textarea") {
+        return (
+          <textarea
+            value={value || ""}
+            onChange={(e) => handleChange(col.key, e.target.value)}
+            rows={5}
+            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm resize-y focus:ring-2 focus:ring-red-500 focus:outline-none"
+          />
+        );
+      }
+
+      return (
+        <input
+          type={col.type || "text"}
+          value={value || ""}
+          placeholder={col.placeholder || ""}
+          onChange={(e) => handleChange(col.key, e.target.value)}
+          className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
+        />
+      );
+    }
+
+    if (col.dataType === "date") {
+      return (
+        <span className="text-gray-800 text-sm">
+          {value ? formatDateLong(value) : "—"}
+        </span>
+      );
+    }
+
+    if (col.dataType === "image") {
+      return (
+        <DetailImage
+          imageUrl={value}
+          altText={`Image for ${t(col.label)}`}
+          noImageText={t("datagrid.no_image") || "No image available"}
+          className="max-w-full max-h-36 object-contain block"
+          imageAllign="center"
+        />
+      );
+    }
+
+    return (
+      <span className="text-gray-800 text-sm">{value?.toString() || "—"}</span>
+    );
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4 sm:p-8">
-        <div className="bg-white w-full max-w-2xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
+        <div className="bg-white w-full max-w-3xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2">
             {dialogTitle}
           </h2>
@@ -76,57 +180,42 @@ export default function CustomEditDialog({
             <X size={36} />
           </button>
 
-          <div className="flex flex-col gap-4">
-            {fields
-              .filter((col) => col.show !== false)
-              .map((col) => {
-                const value = formData[col.key];
-                return (
-                  <div key={col.key} className="flex flex-col">
-                    <label className="text-sm font-bold text-gray-900 mb-1">
-                      {t(col.label)}:
-                    </label>
+          <div className="overflow-y-auto max-h-[70vh] pr-2">
+            {/* First field with full width */}
+            <div className="grid grid-cols-1 gap-4 ml-4 mr-4">
+              {fields
+                .filter((col) => col.show !== false)
+                .slice(0, 1)
+                .map((col) => {
+                  const value = formData[col.key];
+                  return (
+                    <div key={col.key} className="flex flex-col">
+                      <label className="text-lg font-bold text-gray-900 mb-1">
+                        {t(col.label)}
+                      </label>
+                      {renderField(col, value)}
+                    </div>
+                  );
+                })}
+            </div>
 
-                    {/* Button-type toggle */}
-                    {col.type === "button" ? (
-                      <BooleanToggleButton
-                        value={!!value}
-                        editable={col.editable}
-                        onChange={(newVal) => handleChange(col.key, newVal)}
-                        labels={col.buttonValue || { true: "Ano", false: "Ne" }}
-                      />
-                    ) : col.editable ? (
-                      col.dataType === "boolean" ? (
-                        <input
-                          type="checkbox"
-                          checked={!!value}
-                          onChange={(e) =>
-                            handleChange(col.key, e.target.checked)
-                          }
-                          className="w-5 h-5 accent-red-600"
-                        />
-                      ) : (
-                        <input
-                          type={col.type || "text"}
-                          value={value || ""}
-                          onChange={(e) =>
-                            handleChange(col.key, e.target.value)
-                          }
-                          className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
-                        />
-                      )
-                    ) : col.dataType === "date" ? (
-                      <span className="text-gray-800 text-sm">
-                        {value ? formatDateLong(value) : "—"}
-                      </span>
-                    ) : (
-                      <span className="text-gray-800 text-sm">
-                        {value?.toString() || "—"}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
+            {/* Remaining fields with 2 columns next to each other */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-4 ml-4 mr-4">
+              {fields
+                .filter((col) => col.show !== false)
+                .slice(1)
+                .map((col) => {
+                  const value = formData[col.key];
+                  return (
+                    <div key={col.key} className="flex flex-col">
+                      <label className="text-sm font-bold text-gray-900 mb-1">
+                        {t(col.label)}
+                      </label>
+                      {renderField(col, value)}
+                    </div>
+                  );
+                })}
+            </div>
           </div>
 
           <div className="mt-8 flex justify-end gap-3">
@@ -134,13 +223,13 @@ export default function CustomEditDialog({
               className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
               onClick={onClose}
             >
-              {t("Close")}
+              {t("Zavřít")}
             </button>
             <button
               className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700 transition cursor-pointer"
               onClick={() => setShowConfirm(true)}
             >
-              {t("Save")}
+              {t("Uložit")}
             </button>
           </div>
         </div>
@@ -148,8 +237,8 @@ export default function CustomEditDialog({
 
       {showConfirm && (
         <ConfirmDialog
-          title={t("Confirm Save")}
-          message={t("Are you sure you want to save changes?")}
+          title={t("Potvrdit úpravy")}
+          message={t("Opravdu chcete uložit změny?")}
           onConfirm={() => {
             handleConfirmEdit();
             setShowConfirm(false);

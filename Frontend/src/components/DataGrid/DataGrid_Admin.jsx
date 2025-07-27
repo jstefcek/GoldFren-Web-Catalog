@@ -35,7 +35,7 @@ export default function DataGrid_Admin({
 }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
@@ -44,6 +44,7 @@ export default function DataGrid_Admin({
   const { t } = useTranslation();
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogRow, setDialogRow] = useState(null);
+  const [refreshTokenInternal, setRefreshTokenInternal] = useState(Date.now());
 
   // If api category isnt defined choose category insteed
   const resolvedCategory = apiCategory || category;
@@ -82,7 +83,7 @@ export default function DataGrid_Admin({
       setData(apiData || []);
       setIsLoading(false);
     }
-  }, [resolvedCategory, apiUrl, JSON.stringify(filters), refreshToken]);
+  }, [resolvedCategory, apiUrl, JSON.stringify(filters), refreshToken, refreshTokenInternal]);
 
   // Sorting type ASC or DESC
   const handleSort = (colKey) => {
@@ -205,7 +206,7 @@ export default function DataGrid_Admin({
                 }}
                 aria-label="Items per page"
               >
-                {[10, 25, 50, 100].map((size) => (
+                {[25, 50, 100].map((size) => (
                   <option key={size} value={size}>
                     {size} {t("datagrid.entries")} {t("datagrid.on")}{" "}
                     {t("datagrid.page")}
@@ -610,7 +611,12 @@ export default function DataGrid_Admin({
             onClose={() => setOpenDialog(false)}
             dialogTitle={dialogTitle}
             rowData={dialogRow}
-            category={"user"}
+            category={category}
+            access_token={access_token}
+            onSuccess={() => {
+              setRefreshTokenInternal(Date.now());
+              setOpenDialog(false);                
+            }}
           />
         )}
       </div>

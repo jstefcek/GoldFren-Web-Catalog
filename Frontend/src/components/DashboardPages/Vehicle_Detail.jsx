@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { formatUrlLinkPathtoLable } from "../../utils/utils";
 
+
 export default function VehicleLayout() {
   // Extract the vehicle type from the URL path
   const location = useLocation();
@@ -16,6 +17,7 @@ export default function VehicleLayout() {
         <h2 className="text-3xl font-bold text-gray-900">
           Detail Vozidla - {vehicleLabel}
         </h2>
+
       </div>
     </div>
   );

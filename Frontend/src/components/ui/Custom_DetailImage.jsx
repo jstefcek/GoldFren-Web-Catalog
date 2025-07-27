@@ -1,19 +1,37 @@
 import { ImageOff } from "lucide-react";
 import { CustomImageViewer } from "./Custom_ImageViewer";
 
-const DetailImage = ({ title, imageUrl, altText, noImageText }) => {
+const DetailImage = ({
+  title,
+  imageUrl,
+  altText,
+  noImageText,
+  imageAllign = "center",
+}) => {
+  // Allign the image based on property
+  const justifyClass =
+    imageAllign === "left"
+      ? "justify-start"
+      : imageAllign === "right"
+      ? "justify-end"
+      : "justify-center";
+
   return (
     <div className="w-full max-w-lg mx-auto">
-      <h3 className="text-lg md:text-xl font-semibold mb-4 text-gray-900">{title}</h3>
+      {title && (
+        <h3 className="text-lg md:text-xl font-semibold mb-4 text-gray-900">
+          {title}
+        </h3>
+      )}
       <div
-        className="
+        className={`
           w-full h-72
-          flex items-center justify-center
+          flex items-center ${justifyClass}
           bg-gray-50
           p-4
           shadow-sm
           overflow-hidden
-        "
+        `}
       >
         {imageUrl ? (
           <CustomImageViewer
