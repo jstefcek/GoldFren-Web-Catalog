@@ -19,6 +19,7 @@ import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 import { Link } from "react-router-dom";
 import CustomEditDialog from "../ui/Custom_EditDialog";
 import { formatDateLong } from "../../utils/utils";
+import AlertDialog from "../ui/Custom_AlertDialog";
 
 export default function DataGrid_Admin({
   category = "",
@@ -45,6 +46,7 @@ export default function DataGrid_Admin({
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogRow, setDialogRow] = useState(null);
   const [refreshTokenInternal, setRefreshTokenInternal] = useState(Date.now());
+  const [alertDialog, setAlertDialog] = useState(null);
 
   // If api category isnt defined choose category insteed
   const resolvedCategory = apiCategory || category;
@@ -615,8 +617,33 @@ export default function DataGrid_Admin({
             access_token={access_token}
             onSuccess={() => {
               setRefreshTokenInternal(Date.now());
-              setOpenDialog(false);                
+              setOpenDialog(false);
+              setAlertDialog({
+                title: "Úspěch",
+                message: "Úprava dat byla úspěšná.",
+                type: "success",
+                duration: 5,
+              });
             }}
+            onError={(errMsg) => {
+              setAlertDialog({
+                title: "Chyba",
+                message: errMsg || "Nastala chyba při ukládání dat.",
+                type: "error",
+                duration: 5,
+              });
+            }}
+          />
+        )}
+
+        {/* Alert Dialog for errors or confirmations */}
+        {alertDialog && (
+          <AlertDialog
+            title={alertDialog.title}
+            message={alertDialog.message}
+            type={alertDialog.type}
+            duration={alertDialog.duration}
+            onClose={() => setAlertDialog(null)}
           />
         )}
       </div>

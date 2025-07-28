@@ -2,10 +2,11 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import ConfirmDialog from "../ui/Custom_ConfirmDialog";
-import { dialogColumnsConfig } from "../../config/EditDialog_ViewColumns_Config";
+import { dialogColumnsConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { formatDateLong } from "../../utils/utils";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import DetailImage from "../ui/Custom_DetailImage";
+import { transformFormData } from "../../config/DataTransormation/EditDialog_Transformation";
 
 export default function CustomEditDialog({
   isOpen,
@@ -15,6 +16,7 @@ export default function CustomEditDialog({
   category,
   access_token = null,
   onSuccess = () => {},
+  onError = () => {},
 }) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({});
@@ -34,8 +36,10 @@ export default function CustomEditDialog({
     return () => clearTimeout(timeout);
   }, [isOpen, rowData]);
 
+  // If dialog is not open or no rowData, return null
   if (!isOpen || !rowData || !config || !loaded) return null;
 
+  // Ensure formData has all necessary fields
   const { fields, primaryKey, editEndpoint } = config;
 
   // Ensure primary key exists in rowData
@@ -58,25 +62,28 @@ export default function CustomEditDialog({
               "Content-Type": "application/json",
               Authorization: `Bearer ${access_token}`,
             },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(transformFormData(category, formData)),
       });
 
+      // Log the response and form data for debug
       console.log("Response: ", response);
       console.log("Body: ", formData);
+      console.log("Transformed Data: ", transformFormData(category, formData));
 
       // Check if the response is successful
       if (!response.ok) throw new Error("Edit failed");
 
       // Call onSuccess callback if provided and close the dialog
       onSuccess();
-      onClose();
-    } catch (err) {
-      alert(t("Error saving changes: ") + err.message);
+    } catch (error) {
+      // Show alert dialog with error message
+      onError(error.message);
     }
   };
 
   // Render each field based on its type
   const renderField = (col, value) => {
+    // Handle boolean toggle button
     if (col.type === "button") {
       return (
         <BooleanToggleButton
@@ -88,7 +95,9 @@ export default function CustomEditDialog({
       );
     }
 
+    // Handle other editable fields
     if (col.editable) {
+      // Select input type
       if (col.type === "select" && Array.isArray(col.value)) {
         return (
           <select
@@ -108,6 +117,7 @@ export default function CustomEditDialog({
         );
       }
 
+      // Handle boolean as checkbox
       if (col.dataType === "boolean") {
         return (
           <input
@@ -119,6 +129,7 @@ export default function CustomEditDialog({
         );
       }
 
+      // Handle text input or textarea
       if (col.type === "textarea") {
         return (
           <textarea
@@ -130,6 +141,7 @@ export default function CustomEditDialog({
         );
       }
 
+      // Default input type
       return (
         <input
           type={col.type || "text"}
@@ -141,6 +153,7 @@ export default function CustomEditDialog({
       );
     }
 
+    // Non-editable fields
     if (col.dataType === "date") {
       return (
         <span className="text-gray-800 text-sm">
@@ -149,6 +162,7 @@ export default function CustomEditDialog({
       );
     }
 
+    // Handle image fields
     if (col.dataType === "image") {
       return (
         <DetailImage
@@ -161,6 +175,7 @@ export default function CustomEditDialog({
       );
     }
 
+    // Default text display
     return (
       <span className="text-gray-800 text-sm">{value?.toString() || "—"}</span>
     );
@@ -169,7 +184,7 @@ export default function CustomEditDialog({
   return (
     <>
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4 sm:p-8">
-        <div className="bg-white w-full max-w-3xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
+        <div className="bg-white w-full max-w-4xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2">
             {dialogTitle}
           </h2>
@@ -189,7 +204,7 @@ export default function CustomEditDialog({
                 .map((col) => {
                   const value = formData[col.key];
                   return (
-                    <div key={col.key} className="flex flex-col">
+                    <div key={col.key} className="flex flex-col mb-4">
                       <label className="text-lg font-bold text-gray-900 mb-1">
                         {t(col.label)}
                       </label>

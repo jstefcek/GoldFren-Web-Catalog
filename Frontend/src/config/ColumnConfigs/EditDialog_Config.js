@@ -15,11 +15,19 @@ export const SelectValueConfig = {
   typ_uchyceni: [
     {id: 1, label: "Axis", value: "Axis"},
     {id: 2, label: "Radial", value: "Radial"},
-  ]
+  ],
+
+  // Desticky type 
+  typ_desticky: [
+    {id: 1, label: "L a P stejné", value: 1},
+    {id: 2, label: "L a P zrcadlové", value: 2},
+    {id: 3, label: "L a P různé", value: 3},
+  ],
 };
 
 export const dialogColumnsConfig = {
-  // Edit dialog 
+  // Edit dialog configuration
+  
   // User configuration
   user: {
     primaryKey: "id",
@@ -86,7 +94,7 @@ export const dialogColumnsConfig = {
       {key: "obrazek", label: "Obrázek destičky", type: "image", editable: false, show: true, dataType: "image", },
       {key: "vektor", label: "Vektor destičky", type: "image", editable: false, show: true, dataType: "image", },
       {key: "kategorie", label: "Kategorie destičky", placeholder: "Vyberte kategorii destičky", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", },
-      {key: "typ", label: "Typ destičky", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "typ", label: "Typ destičky", value: SelectValueConfig.typ_desticky, type: "select", editable: true, show: true, dataType: "string", },
       {key: "material_text", label: "Materiál", placeholder: "Zadejte materiál", type: "input", editable: true, show: true, dataType: "string", },
       {key: "oem_cisla", label: "OEM čísla", placeholder: "Zadejte OEM čísla", type: "textarea", editable: true, show: true, dataType: "string", },
       {key: "konkurence_sbs", label: "SBS", placeholder: "Zadejte konkurenci SBS", type: "input", editable: true, show: true, dataType: "string", },

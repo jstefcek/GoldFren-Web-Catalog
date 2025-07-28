@@ -26,7 +26,7 @@ export default function SortimentLayout() {
         <div className="mt-4 mb-8">
           <DataGrid_Admin
             category={`${sortimentType}`}
-            apiUrl={`${serverUrl}/api/goldfren/internal/${sortimentType}?limit=0`}
+            apiUrl={`${serverUrl}/api/goldfren/internal/${sortimentType}?limit=0&states=True`}
             access_token={userInfo?.access_token}
             show_checkbox={true}
             listAll={false}

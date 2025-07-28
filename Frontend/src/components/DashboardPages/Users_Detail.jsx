@@ -121,7 +121,7 @@ export default function Users_Detail_Layout() {
         title: "Úspěch",
         message: "Uživatel byl úspěšně přidán.",
         type: "success",
-        duration: 4,
+        duration: 5,
         onClose: () => setAlertData(null),
       });
 
