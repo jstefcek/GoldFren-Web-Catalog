@@ -23,13 +23,19 @@ export const SelectValueConfig = {
     {id: 2, label: "L a P zrcadlové", value: 2},
     {id: 3, label: "L a P různé", value: 3},
   ],
+
+  // Kotouc type
+  typ_kotouce: [
+    {id: 1, label: "OEM", value: 1},
+    {id: 2, label: "Oversize", value: 2},
+  ]
 };
 
 export const dialogColumnsConfig = {
   // Edit dialog configuration
   
   // User configuration
-  user: {
+  users: {
     primaryKey: "id",
     editEndpoint: (id) => `${serverUrl}/api/goldfren/internal/users/${id}`,
     fields: [
@@ -55,6 +61,7 @@ export const dialogColumnsConfig = {
       {key: "obrazek", label: "Obrázek adaptéru", type: "image", editable: false, show: true, dataType: "image", },
       {key: "vektor", label: "Vektor adaptéru", type: "image", editable: false, show: true, dataType: "image", },
       {key: "kategorie", label: "Kategorie adaptéru", placeholder: "Vyberte kategorii adaptéru", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", },
+      {key: "typ", label: "Typ adaptéru", placeholder: "Zadejte typ adaptéru", type: "input", editable: true, show: true, dataType: "string", },
       {key: "prumer", label: "Průměr adaptéru [mm]", placeholder: "Zadejte průměr adaptéru", type: "input", editable: true, show: true, dataType: "string", },
       {key: "typ_uchyceni", label: "Typ uchycení", placeholder: "Zadejte typ uchycení", value: SelectValueConfig.typ_uchyceni, type: "select", editable: true, show: true, dataType: "string", },
       {key: "roztec_brzdice", label: "Rozteč brzdiče [mm]", placeholder: "Zadejte rozteč brzdiče", type: "input", editable: true, show: true, dataType: "string", },
@@ -120,14 +127,14 @@ export const dialogColumnsConfig = {
       {key: "obrazek", label: "Obrázek kotouče", type: "image", editable: false, show: true, dataType: "image", },
       {key: "vektor", label: "Vektor kotouče", type: "image", editable: false, show: true, dataType: "image", },
       {key: "kategorie", label: "Kategorie kotouče", placeholder: "Vyberte kategorii kotouče", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", },
-      {key: "typ", label: "Typ kotouče", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "typ", label: "Typ kotouče", value: SelectValueConfig.typ_kotouce, type: "select", editable: true, show: true, dataType: "string", },
       {key: "poznamka", label: "Poznámka", type: "input", editable: true, show: true, dataType: "string", },
-      {key: "vnejsi_prumer", label: "Průměr vnější (mm)", type: "input", editable: true, show: true, dataType: "string", },
-      {key: "roztecny_prumer", label: "Rozteč děr kotouče (mm)", type: "input", editable: true, show: true, dataType: "string", },
-      {key: "vnitrni_prumer", label: "Vnitřní průměr (mm)", type: "input", editable: true, show: true, dataType: "string", },
-      {key: "tloustka", label: "Tloušťka kotouče (mm)", type: "input", editable: true, show: true, dataType: "string", },
-      {key: "konkurence_braking", label: "Braking", type: "input", editable: true, show: true, dataType: "string", },
-      {key: "konkurence_ngbrakes", label: "NGBrakes", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "vnejsi_prumer", label: "Průměr vnější (mm)", placeholder: "Zadejte vnější průměr", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "roztecny_prumer", label: "Rozteč děr kotouče (mm)", placeholder: "Zadejte rozteč děr", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "vnitrni_prumer", label: "Vnitřní průměr (mm)", placeholder: "Zadejte vnitřní průměr", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "tloustka", label: "Tloušťka kotouče (mm)", placeholder: "Zadejte tloušťku kotouče", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "konkurence_braking", label: "Braking", placeholder: "Zadejte konkurenci Braking", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "konkurence_ngbrakes", label: "NGBrakes", placeholder: "Zadejte konkurenci NGBrakes", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat díl?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
       {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
     ],

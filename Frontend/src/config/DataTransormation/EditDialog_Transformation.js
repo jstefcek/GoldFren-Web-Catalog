@@ -1,7 +1,7 @@
 export function transformFormData(category, formData) {
   switch (category) {
     // User category data transformation
-    case "user":
+    case "users":
       return {
         // Default data fields
         first_name: formData.first_name || "",
@@ -27,7 +27,7 @@ export function transformFormData(category, formData) {
         // Adaptery specific fields
         prumer: parseFloat(formData.prumer) || 0.0,
         typ_uchyceni: formData.typ_uchyceni || "",
-        roztec_brzdice: parseFloat(formData.roztec_brzdice) || 0.0,
+        roztec_brzdic: parseFloat(formData.roztec_brzdic) || 0.0,
         popis: formData.popis || null,
     };
 
@@ -45,7 +45,7 @@ export function transformFormData(category, formData) {
 
         // Brzdice specific fields
         typ_uchyceni: formData.typ_uchyceni || "",
-        pocet_pistku: parseInt(formData.pocet_pistku) || 0,
+        pocet_pistku: parseInt(formData.pocet_pistku) || null,
         popis: formData.popis || null,
     };
 
@@ -69,32 +69,32 @@ export function transformFormData(category, formData) {
         material: {
           plech_a: {
             material: formData.material?.plech_a?.material || null,
-            tloustka: parseFloat(formData.material?.plech_a?.tloustka) || 0.0,
+            tloustka: parseFloat(formData.material?.plech_a?.tloustka) || null,
             matrice: formData.material?.plech_a?.matrice || null,
           },
           plech_b: {
             material: formData.material?.plech_b?.material || null,
-            tloustka: parseFloat(formData.material?.plech_b?.tloustka) || 0.0,
+            tloustka: parseFloat(formData.material?.plech_b?.tloustka) || null,
             matrice: formData.material?.plech_b?.matrice || null,
           },
           izolator_a: {
             material: formData.material?.izolator_a?.material || null,
-            tloustka: parseFloat(formData.material?.izolator_a?.tloustka) || 0.0,
+            tloustka: parseFloat(formData.material?.izolator_a?.tloustka) || null,
             matrice: formData.material?.izolator_a?.matrice || null,
           },
           izolator_b: {
             material: formData.material?.izolator_b?.material || null,
-            tloustka: parseFloat(formData.material?.izolator_b?.tloustka) || 0.0,
+            tloustka: parseFloat(formData.material?.izolator_b?.tloustka) || null,
             matrice: formData.material?.izolator_b?.matrice || null,
           },
           segment_a: {
             material: formData.material?.segment_a?.material || null,
-            tloustka: parseFloat(formData.material?.segment_a?.tloustka) || 0.0,
+            tloustka: parseFloat(formData.material?.segment_a?.tloustka) || null,
             matrice: formData.material?.segment_a?.matrice || null,
           },
           segment_b: {
             material: formData.material?.segment_b?.material || null,
-            tloustka: parseFloat(formData.material?.segment_b?.tloustka) || 0.0,
+            tloustka: parseFloat(formData.material?.segment_b?.tloustka) || null,
             matrice: formData.material?.segment_b?.matrice || null,
           },
         },
@@ -120,7 +120,7 @@ export function transformFormData(category, formData) {
         obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
         vektor: formData.vektor ? extractFileName(formData.vektor) : null,
         cislo_dilu: formData.cislo_dilu || "",
-        typ: parseInt(formData.typ) || null,
+        typ: formData.typ || null,
         publikovat: !!formData.publikovat,
         aktualizovano: new Date().toISOString(),
         poznamka: formData.poznamka || null,
@@ -128,10 +128,10 @@ export function transformFormData(category, formData) {
         // Kotouce specific fields
         konkurence_braking: formData.konkurence_braking || null,
         konkurence_ngbrakes: formData.konkurence_ngbrakes || null,
-        od: formData.vnejsi_prumer || 0.0,
-        hd: formData.roztecny_prumer || 0.0,
-        thk: formData.tloustka || 0.0,
-        id: formData.vnitrni_prumer || 0.0
+        od: formData.vnejsi_prumer || null,
+        hd: formData.roztecny_prumer || null,
+        thk: formData.tloustka || null,
+        id: formData.vnitrni_prumer || null
     };
 
     // Hadicky category data transformation
@@ -165,7 +165,7 @@ export function transformFormData(category, formData) {
         poznamka: formData.poznamka || null,
 
         // Pumpy specific fields
-        prumer: parseFloat(formData.prumer) || 0.0,
+        prumer: parseFloat(formData.prumer) || null,
         popis: formData.popis || null
     };
 

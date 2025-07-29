@@ -101,8 +101,11 @@ export default function CustomEditDialog({
       if (col.type === "select" && Array.isArray(col.value)) {
         return (
           <select
-            value={value || ""}
-            onChange={(e) => handleChange(col.key, e.target.value)}
+            value={value ?? ""}
+            onChange={(e) => {
+              const selected = col.value.find((opt) => opt.value.toString() === e.target.value);
+              handleChange(col.key, selected ? selected.value : e.target.value);
+            }}
             className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
           >
             <option value="" disabled>
