@@ -1,6 +1,54 @@
 export function transformFormData(category, formData) {
   switch (category) {
-    
+    // User category data transformation
+    case "user":
+      return {
+        // Default data fields
+        first_name: formData.first_name || "",
+        last_name: formData.last_name || "",
+        email: formData.email || "",
+        is_staff: !!formData.is_staff,
+        is_valid: !!formData.is_valid,
+    };
+
+    // Adaptery category data transformation
+    case "adaptery":
+      return {
+        // Default data fields
+        kategorie: parseInt(formData.kategorie) || null,
+        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
+        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        cislo_dilu: formData.cislo_dilu || "",
+        typ: parseInt(formData.typ) || null,
+        publikovat: !!formData.publikovat,
+        aktualizovano: new Date().toISOString(),
+        poznamka: formData.poznamka || null,
+
+        // Adaptery specific fields
+        prumer: parseFloat(formData.prumer) || 0.0,
+        typ_uchyceni: formData.typ_uchyceni || "",
+        roztec_brzdice: parseFloat(formData.roztec_brzdice) || 0.0,
+        popis: formData.popis || null,
+    };
+
+    // Brzdice category data transformation
+    case "brzdice":
+      return {
+        // Default data fields
+        kategorie: parseInt(formData.kategorie) || null,
+        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
+        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        cislo_dilu: formData.cislo_dilu || "",
+        publikovat: !!formData.publikovat,
+        aktualizovano: new Date().toISOString(),
+        poznamka: formData.poznamka || null, 
+
+        // Brzdice specific fields
+        typ_uchyceni: formData.typ_uchyceni || "",
+        pocet_pistku: parseInt(formData.pocet_pistku) || 0,
+        popis: formData.popis || null,
+    };
+
     // Desticky category data transformation
     case "desticky":
       return {
@@ -64,8 +112,79 @@ export function transformFormData(category, formData) {
         },
       };
 
-    // case "brzdice":
-    //   return transformBrzdice(formData);
+    // Kotouce category data transformation
+    case "kotouce":
+      return {
+        // Default data fields
+        kategorie: parseInt(formData.kategorie) || null,
+        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
+        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        cislo_dilu: formData.cislo_dilu || "",
+        typ: parseInt(formData.typ) || null,
+        publikovat: !!formData.publikovat,
+        aktualizovano: new Date().toISOString(),
+        poznamka: formData.poznamka || null,
+
+        // Kotouce specific fields
+        konkurence_braking: formData.konkurence_braking || null,
+        konkurence_ngbrakes: formData.konkurence_ngbrakes || null,
+        od: formData.vnejsi_prumer || 0.0,
+        hd: formData.roztecny_prumer || 0.0,
+        thk: formData.tloustka || 0.0,
+        id: formData.vnitrni_prumer || 0.0
+    };
+
+    // Hadicky category data transformation
+    case "hadicky":
+      return {
+        // Default data fields
+        kategorie: parseInt(formData.kategorie) || null,
+        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
+        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        cislo_dilu: formData.cislo_dilu || "",
+        typ: parseInt(formData.typ) || null,
+        publikovat: !!formData.publikovat,
+        aktualizovano: new Date().toISOString(),
+        poznamka: formData.poznamka || null,
+
+        // Hadicky specific fields
+        popis: formData.popis || null
+    };
+
+    // Pumpy category data transformation
+    case "pumpy":
+      return {
+        // Default data fields
+        kategorie: parseInt(formData.kategorie) || null,
+        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
+        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        cislo_dilu: formData.cislo_dilu || "",
+        typ: parseInt(formData.typ) || null,
+        publikovat: !!formData.publikovat,
+        aktualizovano: new Date().toISOString(),
+        poznamka: formData.poznamka || null,
+
+        // Pumpy specific fields
+        prumer: parseFloat(formData.prumer) || 0.0,
+        popis: formData.popis || null
+    };
+
+    // Prislusenstvi category data transformation
+    case "prislusenstvi":
+      return {
+        // Default data fields
+        kategorie: parseInt(formData.kategorie) || null,
+        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
+        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        cislo_dilu: formData.cislo_dilu || "",
+        typ: formData.typ || null,
+        publikovat: !!formData.publikovat,
+        aktualizovano: new Date().toISOString(),
+        poznamka: formData.poznamka || null,
+
+        // Prislusenstvi specific fields
+        popis: formData.popis || null
+    };
 
     // Default case for unsupported categories
     default:
