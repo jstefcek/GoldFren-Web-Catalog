@@ -29,9 +29,9 @@ export const topNavigationConfig = [
       { label: "Brzdiče", to: "/admin/sortiment/brzdice", iconPath: "/icons/caliper.svg" },
       { label: "Destičky", to: "/admin/sortiment/desticky", iconPath: "/icons/pad.svg" },
       { label: "Kotouče", to: "/admin/sortiment/kotouce", iconPath: "/icons/disc.svg" },
-      { label: "Hadičky", to: "/admin/sortiment/hadicky", icon: Package },
-      { label: "Pumpy", to: "/admin/sortiment/pumpy", icon: Package },
-      { label: "Příslušenství", to: "/admin/sortiment/prislusenstvi", icon: Package }
+      { label: "Hadičky", to: "/admin/sortiment/hadicky", iconPath: "/icons/brake_hoses.svg" },
+      { label: "Pumpy", to: "/admin/sortiment/pumpy", iconPath: "/icons/brake_pump.svg" },
+      { label: "Příslušenství", to: "/admin/sortiment/prislusenstvi", iconPath: "/icons/accessories.svg" }
     ]
   },
   {

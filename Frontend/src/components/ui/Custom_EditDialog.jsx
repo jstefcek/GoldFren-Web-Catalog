@@ -28,7 +28,24 @@ export default function CustomEditDialog({
   useEffect(() => {
     let timeout;
     if (isOpen && rowData) {
-      setFormData(rowData);
+      const fixedData = { ...rowData };
+
+      const categoryConfig = dialogColumnsConfig[category]?.fields || [];
+      categoryConfig.forEach((col) => {
+        if (col.type === "select" && Array.isArray(col.value)) {
+          const match = col.value.find((opt) => {
+            // Match either by value or by label, in case API returned a label
+            return (
+              opt.value === rowData[col.key] ||
+              opt.value.toString() === rowData[col.key]?.toString() ||
+              opt.label === rowData[col.key]
+            );
+          });
+          if (match) fixedData[col.key] = match.value;
+        }
+      });
+
+      setFormData(fixedData);
       timeout = setTimeout(() => setLoaded(true), 50);
     } else {
       setLoaded(false);
@@ -103,7 +120,9 @@ export default function CustomEditDialog({
           <select
             value={value ?? ""}
             onChange={(e) => {
-              const selected = col.value.find((opt) => opt.value.toString() === e.target.value);
+              const selected = col.value.find(
+                (opt) => opt.value.toString() === e.target.value
+              );
               handleChange(col.key, selected ? selected.value : e.target.value);
             }}
             className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"

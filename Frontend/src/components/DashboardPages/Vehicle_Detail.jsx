@@ -15,7 +15,7 @@ export default function VehicleLayout() {
       <div className="max-w-auto mx-auto mt-4">
         {/* Page label */}
         <h2 className="text-3xl font-bold text-gray-900">
-          Detail Vozidla - {vehicleLabel}
+          {vehicleLabel}
         </h2>
 
       </div>
