@@ -20,7 +20,7 @@ export const topNavigationConfig = [
   },
   {
     id: "sortiment",
-    label: "Sortiment Detail",
+    label: "Sortiment",
     icon: Package,
     type: "dropdown",
     permissions: ["isInternal", "isActive"],
@@ -36,7 +36,7 @@ export const topNavigationConfig = [
   },
   {
     id: "vehicles",
-    label: "Vozidla Detail",
+    label: "Vozidla",
     icon: Car,
     type: "dropdown",
     permissions: ["isInternal", "isActive"],

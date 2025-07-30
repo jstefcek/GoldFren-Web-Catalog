@@ -42,7 +42,7 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
           </div>
           {!isCollapsed && (
             <div className="ml-auto">
-              {isOpen ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+              {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </div>
           )}
         </button>
