@@ -1,10 +1,11 @@
 # Business logic for the Vyrobce Service
 
-
 # Imports
-from datetime import datetime
 from GoldFrenAPI.Models.Vyrobce import Vyrobce
-from GoldFrenAPI.Models.Vozidlo import FilteredVozidlo
+from GoldFrenAPI.Models.Vozidlo import (
+    FilteredVozidlo, 
+    Vozidlo
+)
 from GoldFrenAPI.Models.Adaptery import VozidloAdapter
 from GoldFrenAPI.Models.Desticky import VozidloDesticka
 from GoldFrenAPI.Models.Brzdice import VozidloBrzdic
@@ -122,3 +123,44 @@ def get_vozidlo_sortiment_all(vozidlo_id):
 
     # If any records are found, return the result
     return result if result else None
+
+def get_vozidlo_by_category(kategorie_kod: int):
+    """
+    Function would return all vehicles (vozidla) for a given category (kategorie_kod).
+    Categories are given from c_kategorie table 
+    """
+    # Prepare SQL query
+    sql_query = """select * from v_vozidla_detail v 
+                    where kategorie = %s"""
+    params = [kategorie_kod]
+    
+    # Fetch records from the database
+    records = get_filtered_records(sql_query=sql_query, params=params)
+    vozidla = []
+
+    # Check if records are found
+    if records:
+        
+        # Loop through each record and create Vozidlo objects
+        for vozidlo in records:
+            vozidlo_obj = Vozidlo(
+                kod=vozidlo["kod"],
+                kategorie=vozidlo["kategorie"],
+                subkategorie=vozidlo["subkategorie"],
+                vyrobce=vozidlo["vyrobce"],
+                model=vozidlo["model"],
+                typ=vozidlo["typ"],
+                oznaceni=vozidlo["oznaceni"],
+                rok_od=vozidlo["rok_od"],
+                rok_do=vozidlo["rok_do"],
+                vykon=vozidlo["vykon"],
+                objem=vozidlo["objem"],
+                poznamka=vozidlo["poznamka"],
+                publikovat=vozidlo["publikovat"],
+                aktualizovano=vozidlo["aktualizovano"],
+                aktualizoval=vozidlo["aktualizoval"]
+            )
+            vozidla.append(vozidlo_obj)
+
+    # Return list of vozidlo objects
+    return vozidla if vozidla else None

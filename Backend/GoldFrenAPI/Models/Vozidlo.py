@@ -1,23 +1,22 @@
 # Class Definition
 class Vozidlo():
-    def __init__(self, kod, subkategorie, vyrobce, typ, objem, oznaceni, rok_od, mesic_od, rok_do, mesic_do, vykon, poznamka, index, publikovat, aktualizovano, aktualizoval):
+    def __init__(self, kod, kategorie, subkategorie, vyrobce, model, typ, oznaceni, rok_od, rok_do, vykon, objem, poznamka, publikovat, aktualizovano, aktualizoval):
         self.kod = kod
+        self.kategorie = kategorie
         self.subkategorie = subkategorie
         self.vyrobce = vyrobce
+        self.model = model
         self.typ = typ
-        self.objem = objem
         self.oznaceni = oznaceni
         self.rok_od = rok_od
-        self.mesic_od = mesic_od
         self.rok_do = rok_do
-        self.mesic_do = mesic_do
         self.vykon = vykon
+        self.objem = objem
         self.poznamka = poznamka
-        self.index = index
         self.publikovat = publikovat
         self.aktualizovano = aktualizovano
         self.aktualizoval = aktualizoval
-    
+
     def to_dict(self):
         return self.__dict__
     

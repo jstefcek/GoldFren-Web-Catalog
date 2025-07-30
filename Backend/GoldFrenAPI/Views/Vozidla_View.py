@@ -5,7 +5,8 @@ from django.core.cache import cache
 from GoldFrenAPI.Services.Vozidla_Service import (
     get_vyrobce_by_kategorie,
     get_vozidlo_filtered,
-    get_vozidlo_sortiment_all
+    get_vozidlo_sortiment_all,
+    get_vozidlo_by_category
 )
 
 # Cache timeout settings
@@ -85,3 +86,25 @@ def get_vozidlo_sortiment_view(request):
 
     cache.set(cache_key, data, timeout=CACHE_TIMEOUT)
     return JsonResponse(data, safe=False, status=200)
+
+@api_view(['GET'])
+def get_vozidlo_by_category_view(request):
+    # Get the kategorie_kod from the request
+    kategorie_kod = request.GET.get("kategorie_kod")
+    if not kategorie_kod:
+        return JsonResponse({"error": "kategorie_kod is required"}, status=400)
+
+    # Check if there is a cached version of the vozidlo data
+    cache_key = f"vozidlo_by_category_{kategorie_kod}"
+    cached_data = cache.get(cache_key)
+    if cached_data:
+        return JsonResponse(cached_data, safe=False, status=200)
+
+    # If not cached, fetch the vozidlo data from the database
+    vozidla_objects = get_vozidlo_by_category(kategorie_kod)
+    if vozidla_objects:
+        vozidla_list = [v.to_dict() for v in vozidla_objects]
+        cache.set(cache_key, vozidla_list, timeout=CACHE_TIMEOUT)
+        return JsonResponse(vozidla_list, safe=False, status=200)
+    
+    return JsonResponse({"error": "Vozidla not found"}, status=404)
