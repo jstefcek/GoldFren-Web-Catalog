@@ -11,6 +11,31 @@ export const SelectValueConfig = {
     {id: 6, label: "Motokáry", value: 6},
   ],
 
+  // Vehicle subcategorie
+  subkategorie_vozidel: [
+    {id: 1, label: "Motocross", value: 1},
+    {id: 2, label: "Silniční", value: 2},
+    {id: 3, label: "ATV", value: 3},
+    {id: 4, label: "Závodní", value: 4},
+    {id: 5, label: "Bike", value: 5},
+    {id: 6, label: "Nezařazeno", value: 6},
+    {id: 7, label: "Motard", value: 7},
+    {id: 8, label: "Nezařazeno", value: 8},
+    {id: 9, label: "Osobní", value: 9},
+    {id: 10, label: "Závodní", value: 10},
+    {id: 11, label: "Kamión", value: 11},
+    {id: 12, label: "Nezařazeno", value: 12},
+    {id: 13, label: "Horské kolo", value: 13},
+    {id: 14, label: "Rám", value: 14},
+    {id: 15, label: "Nezařazeno", value: 15},
+    {id: 16, label: "-", value: 16},
+    {id: 17, label: "Nezařazeno", value: 17},
+    {id: 18, label: "-", value: 18},
+    {id: 19, label: "Nezařazeno", value: 19},
+    {id: 20, label: "Závodní", value: 20},
+    {id: 21, label: "Sněžný", value: 21},
+  ],
+
   // Attachment type
   typ_uchyceni: [
     {id: 1, label: "Axis", value: "Axis"},
@@ -190,5 +215,27 @@ export const dialogColumnsConfig = {
       {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
     ],
   },
+
+  // Vehicle configuration
+  vozidla: {
+    primaryKey: "kod",
+    editEndpoint: (kod) => `${serverUrl}/api/goldfren/internal/vozidla/update/${kod}`,
+    fields: [
+      {key: "kod", label: "ID", type: "text", editable: false, show: false, dataType: "string", },
+      {key: "nazev_modelu", label: "Model vozidla", type: "input", editable: false, show: true, dataType: "string", },
+      {key: "kategorie", label: "Kategorie vozidla", placeholder: "Vyberte kategorii vozidla", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", },
+      {key: "subkategorie", label: "Subkategorie vozidla", placeholder: "Zadejte subkategorii vozidla", value: SelectValueConfig.subkategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", },
+      {key: "vyrobce", label: "Výrobce vozidla", placeholder: "Zadejte výrobce vozidla", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "typ", label: "Typ vozidla", placeholder: "Zadejte typ vozidla", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "oznaceni", label: "Označení vozidla", placeholder: "Zadejte označení vozidla", type: "textarea", editable: true, show: true, dataType: "string", },
+      {key: "poznamka", label: "Poznámka", placeholder: "Zadejte poznámku k vozidlu", type: "textarea", editable: true, show: true, dataType: "string", },
+      {key: "rok_od", label: "Rok od", placeholder: "Zadejte rok výroby od", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "rok_do", label: "Rok do", placeholder: "Zadejte rok výroby do", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "vykon", label: "Výkon [kW]", placeholder: "Zadejte výkon vozidla", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "objem", label: "Objem [cm3]", placeholder: "Zadejte objem vozidla", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "publikovat", label: "Publikovat vozidlo?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
+      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
+    ],
+  }
 
 };

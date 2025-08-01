@@ -93,6 +93,20 @@ def get_vozidlo_by_category_view(request):
     kategorie_kod = request.GET.get("kategorie_kod")
     if not kategorie_kod:
         return JsonResponse({"error": "kategorie_kod is required"}, status=400)
+    
+    # Set the kategorie kod to specific value
+    if kategorie_kod == "automobily":
+        kategorie_kod = "Auto"
+    elif kategorie_kod == "motocykly":
+        kategorie_kod = "Motocykl"
+    elif kategorie_kod == "motokary":
+        kategorie_kod = "Motokára"
+    elif kategorie_kod == "kola":
+        kategorie_kod = "Kolo"
+    elif kategorie_kod == "letadla":
+        kategorie_kod = "Letadlo"
+    elif kategorie_kod == "prumysl":
+        kategorie_kod = "Průmysl"
 
     # Check if there is a cached version of the vozidlo data
     cache_key = f"vozidlo_by_category_{kategorie_kod}"

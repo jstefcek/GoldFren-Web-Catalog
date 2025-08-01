@@ -175,6 +175,15 @@
       "is_staff": "Administrator",
       "date_joined": "Erstellt am",
       "last_login": "Letzte Anmeldung"
+    },
+    "vehicle": {
+      "code": "Code",
+      "subcategory": "Unterkategorie",
+      "manufacturer": "Hersteller",
+      "model": "Modell",
+      "year_from": "Baujahr ab",
+      "year_to": "Baujahr bis",
+      "publish": "Veröffentlichen"
     }
   },
   "contact": {

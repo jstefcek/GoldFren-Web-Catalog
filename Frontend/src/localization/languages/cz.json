@@ -175,6 +175,15 @@
       "is_staff": "Administrátor",
       "date_joined": "Vytvořeno",
       "last_login": "Poslední přihlášení"
+    },
+    "vehicle": {
+      "code": "Kód",
+      "subcategory": "Subkategorie",
+      "manufacturer": "Výrobce",
+      "model": "Model",
+      "year_from": "Rok výroby od",
+      "year_to": "Rok výroby do",
+      "publish": "Publikovat"
     }
   },
   "error": {

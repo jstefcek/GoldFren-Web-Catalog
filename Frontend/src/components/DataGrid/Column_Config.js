@@ -276,6 +276,17 @@ export const columnsConfig = {
     {key: "is_staff", label: "datagrid.user.is_staff", sortable: true, filterable: true },
     {key: "date_joined", label: "datagrid.user.date_joined", type: "date", sortable: true, filterable: true },
     {key: "last_login", label: "datagrid.user.last_login", type: "date", sortable: true, filterable: true },
+  ],
+
+  // Vozidla column config
+  vozidla: [
+    {key: "kod", label: "datagrid.vehicle.code", sortable: true, filterable: true, link: true },
+    {key: "subkategorie", label: "datagrid.vehicle.subcategory", sortable: true, filterable: true },
+    {key: "vyrobce", label: "datagrid.vehicle.manufacturer", sortable: true, filterable: true },
+    {key: "model", label: "datagrid.vehicle.model", sortable: true, filterable: true },
+    {key: "rok_od", label: "datagrid.vehicle.year_from", sortable: true, filterable: true },
+    {key: "rok_do", label: "datagrid.vehicle.year_to", sortable: true, filterable: true },
+    {key: "publikovat", label: "datagrid.vehicle.publish", type: "boolean", sortable: true, filterable: true },
   ]
 
 };

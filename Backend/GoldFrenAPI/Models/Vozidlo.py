@@ -1,9 +1,10 @@
 # Class Definition
 class Vozidlo():
-    def __init__(self, kod, kategorie, subkategorie, vyrobce, model, typ, oznaceni, rok_od, rok_do, vykon, objem, poznamka, publikovat, aktualizovano, aktualizoval):
+    def __init__(self, kod, kategorie, subkategorie, nazev_modelu, vyrobce, model, typ, oznaceni, rok_od, rok_do, vykon, objem, poznamka, publikovat, aktualizovano, aktualizoval):
         self.kod = kod
         self.kategorie = kategorie
         self.subkategorie = subkategorie
+        self.nazev_modelu = nazev_modelu
         self.vyrobce = vyrobce
         self.model = model
         self.typ = typ

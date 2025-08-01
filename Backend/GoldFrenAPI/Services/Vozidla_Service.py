@@ -146,6 +146,7 @@ def get_vozidlo_by_category(kategorie_kod: int):
             vozidlo_obj = Vozidlo(
                 kod=vozidlo["kod"],
                 kategorie=vozidlo["kategorie"],
+                nazev_modelu=vozidlo["nazev_modelu"],
                 subkategorie=vozidlo["subkategorie"],
                 vyrobce=vozidlo["vyrobce"],
                 model=vozidlo["model"],
@@ -156,10 +157,26 @@ def get_vozidlo_by_category(kategorie_kod: int):
                 vykon=vozidlo["vykon"],
                 objem=vozidlo["objem"],
                 poznamka=vozidlo["poznamka"],
-                publikovat=vozidlo["publikovat"],
+                publikovat=bool(vozidlo["publikovat"]),
                 aktualizovano=vozidlo["aktualizovano"],
                 aktualizoval=vozidlo["aktualizoval"]
             )
+            
+            # Change vozidlo category
+            if vozidlo_obj.kategorie == "Auto":
+                vozidlo_obj.kategorie = "Automobily"
+            elif vozidlo_obj.kategorie == "Motocykl":
+                vozidlo_obj.kategorie = "Motocykly"
+            elif vozidlo_obj.kategorie == "Motokára":
+                vozidlo_obj.kategorie = "Motokáry"
+            elif vozidlo_obj.kategorie == "Kolo":
+                vozidlo_obj.kategorie = "Jízdní kola"
+            elif vozidlo_obj.kategorie == "Letadlo":
+                vozidlo_obj.kategorie = "Letadla"
+            elif vozidlo_obj.kategorie == "Průmysl":
+                vozidlo_obj.kategorie = "Průmysl"
+                
+            # Append vozidlo object to the list
             vozidla.append(vozidlo_obj)
 
     # Return list of vozidlo objects
