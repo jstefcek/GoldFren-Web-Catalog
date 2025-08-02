@@ -628,7 +628,7 @@ export default function DataGrid_Admin({
             onError={(errMsg) => {
               setAlertDialog({
                 title: "Chyba",
-                message: errMsg || "Nastala chyba při ukládání dat.",
+                message: errMsg || "Nastala chyba při editaci dat.",
                 type: "error",
                 duration: 5,
               });

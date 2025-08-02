@@ -186,9 +186,28 @@ export function transformFormData(category, formData) {
         popis: formData.popis || null
     };
 
+    // Vozidla category data transformation
+    case "vozidla":
+      return {
+        // Default data fields
+        kod: formData.kod || null,
+        kategorie: parseInt(formData.kategorie) || null,
+        subkategorie: parseInt(formData.subkategorie) || null,
+        vyrobce: formData.vyrobce || "",
+        typ: formData.typ || "",
+        oznaceni: formData.oznaceni || "",
+        poznamka: formData.poznamka || "",
+        rok_od: formData.rok_od ? parseInt(formData.rok_od) : null,
+        rok_do: formData.rok_do ? parseInt(formData.rok_do) : null,
+        vykon: formData.vykon ? parseFloat(formData.vykon) : null,
+        objem: formData.objem ? parseFloat(formData.objem) : null,
+        publikovat: !!formData.publikovat,
+        aktualizovano: new Date().toISOString(),
+    };
+
     // Default case for unsupported categories
     default:
-      throw new Error(`Unsupported category: ${category}`);
+      throw new Error(`Unsupported category to edit data: ${category}`);
   }
 }
 

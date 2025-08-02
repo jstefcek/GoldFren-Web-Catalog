@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import ConfirmDialog from "../ui/Custom_ConfirmDialog";
 import { dialogColumnsConfig } from "../../config/ColumnConfigs/EditDialog_Config";
+import { SelectValueConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { formatDateLong } from "../../utils/utils";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import DetailImage from "../ui/Custom_DetailImage";
@@ -23,6 +24,7 @@ export default function CustomEditDialog({
   const [showConfirm, setShowConfirm] = useState(false);
   const config = dialogColumnsConfig[category];
   const [loaded, setLoaded] = useState(false);
+  const [filteredSubkategorie, setFilteredSubkategorie] = useState([]);
 
   // Initialize form data when dialog opens
   useEffect(() => {
@@ -34,10 +36,9 @@ export default function CustomEditDialog({
       categoryConfig.forEach((col) => {
         if (col.type === "select" && Array.isArray(col.value)) {
           const match = col.value.find((opt) => {
-            // Match either by value or by label, in case API returned a label
             return (
               opt.value === rowData[col.key] ||
-              opt.value.toString() === rowData[col.key]?.toString() ||
+              opt.value?.toString() === rowData[col.key]?.toString() ||
               opt.label === rowData[col.key]
             );
           });
@@ -45,13 +46,64 @@ export default function CustomEditDialog({
         }
       });
 
+      // Set formData early
       setFormData(fixedData);
-      timeout = setTimeout(() => setLoaded(true), 50);
+
+      // Ensure subkategorie gets mapped AFTER filtered options are available
+      timeout = setTimeout(() => {
+        const kategorieLabel = SelectValueConfig.kategorie_vozidel.find(
+          (kat) => kat.value === fixedData.kategorie
+        )?.label;
+
+        const filtered = SelectValueConfig.subkategorie_vozidel.filter(
+          (sub) => sub.category === kategorieLabel
+        );
+        setFilteredSubkategorie(filtered);
+
+        const matchSub = filtered.find(
+          (sub) =>
+            sub.value === rowData.subkategorie ||
+            sub.value?.toString() === rowData.subkategorie?.toString() ||
+            sub.label === rowData.subkategorie
+        );
+
+        if (matchSub) {
+          setFormData((prev) => ({
+            ...prev,
+            subkategorie: matchSub.value,
+          }));
+        }
+
+        setLoaded(true);
+      }, 50);
     } else {
       setLoaded(false);
     }
     return () => clearTimeout(timeout);
   }, [isOpen, rowData]);
+
+  // Select subkategorii based on selected kategorie
+  useEffect(() => {
+    const kategorieLabel = SelectValueConfig.kategorie_vozidel.find(
+      (kat) => kat.value === formData.kategorie
+    )?.label;
+
+    const filtered = SelectValueConfig.subkategorie_vozidel.filter(
+      (sub) => sub.category === kategorieLabel
+    );
+
+    setFilteredSubkategorie(filtered);
+  }, [formData.kategorie]);
+
+  // Clear subkategorie when kategorie changes
+  useEffect(() => {
+    if (
+      formData.subkategorie &&
+      !filteredSubkategorie.some((sub) => sub.value === formData.subkategorie)
+    ) {
+      setFormData((prev) => ({ ...prev, subkategorie: "" }));
+    }
+  }, [filteredSubkategorie]);
 
   // If dialog is not open or no rowData, return null
   if (!isOpen || !rowData || !config || !loaded) return null;
@@ -82,13 +134,13 @@ export default function CustomEditDialog({
         body: JSON.stringify(transformFormData(category, formData)),
       });
 
+      // Check if the response is successful
+      if (!response.ok) throw new Error("Editing the data failed...");
+
       // Log the response and form data for debug
       console.log("Response: ", response);
       console.log("Body: ", formData);
       console.log("Transformed Data: ", transformFormData(category, formData));
-
-      // Check if the response is successful
-      if (!response.ok) throw new Error("Edit failed");
 
       // Call onSuccess callback if provided and close the dialog
       onSuccess();
@@ -114,6 +166,33 @@ export default function CustomEditDialog({
 
     // Handle other editable fields
     if (col.editable) {
+      // Handle select input for subkategorie with filtered options
+      if (col.key === "subkategorie" && col.type === "select") {
+        const options = filteredSubkategorie;
+
+        return (
+          <select
+            value={value ?? ""}
+            onChange={(e) => {
+              const selected = options.find(
+                (opt) => opt.value.toString() === e.target.value
+              );
+              handleChange(col.key, selected ? selected.value : e.target.value);
+            }}
+            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
+          >
+            <option value="" disabled>
+              {col.placeholder || t("Vyberte možnost")}
+            </option>
+            {options.map((option) => (
+              <option key={option.id} value={option.value}>
+                {t(option.label)}
+              </option>
+            ))}
+          </select>
+        );
+      }
+
       // Select input type
       if (col.type === "select" && Array.isArray(col.value)) {
         return (
@@ -157,6 +236,7 @@ export default function CustomEditDialog({
           <textarea
             value={value || ""}
             onChange={(e) => handleChange(col.key, e.target.value)}
+            placeholder={col.placeholder || ""}
             rows={5}
             className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm resize-y focus:ring-2 focus:ring-red-500 focus:outline-none"
           />
