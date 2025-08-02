@@ -135,7 +135,7 @@ export default function CustomEditDialog({
       });
 
       // Check if the response is successful
-      if (!response.ok) throw new Error("Editing the data failed..." + response.statusText);
+      if (!response.ok) throw new Error("Editing the data failed... Error: " + response.statusText);
 
       // Log the response and form data for debug
       console.log("Response: ", response);
