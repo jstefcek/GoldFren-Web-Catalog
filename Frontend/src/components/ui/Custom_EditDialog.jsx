@@ -134,13 +134,13 @@ export default function CustomEditDialog({
         body: JSON.stringify(transformFormData(category, formData)),
       });
 
-      // Check if the response is successful
-      if (!response.ok) throw new Error("Editing the data failed... Error: " + response.statusText);
-
       // Log the response and form data for debug
       console.log("Response: ", response);
       console.log("Body: ", formData);
       console.log("Transformed Data: ", transformFormData(category, formData));
+
+      // Check if the response is successful
+      if (!response.ok) throw new Error("Editing the data failed... Error: " + response.statusText);
 
       // Call onSuccess callback if provided and close the dialog
       onSuccess();

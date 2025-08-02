@@ -181,3 +181,26 @@ def get_vozidlo_by_category(kategorie_kod: int):
 
     # Return list of vozidlo objects
     return vozidla if vozidla else None
+
+def update_vozidlo(vozidlo_id: int, data: dict):
+    """
+    Function to would update vozidlo data
+    """
+    # Prepare SQL query for updating vozidlo
+    sql_query = """
+        UPDATE d_vozidla 
+        SET kategorie = %s, subkategorie = %s, vyrobce = %s, model = %s, 
+            typ = %s, oznaceni = %s, rok_od = %s, rok_do = %s, vykon = %s, 
+            objem = %s, poznamka = %s, publikovat = %s 
+        WHERE kod = %s
+    """
+    
+    # Prepare parameters for the query
+    params = [
+        data.get("kategorie"), data.get("subkategorie"), data.get("vyrobce"), data.get("model"),
+        data.get("typ"), data.get("oznaceni"), data.get("rok_od"), data.get("rok_do"),
+        data.get("vykon"), data.get("objem"), data.get("poznamka"), data.get("publikovat", False), vozidlo_id
+    ]
+    
+    # Execute the update query
+    get_filtered_records(sql_query=sql_query, params=params)

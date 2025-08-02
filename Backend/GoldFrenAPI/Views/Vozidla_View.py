@@ -6,7 +6,8 @@ from GoldFrenAPI.Services.Vozidla_Service import (
     get_vyrobce_by_kategorie,
     get_vozidlo_filtered,
     get_vozidlo_sortiment_all,
-    get_vozidlo_by_category
+    get_vozidlo_by_category,
+    update_vozidlo
 )
 
 # Cache timeout settings
@@ -122,3 +123,21 @@ def get_vozidlo_by_category_view(request):
         return JsonResponse(vozidla_list, safe=False, status=200)
     
     return JsonResponse({"error": "Vozidla not found"}, status=404)
+
+@api_view(['PUT'])
+def update_vozidlo_view(request, vozidlo_id):
+    # Get the data from the request
+    data = request.data
+
+    # Validate the required fields
+    required_fields = ["kategorie", "subkategorie", "vyrobce", "model", "typ", "oznaceni", "rok_od", "rok_do", "vykon", "objem", "publikovat", "aktualizoval"]
+    for field in required_fields:
+        if field not in data:
+            return JsonResponse({"error": f"{field} is required"}, status=400)
+
+    # Update the vozidlo in the database
+    try:
+        update_vozidlo(vozidlo_id, data)
+        return JsonResponse({"message": "Vozidlo updated successfully"}, status=200)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
