@@ -593,50 +593,50 @@ FROM (
 WHERE data.publikovat = 1;
 
 -- Vozidlo detail view
-CREATE OR REPLACE VIEW `goldfren_data`.`v_vozidla_detail` AS
+CREATE OR REPLACE VIEW v_vozidla_detail AS
 select
-    `data`.`kod` AS `kod`,
-    `data`.`kategorie` AS `kategorie`,
-    `data`.`subkategorie` AS `subkategorie`,
-    trim(ifnull(concat(`data`.`vyrobce`, ' ', `data`.`model`), `data`.`model`)) AS `nazev_modelu`,
-    `data`.`vyrobce` AS `vyrobce`,
-    `data`.`model` AS `model`,
-    `data`.`typ` AS `typ`,
-    `data`.`oznaceni` AS `oznaceni`,
-    `data`.`rok_od` AS `rok_od`,
-    `data`.`rok_do` AS `rok_do`,
-    `data`.`vykon` AS `vykon`,
-    `data`.`objem` AS `objem`,
-    `data`.`poznamka` AS `poznamka`,
-    `data`.`publikovat` AS `publikovat`,
-    `data`.`aktualizovano` AS `aktualizovano`,
-    `data`.`aktualizoval` AS `aktualizoval`
+    data.kod AS kod,
+    data.kategorie AS kategorie,
+    data.subkategorie AS subkategorie,
+    trim(ifnull(concat(data.vyrobce, ' ', data.model), data.model)) AS nazev_modelu,
+    data.vyrobce AS vyrobce,
+    data.model AS model,
+    data.typ AS typ,
+    data.oznaceni AS oznaceni,
+    data.rok_od AS rok_od,
+    data.rok_do AS rok_do,
+    data.vykon AS vykon,
+    data.objem AS objem,
+    data.poznamka AS poznamka,
+    data.publikovat AS publikovat,
+    data.aktualizovano AS aktualizovano,
+    data.aktualizoval AS aktualizoval
 from
     (
     select
-        `dv`.`kod` AS `kod`,
-        `ck`.`nazev` AS `kategorie`,
-        `cs`.`nazev` AS `subkategorie`,
-        `dv2`.`nazev` AS `vyrobce`,
-        trim(ifnull(concat(`dv`.`typ`, ' ', if((`dv`.`objem` is null), '', concat(`dv`.`objem`, ' ')), if((`dv`.`oznaceni` is null), '', `dv`.`oznaceni`)), `dv`.`oznaceni`)) AS `model`,
-        `dv`.`typ` AS `typ`,
-        `dv`.`oznaceni` AS `oznaceni`,
-        `dv`.`rok_od` AS `rok_od`,
-        ifnull(`dv`.`rok_do`, year(curdate())) AS `rok_do`,
-        `dv`.`vykon` AS `vykon`,
-        `dv`.`objem` AS `objem`,
-        `dv`.`poznamka` AS `poznamka`,
-        ifnull(`dv`.`publikovat`, 1) AS `publikovat`,
-        `dv`.`aktualizovano` AS `aktualizovano`,
-        `dv`.`aktualizoval` AS `aktualizoval`
+        dv.kod AS kod,
+        ck.nazev AS kategorie,
+        cs.nazev AS subkategorie,
+        dv2.nazev AS vyrobce,
+        trim(ifnull(concat(dv.typ, ' ', if((dv.objem is null), '', concat(dv.objem, ' ')), if((dv.oznaceni is null), '', dv.oznaceni)), dv.oznaceni)) AS model,
+        dv.typ AS typ,
+        dv.oznaceni AS oznaceni,
+        dv.rok_od AS rok_od,
+        ifnull(dv.rok_do, year(curdate())) AS rok_do,
+        dv.vykon AS vykon,
+        dv.objem AS objem,
+        dv.poznamka AS poznamka,
+        ifnull(dv.publikovat, 1) AS publikovat,
+        dv.aktualizovano AS aktualizovano,
+        dv.aktualizoval AS aktualizoval
     from
-        (((`goldfren_data`.`d_vozidlo` `dv`
-    left join `goldfren_data`.`d_vyrobce` `dv2` on
-        ((`dv2`.`kod` = `dv`.`vyrobce`)))
-    left join `goldfren_data`.`c_kategorie` `ck` on
-        ((`ck`.`kod` = `dv2`.`kategorie`)))
-    left join `goldfren_data`.`c_subkategorie` `cs` on
-        ((`cs`.`kod` = `dv`.`subkategorie`)))) `data`
+        (((goldfren_data.d_vozidlo dv
+    left join goldfren_data.d_vyrobce dv2 on
+        ((dv2.kod = dv.vyrobce)))
+    left join goldfren_data.c_kategorie ck on
+        ((ck.kod = dv2.kategorie)))
+    left join goldfren_data.c_subkategorie cs on
+        ((cs.kod = dv.subkategorie)))) data
 order by
-    `data`.`vyrobce`,
-    `data`.`model`;
+    data.vyrobce,
+    data.model;
