@@ -1,6 +1,11 @@
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export const SelectValueConfig = {
+  // Vyrobce category
+  vyrobce: [
+    {api: `${serverUrl}/api/goldfren/internal/vozidla/vyrobce`, param_key: "kategorie_kod", param_value: "kategorie"},
+  ],
+
   // Vehicle categorie
   kategorie_vozidel: [
     {id: 1, label: "Motocykly", value: 1},
@@ -223,9 +228,9 @@ export const dialogColumnsConfig = {
     fields: [
       {key: "kod", label: "ID", type: "text", editable: false, show: false, dataType: "string", },
       {key: "nazev_modelu", label: "Model vozidla", type: "input", editable: false, show: true, dataType: "string", },
-      {key: "kategorie", label: "Kategorie vozidla", placeholder: "Vyberte kategorii vozidla", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", },
+      {key: "kategorie", label: "Kategorie vozidla", placeholder: "Vyberte kategorii vozidla", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: false, show: true, dataType: "string", },
       {key: "subkategorie", label: "Subkategorie vozidla", placeholder: "Zadejte subkategorii vozidla", value: SelectValueConfig.subkategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", },
-      {key: "vyrobce", label: "Výrobce vozidla", placeholder: "Zadejte výrobce vozidla", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "vyrobce", label: "Výrobce vozidla", placeholder: "Zadejte výrobce vozidla", value: SelectValueConfig.vyrobce, type: "select", editable: true, show: true, dataType: "string", },
       {key: "typ", label: "Typ vozidla", placeholder: "Zadejte typ vozidla", type: "input", editable: true, show: true, dataType: "string", },
       {key: "oznaceni", label: "Označení vozidla", placeholder: "Zadejte označení vozidla", type: "textarea", editable: true, show: true, dataType: "string", },
       {key: "poznamka", label: "Poznámka", placeholder: "Zadejte poznámku k vozidlu", type: "textarea", editable: true, show: true, dataType: "string", },
@@ -234,7 +239,7 @@ export const dialogColumnsConfig = {
       {key: "vykon", label: "Výkon [kW]", placeholder: "Zadejte výkon vozidla", type: "input", editable: true, show: true, dataType: "string", },
       {key: "objem", label: "Objem [cm3]", placeholder: "Zadejte objem vozidla", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat vozidlo?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
-      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
+      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: false, show: true, dataType: "date", },
     ],
   }
 

@@ -25,6 +25,7 @@ export default function CustomEditDialog({
   const config = dialogColumnsConfig[category];
   const [loaded, setLoaded] = useState(false);
   const [filteredSubkategorie, setFilteredSubkategorie] = useState([]);
+  const [vyrobceOptions, setVyrobceOptions] = useState([]);
 
   // Initialize form data when dialog opens
   useEffect(() => {
@@ -34,6 +35,17 @@ export default function CustomEditDialog({
 
       const categoryConfig = dialogColumnsConfig[category]?.fields || [];
       categoryConfig.forEach((col) => {
+        if (col.key === "vyrobce" && Array.isArray(vyrobceOptions)) {
+          const match = vyrobceOptions.find(
+            (opt) =>
+              opt.value === rowData.vyrobce ||
+              opt.label === rowData.vyrobce ||
+              opt.value?.toString() === rowData.vyrobce?.toString()
+          );
+          if (match) fixedData.vyrobce = match.value;
+          return;
+        }
+
         if (col.type === "select" && Array.isArray(col.value)) {
           const match = col.value.find((opt) => {
             return (
@@ -95,6 +107,56 @@ export default function CustomEditDialog({
     setFilteredSubkategorie(filtered);
   }, [formData.kategorie]);
 
+  // Fetch vyrobce options when dialog opens
+  useEffect(() => {
+    const loadVyrobceOptions = async () => {
+      const config = SelectValueConfig.vyrobce?.[0];
+      if (!config || !formData?.[config.param_value]) return;
+
+      const url = `${config.api}?${config.param_key}=${
+        formData[config.param_value]
+      }`;
+      try {
+        const res = await fetch(url, {
+          headers: access_token
+            ? { Authorization: `Bearer ${access_token}` }
+            : {},
+        });
+        if (!res.ok) throw new Error("Failed to load manufacturer options");
+        const data = await res.json();
+
+        // Map to { id, label, value }
+        const mapped = data.map((item) => ({
+          id: item.kod,
+          label: item.nazev,
+          value: item.kod,
+        }));
+
+        setVyrobceOptions(mapped);
+      } catch (error) {
+        console.error("Vyrobce API error:", error);
+        setVyrobceOptions([]);
+      }
+    };
+
+    loadVyrobceOptions();
+  }, [formData.kategorie]);
+
+  // Ensure vyrobce matches options when formData changes
+  useEffect(() => {
+    if (!vyrobceOptions.length || !formData.vyrobce || loaded) return;
+
+    const found = vyrobceOptions.find(
+      (opt) =>
+        opt.label === formData.vyrobce ||
+        opt.value.toString() === formData.vyrobce?.toString()
+    );
+
+    if (found && found.value !== formData.vyrobce) {
+      setFormData((prev) => ({ ...prev, vyrobce: found.value }));
+    }
+  }, [vyrobceOptions, formData.vyrobce, loaded, isOpen]);
+
   // Clear subkategorie when kategorie changes
   useEffect(() => {
     if (
@@ -140,7 +202,10 @@ export default function CustomEditDialog({
       console.log("Transformed Data: ", transformFormData(category, formData));
 
       // Check if the response is successful
-      if (!response.ok) throw new Error("Editing the data failed... Error: " + response.statusText);
+      if (!response.ok)
+        throw new Error(
+          "Editing the data failed... Error: " + response.statusText
+        );
 
       // Call onSuccess callback if provided and close the dialog
       onSuccess();
@@ -185,6 +250,26 @@ export default function CustomEditDialog({
               {col.placeholder || t("Vyberte možnost")}
             </option>
             {options.map((option) => (
+              <option key={option.id} value={option.value}>
+                {t(option.label)}
+              </option>
+            ))}
+          </select>
+        );
+      }
+
+      // Handle select input for vyrobce
+      if (col.key === "vyrobce" && col.type === "select") {
+        return (
+          <select
+            value={value ?? ""}
+            onChange={(e) => handleChange(col.key, e.target.value)}
+            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
+          >
+            <option value="" disabled>
+              {col.placeholder || t("Vyberte možnost")}
+            </option>
+            {vyrobceOptions.map((option) => (
               <option key={option.id} value={option.value}>
                 {t(option.label)}
               </option>
@@ -274,6 +359,36 @@ export default function CustomEditDialog({
           className="max-w-full max-h-36 object-contain block"
           imageAllign="center"
         />
+      );
+    }
+
+    // Handle non-editable selects
+    if (col.type === "select") {
+      let options = [];
+
+      if (col.key === "subkategorie") {
+        options = filteredSubkategorie;
+      } else if (col.key === "vyrobce") {
+        options = vyrobceOptions;
+      } else if (Array.isArray(col.value)) {
+        options = col.value;
+      }
+
+      const selectedOption = options.find(
+        (opt) =>
+          opt.value === value ||
+          opt.value?.toString() === value?.toString() ||
+          opt.label === value
+      );
+
+      return (
+        <select
+          value={selectedOption?.value ?? ""}
+          disabled
+          className="px-3 py-2 border border-gray-300 text-gray-500 bg-gray-100 rounded-md text-sm cursor-not-allowed"
+        >
+          <option>{selectedOption ? t(selectedOption.label) : "—"}</option>
+        </select>
       );
     }
 
