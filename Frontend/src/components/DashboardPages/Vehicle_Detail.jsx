@@ -22,6 +22,13 @@ export default function VehicleLayout() {
           {vehicleLabel}
         </h2>
 
+        {/* Add button */}
+        <button
+          className="mt-2 mb-4 px-6 py-4 bg-red-600 text-white font-bold rounded-md cursor-pointer hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+        >
+          Přidat {vehicleLabel}
+        </button>
+
         {/* DataGrid */}
         <div className="mt-4 mb-8">
           <DataGrid_Admin

@@ -194,7 +194,7 @@ export default function Users_Detail_Layout() {
 
         <button
           onClick={() => setShowDialog(true)}
-          className="mt-2 px-6 py-4 bg-red-600 text-white font-bold rounded-md cursor-pointer hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          className="mt-2 mb-4 px-6 py-4 bg-red-600 text-white font-bold rounded-md cursor-pointer hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
         >
           Přidat uživatele
         </button>
