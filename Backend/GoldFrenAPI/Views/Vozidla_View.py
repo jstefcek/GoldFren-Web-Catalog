@@ -1,7 +1,9 @@
 import os
 from django.http import JsonResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from django.core.cache import cache
+from rest_framework.permissions import IsAuthenticated
+from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from GoldFrenAPI.Services.Vozidla_Service import (
     get_vyrobce_by_kategorie,
     get_vozidlo_filtered,
@@ -125,12 +127,13 @@ def get_vozidlo_by_category_view(request):
     return JsonResponse({"error": "Vozidla not found"}, status=404)
 
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsInternalUser])
 def update_vozidlo_view(request, vozidlo_id):
     # Get the data from the request
     data = request.data
 
     # Validate the required fields
-    required_fields = ["kategorie", "subkategorie", "vyrobce", "model", "typ", "oznaceni", "rok_od", "rok_do", "vykon", "objem", "publikovat", "aktualizoval"]
+    required_fields = ["subkategorie", "vyrobce", "typ", "oznaceni", "rok_od", "rok_do", "vykon", "objem", "publikovat"]
     for field in required_fields:
         if field not in data:
             return JsonResponse({"error": f"{field} is required"}, status=400)
@@ -138,6 +141,10 @@ def update_vozidlo_view(request, vozidlo_id):
     # Update the vozidlo in the database
     try:
         update_vozidlo(vozidlo_id, data)
+        
+        # Clear kategorie cache
+        cache.delete(f"vozidlo_by_category_{data.get('kategorie')}")
+        
         return JsonResponse({"message": "Vozidlo updated successfully"}, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

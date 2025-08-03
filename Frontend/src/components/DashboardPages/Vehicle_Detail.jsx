@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { formatUrlLinkPathtoLable } from "../../utils/utils";
 import DataGrid_Admin from "../DataGrid/DataGrid_Admin";
+import { useAuth } from "../../services/authContext";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -8,6 +9,7 @@ export default function VehicleLayout() {
   // Extract the vehicle type from the URL path
   const location = useLocation();
   const vehicleType = location.pathname.split("/").pop();
+  const { userInfo } = useAuth();
 
   // Format the vehicle type to label
   const vehicleLabel = formatUrlLinkPathtoLable(vehicleType);
@@ -25,7 +27,7 @@ export default function VehicleLayout() {
           <DataGrid_Admin
             category={`vozidla`}
             apiUrl={`${serverUrl}/api/goldfren/internal/vozidla/kategorie?kategorie_kod=${vehicleType}`}
-            //access_token={userInfo?.access_token}
+            access_token={userInfo?.access_token}
             show_checkbox={true}
             listAll={false}
             refreshToken={null}

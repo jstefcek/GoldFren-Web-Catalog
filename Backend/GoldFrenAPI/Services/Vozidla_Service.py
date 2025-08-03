@@ -188,8 +188,8 @@ def update_vozidlo(vozidlo_id: int, data: dict):
     """
     # Prepare SQL query for updating vozidlo
     sql_query = """
-        UPDATE d_vozidla 
-        SET kategorie = %s, subkategorie = %s, vyrobce = %s, model = %s, 
+        UPDATE d_vozidlo
+        SET subkategorie = %s, vyrobce = %s,  
             typ = %s, oznaceni = %s, rok_od = %s, rok_do = %s, vykon = %s, 
             objem = %s, poznamka = %s, publikovat = %s 
         WHERE kod = %s
@@ -197,7 +197,7 @@ def update_vozidlo(vozidlo_id: int, data: dict):
     
     # Prepare parameters for the query
     params = [
-        data.get("kategorie"), data.get("subkategorie"), data.get("vyrobce"), data.get("model"),
+        data.get("subkategorie"), data.get("vyrobce"), data.get("model"),
         data.get("typ"), data.get("oznaceni"), data.get("rok_od"), data.get("rok_do"),
         data.get("vykon"), data.get("objem"), data.get("poznamka"), data.get("publikovat", False), vozidlo_id
     ]
