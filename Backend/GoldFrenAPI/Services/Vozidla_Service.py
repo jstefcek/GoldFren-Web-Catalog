@@ -14,7 +14,8 @@ from GoldFrenAPI.Models.Kotouce import VozidloKotouc
 from GoldFrenAPI.Models.Pumpy import VozidloPumpa
 from GoldFrenAPI.Models.Prislusenstvi import VozidloPrislusenstvi
 from GoldFrenAPI.Services.Service_utils import (
-    get_filtered_records
+    get_filtered_records,
+    execute_update
 )
 
 def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
@@ -167,14 +168,14 @@ def get_vozidlo_by_category(kategorie_kod: int):
                 vozidlo_obj.kategorie = "Automobily"
             elif vozidlo_obj.kategorie == "Motocykl":
                 vozidlo_obj.kategorie = "Motocykly"
-            elif vozidlo_obj.kategorie == "Motokára":
-                vozidlo_obj.kategorie = "Motokáry"
+            elif vozidlo_obj.kategorie == "Motokary":
+                vozidlo_obj.kategorie = "Motokary"
             elif vozidlo_obj.kategorie == "Kolo":
                 vozidlo_obj.kategorie = "Jízdní kola"
             elif vozidlo_obj.kategorie == "Letadlo":
                 vozidlo_obj.kategorie = "Letadla"
-            elif vozidlo_obj.kategorie == "Průmysl":
-                vozidlo_obj.kategorie = "Průmysl"
+            elif vozidlo_obj.kategorie == "Prumysl":
+                vozidlo_obj.kategorie = "Prumysl"
                 
             # Append vozidlo object to the list
             vozidla.append(vozidlo_obj)
@@ -194,13 +195,13 @@ def update_vozidlo(vozidlo_id: int, data: dict):
             objem = %s, poznamka = %s, publikovat = %s 
         WHERE kod = %s
     """
-    
     # Prepare parameters for the query
     params = [
-        data.get("subkategorie"), data.get("vyrobce"), data.get("model"),
-        data.get("typ"), data.get("oznaceni"), data.get("rok_od"), data.get("rok_do"),
+        data.get("subkategorie"), data.get("vyrobce"), data.get("typ"), 
+        data.get("oznaceni"), data.get("rok_od"), data.get("rok_do"),
         data.get("vykon"), data.get("objem"), data.get("poznamka"), data.get("publikovat", False), vozidlo_id
     ]
     
     # Execute the update query
-    get_filtered_records(sql_query=sql_query, params=params)
+    status = execute_update(sql_query=sql_query, params=params)
+    return status

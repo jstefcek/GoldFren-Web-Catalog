@@ -24,6 +24,8 @@ export default function CustomAddDialog({
   const [filteredSubkategorie, setFilteredSubkategorie] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [alert, setAlert] = useState(null);
+  const isDisabled = (col) => col.editable === false;
+  const normalizeInputType = (t) => (t === "input" ? "text" : (t || "text"));
 
   // Remove diacritics for username generation
   const removeDiacritics = (str) =>
@@ -112,7 +114,7 @@ export default function CustomAddDialog({
       .catch(() => setVyrobceOptions([]));
   }, [formData.kategorie]);
 
-  // Auto username
+  // Auto create username
   useEffect(() => {
     const first = formData.first_name?.[0] || "";
     const last = formData.last_name || "";
@@ -174,7 +176,7 @@ export default function CustomAddDialog({
       return (
         <BooleanToggleButton
           value={!!value}
-          editable={true}
+          editable={col.editable !== false}
           onChange={(val) => handleChange(col.key, val)}
           labels={col.buttonValue || { true: "Ano", false: "Ne" }}
         />
@@ -187,6 +189,7 @@ export default function CustomAddDialog({
         <select
           value={value || ""}
           onChange={(e) => handleChange(col.key, e.target.value)}
+          disabled={isDisabled(col)}
           className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm"
         >
           <option value="">{col.placeholder || t("Vyberte výrobce")}</option>
@@ -205,6 +208,7 @@ export default function CustomAddDialog({
         <select
           value={value || ""}
           onChange={(e) => handleChange(col.key, e.target.value)}
+          disabled={isDisabled(col)}
           className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm"
         >
           <option value="">{col.placeholder || t("Vyberte kategorii")}</option>
@@ -227,6 +231,7 @@ export default function CustomAddDialog({
         <select
           value={value || ""}
           onChange={(e) => handleChange(col.key, e.target.value)}
+          disabled={isDisabled(col)}
           className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm"
         >
           <option value="">
@@ -247,6 +252,7 @@ export default function CustomAddDialog({
         <select
           value={value || ""}
           onChange={(e) => handleChange(col.key, e.target.value)}
+          disabled={isDisabled(col)}
           className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm"
         >
           <option value="">{col.placeholder || t("Vyberte možnost")}</option>
@@ -267,6 +273,8 @@ export default function CustomAddDialog({
           onChange={(e) => handleChange(col.key, e.target.value)}
           rows={5}
           placeholder={col.placeholder || ""}
+          disabled={isDisabled(col)}
+          readOnly={isDisabled(col)}
           className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm resize-y"
         />
       );
@@ -281,11 +289,14 @@ export default function CustomAddDialog({
             value={value || ""}
             onChange={(e) => handleChange(col.key, e.target.value)}
             placeholder={col.placeholder || ""}
+            disabled={isDisabled(col)}
+            readOnly={isDisabled(col)}
             className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
+            disabled={isDisabled(col)}
             className="absolute inset-y-0 right-2 flex items-center text-gray-500"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -295,7 +306,7 @@ export default function CustomAddDialog({
     }
 
     // Read-only username
-    if (col.key === "username") {
+    if (col.key === "username" || col.key === "nazev_modelu") {
       return (
         <input
           type="text"
@@ -309,11 +320,15 @@ export default function CustomAddDialog({
     // Default input
     return (
       <input
-        type={col.type || "text"}
+        type={normalizeInputType(col.type)}
         value={value || ""}
         onChange={(e) => handleChange(col.key, e.target.value)}
         placeholder={col.placeholder || ""}
-        className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm"
+        disabled={isDisabled(col)}
+        readOnly={isDisabled(col)}
+        className={`${
+          isDisabled(col) ? "text-gray-500" : "text-gray-900"
+        } px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm`}
       />
     );
   };

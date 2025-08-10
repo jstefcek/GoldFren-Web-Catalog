@@ -53,7 +53,7 @@ export default function VehicleLayout() {
         <CustomAddDialog
           isOpen={showDialog}
           onClose={() => setShowDialog(false)}
-          category={`vozidla`}
+          category="vozidla"
           access_token={userInfo?.access_token}
           onSuccess={() => {
             setShowDialog(false);

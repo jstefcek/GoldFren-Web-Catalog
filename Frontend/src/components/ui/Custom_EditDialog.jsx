@@ -117,11 +117,7 @@ export default function CustomEditDialog({
         formData[config.param_value]
       }`;
       try {
-        const res = await fetch(url, {
-          headers: access_token
-            ? { Authorization: `Bearer ${access_token}` }
-            : {},
-        });
+        const res = await fetch(url);
         if (!res.ok) throw new Error("Failed to load manufacturer options");
         const data = await res.json();
 

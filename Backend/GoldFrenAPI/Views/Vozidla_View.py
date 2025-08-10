@@ -92,33 +92,40 @@ def get_vozidlo_sortiment_view(request):
 
 @api_view(['GET'])
 def get_vozidlo_by_category_view(request):
-    # Get the kategorie_kod from the request
-    kategorie_kod = request.GET.get("kategorie_kod")
-    if not kategorie_kod:
-        return JsonResponse({"error": "kategorie_kod is required"}, status=400)
+    # Get the kategorie from the request
+    kategorie = request.GET.get("kategorie_kod")
+    if not kategorie:
+        return JsonResponse({"error": "kategorie is required"}, status=400)
     
     # Set the kategorie kod to specific value
-    if kategorie_kod == "automobily":
-        kategorie_kod = "Auto"
-    elif kategorie_kod == "motocykly":
-        kategorie_kod = "Motocykl"
-    elif kategorie_kod == "motokary":
-        kategorie_kod = "Motokára"
-    elif kategorie_kod == "kola":
-        kategorie_kod = "Kolo"
-    elif kategorie_kod == "letadla":
-        kategorie_kod = "Letadlo"
-    elif kategorie_kod == "prumysl":
-        kategorie_kod = "Průmysl"
+    if kategorie == "automobily":
+        kategorie = "Auto"
+        kategorie_kod = 2
+    elif kategorie == "motocykly":
+        kategorie = "Motocykl"
+        kategorie_kod = 1
+    elif kategorie == "motokary":
+        kategorie = "Motokary"
+        kategorie_kod = 6
+    elif kategorie == "kola":
+        kategorie = "Kolo"
+        kategorie_kod = 3
+    elif kategorie == "letadla":
+        kategorie = "Letadlo"
+        kategorie_kod = 4
+    elif kategorie == "prumysl":
+        kategorie = "Prumysl"
+        kategorie_kod = 5
 
     # Check if there is a cached version of the vozidlo data
     cache_key = f"vozidlo_by_category_{kategorie_kod}"
+    
     cached_data = cache.get(cache_key)
     if cached_data:
         return JsonResponse(cached_data, safe=False, status=200)
 
     # If not cached, fetch the vozidlo data from the database
-    vozidla_objects = get_vozidlo_by_category(kategorie_kod)
+    vozidla_objects = get_vozidlo_by_category(kategorie)
     if vozidla_objects:
         vozidla_list = [v.to_dict() for v in vozidla_objects]
         cache.set(cache_key, vozidla_list, timeout=CACHE_TIMEOUT)
@@ -140,11 +147,13 @@ def update_vozidlo_view(request, vozidlo_id):
 
     # Update the vozidlo in the database
     try:
-        update_vozidlo(vozidlo_id, data)
-        
-        # Clear kategorie cache
-        cache.delete(f"vozidlo_by_category_{data.get('kategorie')}")
-        
-        return JsonResponse({"message": "Vozidlo updated successfully"}, status=200)
+        success = update_vozidlo(vozidlo_id, data)
+
+        # Clear kategorie cache and return 200
+        if success:
+            cache.delete(f"vozidlo_by_category_{data.get('kategorie')}")
+            return JsonResponse({"message": "Vozidlo updated successfully"}, status=200)
+
+        return JsonResponse({"error": "Failed to update Vozidlo"}, status=400)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

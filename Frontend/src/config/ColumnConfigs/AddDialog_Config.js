@@ -142,7 +142,7 @@ export const dialogColumnsConfig = {
       vozidla: {
         addEndpoint: (kod = "") => `${serverUrl}/api/goldfren/internal/vozidla/create/${kod}`,
         fields: [
-          {key: "nazev_modelu", label: "Model vozidla", type: "input", editable: false, show: true, dataType: "string", },
+          {key: "nazev_modelu", label: "Model vozidla", placeholder: "Model vozidla", type: "input", editable: false, show: true, dataType: "string", },
           {key: "kategorie", label: "Kategorie vozidla", placeholder: "Vyberte kategorii vozidla", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", },
           {key: "subkategorie", label: "Subkategorie vozidla", placeholder: "Zadejte subkategorii vozidla", value: SelectValueConfig.subkategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", },
           {key: "vyrobce", label: "Výrobce vozidla", placeholder: "Zadejte výrobce vozidla", value: SelectValueConfig.vyrobce, type: "select", editable: true, show: true, dataType: "string", },
