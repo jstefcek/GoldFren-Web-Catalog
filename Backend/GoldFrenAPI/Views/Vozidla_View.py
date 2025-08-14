@@ -160,7 +160,7 @@ def update_vozidlo_view(request, vozidlo_id):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     
-@api_view(['PUT'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def create_vozidlo_view(request):
     """
