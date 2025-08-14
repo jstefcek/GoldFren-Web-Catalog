@@ -1,15 +1,17 @@
-import os
+import os, json
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from django.core.cache import cache
 from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse, HttpResponseBadRequest
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from GoldFrenAPI.Services.Vozidla_Service import (
     get_vyrobce_by_kategorie,
     get_vozidlo_filtered,
     get_vozidlo_sortiment_all,
     get_vozidlo_by_category,
-    update_vozidlo
+    update_vozidlo,
+    create_vozidlo
 )
 
 # Cache timeout settings
@@ -157,3 +159,28 @@ def update_vozidlo_view(request, vozidlo_id):
         return JsonResponse({"error": "Failed to update Vozidlo"}, status=400)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def create_vozidlo_view(request):
+    """
+    This function creates a new vozidlo in DB.
+    """
+    if request.method != "POST":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Parse JSON request body
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
+    
+    # Create vozidlo
+    new_id = create_vozidlo(data)
+    if new_id:
+        return JsonResponse({"message": "Vozidlo created successfully", "vozidlo_id": new_id}, status=201)
+    return JsonResponse({"error": "Failed to create vozidlo"}, status=500)

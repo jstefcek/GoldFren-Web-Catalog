@@ -15,7 +15,8 @@ from GoldFrenAPI.Models.Pumpy import VozidloPumpa
 from GoldFrenAPI.Models.Prislusenstvi import VozidloPrislusenstvi
 from GoldFrenAPI.Services.Service_utils import (
     get_filtered_records,
-    execute_update
+    execute_update,
+    insert_record
 )
 
 def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
@@ -205,3 +206,24 @@ def update_vozidlo(vozidlo_id: int, data: dict):
     # Execute the update query
     status = execute_update(sql_query=sql_query, params=params)
     return status
+
+def create_vozidlo(data: dict):
+    """
+    Function would create a new vozidlo record in the database.
+    """
+    # Prepare SQL query for inserting new vozidlo
+    sql_query = """
+        INSERT INTO d_vozidlo (subkategorie, vyrobce, typ, oznaceni, rok_od, rok_do, vykon, objem, poznamka, publikovat, aktualizoval)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    
+    # Prepare parameters for the query
+    new_id = insert_record(sql_query=sql_query,
+        params=(data["subkategorie"], data["vyrobce"], data["typ"],
+        data["oznaceni"], data["rok_od"], data["rok_do"],
+        data["vykon"], data["objem"], data["poznamka"],
+        data["publikovat"], data["aktualizoval"]),
+        return_id=True
+    )
+    
+    return new_id
