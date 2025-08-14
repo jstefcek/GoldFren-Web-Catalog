@@ -38,3 +38,8 @@ export function formatUrlLinkPathtoLable (url_path) {
   if (url_path === "pumpy") return "Brzdové Pumpy";
   if (url_path === "prislusenstvi") return "Brzdové Příslušenství";
 }
+
+// Helper function to extract file name from a URL or path
+export function extractFileName(urlOrPath) {
+  return urlOrPath?.split("/").pop();
+}

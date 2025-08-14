@@ -1,3 +1,5 @@
+import { extractFileName } from "../../utils/utils";
+
 export function transformFormData(category, formData) {
   switch (category) {
     // User category data transformation
@@ -209,9 +211,4 @@ export function transformFormData(category, formData) {
     default:
       throw new Error(`Unsupported category to edit data: ${category}`);
   }
-}
-
-// Helper function to extract file name from a URL or path
-function extractFileName(urlOrPath) {
-  return urlOrPath?.split("/").pop();
 }
