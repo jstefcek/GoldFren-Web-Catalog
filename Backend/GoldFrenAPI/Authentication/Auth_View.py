@@ -88,14 +88,19 @@ def get_users(request):
     """
     Returns a list of all users with their details.
     Optional query param 'group' can filter users by group name.
-    Example: ?group=Internal or ?group=External
+    Example: group=Internal or group=External
     """
+    # Get the group name from query params
     group_name = request.query_params.get('group', None)
 
+    # Check if group name is specified
     if group_name:
         try:
             group = Group.objects.get(name=group_name)
             users = User.objects.filter(groups=group)
+            
+            # Remove user that made request
+            users = users.exclude(id=request.user.id)
         except Group.DoesNotExist:
             return Response({"detail": f"Group '{group_name}' not found."}, status=status.HTTP_404_NOT_FOUND)
     else:
