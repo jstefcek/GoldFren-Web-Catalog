@@ -596,7 +596,8 @@ export default function CustomAddDialog({
                 )}
             </div>
           </div>
-
+          
+          {/* Close button */}
           <div className="mt-8 flex justify-end gap-3">
             <button
               className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
@@ -604,6 +605,8 @@ export default function CustomAddDialog({
             >
               {t("Zavřít")}
             </button>
+
+            {/* Add button */}
             <button
               className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700"
               onClick={handleOpenConfirm}
@@ -613,7 +616,8 @@ export default function CustomAddDialog({
           </div>
         </div>
       </div>
-
+      
+      {/* Confirm dialog */}
       {showConfirm && (
         <ConfirmDialog
           title={t("Potvrdit přidání")}
@@ -626,6 +630,7 @@ export default function CustomAddDialog({
         />
       )}
 
+      {/* Alert dialog */}
       {alert && <AlertDialog {...alert} />}
     </>
   );
