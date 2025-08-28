@@ -123,3 +123,13 @@ def prepare_sql_filters(filters: dict, filter_condition: list, params: list):
        
     # Return filter condition and params  
     return filter_condition, params
+
+def change_category_label(kategorie: str):
+    if kategorie == "Auto":
+        return "Automobily"
+    elif kategorie == "Motocykl":
+        return "Motocykly"
+    elif kategorie == "Kolo":
+        return "Jízdní kola"
+    elif kategorie == "Letadlo":
+        return "Letadla"

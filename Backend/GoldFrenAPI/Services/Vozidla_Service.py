@@ -18,6 +18,7 @@ from GoldFrenAPI.Services.Service_utils import (
     execute_update,
     insert_record
 )
+from GoldFrenAPI.utils.utils import change_category_label
 
 def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
     """
@@ -165,18 +166,7 @@ def get_vozidlo_by_category(kategorie_kod: int):
             )
             
             # Change vozidlo category
-            if vozidlo_obj.kategorie == "Auto":
-                vozidlo_obj.kategorie = "Automobily"
-            elif vozidlo_obj.kategorie == "Motocykl":
-                vozidlo_obj.kategorie = "Motocykly"
-            elif vozidlo_obj.kategorie == "Motokary":
-                vozidlo_obj.kategorie = "Motokary"
-            elif vozidlo_obj.kategorie == "Kolo":
-                vozidlo_obj.kategorie = "Jízdní kola"
-            elif vozidlo_obj.kategorie == "Letadlo":
-                vozidlo_obj.kategorie = "Letadla"
-            elif vozidlo_obj.kategorie == "Prumysl":
-                vozidlo_obj.kategorie = "Prumysl"
+            vozidlo_obj.kategorie = change_category_label(vozidlo_obj.kategorie)
                 
             # Append vozidlo object to the list
             vozidla.append(vozidlo_obj)

@@ -11,7 +11,7 @@ from GoldFrenAPI.Services.Service_utils import (
     get_records
 )
 from GoldFrenAPI.utils.utils import (
-    prepare_sql_filters
+    prepare_sql_filters, change_category_label
 )
 
 # Function to get all kotouce
@@ -47,6 +47,9 @@ def get_kotouce(limit: int = None, page: int = None, states: bool = False):
             aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
             aktualizoval=record["aktualizoval"]
         )
+        
+        # Change kotouc category
+        kotouc.kategorie = change_category_label(kotouc.kategorie)
         
         # Append adapter object to list
         kotouce.append(kotouc)

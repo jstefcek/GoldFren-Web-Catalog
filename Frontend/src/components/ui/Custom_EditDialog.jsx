@@ -1,13 +1,18 @@
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { X } from "lucide-react";
 import ConfirmDialog from "../ui/Custom_ConfirmDialog";
+import AlertDialog from "../ui/Custom_AlertDialog";
 import { dialogColumnsConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { SelectValueConfig } from "../../config/ColumnConfigs/EditDialog_Config";
-import { formatDateLong } from "../../utils/utils";
-import BooleanToggleButton from "../ui/Custom_ButtonToggle";
-import DetailImage from "../ui/Custom_DetailImage";
 import { transformFormData } from "../../config/DataTransormation/EditDialog_Transformation";
+import FieldRenderer from "../FolderComponents/Field_Renderer";
+
+const toStr = (v) => (v === null || v === undefined ? "" : String(v));
+const findByValueOrLabel = (opts, raw) =>
+  (opts || []).find(
+    (o) => toStr(o.value) === toStr(raw) || toStr(o.label) === toStr(raw)
+  );
 
 export default function CustomEditDialog({
   isOpen,
@@ -20,379 +25,304 @@ export default function CustomEditDialog({
   onError = () => {},
 }) {
   const { t } = useTranslation();
+  const config = dialogColumnsConfig[category];
+
+  // Form state
   const [formData, setFormData] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
-  const config = dialogColumnsConfig[category];
-  const [loaded, setLoaded] = useState(false);
-  const [filteredSubkategorie, setFilteredSubkategorie] = useState([]);
   const [vyrobceOptions, setVyrobceOptions] = useState([]);
+  const [filteredSubkategorie, setFilteredSubkategorie] = useState([]);
+  const [alert, setAlert] = useState(null);
 
-  // Initialize form data when dialog opens
+  // Validation state
+  const [touched, setTouched] = useState({});
+  const [errors, setErrors] = useState({});
+
+  const isDisabled = (col) => col.editable === false;
+
+  const requiredKeys = useMemo(
+    () =>
+      (config?.fields || [])
+        .filter((f) => f.required && f.show !== false && f.editable !== false)
+        .map((f) => f.key),
+    [config]
+  );
+
+  // ---------- INIT / NORMALIZE FROM rowData ----------
   useEffect(() => {
-    let timeout;
-    if (isOpen && rowData) {
-      const fixedData = { ...rowData };
+    if (!isOpen || !config || !rowData) return;
 
-      const categoryConfig = dialogColumnsConfig[category]?.fields || [];
-      categoryConfig.forEach((col) => {
-        if (col.key === "vyrobce" && Array.isArray(vyrobceOptions)) {
-          const match = vyrobceOptions.find(
-            (opt) =>
-              opt.value === rowData.vyrobce ||
-              opt.label === rowData.vyrobce ||
-              opt.value?.toString() === rowData.vyrobce?.toString()
-          );
-          if (match) fixedData.vyrobce = match.value;
-          return;
-        }
+    const initial = {};
+    (config.fields || []).forEach((col) => {
+      initial[col.key] =
+        rowData[col.key] !== undefined && rowData[col.key] !== null
+          ? rowData[col.key]
+          : "";
+    });
 
-        if (col.type === "select" && Array.isArray(col.value)) {
-          const match = col.value.find((opt) => {
-            return (
-              opt.value === rowData[col.key] ||
-              opt.value?.toString() === rowData[col.key]?.toString() ||
-              opt.label === rowData[col.key]
-            );
-          });
-          if (match) fixedData[col.key] = match.value;
-        }
-      });
-
-      // Set formData early
-      setFormData(fixedData);
-
-      // Ensure subkategorie gets mapped AFTER filtered options are available
-      timeout = setTimeout(() => {
-        const kategorieLabel = SelectValueConfig.kategorie_vozidel.find(
-          (kat) => kat.value === fixedData.kategorie
-        )?.label;
-
-        const filtered = SelectValueConfig.subkategorie_vozidel.filter(
-          (sub) => sub.category === kategorieLabel
-        );
-        setFilteredSubkategorie(filtered);
-
-        const matchSub = filtered.find(
-          (sub) =>
-            sub.value === rowData.subkategorie ||
-            sub.value?.toString() === rowData.subkategorie?.toString() ||
-            sub.label === rowData.subkategorie
-        );
-
-        if (matchSub) {
-          setFormData((prev) => ({
-            ...prev,
-            subkategorie: matchSub.value,
-          }));
-        }
-
-        setLoaded(true);
-      }, 50);
-    } else {
-      setLoaded(false);
-    }
-    return () => clearTimeout(timeout);
-  }, [isOpen, rowData]);
-
-  // Select subkategorii based on selected kategorie
-  useEffect(() => {
-    const kategorieLabel = SelectValueConfig.kategorie_vozidel.find(
-      (kat) => kat.value === formData.kategorie
-    )?.label;
-
-    const filtered = SelectValueConfig.subkategorie_vozidel.filter(
-      (sub) => sub.category === kategorieLabel
+    // Normalize kategorie to option.value (accept label or value)
+    const katOpt = findByValueOrLabel(
+      SelectValueConfig.kategorie_vozidel,
+      rowData.kategorie
     );
+    if (katOpt) initial.kategorie = String(katOpt.value);
 
+    // Build filtered subkategorie from normalized kategorie
+    const katLabel =
+      katOpt?.label ||
+      (findByValueOrLabel(
+        SelectValueConfig.kategorie_vozidel,
+        initial.kategorie
+      )?.label ??
+        "");
+    const subFiltered = (SelectValueConfig.subkategorie_vozidel || []).filter(
+      (s) => s.category === katLabel
+    );
+    setFilteredSubkategorie(subFiltered);
+
+    // Normalize subkategorie to option.value
+    const subOpt = findByValueOrLabel(subFiltered, rowData.subkategorie);
+    if (subOpt) initial.subkategorie = String(subOpt.value);
+
+    // Manufacturer label (may not come from API yet)
+    initial.vyrobce_label = rowData.vyrobce_label || "";
+
+    // Ensure vyrobce stored as string (can be label or value for now; we reconcile later)
+    if (rowData.vyrobce !== undefined && rowData.vyrobce !== null) {
+      initial.vyrobce = String(rowData.vyrobce);
+    }
+
+    setFormData(initial);
+    setTouched({});
+    setErrors({});
+
+    // Prepare static vyrobce fallback first (API may override)
+    const staticVyrobce =
+      Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
+    setVyrobceOptions(staticVyrobce.map((o) => ({ ...o, value: String(o.value) })));
+  }, [isOpen, config, rowData, category]);
+
+  // ---------- SUBKATEGORIE reacts to KATEGORIE ----------
+  useEffect(() => {
+    if (!formData.kategorie) {
+      setFilteredSubkategorie([]);
+      return;
+    }
+    const selected = findByValueOrLabel(
+      SelectValueConfig.kategorie_vozidel,
+      formData.kategorie
+    );
+    if (!selected) {
+      setFilteredSubkategorie([]);
+      return;
+    }
+    const filtered = (SelectValueConfig.subkategorie_vozidel || []).filter(
+      (sub) => sub.category === selected.label
+    );
     setFilteredSubkategorie(filtered);
-  }, [formData.kategorie]);
 
-  // Fetch vyrobce options when dialog opens
-  useEffect(() => {
-    const loadVyrobceOptions = async () => {
-      const config = SelectValueConfig.vyrobce?.[0];
-      if (!config || !formData?.[config.param_value]) return;
-
-      const url = `${config.api}?${config.param_key}=${
-        formData[config.param_value]
-      }`;
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("Failed to load manufacturer options");
-        const data = await res.json();
-
-        // Map to { id, label, value }
-        const mapped = data.map((item) => ({
-          id: item.kod,
-          label: item.nazev,
-          value: item.kod,
-        }));
-
-        setVyrobceOptions(mapped);
-      } catch (error) {
-        console.error("Vyrobce API error:", error);
-        setVyrobceOptions([]);
-      }
-    };
-
-    loadVyrobceOptions();
-  }, [formData.kategorie]);
-
-  // Ensure vyrobce matches options when formData changes
-  useEffect(() => {
-    if (!vyrobceOptions.length || !formData.vyrobce || loaded) return;
-
-    const found = vyrobceOptions.find(
-      (opt) =>
-        opt.label === formData.vyrobce ||
-        opt.value.toString() === formData.vyrobce?.toString()
-    );
-
-    if (found && found.value !== formData.vyrobce) {
-      setFormData((prev) => ({ ...prev, vyrobce: found.value }));
-    }
-  }, [vyrobceOptions, formData.vyrobce, loaded, isOpen]);
-
-  // Clear subkategorie when kategorie changes
-  useEffect(() => {
     if (
       formData.subkategorie &&
-      !filteredSubkategorie.some((sub) => sub.value === formData.subkategorie)
+      !filtered.some((sub) => toStr(sub.value) === toStr(formData.subkategorie))
     ) {
       setFormData((prev) => ({ ...prev, subkategorie: "" }));
     }
-  }, [filteredSubkategorie]);
+  }, [formData.kategorie]);
 
-  // If dialog is not open or no rowData, return null
-  if (!isOpen || !rowData || !config || !loaded) return null;
+  // ---------- VYROBCE OPTIONS (API with static fallback) ----------
+  useEffect(() => {
+    const dynamicConfig = SelectValueConfig.vyrobce?.[0];
+    if (!formData.kategorie) return;
 
-  // Ensure formData has all necessary fields
-  const { fields, primaryKey, editEndpoint } = config;
+    if (!dynamicConfig) {
+      const staticVyrobce =
+        Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
+      const nextOpts = staticVyrobce.map((o) => ({ ...o, value: String(o.value) }));
+      setVyrobceOptions(nextOpts);
+      setFormData((prev) => {
+        if (!prev.vyrobce) return prev;
+        const found = findByValueOrLabel(nextOpts, prev.vyrobce);
+        const label = found?.label || "";
+        return label && label !== prev.vyrobce_label
+          ? { ...prev, vyrobce_label: label }
+          : prev;
+      });
+      return;
+    }
 
-  // Ensure primary key exists in rowData
-  const handleChange = (key, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+    const url = `${dynamicConfig.api}?${dynamicConfig.param_key}=${formData.kategorie}`;
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        const mapped = (data || []).map((item) => ({
+          id: item.kod,
+          value: String(item.kod),
+          label: item.nazev,
+        }));
+
+        const staticVyrobce =
+          Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
+        const staticNorm = staticVyrobce.map((o) => ({ ...o, value: String(o.value) }));
+
+        const nextOpts = mapped.length > 0 ? mapped : staticNorm;
+        setVyrobceOptions(nextOpts);
+      })
+      .catch(() => {
+        const staticVyrobce =
+          Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
+        const nextOpts = staticVyrobce.map((o) => ({ ...o, value: String(o.value) }));
+        setVyrobceOptions(nextOpts);
+      });
+  }, [formData.kategorie]);
+
+  // ---------- RECONCILE vyrobce & vyrobce_label once options are ready ----------
+  useEffect(() => {
+    if (!vyrobceOptions.length) return;
+    setFormData((prev) => {
+      // Try to match using either current value or current label
+      const match =
+        findByValueOrLabel(vyrobceOptions, prev.vyrobce) ||
+        findByValueOrLabel(vyrobceOptions, prev.vyrobce_label);
+      if (!match) return prev;
+
+      const updates = {};
+      if (toStr(prev.vyrobce) !== toStr(match.value)) updates.vyrobce = String(match.value);
+      if (prev.vyrobce_label !== match.label) updates.vyrobce_label = match.label;
+
+      return Object.keys(updates).length ? { ...prev, ...updates } : prev;
+    });
+  }, [vyrobceOptions]);
+
+  // ---------- MODEL NAME auto-build (uses vyrobce_label) ----------
+  useEffect(() => {
+    const parts = [
+      formData.vyrobce_label,
+      formData.typ,
+      formData.oznaceni,
+      formData.vykon,
+    ]
+      .map((p) => (typeof p === "string" ? p.trim() : p))
+      .filter(Boolean);
+
+    const built = parts.join(" ").replace(/\s+/g, " ").trim();
+    setFormData((prev) =>
+      prev.nazev_modelu === built ? prev : { ...prev, nazev_modelu: built }
+    );
+  }, [formData.vyrobce_label, formData.oznaceni, formData.typ, formData.vykon]);
+
+  // ---------- VALIDATION ----------
+  const isEmptyValue = (val, dataType = "string", type = "input") => {
+    if (type === "button") return false;
+    if (val === null || val === undefined) return true;
+    switch (dataType) {
+      case "string":
+        return String(val).trim() === "";
+      case "number": {
+        if (val === "") return true;
+        const n = Number(val);
+        return Number.isNaN(n);
+      }
+      case "boolean":
+        return !(val === true || val === false);
+      case "image":
+        return !val;
+      default:
+        return String(val).trim() === "";
+    }
   };
 
-  // Handle confirm edit action
+  const validateField = (key) => {
+    const col = config?.fields.find((f) => f.key === key);
+    if (!col || !col.required || isDisabled(col)) return null;
+    const hasError = isEmptyValue(formData[key], col.dataType, col.type);
+    return hasError ? t("Toto pole je povinné.") : null;
+  };
+
+  const validateAll = () => {
+    const newErrors = {};
+    for (const key of requiredKeys) {
+      const msg = validateField(key);
+      if (msg) newErrors[key] = msg;
+    }
+    setErrors(newErrors);
+    return newErrors;
+  };
+
+  const handleBlur = (key) => {
+    setTouched((prev) => ({ ...prev, [key]: true }));
+    const msg = validateField(key);
+    setErrors((prev) => ({ ...prev, [key]: msg || undefined }));
+  };
+
+  const handleChange = (key, value) => {
+    setFormData((prev) => {
+      const next = { ...prev, [key]: value };
+      if (key === "vyrobce") {
+        const opt = findByValueOrLabel(vyrobceOptions, value);
+        next.vyrobce_label = opt?.label || "";
+      }
+      return next;
+    });
+    if (touched[key]) {
+      const msg = validateField(key);
+      setErrors((prev) => ({ ...prev, [key]: msg || undefined }));
+    }
+  };
+
+  const handleOpenConfirm = () => {
+    const errs = validateAll();
+    if (Object.keys(errs).length > 0) {
+      setAlert({
+        title: t("Neúplný formulář"),
+        message: t("Vyplňte prosím všechna povinná pole označená červeně."),
+        type: "error",
+        duration: 5,
+        onClose: () => setAlert(null),
+      });
+      return;
+    }
+    setShowConfirm(true);
+  };
+
   const handleConfirmEdit = async () => {
     try {
-      const id = rowData[primaryKey];
+      const { primaryKey, editEndpoint } = config || {};
+      const id = rowData?.[primaryKey];
+      if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu.");
+
       const response = await fetch(editEndpoint(id), {
         method: "PUT",
-        headers: !access_token
-          ? { "Content-Type": "application/json" }
-          : {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
-            },
+        headers: {
+          "Content-Type": "application/json",
+          ...(access_token && { Authorization: `Bearer ${access_token}` }),
+        },
         body: JSON.stringify(transformFormData(category, formData)),
       });
 
-      // Log the response and form data for debug
-      console.log("Response: ", response);
-      console.log("Body: ", formData);
-      console.log("Transformed Data: ", transformFormData(category, formData));
-
-      // Check if the response is successful
-      if (!response.ok)
+      if (!response.ok) {
+        const text = await response.text().catch(() => "");
         throw new Error(
-          "Editing the data failed... Error: " + response.statusText
+          `Chyba při ukládání: ${response.status} ${response.statusText}${
+            text ? ` – ${text}` : ""
+          }`
         );
+      }
 
-      // Call onSuccess callback if provided and close the dialog
       onSuccess();
     } catch (error) {
-      // Show alert dialog with error message
+      setAlert({
+        title: t("Chyba"),
+        message: error.message,
+        type: "error",
+        duration: 6,
+        onClose: () => setAlert(null),
+      });
       onError(error.message);
     }
   };
 
-  // Render each field based on its type
-  const renderField = (col, value) => {
-    // Handle boolean toggle button
-    if (col.type === "button") {
-      return (
-        <BooleanToggleButton
-          value={!!value}
-          editable={col.editable}
-          onChange={(newVal) => handleChange(col.key, newVal)}
-          labels={col.buttonValue || { true: "Ano", false: "Ne" }}
-        />
-      );
-    }
-
-    // Handle other editable fields
-    if (col.editable) {
-      // Handle select input for subkategorie with filtered options
-      if (col.key === "subkategorie" && col.type === "select") {
-        const options = filteredSubkategorie;
-
-        return (
-          <select
-            value={value ?? ""}
-            onChange={(e) => {
-              const selected = options.find(
-                (opt) => opt.value.toString() === e.target.value
-              );
-              handleChange(col.key, selected ? selected.value : e.target.value);
-            }}
-            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
-          >
-            <option value="" disabled>
-              {col.placeholder || t("Vyberte možnost")}
-            </option>
-            {options.map((option) => (
-              <option key={option.id} value={option.value}>
-                {t(option.label)}
-              </option>
-            ))}
-          </select>
-        );
-      }
-
-      // Handle select input for vyrobce
-      if (col.key === "vyrobce" && col.type === "select") {
-        return (
-          <select
-            value={value ?? ""}
-            onChange={(e) => handleChange(col.key, e.target.value)}
-            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
-          >
-            <option value="" disabled>
-              {col.placeholder || t("Vyberte možnost")}
-            </option>
-            {vyrobceOptions.map((option) => (
-              <option key={option.id} value={option.value}>
-                {t(option.label)}
-              </option>
-            ))}
-          </select>
-        );
-      }
-
-      // Select input type
-      if (col.type === "select" && Array.isArray(col.value)) {
-        return (
-          <select
-            value={value ?? ""}
-            onChange={(e) => {
-              const selected = col.value.find(
-                (opt) => opt.value.toString() === e.target.value
-              );
-              handleChange(col.key, selected ? selected.value : e.target.value);
-            }}
-            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
-          >
-            <option value="" disabled>
-              {col.placeholder || t("Vyberte možnost")}
-            </option>
-            {col.value.map((option) => (
-              <option key={option.id} value={option.value}>
-                {t(option.label)}
-              </option>
-            ))}
-          </select>
-        );
-      }
-
-      // Handle boolean as checkbox
-      if (col.dataType === "boolean") {
-        return (
-          <input
-            type="checkbox"
-            checked={!!value}
-            onChange={(e) => handleChange(col.key, e.target.checked)}
-            className="w-5 h-5 accent-red-600"
-          />
-        );
-      }
-
-      // Handle text input or textarea
-      if (col.type === "textarea") {
-        return (
-          <textarea
-            value={value || ""}
-            onChange={(e) => handleChange(col.key, e.target.value)}
-            placeholder={col.placeholder || ""}
-            rows={5}
-            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm resize-y focus:ring-2 focus:ring-red-500 focus:outline-none"
-          />
-        );
-      }
-
-      // Default input type
-      return (
-        <input
-          type={col.type || "text"}
-          value={value || ""}
-          placeholder={col.placeholder || ""}
-          onChange={(e) => handleChange(col.key, e.target.value)}
-          className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
-        />
-      );
-    }
-
-    // Non-editable fields
-    if (col.dataType === "date") {
-      return (
-        <span className="text-gray-800 text-sm">
-          {value ? formatDateLong(value) : "—"}
-        </span>
-      );
-    }
-
-    // Handle image fields
-    if (col.dataType === "image") {
-      return (
-        <DetailImage
-          imageUrl={value}
-          altText={`Image for ${t(col.label)}`}
-          noImageText={t("datagrid.no_image") || "No image available"}
-          className="max-w-full max-h-36 object-contain block"
-          imageAllign="center"
-        />
-      );
-    }
-
-    // Handle non-editable selects
-    if (col.type === "select") {
-      let options = [];
-
-      if (col.key === "subkategorie") {
-        options = filteredSubkategorie;
-      } else if (col.key === "vyrobce") {
-        options = vyrobceOptions;
-      } else if (Array.isArray(col.value)) {
-        options = col.value;
-      }
-
-      const selectedOption = options.find(
-        (opt) =>
-          opt.value === value ||
-          opt.value?.toString() === value?.toString() ||
-          opt.label === value
-      );
-
-      return (
-        <select
-          value={selectedOption?.value ?? ""}
-          disabled
-          className="px-3 py-2 border border-gray-300 text-gray-500 bg-gray-100 rounded-md text-sm cursor-not-allowed"
-        >
-          <option>{selectedOption ? t(selectedOption.label) : "—"}</option>
-        </select>
-      );
-    }
-
-    // Default text display
-    return (
-      <span className="text-gray-800 text-sm">{value?.toString() || "—"}</span>
-    );
-  };
+  if (!isOpen || !config || !rowData) return null;
+  const { fields } = config;
 
   return (
     <>
@@ -409,53 +339,61 @@ export default function CustomEditDialog({
           </button>
 
           <div className="overflow-y-auto max-h-[70vh] pr-2">
-            {/* First field with full width */}
+            {/* First prominent field */}
             <div className="grid grid-cols-1 gap-4 ml-4 mr-4">
               {fields
-                .filter((col) => col.show !== false)
+                .filter((f) => f.show !== false)
                 .slice(0, 1)
-                .map((col) => {
-                  const value = formData[col.key];
-                  return (
-                    <div key={col.key} className="flex flex-col mb-4">
-                      <label className="text-lg font-bold text-gray-900 mb-1">
-                        {t(col.label)}
-                      </label>
-                      {renderField(col, value)}
-                    </div>
-                  );
-                })}
+                .map((col) => (
+                  <FieldRenderer
+                    key={col.key}
+                    col={col}
+                    value={formData[col.key]}
+                    t={t}
+                    isDisabled={isDisabled}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors[col.key]}
+                    vyrobceOptions={vyrobceOptions}
+                    filteredSubkategorie={filteredSubkategorie}
+                  />
+                ))}
             </div>
 
-            {/* Remaining fields with 2 columns next to each other */}
+            {/* Remaining fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-4 ml-4 mr-4">
               {fields
-                .filter((col) => col.show !== false)
+                .filter((f) => f.show !== false)
                 .slice(1)
-                .map((col) => {
-                  const value = formData[col.key];
-                  return (
-                    <div key={col.key} className="flex flex-col">
-                      <label className="text-sm font-bold text-gray-900 mb-1">
-                        {t(col.label)}
-                      </label>
-                      {renderField(col, value)}
-                    </div>
-                  );
-                })}
+                .map((col) => (
+                  <FieldRenderer
+                    key={col.key}
+                    col={col}
+                    value={formData[col.key]}
+                    t={t}
+                    isDisabled={isDisabled}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors[col.key]}
+                    vyrobceOptions={vyrobceOptions}
+                    filteredSubkategorie={filteredSubkategorie}
+                  />
+                ))}
             </div>
           </div>
 
+          {/* Footer */}
           <div className="mt-8 flex justify-end gap-3">
             <button
-              className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+              className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
               onClick={onClose}
             >
               {t("Zavřít")}
             </button>
+
             <button
-              className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700 transition cursor-pointer"
-              onClick={() => setShowConfirm(true)}
+              className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700"
+              onClick={handleOpenConfirm}
             >
               {t("Uložit")}
             </button>
@@ -463,6 +401,7 @@ export default function CustomEditDialog({
         </div>
       </div>
 
+      {/* Confirm */}
       {showConfirm && (
         <ConfirmDialog
           title={t("Potvrdit úpravy")}
@@ -474,6 +413,9 @@ export default function CustomEditDialog({
           onCancel={() => setShowConfirm(false)}
         />
       )}
+
+      {/* Alert */}
+      {alert && <AlertDialog {...alert} />}
     </>
   );
 }

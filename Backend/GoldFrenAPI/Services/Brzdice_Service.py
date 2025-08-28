@@ -5,13 +5,12 @@ from datetime import datetime
 from GoldFrenAPI.Models.Brzdice import Brzdic, VozidloBrzdic
 from GoldFrenAPI.Services.Service_utils import (
     set_publication_state, 
-    get_all_items,
     get_item_by_id,
     execute_update,
     insert_record,
     get_records
 )
-from GoldFrenAPI.utils.utils import prepare_sql_filters
+from GoldFrenAPI.utils.utils import prepare_sql_filters, change_category_label
 
 # Function to get all brzdice
 def get_brzdice(limit: int = None, page: int = None, states: bool = False):
@@ -41,7 +40,10 @@ def get_brzdice(limit: int = None, page: int = None, states: bool = False):
             aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
             aktualizoval=record["aktualizoval"]
         )
-        
+
+        # Change brzdic category
+        brzdic.kategorie = change_category_label(brzdic.kategorie)
+
         # Append brzdice object to list
         brzdice.append(brzdic)
         

@@ -10,7 +10,7 @@ from GoldFrenAPI.Services.Service_utils import (
     insert_record,
     get_records
 )
-from GoldFrenAPI.utils.utils import prepare_sql_filters
+from GoldFrenAPI.utils.utils import prepare_sql_filters, change_category_label
 
 # Function to get all adapters
 def get_adapters(limit: int = None, page: int = None, states: bool = False):
@@ -44,6 +44,9 @@ def get_adapters(limit: int = None, page: int = None, states: bool = False):
             aktualizoval=record["aktualizoval"]
         )
         
+        # Change adapter category
+        adapter.kategorie = change_category_label(adapter.kategorie)
+
         # Append adapter object to list
         adapters.append(adapter)
     

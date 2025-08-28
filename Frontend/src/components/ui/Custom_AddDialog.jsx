@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { X, Eye, EyeOff, ImageOff } from "lucide-react";
+import { X } from "lucide-react";
 import ConfirmDialog from "../ui/Custom_ConfirmDialog";
 import AlertDialog from "../ui/Custom_AlertDialog";
-import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import { dialogColumnsConfig } from "../../config/ColumnConfigs/AddDialog_Config";
 import { SelectValueConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { transformFormData } from "../../config/DataTransormation/AddDialog_Transformation";
+import FieldRenderer from "../FolderComponents/Field_Renderer";
 
 export default function CustomAddDialog({
   isOpen,
@@ -24,16 +24,16 @@ export default function CustomAddDialog({
   const [showConfirm, setShowConfirm] = useState(false);
   const [vyrobceOptions, setVyrobceOptions] = useState([]);
   const [filteredSubkategorie, setFilteredSubkategorie] = useState([]);
-  const [showPassword, setShowPassword] = useState(false);
   const [alert, setAlert] = useState(null);
 
-  // validation state
+  // Validation state
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
 
+  // Field validation
   const isDisabled = (col) => col.editable === false;
-  const normalizeInputType = (t) => (t === "input" ? "text" : t || "text");
 
+  // Required fields
   const requiredKeys = useMemo(
     () =>
       (config?.fields || [])
@@ -42,7 +42,7 @@ export default function CustomAddDialog({
     [config]
   );
 
-  // Remove diacritics for username generation
+  // Remove diacritics
   const removeDiacritics = (str) =>
     str
       .normalize("NFD")
@@ -66,25 +66,22 @@ export default function CustomAddDialog({
       .replace(/Ů/g, "U")
       .replace(/Ž/g, "Z");
 
-  // Init/reset form data when category changes + set static manufacturer fallback
+  // Init/reset + static fallback
   useEffect(() => {
     if (!config) return;
     const initial = {};
     config.fields.forEach((col) => (initial[col.key] = ""));
-    // also track vyrobce_label
-    initial.vyrobce_label = "";
-
+    initial.vyrobce_label = ""; // track label for display
     setFormData(initial);
     setTouched({});
     setErrors({});
 
-    // ensure vyrobce select is never empty (static fallback) + normalize value to string
     const staticVyrobce =
       Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
     setVyrobceOptions(staticVyrobce.map((o) => ({ ...o, value: String(o.value) })));
   }, [category, config]);
 
-  // Update subkategorie when kategorie changes
+  // Subkategorie when kategorie changes
   useEffect(() => {
     if (!formData.kategorie) {
       setFilteredSubkategorie([]);
@@ -108,13 +105,11 @@ export default function CustomAddDialog({
     ) {
       setFormData((prev) => ({ ...prev, subkategorie: "" }));
     }
-  }, [formData.kategorie]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [formData.kategorie]);
 
-  // Update vyrobce when kategorie changes
+  // Vyrobce when kategorie changes
   useEffect(() => {
     const dynamicConfig = SelectValueConfig.vyrobce?.[0];
-
-    // If no category chosen, keep whatever we already have (static fallback from init)
     if (!formData.kategorie) return;
 
     if (!dynamicConfig) {
@@ -122,8 +117,6 @@ export default function CustomAddDialog({
         Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
       const nextOpts = staticVyrobce.map((o) => ({ ...o, value: String(o.value) }));
       setVyrobceOptions(nextOpts);
-
-      // sync label if we already have an ID selected
       setFormData((prev) => {
         if (!prev.vyrobce) return prev;
         const found = nextOpts.find((o) => String(o.value) === String(prev.vyrobce));
@@ -141,7 +134,7 @@ export default function CustomAddDialog({
       .then((data) => {
         const mapped = (data || []).map((item) => ({
           id: item.kod,
-          value: String(item.kod), // normalize to string
+          value: String(item.kod),
           label: item.nazev,
         }));
 
@@ -149,11 +142,9 @@ export default function CustomAddDialog({
           Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
         const staticNorm = staticVyrobce.map((o) => ({ ...o, value: String(o.value) }));
 
-        // fallback to static if API returns empty
         const nextOpts = mapped.length > 0 ? mapped : staticNorm;
         setVyrobceOptions(nextOpts);
 
-        // If current selected vyrobce not in new options, clear it. Else sync label.
         setFormData((prev) => {
           if (!prev.vyrobce) return prev;
           const exists = nextOpts.some(
@@ -170,13 +161,10 @@ export default function CustomAddDialog({
         });
       })
       .catch(() => {
-        // On error, fallback to static
         const staticVyrobce =
           Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
         const nextOpts = staticVyrobce.map((o) => ({ ...o, value: String(o.value) }));
         setVyrobceOptions(nextOpts);
-
-        // sync label if we already have an ID selected
         setFormData((prev) => {
           if (!prev.vyrobce) return prev;
           const found = nextOpts.find((o) => String(o.value) === String(prev.vyrobce));
@@ -186,15 +174,15 @@ export default function CustomAddDialog({
             : prev;
         });
       });
-  }, [formData.kategorie]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [formData.kategorie]);
 
-  // Auto-create username 
+  // Auto-create username
   useEffect(() => {
     const first = formData.first_name?.[0] || "";
     const last = formData.last_name || "";
     const username = removeDiacritics((first + last).toLowerCase());
     setFormData((prev) => ({ ...prev, username }));
-  }, [formData.first_name, formData.last_name]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [formData.first_name, formData.last_name]);
 
   // Auto-create model name
   useEffect(() => {
@@ -211,13 +199,12 @@ export default function CustomAddDialog({
     setFormData((prev) =>
       prev.nazev_modelu === built ? prev : { ...prev, nazev_modelu: built }
     );
-  }, [formData.vyrobce_label, formData.oznaceni, formData.typ, formData.vykon]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [formData.vyrobce_label, formData.oznaceni, formData.typ, formData.vykon]);
 
-  // Validation helpers 
+  // Validation
   const isEmptyValue = (val, dataType = "string", type = "input") => {
     if (type === "button") return false;
     if (val === null || val === undefined) return true;
-
     switch (dataType) {
       case "string":
         return String(val).trim() === "";
@@ -229,12 +216,13 @@ export default function CustomAddDialog({
       case "boolean":
         return !(val === true || val === false);
       case "image":
-        return !val; // empty URL or base64
+        return !val;
       default:
         return String(val).trim() === "";
     }
   };
 
+  // Field validation
   const validateField = (key) => {
     const col = config?.fields.find((f) => f.key === key);
     if (!col || !col.required || isDisabled(col)) return null;
@@ -242,6 +230,7 @@ export default function CustomAddDialog({
     return hasError ? "Toto pole je povinné." : null;
   };
 
+  // Validate all fields
   const validateAll = () => {
     const newErrors = {};
     for (const key of requiredKeys) {
@@ -258,28 +247,25 @@ export default function CustomAddDialog({
     setErrors((prev) => ({ ...prev, [key]: msg || undefined }));
   };
 
-  // Handle field change
+  // Change handler
   const handleChange = (key, value) => {
     setFormData((prev) => {
       const next = { ...prev, [key]: value };
-
       if (key === "vyrobce") {
         const opt = vyrobceOptions.find(
           (o) => String(o.value) === String(value)
         );
         next.vyrobce_label = opt?.label || "";
       }
-
       return next;
     });
-
     if (touched[key]) {
       const msg = validateField(key);
       setErrors((prev) => ({ ...prev, [key]: msg || undefined }));
     }
   };
 
-  // Submit flow
+  // Submit handler
   const handleOpenConfirm = () => {
     const errs = validateAll();
     if (Object.keys(errs).length > 0) {
@@ -295,6 +281,7 @@ export default function CustomAddDialog({
     setShowConfirm(true);
   };
 
+  // Confirm dialog
   const handleConfirm = async () => {
     try {
       const response = await fetch(config.addEndpoint(""), {
@@ -303,7 +290,6 @@ export default function CustomAddDialog({
           "Content-Type": "application/json",
           ...(access_token && { Authorization: `Bearer ${access_token}` }),
         },
-        // Keep vyrobce as ID for the API. If needed, cast to number in transformFormData.
         body: JSON.stringify(transformFormData(category, formData)),
       });
       if (!response.ok) throw new Error("Chyba při odeslání dat");
@@ -320,244 +306,7 @@ export default function CustomAddDialog({
     }
   };
 
-  // Styling helpers
-  const errorClass = (col) =>
-    errors[col.key]
-      ? "border-red-600 focus:ring-red-600"
-      : "border-gray-300 focus:ring-gray-600";
-
-  const commonFieldClasses = (col) =>
-    `${
-      isDisabled(col) ? "text-gray-500" : "text-gray-900"
-    } px-3 py-2 border ${errorClass(
-      col
-    )} text-gray-700 rounded-md text-sm focus:outline-none focus:ring-2`;
-
-  const fieldWrapper = (col, control) => {
-    const hasError = !!errors[col.key];
-    return (
-      <div key={col.key} className="flex flex-col">
-        <label className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-1">
-          {t(col.label)}
-          {col.required && <span className="text-red-600">*</span>}
-        </label>
-        {control}
-        {hasError && (
-          <span className="mt-1 text-xs text-red-600">{errors[col.key]}</span>
-        )}
-      </div>
-    );
-  };
-
-  // Field renderer
-  const renderField = (col, value) => {
-    // Image preview
-    if (col.type === "image") {
-      return value ? (
-        <img
-          src={value}
-          alt={col.label}
-          className={`max-w-full max-h-36 object-contain border ${errorClass(
-            col
-          )} rounded-md bg-white`}
-          onBlur={() => handleBlur(col.key)}
-        />
-      ) : (
-        <div
-          className={`max-w-full h-48 flex items-center justify-center border ${errorClass(
-            col
-          )} rounded-md bg-gray-50 text-gray-400`}
-          onBlur={() => handleBlur(col.key)}
-          tabIndex={0}
-        >
-          <ImageOff size={32} />
-        </div>
-      );
-    }
-
-    // Toggle buttons
-    if (col.type === "button") {
-      return (
-        <div onBlur={() => handleBlur(col.key)}>
-          <BooleanToggleButton
-            value={!!value}
-            editable={col.editable !== false}
-            onChange={(val) => handleChange(col.key, val)}
-            labels={col.buttonValue || { true: "Ano", false: "Ne" }}
-          />
-        </div>
-      );
-    }
-
-    // Vyrobce select (API + fallback)
-    if (col.key === "vyrobce") {
-      const noOptions = (vyrobceOptions || []).length === 0;
-      return (
-        <select
-          value={value || ""}
-          onChange={(e) => handleChange(col.key, e.target.value)}
-          onBlur={() => handleBlur(col.key)}
-          disabled={isDisabled(col)}
-          className={`px-3 py-2 border ${errorClass(
-            col
-          )} text-gray-700 rounded-md text-sm focus:outline-none focus:ring-2`}
-        >
-          <option value="">
-            {col.placeholder ||
-              (noOptions
-                ? t("Nejprve vyberte kategorii")
-                : t("Vyberte výrobce"))}
-          </option>
-          {!noOptions &&
-            vyrobceOptions.map((opt) => (
-              <option key={opt.id ?? opt.value} value={String(opt.value)}>
-                {opt.label}
-              </option>
-            ))}
-        </select>
-      );
-    }
-
-    // Kategorie select
-    if (col.key === "kategorie") {
-      return (
-        <select
-          value={value || ""}
-          onChange={(e) => handleChange(col.key, e.target.value)}
-          onBlur={() => handleBlur(col.key)}
-          disabled={isDisabled(col)}
-          className={`px-3 py-2 border ${errorClass(
-            col
-          )} text-gray-700 rounded-md text-sm focus:outline-none focus:ring-2`}
-        >
-          <option value="">{col.placeholder || t("Vyberte kategorii")}</option>
-          {col.value.map((opt) => (
-            <option key={opt.id} value={opt.value}>
-              {t(opt.label)}
-            </option>
-          ))}
-        </select>
-      );
-    }
-
-    // Subkategorie select
-    if (col.key === "subkategorie") {
-      return (
-        <select
-          value={value || ""}
-          onChange={(e) => handleChange(col.key, e.target.value)}
-          onBlur={() => handleBlur(col.key)}
-          disabled={isDisabled(col)}
-          className={`px-3 py-2 border ${errorClass(
-            col
-          )} text-gray-700 rounded-md text-sm focus:outline-none focus:ring-2`}
-        >
-          <option value="">
-            {col.placeholder || t("Vyberte subkategorii")}
-          </option>
-          {filteredSubkategorie.map((opt) => (
-            <option key={opt.id} value={opt.value}>
-              {t(opt.label)}
-            </option>
-          ))}
-        </select>
-      );
-    }
-
-    // Static select
-    if (col.type === "select" && Array.isArray(col.value)) {
-      return (
-        <select
-          value={value || ""}
-          onChange={(e) => handleChange(col.key, e.target.value)}
-          onBlur={() => handleBlur(col.key)}
-          disabled={isDisabled(col)}
-          className={`px-3 py-2 border ${errorClass(
-            col
-          )} text-gray-700 rounded-md text-sm focus:outline-none focus:ring-2`}
-        >
-          <option value="">{col.placeholder || t("Vyberte možnost")}</option>
-          {col.value.map((opt) => (
-            <option key={opt.id} value={opt.value}>
-              {t(opt.label)}
-            </option>
-          ))}
-        </select>
-      );
-    }
-
-    // Textarea
-    if (col.type === "textarea") {
-      return (
-        <textarea
-          value={value || ""}
-          onChange={(e) => handleChange(col.key, e.target.value)}
-          onBlur={() => handleBlur(col.key)}
-          rows={5}
-          placeholder={col.placeholder || ""}
-          disabled={isDisabled(col)}
-          readOnly={isDisabled(col)}
-          className={commonFieldClasses(col) + " resize-y"}
-        />
-      );
-    }
-
-    // Password field
-    if (col.type === "password") {
-      return (
-        <div className="relative">
-          <input
-            type={showPassword ? "text" : "password"}
-            value={value || ""}
-            onChange={(e) => handleChange(col.key, e.target.value)}
-            onBlur={() => handleBlur(col.key)}
-            placeholder={col.placeholder || ""}
-            disabled={isDisabled(col)}
-            readOnly={isDisabled(col)}
-            className={commonFieldClasses(col) + " w-full"}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            disabled={isDisabled(col)}
-            className="absolute inset-y-0 right-2 flex items-center text-gray-500"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        </div>
-      );
-    }
-
-    // Read-only username / nazev_modelu
-    if (col.key === "username" || col.key === "nazev_modelu") {
-      return (
-        <input
-          type="text"
-          value={value || ""}
-          disabled
-          onBlur={() => handleBlur(col.key)}
-          className={`px-3 py-2 border ${errorClass(
-            col
-          )} bg-gray-100 text-gray-500 rounded-md text-sm cursor-not-allowed`}
-        />
-      );
-    }
-
-    // Default input
-    return (
-      <input
-        type={normalizeInputType(col.type)}
-        value={value || ""}
-        onChange={(e) => handleChange(col.key, e.target.value)}
-        onBlur={() => handleBlur(col.key)}
-        placeholder={col.placeholder || ""}
-        disabled={isDisabled(col)}
-        readOnly={isDisabled(col)}
-        className={commonFieldClasses(col)}
-      />
-    );
-  };
-
+  // Dialog rendering
   if (!isOpen || !config) return null;
   const { fields } = config;
 
@@ -581,9 +330,20 @@ export default function CustomAddDialog({
               {fields
                 .filter((f) => f.show !== false)
                 .slice(0, 1)
-                .map((col) =>
-                  fieldWrapper(col, renderField(col, formData[col.key]))
-                )}
+                .map((col) => (
+                  <FieldRenderer
+                    key={col.key}
+                    col={col}
+                    value={formData[col.key]}
+                    t={t}
+                    isDisabled={isDisabled}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors[col.key]}
+                    vyrobceOptions={vyrobceOptions}
+                    filteredSubkategorie={filteredSubkategorie}
+                  />
+                ))}
             </div>
 
             {/* Remaining fields */}
@@ -591,12 +351,24 @@ export default function CustomAddDialog({
               {fields
                 .filter((f) => f.show !== false)
                 .slice(1)
-                .map((col) =>
-                  fieldWrapper(col, renderField(col, formData[col.key]))
-                )}
+                .map((col) => (
+                  <FieldRenderer
+                    key={col.key}
+                    col={col}
+                    value={formData[col.key]}
+                    t={t}
+                    isDisabled={isDisabled}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors[col.key]}
+                    vyrobceOptions={vyrobceOptions}
+                    filteredSubkategorie={filteredSubkategorie}
+                  />
+                ))}
             </div>
           </div>
-          
+
+          {/* Footer part */}
           {/* Close button */}
           <div className="mt-8 flex justify-end gap-3">
             <button

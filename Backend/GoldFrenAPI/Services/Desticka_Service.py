@@ -11,7 +11,7 @@ from GoldFrenAPI.Services.Service_utils import (
     get_records
 )
 from GoldFrenAPI.utils.utils import (
-    prepare_sql_filters
+    prepare_sql_filters, change_category_label
 )
 
 # Function to get all desticka records
@@ -38,6 +38,9 @@ def get_desticky(limit: int = None, page: int = None, states: bool = False):
             aktualizovano=record["aktualizovano"] if isinstance(record["aktualizovano"], datetime) else None,
             aktualizoval=record["aktualizoval"]
         )
+
+        # Change desticka category
+        desticka.kategorie = change_category_label(desticka.kategorie)
 
         # Populate material dictionary
         desticka.material = {
