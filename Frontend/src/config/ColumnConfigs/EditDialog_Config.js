@@ -132,7 +132,7 @@ export const dialogColumnsConfig = {
       {key: "vektor", label: "Vektor destičky", type: "image", editable: false, show: true, dataType: "image", },
       {key: "kategorie", label: "Kategorie destičky", placeholder: "Vyberte kategorii destičky", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", required: true },
       {key: "typ", label: "Typ destičky", value: SelectValueConfig.typ_desticky, type: "select", editable: true, show: true, dataType: "string", required: true },
-      {key: "material_text", label: "Materiál", placeholder: "Zadejte materiál", type: "input", editable: true, show: true, dataType: "string", },
+      {key: "material_text", label: "Materiál", placeholder: "Zadejte materiál", type: "textarea", editable: true, show: true, dataType: "string", },
       {key: "oem_cisla", label: "OEM čísla", placeholder: "Zadejte OEM čísla", type: "textarea", editable: true, show: true, dataType: "string", },
       {key: "konkurence_sbs", label: "SBS", placeholder: "Zadejte konkurenci SBS", type: "input", editable: true, show: true, dataType: "string", },
       {key: "konkurence_ebc", label: "EBC", placeholder: "Zadejte konkurenci EBC", type: "input", editable: true, show: true, dataType: "string", },
