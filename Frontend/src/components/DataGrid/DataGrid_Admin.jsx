@@ -188,7 +188,7 @@ export default function DataGrid_Admin({
     <div className="w-full">
       <div className="flex flex-col md:flex-row md:flex-wrap gap-4 justify-between mb-4 items-start md:items-center">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-48">
             {/* Left icon */}
             <SlidersHorizontal className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
             {/* Right chevron */}
@@ -218,7 +218,7 @@ export default function DataGrid_Admin({
             </select>
           </div>
 
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-56">
             <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
             <Input
               placeholder={t("datagrid.search_placeholder")}
