@@ -115,6 +115,7 @@
     }
   },
   "datagrid": {
+    "all_columns": "Alle filtern",
     "page": "Seite",
     "search_placeholder": "Schnellsuche",
     "reset": "Suche & Filter zurücksetzen",

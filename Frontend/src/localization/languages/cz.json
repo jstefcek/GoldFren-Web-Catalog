@@ -115,6 +115,7 @@
     }
   },
   "datagrid": {
+    "all_columns": "Filtrovat vše",
     "page": "stránce",
     "search_placeholder": "Filtrovat výsledky",
     "reset": "Resetovat filtry",

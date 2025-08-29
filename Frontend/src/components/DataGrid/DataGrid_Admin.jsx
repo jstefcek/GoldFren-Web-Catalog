@@ -36,6 +36,7 @@ export default function DataGrid_Admin({
 }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
+  const [filterColumn, setFilterColumn] = useState("all"); // NEW
   const [pageSize, setPageSize] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState(null);
@@ -51,6 +52,7 @@ export default function DataGrid_Admin({
   // If api category isnt defined choose category insteed
   const resolvedCategory = apiCategory || category;
   const columns = columnsConfig[resolvedCategory] || [];
+  const searchableColumns = columns.filter((c) => c.searchable !== false); // NEW
 
   // Call API to get data or set data from already call API
   useEffect(() => {
@@ -85,7 +87,13 @@ export default function DataGrid_Admin({
       setData(apiData || []);
       setIsLoading(false);
     }
-  }, [resolvedCategory, apiUrl, JSON.stringify(filters), refreshToken, refreshTokenInternal]);
+  }, [
+    resolvedCategory,
+    apiUrl,
+    JSON.stringify(filters),
+    refreshToken,
+    refreshTokenInternal,
+  ]);
 
   // Sorting type ASC or DESC
   const handleSort = (colKey) => {
@@ -100,6 +108,7 @@ export default function DataGrid_Admin({
   // Reset filters and sorting
   const handleReset = () => {
     setSearch("");
+    setFilterColumn("all"); // NEW
     setSortColumn(null);
     setSortDirection("asc");
     setSelectedRows([]);
@@ -114,27 +123,45 @@ export default function DataGrid_Admin({
 
   // Check if any filter is active to show/hide reset button
   const isFilterActive =
-    search !== "" || sortColumn !== null || selectedRows.length > 0;
+    search !== "" ||
+    sortColumn !== null ||
+    selectedRows.length > 0 ||
+    filterColumn !== "all";
 
-  // Filter data
-  const filtered = data.filter((row) =>
-    columns.some((col) => {
-      const value = row[col.key];
-      return (
-        value !== null &&
-        value !== undefined &&
-        value.toString().toLowerCase().includes(search.toLowerCase())
-      );
-    })
-  );
+  // Filtering helpers + logic
+  const norm = (v) => {
+    if (v === null || v === undefined) return "";
+    if (typeof v === "boolean") return v ? "true" : "false";
+    return String(v).toLowerCase();
+  };
+
+  const term = search.trim().toLowerCase();
+  const filtered =
+    term === ""
+      ? data
+      : data.filter((row) => {
+          const keysToCheck =
+            filterColumn === "all"
+              ? searchableColumns.map((c) => c.key)
+              : [filterColumn];
+
+          const keys = keysToCheck.length
+            ? keysToCheck
+            : columns.map((c) => c.key);
+          return keys.some((key) => norm(row[key]).includes(term));
+        });
 
   // Sorting values
   const sorted = sortColumn
     ? [...filtered].sort((a, b) => {
         const aVal =
-          a[sortColumn] !== null ? a[sortColumn]?.toString().toLowerCase() : "";
+          a[sortColumn] !== null && a[sortColumn] !== undefined
+            ? a[sortColumn]?.toString().toLowerCase()
+            : "";
         const bVal =
-          b[sortColumn] !== null ? b[sortColumn]?.toString().toLowerCase() : "";
+          b[sortColumn] !== null && b[sortColumn] !== undefined
+            ? b[sortColumn]?.toString().toLowerCase()
+            : "";
 
         if (aVal === bVal) return 0;
 
@@ -162,14 +189,46 @@ export default function DataGrid_Admin({
       <div className="flex flex-col md:flex-row md:flex-wrap gap-4 justify-between mb-4 items-start md:items-center">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
           <div className="relative w-full sm:w-64">
-            {/* INPUT - Search input */}
-            <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 bg-white" />
+            {/* Left icon */}
+            <SlidersHorizontal className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
+            {/* Right chevron */}
+            <ChevronRight className="absolute right-3 top-2.5 rotate-90 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
 
+            <select
+              className={`w-full appearance-none border border-gray-300 rounded-xl pl-10 pr-10 h-10 text-sm sm:text-base bg-white
+                shadow-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 focus:shadow-md
+                transition ${
+                  filterColumn === "all" ? "text-gray-400" : "text-gray-900"
+                }`}
+              value={filterColumn}
+              onChange={(e) => {
+                setFilterColumn(e.target.value);
+                setCurrentPage(1);
+              }}
+              aria-label="Choose column to filter"
+            >
+              <option value="all" disabled>
+                {t("datagrid.all_columns") || "Filtrovat všechny sloupce"}
+              </option>
+              {searchableColumns.map((c) => (
+                <option key={c.key} value={c.key} className="text-gray-900">
+                  {t(c.label)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
             <Input
               placeholder={t("datagrid.search_placeholder")}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 h-10 text-sm sm:text-base focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white"
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="pl-10 pr-3 h-10 text-sm sm:text-base bg-white text-gray-600 border border-gray-300 rounded-xl
+               shadow-sm focus:ring-1 focus:ring-red-500 focus:border-red-500 focus:shadow-md transition"
               aria-label="Search data"
             />
           </div>
@@ -179,7 +238,7 @@ export default function DataGrid_Admin({
             <Button
               variant="outline"
               onClick={handleReset}
-              className="h-10 text-sm sm:text-base flex gap-1 items-center border border-gray-300 hover:bg-gray-50 px-3"
+              className="h-10 text-sm sm:text-base flex gap-1 items-center border border-gray-300 hover:bg-gray-50 px-3 cursor-pointer"
             >
               <X className="w-4 h-4 sm:w-5 sm:h-5" />
               {t("datagrid.reset")}
@@ -379,7 +438,6 @@ export default function DataGrid_Admin({
                             typeof value === "string" &&
                             col.type === "date"
                           ) {
-
                             // Format to czech long date format
                             return formatDateLong(value);
                           }
