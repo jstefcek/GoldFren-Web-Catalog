@@ -9,10 +9,16 @@ import { transformFormData } from "../../config/DataTransormation/EditDialog_Tra
 import FieldRenderer from "../FolderComponents/Field_Renderer";
 
 const toStr = (v) => (v === null || v === undefined ? "" : String(v));
-const findByValueOrLabel = (opts, raw) =>
-  (opts || []).find(
-    (o) => toStr(o.value) === toStr(raw) || toStr(o.label) === toStr(raw)
+const norm = (v) => toStr(v).trim().toLowerCase();
+
+// Find option by value or label
+const findByValueOrLabel = (opts, raw) => {
+  const needle = norm(raw);
+  if (!needle) return undefined;
+  return (opts || []).find(
+    (o) => norm(o.value) === needle || norm(o.label) === needle
   );
+};
 
 export default function CustomEditDialog({
   isOpen,
@@ -38,6 +44,7 @@ export default function CustomEditDialog({
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
 
+  // Check for form field errors
   const isDisabled = (col) => col.editable === false;
 
   const requiredKeys = useMemo(
@@ -48,7 +55,7 @@ export default function CustomEditDialog({
     [config]
   );
 
-  // ---------- INIT / NORMALIZE FROM rowData ----------
+  // Initialize form data from rowData
   useEffect(() => {
     if (!isOpen || !config || !rowData) return;
 
@@ -97,12 +104,15 @@ export default function CustomEditDialog({
     setErrors({});
 
     // Prepare static vyrobce fallback first (API may override)
-    const staticVyrobce =
-      Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
-    setVyrobceOptions(staticVyrobce.map((o) => ({ ...o, value: String(o.value) })));
+    const staticVyrobce = Array.isArray(SelectValueConfig.vyrobce)
+      ? SelectValueConfig.vyrobce
+      : [];
+    setVyrobceOptions(
+      staticVyrobce.map((o) => ({ ...o, value: String(o.value) }))
+    );
   }, [isOpen, config, rowData, category]);
 
-  // ---------- SUBKATEGORIE reacts to KATEGORIE ----------
+  // Subkategorie reacts to Kategorie
   useEffect(() => {
     if (!formData.kategorie) {
       setFilteredSubkategorie([]);
@@ -129,15 +139,19 @@ export default function CustomEditDialog({
     }
   }, [formData.kategorie]);
 
-  // ---------- VYROBCE OPTIONS (API with static fallback) ----------
+  // Get vyrobce options
   useEffect(() => {
     const dynamicConfig = SelectValueConfig.vyrobce?.[0];
     if (!formData.kategorie) return;
 
     if (!dynamicConfig) {
-      const staticVyrobce =
-        Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
-      const nextOpts = staticVyrobce.map((o) => ({ ...o, value: String(o.value) }));
+      const staticVyrobce = Array.isArray(SelectValueConfig.vyrobce)
+        ? SelectValueConfig.vyrobce
+        : [];
+      const nextOpts = staticVyrobce.map((o) => ({
+        ...o,
+        value: String(o.value),
+      }));
       setVyrobceOptions(nextOpts);
       setFormData((prev) => {
         if (!prev.vyrobce) return prev;
@@ -160,46 +174,57 @@ export default function CustomEditDialog({
           label: item.nazev,
         }));
 
-        const staticVyrobce =
-          Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
-        const staticNorm = staticVyrobce.map((o) => ({ ...o, value: String(o.value) }));
+        const staticVyrobce = Array.isArray(SelectValueConfig.vyrobce)
+          ? SelectValueConfig.vyrobce
+          : [];
+        const staticNorm = staticVyrobce.map((o) => ({
+          ...o,
+          value: String(o.value),
+        }));
 
         const nextOpts = mapped.length > 0 ? mapped : staticNorm;
         setVyrobceOptions(nextOpts);
       })
       .catch(() => {
-        const staticVyrobce =
-          Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
-        const nextOpts = staticVyrobce.map((o) => ({ ...o, value: String(o.value) }));
+        const staticVyrobce = Array.isArray(SelectValueConfig.vyrobce)
+          ? SelectValueConfig.vyrobce
+          : [];
+        const nextOpts = staticVyrobce.map((o) => ({
+          ...o,
+          value: String(o.value),
+        }));
         setVyrobceOptions(nextOpts);
       });
   }, [formData.kategorie]);
 
-  // ---------- RECONCILE vyrobce & vyrobce_label once options are ready ----------
+  // Check for vyrobce name and match by value or label
   useEffect(() => {
     if (!vyrobceOptions.length) return;
     setFormData((prev) => {
-      // Try to match using either current value or current label
+      // Try to match by both value and label
       const match =
         findByValueOrLabel(vyrobceOptions, prev.vyrobce) ||
         findByValueOrLabel(vyrobceOptions, prev.vyrobce_label);
+
       if (!match) return prev;
 
       const updates = {};
-      if (toStr(prev.vyrobce) !== toStr(match.value)) updates.vyrobce = String(match.value);
-      if (prev.vyrobce_label !== match.label) updates.vyrobce_label = match.label;
+      if (toStr(prev.vyrobce) !== toStr(match.value))
+        updates.vyrobce = String(match.value);
+      if (prev.vyrobce_label !== match.label)
+        updates.vyrobce_label = match.label;
 
       return Object.keys(updates).length ? { ...prev, ...updates } : prev;
     });
   }, [vyrobceOptions]);
 
-  // ---------- MODEL NAME auto-build (uses vyrobce_label) ----------
+  // Auto-create model name
   useEffect(() => {
     const parts = [
       formData.vyrobce_label,
       formData.typ,
+      formData.objem,
       formData.oznaceni,
-      formData.vykon,
     ]
       .map((p) => (typeof p === "string" ? p.trim() : p))
       .filter(Boolean);
@@ -208,9 +233,9 @@ export default function CustomEditDialog({
     setFormData((prev) =>
       prev.nazev_modelu === built ? prev : { ...prev, nazev_modelu: built }
     );
-  }, [formData.vyrobce_label, formData.oznaceni, formData.typ, formData.vykon]);
+  }, [formData.vyrobce_label, formData.oznaceni, formData.typ, formData.objem]);
 
-  // ---------- VALIDATION ----------
+  // Validation
   const isEmptyValue = (val, dataType = "string", type = "input") => {
     if (type === "button") return false;
     if (val === null || val === undefined) return true;
@@ -231,6 +256,7 @@ export default function CustomEditDialog({
     }
   };
 
+  // Validate a single form field
   const validateField = (key) => {
     const col = config?.fields.find((f) => f.key === key);
     if (!col || !col.required || isDisabled(col)) return null;
@@ -238,6 +264,7 @@ export default function CustomEditDialog({
     return hasError ? t("Toto pole je povinné.") : null;
   };
 
+  // Validate all required fields
   const validateAll = () => {
     const newErrors = {};
     for (const key of requiredKeys) {
@@ -254,6 +281,7 @@ export default function CustomEditDialog({
     setErrors((prev) => ({ ...prev, [key]: msg || undefined }));
   };
 
+  // Handle form field changes
   const handleChange = (key, value) => {
     setFormData((prev) => {
       const next = { ...prev, [key]: value };
@@ -269,6 +297,7 @@ export default function CustomEditDialog({
     }
   };
 
+  // Open confirmation dialog and check for required fields
   const handleOpenConfirm = () => {
     const errs = validateAll();
     if (Object.keys(errs).length > 0) {
@@ -284,6 +313,7 @@ export default function CustomEditDialog({
     setShowConfirm(true);
   };
 
+  // Confirm edit action
   const handleConfirmEdit = async () => {
     try {
       const { primaryKey, editEndpoint } = config || {};
@@ -321,6 +351,7 @@ export default function CustomEditDialog({
     }
   };
 
+  // Check for form field errors
   if (!isOpen || !config || !rowData) return null;
   const { fields } = config;
 
@@ -385,14 +416,14 @@ export default function CustomEditDialog({
           {/* Footer */}
           <div className="mt-8 flex justify-end gap-3">
             <button
-              className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+              className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 cursor-pointer"
               onClick={onClose}
             >
               {t("Zavřít")}
             </button>
 
             <button
-              className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700"
+              className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700 cursor-pointer"
               onClick={handleOpenConfirm}
             >
               {t("Uložit")}

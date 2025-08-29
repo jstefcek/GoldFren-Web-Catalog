@@ -189,8 +189,8 @@ export default function CustomAddDialog({
     const parts = [
       formData.vyrobce_label,
       formData.typ,
+      formData.objem,
       formData.oznaceni,
-      formData.vykon,
     ]
       .map((p) => (typeof p === "string" ? p.trim() : p))
       .filter(Boolean);
@@ -199,7 +199,7 @@ export default function CustomAddDialog({
     setFormData((prev) =>
       prev.nazev_modelu === built ? prev : { ...prev, nazev_modelu: built }
     );
-  }, [formData.vyrobce_label, formData.oznaceni, formData.typ, formData.vykon]);
+  }, [formData.vyrobce_label, formData.oznaceni, formData.typ, formData.objem]);
 
   // Validation
   const isEmptyValue = (val, dataType = "string", type = "input") => {
@@ -372,7 +372,7 @@ export default function CustomAddDialog({
           {/* Close button */}
           <div className="mt-8 flex justify-end gap-3">
             <button
-              className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+              className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 cursor-pointer"
               onClick={onClose}
             >
               {t("Zavřít")}
@@ -380,7 +380,7 @@ export default function CustomAddDialog({
 
             {/* Add button */}
             <button
-              className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700"
+              className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700 cursor-pointer"
               onClick={handleOpenConfirm}
             >
               {t("Přidat")}

@@ -6,7 +6,7 @@ export const dialogColumnsConfig = {
     // Configuration for the dialog columns
     // User configuration
     users: {
-        addEndpoint: (id = "") => `${serverUrl}/api/goldfren/internal/users/register/${id}`,
+        addEndpoint: () => `${serverUrl}/api/goldfren/internal/users/register`,
         fields: [
             {key: "username", label: "Uživatelské jméno", placeholder: "", type: "input", editable: false, show: true, dataType: "string", },
             {key: "first_name", label: "Křestní jméno", placeholder: "Zadejte křestní jméno", type: "input", editable: true, show: true, dataType: "string", required: true },
@@ -20,7 +20,7 @@ export const dialogColumnsConfig = {
 
     // Adaptery configuration
     adaptery: {
-        addEndpoint: (kod = "") => `${serverUrl}/api/goldfren/internal/adaptery/create/${kod}`,
+        addEndpoint: () => `${serverUrl}/api/goldfren/internal/adaptery/create`,
         fields: [
           {key: "cislo_dilu", label: "Číslo dílu", type: "text", editable: true, show: true, dataType: "string", required: true },
           {key: "obrazek", label: "Obrázek adaptéru", type: "image", editable: false, show: true, dataType: "image", },
@@ -38,7 +38,7 @@ export const dialogColumnsConfig = {
 
     // Brzdice configuration
       brzdice: {
-        addEndpoint: (kod = "") => `${serverUrl}/api/goldfren/internal/brzdice/create/${kod}`,
+        addEndpoint: () => `${serverUrl}/api/goldfren/internal/brzdice/create`,
         fields: [
           {key: "cislo_dilu", label: "Číslo dílu", type: "text", editable: true, show: true, dataType: "string", required: true },
           {key: "obrazek", label: "Obrázek brzdiče", type: "image", editable: false, show: true, dataType: "image", },
@@ -54,7 +54,7 @@ export const dialogColumnsConfig = {
     
       // Desticky configuration
       desticky: {
-        addEndpoint: (kod = "") => `${serverUrl}/api/goldfren/internal/desticky/create/${kod}`,
+        addEndpoint: () => `${serverUrl}/api/goldfren/internal/desticky/create`,
         fields: [
           {key: "cislo_dilu", label: "Číslo dílu", type: "text", editable: true, show: true, dataType: "string", required: true },
           {key: "obrazek", label: "Obrázek destičky", type: "image", editable: false, show: true, dataType: "image", },
@@ -77,7 +77,7 @@ export const dialogColumnsConfig = {
     
       // Kotouce configuration
       kotouce: {
-        addEndpoint: (kod = "") => `${serverUrl}/api/goldfren/internal/kotouce/create/${kod}`,
+        addEndpoint: () => `${serverUrl}/api/goldfren/internal/kotouce/create`,
         fields: [
           {key: "cislo_dilu", label: "Číslo dílu", type: "text", editable: true, show: true, dataType: "string", required: true },
           {key: "obrazek", label: "Obrázek kotouče", type: "image", editable: false, show: true, dataType: "image", },
@@ -97,7 +97,7 @@ export const dialogColumnsConfig = {
     
       // Hadicky configuration
       hadicky: {
-        addEndpoint: (kod) => `${serverUrl}/api/goldfren/internal/hadicky/create/${kod}`,
+        addEndpoint: () => `${serverUrl}/api/goldfren/internal/hadicky/create`,
         fields: [
           {key: "cislo_dilu", label: "Číslo dílu", type: "text", editable: true, show: true, dataType: "string", required: true  },
           {key: "obrazek", label: "Obrázek hadičky", type: "image", editable: false, show: true, dataType: "image", },
@@ -111,7 +111,7 @@ export const dialogColumnsConfig = {
     
       // Pumpy configuration
       pumpy: {
-        addEndpoint: (kod = "") => `${serverUrl}/api/goldfren/internal/pumpy/create/${kod}`,
+        addEndpoint: () => `${serverUrl}/api/goldfren/internal/pumpy/create`,
         fields: [
           {key: "cislo_dilu", label: "Číslo dílu", type: "text", editable: true, show: true, dataType: "string", required: true },
           {key: "obrazek", label: "Obrázek pumpy", type: "image", editable: false, show: true, dataType: "image", },
@@ -126,7 +126,7 @@ export const dialogColumnsConfig = {
     
       // Prislusenstvi configuration
       prislusenstvi: {
-        addEndpoint: (kod = "") => `${serverUrl}/api/goldfren/internal/prislusenstvi/create/${kod}`,
+        addEndpoint: () => `${serverUrl}/api/goldfren/internal/prislusenstvi/create`,
         fields: [
           {key: "cislo_dilu", label: "Číslo dílu", type: "text", editable: true, show: true, dataType: "string", required: true },
           {key: "obrazek", label: "Obrázek příslušenství", type: "image", editable: false, show: true, dataType: "image", },
@@ -140,19 +140,19 @@ export const dialogColumnsConfig = {
     
       // Vehicle configuration
       vozidla: {
-        addEndpoint: (kod = "") => `${serverUrl}/api/goldfren/internal/vozidla/create/${kod}`,
+        addEndpoint: () => `${serverUrl}/api/goldfren/internal/vozidla/create`,
         fields: [
           {key: "nazev_modelu", label: "Model vozidla", placeholder: "Model vozidla", type: "input", editable: false, show: true, dataType: "string", },
           {key: "kategorie", label: "Kategorie vozidla", placeholder: "Vyberte kategorii vozidla", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", required: true },
           {key: "subkategorie", label: "Subkategorie vozidla", placeholder: "Zadejte subkategorii vozidla", value: SelectValueConfig.subkategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", required: true },
           {key: "vyrobce", label: "Výrobce vozidla", placeholder: "Zadejte výrobce vozidla", value: SelectValueConfig.vyrobce, type: "select", editable: true, show: true, dataType: "string", required: true },
-          {key: "typ", label: "Typ vozidla", placeholder: "Zadejte typ vozidla", type: "input", editable: true, show: true, dataType: "string", required: true },
-          {key: "oznaceni", label: "Označení vozidla", placeholder: "Zadejte označení vozidla", type: "textarea", editable: true, show: true, dataType: "string", required: true },
+          {key: "typ", label: "Model vozidla", placeholder: "Zadejte model vozidla", type: "input", editable: true, show: true, dataType: "string", required: true },
+          {key: "oznaceni", label: "Speciální označení vozidla", placeholder: "Zadejte označení vozidla", type: "textarea", editable: true, show: true, dataType: "string" },
           {key: "poznamka", label: "Poznámka", placeholder: "Zadejte poznámku k vozidlu", type: "textarea", editable: true, show: true, dataType: "string", },
           {key: "rok_od", label: "Rok od", placeholder: "Zadejte rok výroby od", type: "input", editable: true, show: true, dataType: "string", required: true },
           {key: "rok_do", label: "Rok do", placeholder: "Zadejte rok výroby do", type: "input", editable: true, show: true, dataType: "string", },
-          {key: "vykon", label: "Výkon [kW]", placeholder: "Zadejte výkon vozidla", type: "input", editable: true, show: true, dataType: "string", required: true },
-          {key: "objem", label: "Objem [cm3]", placeholder: "Zadejte objem vozidla", type: "input", editable: true, show: true, dataType: "string", },
+          {key: "vykon", label: "Výkon [kW]", placeholder: "Zadejte výkon vozidla", type: "input", editable: true, show: true, dataType: "string", },
+          {key: "objem", label: "Objem [cm3]", placeholder: "Zadejte objem vozidla", type: "input", editable: true, show: true, dataType: "string" },
           {key: "publikovat", label: "Publikovat vozidlo?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
         ],
       }

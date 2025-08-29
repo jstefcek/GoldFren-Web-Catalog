@@ -4,6 +4,7 @@ import { formatUrlLinkPathtoLable } from "../../utils/utils";
 import DataGrid_Admin from "../DataGrid/DataGrid_Admin";
 import { useAuth } from "../../services/authContext";
 import CustomAddDialog from "../ui/Custom_AddDialog";
+import AlertDialog from "../ui/Custom_AlertDialog";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -13,8 +14,8 @@ export default function SortimentLayout() {
   const sortimentType = location.pathname.split("/").pop();
   const { userInfo } = useAuth();
   const [showDialog, setShowDialog] = useState(false);
-  const [alertData, setAlertData] = useState(null);
   const [refreshToken, setRefreshToken] = useState(Date.now());
+  const [alertDialog, setAlertDialog] = useState(null);
 
   // Format the sortiment type to label
   const sortimentLabel = formatUrlLinkPathtoLable(sortimentType);
@@ -60,27 +61,33 @@ export default function SortimentLayout() {
           onSuccess={() => {
             setShowDialog(false);
             setRefreshToken(Date.now());
+            setAlertDialog({
+              title: "Úspěch",
+              message: "Sortiment byl úspěšně vytvořen.",
+              type: "success",
+              duration: 7,
+            });
           }}
           onError={(errMsg) =>
-            setAlertData({
+            setAlertDialog({
               title: "Chyba",
               message: errMsg,
               type: "error",
-              duration: 5,
-              onClose: () => setAlertData(null),
+              duration: 7,
+              onClose: () => setAlertDialog(null),
             })
           }
         />
       )}
 
-      {/* Alert Dialog */}
-      {alertData && (
+      {/* Alert Dialog for errors or confirmations */}
+      {alertDialog && (
         <AlertDialog
-          title={alertData.title}
-          message={alertData.message}
-          type={alertData.type}
-          duration={alertData.duration}
-          onClose={alertData.onClose}
+          title={alertDialog.title}
+          message={alertDialog.message}
+          type={alertDialog.type}
+          duration={alertDialog.duration}
+          onClose={() => setAlertDialog(null)}
         />
       )}
     </div>

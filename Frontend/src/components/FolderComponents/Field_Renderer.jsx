@@ -14,14 +14,17 @@ export default function FieldRenderer({
   vyrobceOptions = [],
   filteredSubkategorie = [],
 }) {
+  // Password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
 
+  // Helpers
   const normalizeInputType = (t) => (t === "input" ? "text" : t || "text");
   const hasError = !!error;
 
+  // Control class used between components
   const controlClass = (col) =>
     `${
-      isDisabled(col) ? "text-gray-500" : "text-gray-900"
+      isDisabled(col) ? "text-gray-700 bg-gray-100 cursor-not-allowed" : "text-gray-900 bg-white focus:ring-2"
     } px-3 py-2 border ${
       hasError ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-gray-600"
     } text-gray-700 rounded-md text-sm focus:outline-none focus:ring-2`;
@@ -215,7 +218,7 @@ export default function FieldRenderer({
         onBlur={() => onBlur(col.key)}
         className={`px-3 py-2 border ${
           hasError ? "border-red-600" : "border-gray-300"
-        } bg-gray-100 text-gray-500 rounded-md text-sm cursor-not-allowed`}
+        } bg-gray-100 text-gray-700 rounded-md text-sm cursor-not-allowed`}
       />
     );
   }

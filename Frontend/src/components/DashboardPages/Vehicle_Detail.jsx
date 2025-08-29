@@ -4,6 +4,7 @@ import { formatUrlLinkPathtoLable } from "../../utils/utils";
 import DataGrid_Admin from "../DataGrid/DataGrid_Admin";
 import { useAuth } from "../../services/authContext";
 import CustomAddDialog from "../ui/Custom_AddDialog";
+import AlertDialog from "../ui/Custom_AlertDialog";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -13,7 +14,7 @@ export default function VehicleLayout() {
   const vehicleType = location.pathname.split("/").pop();
   const { userInfo } = useAuth();
   const [showDialog, setShowDialog] = useState(false);
-  const [alertData, setAlertData] = useState(null);
+  const [alertDialog, setAlertDialog] = useState(null);
   const [refreshToken, setRefreshToken] = useState(Date.now());
 
   // Format the vehicle type to label
@@ -26,7 +27,7 @@ export default function VehicleLayout() {
         <h2 className="text-3xl font-bold text-gray-900">{vehicleLabel}</h2>
 
         {/* Add button */}
-        <button 
+        <button
           className="mt-2 mb-4 px-6 py-4 bg-red-600 text-white font-bold rounded-md cursor-pointer hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           onClick={() => setShowDialog(true)}
         >
@@ -58,27 +59,33 @@ export default function VehicleLayout() {
           onSuccess={() => {
             setShowDialog(false);
             setRefreshToken(Date.now());
+            setAlertDialog({
+              title: "Úspěch",
+              message: "Vozidlo bylo úspěšně vytvořeno.",
+              type: "success",
+              duration: 7,
+            });
           }}
           onError={(errMsg) =>
-            setAlertData({
+            setAlertDialog({
               title: "Chyba",
               message: errMsg,
               type: "error",
-              duration: 5,
-              onClose: () => setAlertData(null),
+              duration: 7,
+              onClose: () => setAlertDialog(null),
             })
           }
         />
       )}
 
-      {/* Alert Dialog */}
-      {alertData && (
+      {/* Alert Dialog for errors or confirmations */}
+      {alertDialog && (
         <AlertDialog
-          title={alertData.title}
-          message={alertData.message}
-          type={alertData.type}
-          duration={alertData.duration}
-          onClose={alertData.onClose}
+          title={alertDialog.title}
+          message={alertDialog.message}
+          type={alertDialog.type}
+          duration={alertDialog.duration}
+          onClose={() => setAlertDialog(null)}
         />
       )}
     </div>
