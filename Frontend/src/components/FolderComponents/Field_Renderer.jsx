@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, ImageOff } from "lucide-react";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
+import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 
 // Reusable field renderer with wrapper
 export default function FieldRenderer({
@@ -8,9 +9,9 @@ export default function FieldRenderer({
   value,
   t,
   isDisabled,
-  onChange,        
-  onBlur,          
-  error,           
+  onChange,
+  onBlur,
+  error,
   vyrobceOptions = [],
   filteredSubkategorie = [],
 }) {
@@ -24,9 +25,13 @@ export default function FieldRenderer({
   // Control class used between components
   const controlClass = (col) =>
     `${
-      isDisabled(col) ? "text-gray-700 bg-gray-100 cursor-not-allowed" : "text-gray-900 bg-white focus:ring-2"
+      isDisabled(col)
+        ? "text-gray-700 bg-gray-100 cursor-not-allowed"
+        : "text-gray-900 bg-white focus:ring-2"
     } px-3 py-2 border ${
-      hasError ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-gray-600"
+      hasError
+        ? "border-red-600 focus:ring-red-600"
+        : "border-gray-300 focus:ring-gray-600"
     } text-gray-700 rounded-md text-sm focus:outline-none focus:ring-2`;
 
   const wrapper = (children) => (
@@ -45,13 +50,11 @@ export default function FieldRenderer({
   if (col.type === "image") {
     return wrapper(
       value ? (
-        <img
+        <CustomImageViewer
           src={value}
           alt={col.label}
-          className={`max-w-full max-h-48 object-contain border ${
-            hasError ? "border-red-600" : "border-gray-300"
-          } rounded-md bg-white`}
-          onBlur={() => onBlur(col.key)}
+          fullSize={true}
+          className="h-48 object-contain border border-gray-300 rounded-md bg-white"
         />
       ) : (
         <div

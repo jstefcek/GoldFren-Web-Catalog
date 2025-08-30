@@ -93,7 +93,7 @@ export function CustomImageViewer({ src, alt = "Preview image", fullSize = false
             <img
               src={src}
               alt={alt}
-              className="max-w-full max-h-full object-contain rounded-md shadow-lg"
+              className="max-w-full max-h-full object-contain rounded-md shadow-lg border border-gray-300 bg-white p-2"
               loading="lazy"
             />
           </div>
