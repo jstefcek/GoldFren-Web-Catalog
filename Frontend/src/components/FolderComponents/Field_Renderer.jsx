@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Eye, EyeOff, ImageOff } from "lucide-react";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
+import { formatDateLong } from "../../utils/utils";
 
 // Reusable field renderer with wrapper
 export default function FieldRenderer({
@@ -23,16 +24,19 @@ export default function FieldRenderer({
   const hasError = !!error;
 
   // Control class used between components
-  const controlClass = (col) =>
-    `${
-      isDisabled(col)
-        ? "text-gray-700 bg-gray-100 cursor-not-allowed"
-        : "text-gray-900 bg-white focus:ring-2"
+  const controlClass = (col, isPlaceholder = false) => {
+    const textColor = isDisabled(col)
+      ? "text-gray-700"
+      : isPlaceholder
+      ? "text-gray-400"
+      : "text-gray-900";
+
+    return `${textColor} ${
+      isDisabled(col) ? "bg-gray-100 cursor-not-allowed" : "bg-white focus:ring-2"
     } px-3 py-2 border ${
-      hasError
-        ? "border-red-600 focus:ring-red-600"
-        : "border-gray-300 focus:ring-gray-600"
-    } text-gray-700 rounded-md text-sm focus:outline-none focus:ring-2`;
+      hasError ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-gray-600"
+    } rounded-md text-sm focus:outline-none focus:ring-2`;
+  };
 
   const wrapper = (children) => (
     <div className="flex flex-col">
@@ -44,6 +48,20 @@ export default function FieldRenderer({
       {hasError && <span className="mt-1 text-xs text-red-600">{error}</span>}
     </div>
   );
+
+  // Invisible field: reserve layout space but render a non-interactive placeholder
+  if (col.type === "invisible" || col.key === "invisible") {
+    // Keep the same vertical space as a normal field, but don't render label or border.
+    return (
+      <div className="flex flex-col" aria-hidden="true">
+        <div className="h-5 mb-1" />
+        <div
+          className={`${controlClass(col)} pointer-events-none select-none bg-transparent border-transparent`}
+          tabIndex={-1}
+        />
+      </div>
+    );
+  }
 
   // --- Controls ---
   // Image preview field
@@ -93,9 +111,10 @@ export default function FieldRenderer({
         onChange={(e) => onChange(col.key, e.target.value)}
         onBlur={() => onBlur(col.key)}
         disabled={isDisabled(col)}
-        className={controlClass(col)}
+        className={controlClass(col, !value)}
+        style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="">
+        <option value="" className="text-gray-400">
           {col.placeholder ||
             (noOptions ? t("Nejprve vyberte kategorii") : t("Vyberte výrobce"))}
         </option>
@@ -117,9 +136,10 @@ export default function FieldRenderer({
         onChange={(e) => onChange(col.key, e.target.value)}
         onBlur={() => onBlur(col.key)}
         disabled={isDisabled(col)}
-        className={controlClass(col)}
+        className={controlClass(col, !value)}
+        style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="">{col.placeholder || t("Vyberte kategorii")}</option>
+        <option value="" className="text-gray-400">{col.placeholder || t("Vyberte kategorii")}</option>
         {col.value.map((opt) => (
           <option key={opt.id} value={opt.value}>
             {t(opt.label)}
@@ -137,9 +157,10 @@ export default function FieldRenderer({
         onChange={(e) => onChange(col.key, e.target.value)}
         onBlur={() => onBlur(col.key)}
         disabled={isDisabled(col)}
-        className={controlClass(col)}
+        className={controlClass(col, !value)}
+        style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="">{col.placeholder || t("Vyberte subkategorii")}</option>
+        <option value="" className="text-gray-400">{col.placeholder || t("Vyberte subkategorii")}</option>
         {filteredSubkategorie.map((opt) => (
           <option key={opt.id} value={opt.value}>
             {t(opt.label)}
@@ -157,9 +178,10 @@ export default function FieldRenderer({
         onChange={(e) => onChange(col.key, e.target.value)}
         onBlur={() => onBlur(col.key)}
         disabled={isDisabled(col)}
-        className={controlClass(col)}
+        className={controlClass(col, !value)}
+        style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="">{col.placeholder || t("Vyberte možnost")}</option>
+        <option value="" className="text-gray-400">{col.placeholder || t("Vyberte možnost")}</option>
         {col.value.map((opt) => (
           <option key={opt.id} value={opt.value}>
             {t(opt.label)}
@@ -217,6 +239,22 @@ export default function FieldRenderer({
       <input
         type="text"
         value={value || ""}
+        disabled
+        onBlur={() => onBlur(col.key)}
+        className={`px-3 py-2 border ${
+          hasError ? "border-red-600" : "border-gray-300"
+        } bg-gray-100 text-gray-700 rounded-md text-sm cursor-not-allowed`}
+      />
+    );
+  }
+
+  // Transform date to czech format
+  if (col.dataType === "date" && value) {
+    const date = new Date(value);
+    return wrapper(
+      <input
+        type="text"
+        value={formatDateLong(date)}
         disabled
         onBlur={() => onBlur(col.key)}
         className={`px-3 py-2 border ${
