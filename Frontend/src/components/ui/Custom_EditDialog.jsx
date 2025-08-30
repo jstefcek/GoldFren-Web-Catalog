@@ -91,6 +91,10 @@ export default function CustomEditDialog({
     const subOpt = findByValueOrLabel(subFiltered, rowData.subkategorie);
     if (subOpt) initial.subkategorie = String(subOpt.value);
 
+    // Normalize typ_desticky
+    const typOpt = findByValueOrLabel(SelectValueConfig.typ_desticky, rowData.typ);
+    if (typOpt) initial.typ = String(typOpt.value);
+
     // Manufacturer label (may not come from API yet)
     initial.vyrobce_label = rowData.vyrobce_label || "";
 
