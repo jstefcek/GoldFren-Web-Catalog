@@ -71,7 +71,7 @@ export default function CustomAddDialog({
     if (!config) return;
     const initial = {};
     config.fields.forEach((col) => (initial[col.key] = ""));
-    initial.vyrobce_label = ""; // track label for display
+    initial.vyrobce_label = "";
     setFormData(initial);
     setTouched({});
     setErrors({});
@@ -241,6 +241,7 @@ export default function CustomAddDialog({
     return newErrors;
   };
 
+  // Handle form field blur
   const handleBlur = (key) => {
     setTouched((prev) => ({ ...prev, [key]: true }));
     const msg = validateField(key);

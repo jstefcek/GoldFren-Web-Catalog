@@ -279,6 +279,7 @@ export default function CustomEditDialog({
     return newErrors;
   };
 
+  // Handle form field blur
   const handleBlur = (key) => {
     setTouched((prev) => ({ ...prev, [key]: true }));
     const msg = validateField(key);
