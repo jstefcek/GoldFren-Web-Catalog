@@ -98,7 +98,7 @@ export const dialogColumnsConfig = {
       {key: "popis", label: "Popis adaptéru", placeholder: "Zadejte popis adaptéru", type: "input", editable: true, show: true, dataType: "string", },
       {key: "poznamka", label: "Poznámka", placeholder: "Zadejte poznámku", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
-      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
+      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: false, show: true, dataType: "date", },
     ],
   },
 
@@ -117,7 +117,7 @@ export const dialogColumnsConfig = {
       {key: "popis", label: "Popis brzdiče", placeholder: "Zadejte popis brzdiče", type: "input", editable: true, show: true, dataType: "string", },
       {key: "poznamka", label: "Poznámka", placeholder: "Zadejte poznámku", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat díl?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
-      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
+      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: false, show: true, dataType: "date", },
     ],
   },
 
@@ -143,7 +143,7 @@ export const dialogColumnsConfig = {
       {key: "konkurence_cleveland", label: "Cleveland", placeholder: "Zadejte konkurenci Cleveland", type: "input", editable: true, show: true, dataType: "string", },
       {key: "konkurence_matco", label: "Matco", placeholder: "Zadejte konkurenci Matco", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat díl?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
-      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
+      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: false, show: true, dataType: "date", },
     ],
   },
 
@@ -166,7 +166,7 @@ export const dialogColumnsConfig = {
       {key: "konkurence_braking", label: "Braking", placeholder: "Zadejte konkurenci Braking", type: "input", editable: true, show: true, dataType: "string", },
       {key: "konkurence_ngbrakes", label: "NGBrakes", placeholder: "Zadejte konkurenci NGBrakes", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat díl?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
-      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
+      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: false, show: true, dataType: "date", },
     ],
   },
 
@@ -183,6 +183,7 @@ export const dialogColumnsConfig = {
       {key: "popis", label: "Popis hadičky", placeholder: "Zadejte popis hadičky", type: "input", editable: true, show: true, dataType: "string", },
       {key: "poznamka", label: "Poznámka", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat díl?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
+      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: false, show: true, dataType: "date", },
     ],
   },
 
@@ -200,7 +201,7 @@ export const dialogColumnsConfig = {
       {key: "popis", label: "Popis pumpy", placeholder: "Zadejte popis pumpy", type: "input", editable: true, show: true, dataType: "string", },
       {key: "poznamka", label: "Poznámka", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat díl?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
-      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
+      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: false, show: true, dataType: "date", },
     ],
   },
 
@@ -217,7 +218,7 @@ export const dialogColumnsConfig = {
       {key: "popis", label: "Popis příslušenství", placeholder: "Zadejte popis příslušenství", type: "input", editable: true, show: true, dataType: "string", },
       {key: "poznamka", label: "Poznámka", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat díl?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
-      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: true, show: true, dataType: "date", },
+      {key: "aktualizovano", label: "Aktualizováno", type: "input", editable: false, show: true, dataType: "date", },
     ],
   },
 

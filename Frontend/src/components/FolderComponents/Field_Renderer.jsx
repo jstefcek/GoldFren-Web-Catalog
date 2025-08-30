@@ -48,7 +48,7 @@ export default function FieldRenderer({
         <img
           src={value}
           alt={col.label}
-          className={`max-w-full max-h-36 object-contain border ${
+          className={`max-w-full max-h-48 object-contain border ${
             hasError ? "border-red-600" : "border-gray-300"
           } rounded-md bg-white`}
           onBlur={() => onBlur(col.key)}
