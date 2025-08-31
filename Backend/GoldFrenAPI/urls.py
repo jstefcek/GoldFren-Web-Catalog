@@ -14,4 +14,5 @@ urlpatterns = [
     path("vozidla/", include("GoldFrenAPI.Endpoints.Vozidla_Endpoint")),
     path("users/", include("GoldFrenAPI.Endpoints.User_Endpoint")),
     path("auth/", include("GoldFrenAPI.Endpoints.Auth_Endpoint")),
+    path("sortiment/", include("GoldFrenAPI.Endpoints.Sortiment_Endpoint")),
 ]

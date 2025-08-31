@@ -219,7 +219,7 @@ export const CustomSelect = ({
           ref={inputRef}
           type="text"
           className={`w-full border rounded-lg px-3 py-2 pr-10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm md:text-base transition-all duration-200 ${
-            disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : ""
+            disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : value ? "bg-white" : ""
           } ${value ? "text-black" : "text-gray-700"}`}
           placeholder={i18next.t(placeholder)}
           onClick={() => !disabled && setOpen(true)}

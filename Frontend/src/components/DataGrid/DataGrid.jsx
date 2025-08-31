@@ -176,7 +176,7 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
               placeholder={t("datagrid.search_placeholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 h-10 text-sm sm:text-base focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="pl-10 h-10 text-sm sm:text-base bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500"
               aria-label="Search data"
             />
           </div>
@@ -247,7 +247,7 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
           <div className="flex items-center gap-2 ml-2">
             <SlidersHorizontal className="text-gray-500" size={18} />
             <select
-              className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="border border-gray-300 bg-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
               value={pageSize}
               onChange={(e) => {
                 setPageSize(Number(e.target.value));

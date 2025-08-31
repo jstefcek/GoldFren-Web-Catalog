@@ -22,8 +22,10 @@ def get_vyrobce_names(request):
     # Get the kategorie_kod from the request
     kategorie_kod = request.GET.get("kategorie_kod")
     all_params = request.GET.get("all_params", "false").lower() == "true"
+    
+    # Set default kategorie_kod if not provided (Return all vyrobce)
     if not kategorie_kod:
-        return JsonResponse({"error": "kategorie_kod is required"}, status=400)
+        kategorie_kod = "All"
 
     # Check if there is a cached version of the vyrobce names
     cache_key = f"vyrobce_names_{kategorie_kod}_{all_params}"

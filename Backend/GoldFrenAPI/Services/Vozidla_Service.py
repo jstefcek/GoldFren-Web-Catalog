@@ -24,14 +24,20 @@ def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
     """
     Function to get all vyrobce by kategorie ID
     """
-    # Get all vyrobce from the database based on kategorie ID
-    query = """
-        SELECT *
-        FROM d_vyrobce
-        WHERE kategorie = %s
-        ORDER BY nazev ASC
-    """
-    records = get_filtered_records(sql_query=query, params=[kategorie_id])
+    # Prepare SQL query
+    query = """SELECT * FROM d_vyrobce"""
+    # Add filtering for specific kategorie
+    if kategorie_id != "All":
+        query += " WHERE kategorie = %s"
+
+    # Add ordering
+    query += " ORDER BY nazev ASC"
+
+    # Get all vyrobce from the database based on kategorie ID or all vyrobce when not provided (set as "All")
+    if kategorie_id == "All":
+        records = get_filtered_records(sql_query=query, params=[])
+    else:
+        records = get_filtered_records(sql_query=query, params=[kategorie_id])
     vyrobce = []
     
     # Iterate through records
