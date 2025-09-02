@@ -157,7 +157,7 @@
     "manufacturer": "Hersteller",
     "category": "Fahrzeugkategorie",
     "subcategory": "Unterkategorie",
-    "vehicle_type": "Bezeichnung",
+    "vehicle_type": "Fahrzeugmodell",
     "volume": "Hubraum [cm3]",
     "year_from": "Baujahr von",
     "year_to": "Baujahr bis",

@@ -287,6 +287,43 @@ export const columnsConfig = {
     {key: "rok_od", label: "datagrid.vehicle.year_from", sortable: true, filterable: true },
     {key: "rok_do", label: "datagrid.vehicle.year_to", sortable: true, filterable: true },
     {key: "publikovat", label: "datagrid.vehicle.publish", type: "boolean", sortable: true, filterable: true },
-  ]
+  ],
 
+  // Desticky - Admin page for sortiment export based on manufacturer
+  desticky_sortiment: [
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true,},
+    {key: "material", label: "datagrid.material_text", sortable: true, filterable: true,},
+    {key: "oem_cisla", label: "datagrid.oem_cisla", sortable: true, filterable: true, maxRows: 3, useTruncation: true,},
+  ],
+
+  // Kotouce - Admin page for sortiment export based on manufacturer
+  kotouce_sortiment: [
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+    {key: "vnejsi_prumer", label: "datagrid.outer_diameter", sortable: true, filterable: true,},
+    {key: "roztecny_prumer", label: "datagrid.pitch_diameter", sortable: true, filterable: true,},
+    {key: "vnitrni_prumer", label: "datagrid.inside_diameter", sortable: true, filterable: true,},
+    {key: "tloustka", label: "datagrid.thickness", sortable: true, filterable: true,},
+  ],
+
+  // Hadicky - Admin page for sortiment export based on manufacturer
+  hadicky_sortiment: [
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+  ],
+
+  // Adaptery - Admin page for sortiment export based on manufacturer
+  adaptery_sortiment: [
+    {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+    {key: "prumer",label: "datagrid.diameter", sortable: true, filterable: true },
+    {key: "typ_uchyceni", label: "datagrid.attached_type", sortable: true, filterable: true },
+    {key: "roztec_brzdice", label: "datagrid.brakepad_spacing", sortable: true, filterable: true },
+  ],
 };

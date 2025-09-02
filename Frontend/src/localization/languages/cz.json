@@ -157,7 +157,7 @@
     "manufacturer": "Výrobce",
     "category": "Kategorie vozidla",
     "subcategory": "Subkategorie",
-    "vehicle_type": "Označení",
+    "vehicle_type": "Model vozidla",
     "volume": "Objem [cm3]",
     "year_from": "Rok výroby od",
     "year_to": "Rok výroby do",
