@@ -43,3 +43,9 @@ export function formatUrlLinkPathtoLable (url_path) {
 export function extractFileName(urlOrPath) {
   return urlOrPath?.split("/").pop();
 }
+
+// Format a string to be safe for use in file names
+export const fileSafe = (file_name) => (file_name || "vyrobce").replace(/[\\/:*?"<>|]/g, "_");
+
+// Format today's date as YYYY-MM-DD
+export const todayStr = () => new Date().toISOString().slice(0, 10);

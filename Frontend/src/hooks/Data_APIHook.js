@@ -13,8 +13,6 @@ export const fetchData = async (category, apiUrl, headers = null) => {
         headers: headers ? { ...headers, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' },
       };
 
-      console.log(`Fetching data for category: ${category} from URL: ${apiUrl}`);
-
       // Fetch data from the API
       const response = await fetch(apiUrl, options);
       

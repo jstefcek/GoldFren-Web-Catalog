@@ -4,25 +4,10 @@ import DataGrid from "../DataGrid/DataGrid";
 import AlertDialog from "../ui/Custom_AlertDialog";
 import { CustomSelect } from "../SearchForm/ui/CustomSelect";
 import { FileSpreadsheet, Search } from "lucide-react";
+import { fileSafe, todayStr } from "../../utils/utils";
+import { EXCEL_COLUMN_CONFIG } from '../../utils/export_excel_config';
 
 const serverUrl = import.meta.env.VITE_API_URL;
-
-// Format today's date as YYYY-MM-DD
-const todayStr = () => new Date().toISOString().slice(0, 10);
-
-// Format a string to be safe for use in file names
-const fileSafe = (s) => (s || "vyrobce").replace(/[\\/:*?"<>|]/g, "_");
-
-// Optionally flatten nested values a bit and make nulls empty strings
-const sanitizeRow = (row) => {
-  const out = {};
-  for (const [k, v] of Object.entries(row || {})) {
-    if (v === null || v === undefined) out[k] = "";
-    else if (typeof v === "object" && !Array.isArray(v)) out[k] = JSON.stringify(v);
-    else out[k] = v;
-  }
-  return out;
-};
 
 export default function VyrobceSortimentDetail() {
   const { t } = useTranslation();
@@ -188,112 +173,100 @@ export default function VyrobceSortimentDetail() {
     !!transformedSortimentData &&
     Object.values(transformedSortimentData).some((c) => c.items?.length > 0);
 
-  // Export data to Excel
+  // Replace your handleExport function with this improved version
   const handleExport = useCallback(async () => {
     if (!transformedSortimentData) return;
+    
     try {
       setExporting(true);
-
-      // lightweight SheetJS from CDN
       const XLSX = await import("https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs");
       const wb = XLSX.utils.book_new();
+      
+      // Initialize workbook properties
+      wb.Workbook = { Tables: [] };
 
-      // helper: 0 -> A, 1 -> B ...
-      const colToLetter = (c) => {
-        let s = "";
-        let n = c + 1;
-        while (n > 0) {
-          const rem = (n - 1) % 26;
-          s = String.fromCharCode(65 + rem) + s;
-          n = Math.floor((n - 1) / 26);
-        }
-        return s;
-      };
-
-      // ensure workbook table container
-      wb.Workbook = wb.Workbook || {};
-      wb.Workbook.Tables = wb.Workbook.Tables || [];
-
-      // create one sheet per category as an actual Excel Table (classic blue/striped)
+      // Process each category
       for (const [catKey, catData] of Object.entries(transformedSortimentData)) {
         const items = catData?.items || [];
         if (!items.length) continue;
 
-        const rows = items.map((it) => sanitizeRow(it));
-
-        // collect headers
-        const allKeys = Array.from(
-          rows.reduce((acc, r) => {
-            Object.keys(r || {}).forEach((k) => acc.add(k));
-            return acc;
-          }, new Set())
-        );
-
-        const preferred = ["kod", "id", "nazev", "name"];
-        const headers = [
-          ...preferred.filter((p) => allKeys.includes(p)),
-          ...allKeys.filter((k) => !preferred.includes(k)).sort(),
-        ];
-
-        // create worksheet
-        const ws = XLSX.utils.json_to_sheet(rows, { header: headers, skipHeader: false });
-
-        // ensure ref/range set correctly
-        const lastCol = headers.length - 1;
-        const lastColLetter = colToLetter(lastCol);
-        const lastRow = rows.length + 1;
-        const range = `A1:${lastColLetter}${lastRow}`;
-        ws["!ref"] = range;
-
-        // autofilter and col widths
-        ws["!autofilter"] = { ref: range };
-        ws["!cols"] = headers.map((h) => ({ wch: Math.min(Math.max(h.length + 6, 12), 40) }));
-
-        // sheet name
         const sheetName = (t(catKey) || catKey).toString();
-
-        // append sheet
-        XLSX.utils.book_append_sheet(wb, ws, sheetName);
-
-        // build safe table name (alphanumeric, starts with letter)
-        let tableNameBase = sheetName.replace(/[^A-Za-z0-9]/g, "").slice(0, 20);
-        if (!/^[A-Za-z]/.test(tableNameBase)) tableNameBase = `T${tableNameBase}`;
-        if (!tableNameBase) tableNameBase = "Table";
-        let tableName = tableNameBase;
-        let idx = 1;
-        while (wb.Workbook.Tables.some((t) => t.name === tableName)) {
-          tableName = `${tableNameBase}${idx++}`;
+        
+        // Get category-specific column config
+        const categoryConfig = EXCEL_COLUMN_CONFIG[`${catKey}_sortiment`];
+        if (!categoryConfig) {
+          throw new Error(`No column configuration found for category: ${catKey}`);
         }
 
-        // add table definition
-        const tableObj = {
-          name: tableName,
+        const { columns } = categoryConfig;
+        const { tableStyle } = EXCEL_COLUMN_CONFIG;
+        
+        // Map data to include only configured columns
+        const rows = items.map(item => 
+          columns.reduce((acc, col) => ({
+            ...acc,
+            [col.header]: item[col.key]
+          }), {})
+        );
+
+        // Create headers array
+        const headers = columns.map(col => col.header);
+
+        // Create worksheet with headers
+        const ws = XLSX.utils.json_to_sheet(rows, { 
+          header: headers,
+          skipHeader: false 
+        });
+
+        // Set column widths
+        ws['!cols'] = headers.map(h => ({ 
+          wch: Math.min(Math.max(h.length + 6, 12), 40) 
+        }));
+
+        // Calculate range
+        const lastCol = XLSX.utils.encode_col(headers.length - 1);
+        const lastRow = rows.length + 1;
+        const range = `A1:${lastCol}${lastRow}`;
+
+        // Set autofilter
+        ws['!autofilter'] = { ref: range };
+
+        // Create table name
+        let tableName = `Table_${sheetName.replace(/[^A-Za-z0-9]/g, '')}`;
+        
+        // Add table definition
+        ws['!table'] = {
           ref: range,
-          headerRow: true,
+          name: tableName,
           totalsRow: false,
-          columns: headers.map((h) => ({ name: h })),
-          style: { theme: "TableStyleMedium2", showRowStripes: true },
+          headerRow: true,
+          style: tableStyle,
+          columns: headers.map(h => ({ name: h }))
         };
 
-        // worksheet-level pointer
-        const wsRef = wb.Sheets[sheetName];
-        wsRef["!table"] = { name: tableName, ref: range };
+        // Add worksheet to workbook
+        XLSX.utils.book_append_sheet(wb, ws, sheetName);
 
-        // push to workbook tables so SheetJS emits table xml
-        wb.Workbook.Tables.push(tableObj);
+        // Add table to workbook's table collection
+        wb.Workbook.Tables.push({
+          name: tableName,
+          ref: range,
+          ...tableStyle
+        });
       }
 
-      // filename and write
+      // Generate filename and save
       const mfrLabel = fileSafe(selectedMfr?.label);
       const fname = `goldfren_${mfrLabel.toLowerCase()}_${todayStr()}.xlsx`;
       XLSX.writeFile(wb, fname, { compression: true });
+
     } catch (e) {
       setAlertData({
         title: "Export selhal",
         message: e?.message || "Nepodařilo se vytvořit Excel soubor.",
         type: "error",
         duration: 6,
-        onClose: () => setAlertData(null),
+        onClose: () => setAlertData(null)
       });
     } finally {
       setExporting(false);

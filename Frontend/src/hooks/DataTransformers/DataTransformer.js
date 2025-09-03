@@ -487,5 +487,114 @@ export const dataTransformers = {
       }
       return [];
     },
+
+    // Adaptery for sortiment transformed data
+    adaptery_sortiment: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          cislo_dilu: item.cislo_dilu,
+          prumer: item.prumer,
+          typ_uchyceni: item.typ_uchyceni,
+          roztec_brzdice: item.roztec_brzdice,
+          pozice: item.pozice,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+        }));
+      }
+      return [];
+    },
+
+    // Brzdice for sortiment transformed data
+    brzdice_sortiment: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          cislo_dilu: item.cislo_dilu,
+          typ_uchyceni: item.typ_uchyceni,
+          pocet_pistku: item.pocet_pistku,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+        }));
+      }
+      return [];
+    },
+
+    // Desticky for sortiment transformed data
+    desticky_sortiment: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          cislo_dilu: item.cislo_dilu,
+          typ: item.typ,
+          material_text: item.material_text,
+          oem_cisla: item.oem_cisla,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+        }));
+      }
+      return [];
+    },
+
+    // Kotouce for sortiment transformed data
+    kotouce_sortiment: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          cislo_dilu: item.cislo_dilu,
+          typ: item.typ,
+          vnejsi_prumer: item.od,
+          roztecny_prumer: item.hd,
+          vnitrni_prumer: item.id,
+          tloustka: item.thk,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+        }));
+      }
+      return [];
+    },
+
+    // Hadicky for sortiment transformed data
+    hadicky_sortiment: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          cislo_dilu: item.cislo_dilu,
+          poznamka: item.poznamka,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+        }));
+      }
+      return [];
+    },
+
+    // Pumpy for sortiment transformed data
+    pumpy_sortiment: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          cislo_dilu: item.cislo_dilu,
+          prumer: item.prumer,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+        }));
+      }
+      return [];
+    },
+
+    // Prislusenstvi for sortiment transformed data
+    prislusenstvi_sortiment: (data) => {
+      if (Array.isArray(data.data)) {
+        return data.data.map(item => ({
+          ...item,
+          id: item.kod,
+          cislo_dilu: item.cislo_dilu,
+          typ: item.typ,
+          poznamka: item.poznamka,
+          oznaceni_vozidla: item.oznaceni_vozidla,
+        }));
+      }
+      return [];
+    },
     
   };
