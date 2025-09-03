@@ -1,12 +1,12 @@
 # Dockerfile (frontend)
-FROM node:22.14.0-alpine
+FROM node:22.19.0-alpine
 WORKDIR /goldfren_frontend
 
 # 1. copy lock‑files first for better layer caching
 COPY package*.json ./
 
 # 2. **install *with* optional deps**
-RUN npm ci      
+RUN npm i      
 
 # 3. copy the rest and build
 COPY . .

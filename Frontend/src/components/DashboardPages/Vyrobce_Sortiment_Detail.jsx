@@ -6,6 +6,7 @@ import { CustomSelect } from "../SearchForm/ui/CustomSelect";
 import { FileSpreadsheet, Search } from "lucide-react";
 import { fileSafe, todayStr } from "../../utils/utils";
 import { EXCEL_COLUMN_CONFIG } from '../../utils/export_excel_config';
+import { writeFile, utils } from "xlsx";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -179,8 +180,8 @@ export default function VyrobceSortimentDetail() {
     
     try {
       setExporting(true);
-      const XLSX = await import("https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs");
-      const wb = XLSX.utils.book_new();
+      //const XLSX = await import("https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs");
+      const wb = utils.book_new();
       
       // Initialize workbook properties
       wb.Workbook = { Tables: [] };
@@ -213,7 +214,7 @@ export default function VyrobceSortimentDetail() {
         const headers = columns.map(col => col.header);
 
         // Create worksheet with headers
-        const ws = XLSX.utils.json_to_sheet(rows, { 
+        const ws = utils.json_to_sheet(rows, { 
           header: headers,
           skipHeader: false 
         });
@@ -224,7 +225,7 @@ export default function VyrobceSortimentDetail() {
         }));
 
         // Calculate range
-        const lastCol = XLSX.utils.encode_col(headers.length - 1);
+        const lastCol = utils.encode_col(headers.length - 1);
         const lastRow = rows.length + 1;
         const range = `A1:${lastCol}${lastRow}`;
 
@@ -245,7 +246,7 @@ export default function VyrobceSortimentDetail() {
         };
 
         // Add worksheet to workbook
-        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        utils.book_append_sheet(wb, ws, sheetName);
 
         // Add table to workbook's table collection
         wb.Workbook.Tables.push({
@@ -258,7 +259,7 @@ export default function VyrobceSortimentDetail() {
       // Generate filename and save
       const mfrLabel = fileSafe(selectedMfr?.label);
       const fname = `goldfren_${mfrLabel.toLowerCase()}_${todayStr()}.xlsx`;
-      XLSX.writeFile(wb, fname, { compression: true });
+      writeFile(wb, fname, { compression: true });
 
     } catch (e) {
       setAlertData({
