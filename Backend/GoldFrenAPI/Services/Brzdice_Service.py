@@ -102,7 +102,7 @@ def create_brzdic(data: dict):
     """
     new_id = insert_record(sql_query=query, 
         params=(data["kategorie"], data["obrazek"], data["vektor"],
-        data["cislo_dilu"], data["popis"], data["typ_uchyceni"], data["pocet_pistku"], data["poznamka"], 
+        data["cislo_dilu"], data["popis"], data["typ_uchyceni"], data["poznamka"], data["pocet_pistku"], 
         data["publikovat"], data["aktualizoval"]),
         return_id=True
     )
