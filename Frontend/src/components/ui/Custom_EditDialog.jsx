@@ -334,6 +334,9 @@ export default function CustomEditDialog({
         body: JSON.stringify(transformFormData(category, formData)),
       });
 
+      // Log
+      console.log("Edit data", { id, formData });
+
       if (!response.ok) {
         const text = await response.text().catch(() => "");
         throw new Error(

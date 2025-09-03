@@ -124,7 +124,7 @@ export const dataTransformers = {
           material_text: item.material_text,
           oem_cisla: item.oem_cisla,
           obchodni_nazev: item.obchodni_nazev,
-          // Konurence
+          // Konkurence
           konkurence_sbs: item.konkurence.sbs,
           konkurence_ebc: item.konkurence.ebc,
           konkurence_ferodo: item.konkurence.ferodo,
@@ -133,6 +133,31 @@ export const dataTransformers = {
           konkurence_grove: item.konkurence.grove,
           konkurence_cleveland: item.konkurence.konkurence_cleveland,
           konkurence_matco: item.konkurence_matco,
+          // Material
+            // Plech A
+            material_plech_a_material: item.material.plech_a.material,
+            material_plech_a_tloustka: item.material.plech_a.tloustka,
+            material_plech_a_matrice: item.material.plech_a.matrice,
+            // Plech B
+            material_plech_b_material: item.material.plech_b.material,
+            material_plech_b_tloustka: item.material.plech_b.tloustka,
+            material_plech_b_matrice: item.material.plech_b.matrice,
+            // Izolator A
+            material_izolator_a_material: item.material.izolator_a.material,
+            material_izolator_a_tloustka: item.material.izolator_a.tloustka,
+            material_izolator_a_matrice: item.material.izolator_a.matrice,
+            // Izolator B
+            material_izolator_b_material: item.material.izolator_b.material,
+            material_izolator_b_tloustka: item.material.izolator_b.tloustka,
+            material_izolator_b_matrice: item.material.izolator_b.matrice,
+            // Segment A
+            material_segment_a_material: item.material.segment_a.material,
+            material_segment_a_tloustka: item.material.segment_a.tloustka,
+            material_segment_a_matrice: item.material.segment_a.matrice,
+            // Segment B
+            material_segment_b_material: item.material.segment_b.material,
+            material_segment_b_tloustka: item.material.segment_b.tloustka,
+            material_segment_b_matrice: item.material.segment_b.matrice,
         }));
       }
       return [];

@@ -70,34 +70,34 @@ export function transformFormData(category, formData) {
         // Material data
         material: {
           plech_a: {
-            material: formData.material?.plech_a?.material || null,
-            tloustka: parseFloat(formData.material?.plech_a?.tloustka) || null,
-            matrice: formData.material?.plech_a?.matrice || null,
+            material: formData.material_plech_a_material || null,
+            tloustka: parseFloat(formData.material_plech_a_tloustka) || null,
+            matrice: formData.material_plech_a_matrice || null,
           },
           plech_b: {
-            material: formData.material?.plech_b?.material || null,
-            tloustka: parseFloat(formData.material?.plech_b?.tloustka) || null,
-            matrice: formData.material?.plech_b?.matrice || null,
+            material: formData.material_plech_b_material || null,
+            tloustka: parseFloat(formData.material_plech_b_tloustka) || null,
+            matrice: formData.material_plech_b_matrice || null,
           },
           izolator_a: {
-            material: formData.material?.izolator_a?.material || null,
-            tloustka: parseFloat(formData.material?.izolator_a?.tloustka) || null,
-            matrice: formData.material?.izolator_a?.matrice || null,
+            material: formData.material_izolator_a_material || null,
+            tloustka: parseFloat(formData.material_izolator_a_tloustka) || null,
+            matrice: formData.material_izolator_a_matrice || null,
           },
           izolator_b: {
-            material: formData.material?.izolator_b?.material || null,
-            tloustka: parseFloat(formData.material?.izolator_b?.tloustka) || null,
-            matrice: formData.material?.izolator_b?.matrice || null,
+            material: formData.material_izolator_b_material || null,
+            tloustka: parseFloat(formData.material_izolator_b_tloustka) || null,
+            matrice: formData.material_izolator_b_matrice || null,
           },
           segment_a: {
-            material: formData.material?.segment_a?.material || null,
-            tloustka: parseFloat(formData.material?.segment_a?.tloustka) || null,
-            matrice: formData.material?.segment_a?.matrice || null,
+            material: formData.material_segment_a_material || null,
+            tloustka: parseFloat(formData.material_segment_a_tloustka) || null,
+            matrice: formData.material_segment_a_matrice || null,
           },
           segment_b: {
-            material: formData.material?.segment_b?.material || null,
-            tloustka: parseFloat(formData.material?.segment_b?.tloustka) || null,
-            matrice: formData.material?.segment_b?.matrice || null,
+            material: formData.material_segment_b_material || null,
+            tloustka: parseFloat(formData.material_segment_b_tloustka) || null,
+            matrice: formData.material_segment_b_matrice || null,
           },
         },
 

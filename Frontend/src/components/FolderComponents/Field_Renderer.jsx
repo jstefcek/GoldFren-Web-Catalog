@@ -207,6 +207,33 @@ export default function FieldRenderer({
     );
   }
 
+  // Label field
+  if (col.type === "label") {
+    let labelClassName = "text-gray-900 font-bold ";
+    
+    switch (col.label_type) {
+      case "big":
+        labelClassName += "text-2xl mt-4";
+        break;
+      case "medium":
+        labelClassName += "text-lg mt-4";
+        break;
+      default:
+        labelClassName += "text-base";
+    }
+
+    return (
+      <div className="flex flex-col">
+        <input 
+          type="hidden"
+          value={value || ""}
+          onChange={(e) => onChange(col.key, e.target.value)}
+        />
+        <span className={labelClassName}>{t(col.label)}</span>
+      </div>
+    );
+  }
+
   // Password field
   if (col.type === "password") {
     return wrapper(
