@@ -6,7 +6,6 @@ import { CustomSelect } from "../SearchForm/ui/CustomSelect";
 import { FileSpreadsheet, Search } from "lucide-react";
 import { fileSafe, todayStr } from "../../utils/utils";
 import { EXCEL_COLUMN_CONFIG } from '../../config/export_excel_config';
-import { writeFile, utils } from "xlsx";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -180,7 +179,7 @@ export default function VyrobceSortimentDetail() {
     
     try {
       setExporting(true);
-      //const XLSX = await import("https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs");
+      const { writeFile, utils } = await import("xlsx");
       const wb = utils.book_new();
       
       // Initialize workbook properties
