@@ -5,7 +5,7 @@ import AlertDialog from "../ui/Custom_AlertDialog";
 import { CustomSelect } from "../SearchForm/ui/CustomSelect";
 import { FileSpreadsheet, Search } from "lucide-react";
 import { fileSafe, todayStr } from "../../utils/utils";
-import { EXCEL_COLUMN_CONFIG } from '../../utils/export_excel_config';
+import { EXCEL_COLUMN_CONFIG } from '../../config/export_excel_config';
 import { writeFile, utils } from "xlsx";
 
 const serverUrl = import.meta.env.VITE_API_URL;
