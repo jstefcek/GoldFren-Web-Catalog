@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff, ImageOff } from "lucide-react";
+import { Eye, EyeOff, ImageOff, Upload } from "lucide-react";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 import { formatDateLong } from "../../utils/utils";
@@ -67,24 +67,44 @@ export default function FieldRenderer({
   // Image preview field
   if (col.type === "image") {
     return wrapper(
-      value ? (
-        <CustomImageViewer
-          src={value}
-          alt={col.label}
-          fullSize={true}
-          className="h-48 object-contain border border-gray-300 rounded-md bg-white"
-        />
-      ) : (
-        <div
-          className={`max-w-full h-48 flex items-center justify-center border ${
-            hasError ? "border-red-600" : "border-gray-300"
-          } rounded-md bg-gray-50 text-gray-400`}
-          onBlur={() => onBlur(col.key)}
-          tabIndex={0}
-        >
-          <ImageOff size={32} />
-        </div>
-      )
+      <div className="relative">
+        {value ? (
+          <CustomImageViewer
+            src={value}
+            alt={col.label}
+            fullSize={true}
+            className="h-64 w-full object-contain border border-gray-300 rounded-md bg-white"
+            allowUpload={!isDisabled(col)}
+            onUpload={(file) => onChange(col.key, file)}
+          />
+        ) : (
+          <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md 
+            ${hasError ? 'border-red-600' : 'border-gray-300'} 
+            ${isDisabled(col) ? 'cursor-not-allowed bg-gray-50' : 'cursor-pointer hover:border-gray-400'}`}
+          >
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <ImageOff className="w-8 h-8 text-gray-400 mb-2" />
+              {!isDisabled(col) && (
+                <p className="text-sm text-gray-500">{t("Klikněte pro nahrání obrázku")}</p>
+              )}
+            </div>
+            {!isDisabled(col) && (
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*,.svg"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    onChange(col.key, file);
+                  }
+                }}
+                onBlur={() => onBlur(col.key)}
+              />
+            )}
+          </label>
+        )}
+      </div>
     );
   }
 

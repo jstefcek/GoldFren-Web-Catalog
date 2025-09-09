@@ -7,6 +7,7 @@ import { dialogColumnsConfig } from "../../config/ColumnConfigs/EditDialog_Confi
 import { SelectValueConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { transformFormData } from "../../config/DataTransormation/EditDialog_Transformation";
 import FieldRenderer from "../FolderComponents/Field_Renderer";
+import { uploadImage } from '../../hooks/UploadImage_APIHook';
 
 const toStr = (v) => (v === null || v === undefined ? "" : String(v));
 const norm = (v) => toStr(v).trim().toLowerCase();
@@ -325,6 +326,17 @@ export default function CustomEditDialog({
       const id = rowData?.[primaryKey];
       if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu.");
 
+      // First upload the image if exists and is a File object
+      if (formData.obrazek instanceof File) {
+        await uploadImage(
+          formData.obrazek,
+          category,
+          id,
+          access_token
+        );
+      }
+
+      // Then save the record
       const response = await fetch(editEndpoint(id), {
         method: "PUT",
         headers: {

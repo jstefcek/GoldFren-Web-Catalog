@@ -7,6 +7,7 @@ import { dialogColumnsConfig } from "../../config/ColumnConfigs/AddDialog_Config
 import { SelectValueConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { transformFormData } from "../../config/DataTransormation/AddDialog_Transformation";
 import FieldRenderer from "../FolderComponents/Field_Renderer";
+import { uploadImage } from '../../hooks/UploadImage_APIHook';
 
 export default function CustomAddDialog({
   isOpen,
@@ -285,6 +286,7 @@ export default function CustomAddDialog({
   // Confirm dialog
   const handleConfirm = async () => {
     try {
+      // First create the record to get the ID
       const response = await fetch(config.addEndpoint(""), {
         method: "POST",
         headers: {
@@ -293,7 +295,22 @@ export default function CustomAddDialog({
         },
         body: JSON.stringify(transformFormData(category, formData)),
       });
+
       if (!response.ok) throw new Error("Chyba při odeslání dat");
+      
+      const newRecord = await response.json();
+      const newId = newRecord.id;
+
+      // Then upload the image if exists
+      if (formData.obrazek instanceof File) {
+        await uploadImage(
+          formData.obrazek,
+          category,
+          newId,
+          access_token
+        );
+      }
+
       onSuccess();
     } catch (error) {
       setAlert({
@@ -314,7 +331,7 @@ export default function CustomAddDialog({
   return (
     <>
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4 sm:p-8">
-        <div className="bg-white w-full max-w-4xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
+        <div className="bg-white w-full max-w-5xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2">
             {t("Přidání nového záznamu")}
           </h2>

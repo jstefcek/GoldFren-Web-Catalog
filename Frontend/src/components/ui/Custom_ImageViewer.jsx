@@ -1,13 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Download } from "lucide-react";
+import { X, Download, Upload, Eye } from "lucide-react";
 
-export function CustomImageViewer({ src, alt = "Preview image", fullSize = false, className = "" }) {
+export function CustomImageViewer({ 
+  src, 
+  alt = "Preview image", 
+  fullSize = false, 
+  className = "",
+  allowUpload = false,
+  onUpload = null
+}) {
+  // Custom states to keep track
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
+  // Handle escape key
   const handleKeyDown = useCallback((e) => {
     if (e.key === "Escape") setIsOpen(false);
   }, []);
 
+  // Lock body scroll
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -19,6 +30,7 @@ export function CustomImageViewer({ src, alt = "Preview image", fullSize = false
     };
   }, [isOpen, handleKeyDown]);
 
+  // Handle download button
   const handleDownload = () => {
     const link = document.createElement("a");
     link.href = src;
@@ -28,16 +40,26 @@ export function CustomImageViewer({ src, alt = "Preview image", fullSize = false
     document.body.removeChild(link);
   };
 
+  // Handle upload button
+  const handleUpload = (e) => {
+    e.stopPropagation();
+    const file = e.target.files?.[0];
+    if (file && onUpload) {
+      onUpload(file);
+    }
+  };
+
   if (!src) return null;
 
   return (
     <>
-      {/* Thumbnail */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 rounded cursor-pointer"
-        aria-label={`Open image viewer: ${alt}`}
+      {/* Thumbnail with hover controls */}
+      <div 
+        className="relative group"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Image */}
         <img
           src={src}
           alt={alt}
@@ -48,7 +70,34 @@ export function CustomImageViewer({ src, alt = "Preview image", fullSize = false
               : "max-w-[100px] sm:max-w-[120px] max-h-[80px] sm:max-h-[100px]"
           }`}
         />
-      </button>
+
+        {/* Hover Controls */}
+        {isHovered && (
+          <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center gap-3 transition-opacity">
+            {/* View Button */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
+              aria-label={`View ${alt}`}
+            >
+              <Eye className="w-5 h-5 text-gray-700" />
+            </button>
+
+            {/* Upload Button */}
+            {allowUpload && (
+              <label className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer cursor-pointer">
+                <Upload className="w-5 h-5 text-gray-700" />
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*,.svg"
+                  onChange={handleUpload}
+                />
+              </label>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Modal */}
       {isOpen && (
