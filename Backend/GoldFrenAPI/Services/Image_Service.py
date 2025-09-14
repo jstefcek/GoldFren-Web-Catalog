@@ -23,19 +23,55 @@ def save_image_file(sortiment: str, file_object, file_type: str, component_id: s
     else:
         raise ValueError("Unsupported file type")
 
-    # Construct file name and path
+    # Use component_id as filename
     filename = f"{component_id}{ext}"
+    
     dir_path = os.path.join(settings.MEDIA_ROOT, media_category, file_type)
     file_path = os.path.join(dir_path, filename)
 
     # Create the directory and save the file
     os.makedirs(dir_path, exist_ok=True)
+    
+    # Remove existing file with different extension if it exists
+    for existing_ext in ['.jpg', '.jpeg', '.png', '.svg']:
+        if existing_ext != ext:
+            existing_file = os.path.join(dir_path, f"{component_id}{existing_ext}")
+            if os.path.exists(existing_file):
+                os.remove(existing_file)
+    
     with open(file_path, 'wb+') as file:
         for chunk in file_object.chunks():
             file.write(chunk)
 
+    # Update the database with the filename
+    update_component_image(sortiment, component_id, file_type, filename)
+
     # Return the URL of the saved file
     return f"{settings.MEDIA_URL}{media_category}/{file_type}/{filename}"
+
+def update_component_image(sortiment: str, component_id: str, file_type: str, filename: str):
+    """Update the component record with the image filename."""
+    conn = connect()
+    if conn is not None:
+        try:
+            cursor = conn.cursor()
+            
+            # Determine the column name based on file type
+            column_name = "obrazek" if file_type == "image" else "vektor"
+            
+            # Update the record
+            query = f"UPDATE {sortiment} SET {column_name} = %s WHERE id = %s"
+            cursor.execute(query, (filename, component_id))
+            conn.commit()
+            
+        except Exception as e:
+            print(f"Error updating component image: {e}")
+            conn.rollback()
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        print("Connection failed")
 
 def get_sortiment_image_category(sortiment: str) -> str:
     """This function retrieves the image category for a given sortiment from the database.""" 

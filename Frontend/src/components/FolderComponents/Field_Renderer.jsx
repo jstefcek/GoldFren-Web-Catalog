@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Eye, EyeOff, ImageOff, Upload } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Eye, EyeOff, ImageOff } from "lucide-react";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 import { formatDateLong } from "../../utils/utils";
@@ -18,6 +18,27 @@ export default function FieldRenderer({
 }) {
   // Password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
+
+  // Create object URL for File objects and memoize it - ALWAYS call this hook
+  const imageSrc = useMemo(() => {
+    if (col.type === "image") {
+      if (value instanceof File) {
+        return URL.createObjectURL(value);
+      }
+      return value || null;
+    }
+    return null;
+  }, [value, col.type]);
+
+  // Cleanup object URL when component unmounts or value changes - ALWAYS call this hook
+  useEffect(() => {
+    // Cleanup previous blob URLs
+    return () => {
+      if (imageSrc && typeof imageSrc === 'string' && imageSrc.startsWith('blob:')) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [imageSrc]);
 
   // Helpers
   const normalizeInputType = (t) => (t === "input" ? "text" : t || "text");
@@ -68,14 +89,21 @@ export default function FieldRenderer({
   if (col.type === "image") {
     return wrapper(
       <div className="relative">
-        {value ? (
+        {imageSrc ? (
           <CustomImageViewer
-            src={value}
+            key={`${col.key}-${imageSrc}`} // Force re-render when imageSrc changes
+            src={imageSrc}
             alt={col.label}
             fullSize={true}
             className="h-64 w-full object-contain border border-gray-300 rounded-md bg-white"
             allowUpload={!isDisabled(col)}
-            onUpload={(file) => onChange(col.key, file)}
+            onUpload={(file) => {
+              onChange(col.key, file);
+            }}
+            allowDelete={!isDisabled(col)}
+            onDelete={() => {
+              onChange(col.key, null);
+            }}
           />
         ) : (
           <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md 

@@ -326,48 +326,56 @@ export default function CustomEditDialog({
       const id = rowData?.[primaryKey];
       if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu.");
 
-      // First upload the image if exists and is a File object
+      // First upload images if they exist and are File objects
       if (formData.obrazek instanceof File) {
-        await uploadImage(
-          formData.obrazek,
-          category,
-          id,
-          access_token
-        );
+        await uploadImage(formData.obrazek, category, id, access_token);
+      }
+      
+      if (formData.vektor instanceof File) {
+        await uploadImage(formData.vektor, category, id, access_token);
       }
 
-      // Then save the record
+      // Then save the record (pass the component ID for filename generation)
       const response = await fetch(editEndpoint(id), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           ...(access_token && { Authorization: `Bearer ${access_token}` }),
         },
-        body: JSON.stringify(transformFormData(category, formData)),
+        body: JSON.stringify(transformFormData(category, formData, id)),
       });
-
-      // Log
-      console.log("Edit data", { id, formData });
 
       if (!response.ok) {
-        const text = await response.text().catch(() => "");
-        throw new Error(
-          `Chyba při ukládání: ${response.status} ${response.statusText}${
-            text ? ` – ${text}` : ""
-          }`
-        );
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Chyba při ukládání dat.");
       }
 
+      // Close the dialog
+      onClose();
       onSuccess();
-    } catch (error) {
+      
+      // Show success message
       setAlert({
-        title: t("Chyba"),
-        message: error.message,
-        type: "error",
-        duration: 6,
+        title: "Úspěch",
+        message: "Záznam byl úspěšně upraven.",
+        type: "success",
         onClose: () => setAlert(null),
       });
-      onError(error.message);
+    } catch (error) {
+      console.error("Error during edit:", error);
+      
+      // Call the onError callback with the error
+      onError(error);
+      
+      // Show error in AlertDialog
+      setAlert({
+        title: "Chyba",
+        message: error.message || "Nastala neočekávaná chyba.",
+        type: "error",
+        onClose: () => setAlert(null),
+      });
+    } finally {
+      setShowConfirm(false);
     }
   };
 

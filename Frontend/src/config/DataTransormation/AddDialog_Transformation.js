@@ -1,6 +1,13 @@
 import { extractFileName } from "../../utils/utils";
 
-export function transformFormData(category, formData) {
+// Helper function to generate filename from component ID and file extension
+const generateFilename = (file, componentId) => {
+  if (!file || !componentId) return null;
+  const ext = file.name.split('.').pop().toLowerCase();
+  return `${componentId}.${ext}`;
+};
+
+export function transformFormData(category, formData, componentId = null) {
   switch (category) {
     // User category data transformation
     case "users":
@@ -19,8 +26,8 @@ export function transformFormData(category, formData) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
-        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: parseInt(formData.typ) || null,
         publikovat: !!formData.publikovat,
@@ -39,8 +46,8 @@ export function transformFormData(category, formData) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
-        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         publikovat: !!formData.publikovat,
         aktualizovano: new Date().toISOString(),
@@ -57,8 +64,8 @@ export function transformFormData(category, formData) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
-        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: parseInt(formData.typ) || null,
         publikovat: !!formData.publikovat,
@@ -120,8 +127,8 @@ export function transformFormData(category, formData) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
-        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: formData.typ || null,
         publikovat: !!formData.publikovat,
@@ -142,8 +149,8 @@ export function transformFormData(category, formData) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
-        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: parseInt(formData.typ) || null,
         publikovat: !!formData.publikovat,
@@ -159,8 +166,8 @@ export function transformFormData(category, formData) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
-        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: parseInt(formData.typ) || null,
         publikovat: !!formData.publikovat,
@@ -177,8 +184,8 @@ export function transformFormData(category, formData) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek ? extractFileName(formData.obrazek) : null,
-        vektor: formData.vektor ? extractFileName(formData.vektor) : null,
+        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: formData.typ || null,
         publikovat: !!formData.publikovat,

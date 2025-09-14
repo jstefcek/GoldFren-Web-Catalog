@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Download, Upload, Eye } from "lucide-react";
+import { X, Download, Upload, Eye, Trash2 } from "lucide-react";
+import ConfirmDialog from "./Custom_ConfirmDialog";
 
 export function CustomImageViewer({ 
   src, 
@@ -7,11 +8,14 @@ export function CustomImageViewer({
   fullSize = false, 
   className = "",
   allowUpload = false,
-  onUpload = null
+  onUpload = null,
+  allowDelete = false,
+  onDelete = null
 }) {
   // Custom states to keep track
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Handle escape key
   const handleKeyDown = useCallback((e) => {
@@ -46,7 +50,26 @@ export function CustomImageViewer({
     const file = e.target.files?.[0];
     if (file && onUpload) {
       onUpload(file);
+      // Reset the input value so the same file can be selected again
+      e.target.value = '';
     }
+  };
+
+  // Handle delete button
+  const handleDeleteClick = (e) => {
+    e.stopPropagation();
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (onDelete) {
+      onDelete();
+    }
+    setShowDeleteConfirm(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
   };
 
   if (!src) return null;
@@ -85,7 +108,7 @@ export function CustomImageViewer({
 
             {/* Upload Button */}
             {allowUpload && (
-              <label className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer cursor-pointer">
+              <label className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
                 <Upload className="w-5 h-5 text-gray-700" />
                 <input
                   type="file"
@@ -94,6 +117,17 @@ export function CustomImageViewer({
                   onChange={handleUpload}
                 />
               </label>
+            )}
+
+            {/* Delete Button */}
+            {allowDelete && (
+              <button
+                onClick={handleDeleteClick}
+                className="p-2 bg-white rounded-full hover:bg-red-50 transition-colors cursor-pointer"
+                aria-label={`Delete ${alt}`}
+              >
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </button>
             )}
           </div>
         )}
@@ -147,6 +181,16 @@ export function CustomImageViewer({
             />
           </div>
         </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <ConfirmDialog
+          title="Smazat obrázek"
+          message="Opravdu chcete smazat tento obrázek? Tato akce je nevratná."
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+        />
       )}
     </>
   );

@@ -311,6 +311,15 @@ export default function CustomAddDialog({
         );
       }
 
+      if (formData.vektor instanceof File) {
+        await uploadImage(
+          formData.vektor,
+          category,
+          newId,
+          access_token
+        );
+      }
+
       onSuccess();
     } catch (error) {
       setAlert({
@@ -320,7 +329,9 @@ export default function CustomAddDialog({
         duration: 5,
         onClose: () => setAlert(null),
       });
-      onError(error.message);
+      onError(error);
+    } finally {
+      setShowConfirm(false);
     }
   };
 
