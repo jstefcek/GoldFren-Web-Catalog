@@ -187,7 +187,7 @@ export function CustomImageViewer({
       {showDeleteConfirm && (
         <ConfirmDialog
           title="Smazat obrázek"
-          message="Opravdu chcete smazat tento obrázek? Tato akce je nevratná."
+          message="Opravdu chcete odebrat tento obrázek?"
           onConfirm={handleDeleteConfirm}
           onCancel={handleDeleteCancel}
         />
