@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff, ImageOff } from "lucide-react";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
@@ -19,26 +19,23 @@ export default function FieldRenderer({
   // Password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
 
-  // Create object URL for File objects and memoize it - ALWAYS call this hook
-  const imageSrc = useMemo(() => {
-    if (col.type === "image") {
-      if (value instanceof File) {
-        return URL.createObjectURL(value);
-      }
-      return value || null;
-    }
-    return null;
-  }, [value, col.type]);
+  // Keep a stable preview URL for image fields
+  const [imageSrc, setImageSrc] = useState(null);
 
-  // Cleanup object URL when component unmounts or value changes - ALWAYS call this hook
   useEffect(() => {
-    // Cleanup previous blob URLs
-    return () => {
-      if (imageSrc && typeof imageSrc === 'string' && imageSrc.startsWith('blob:')) {
-        URL.revokeObjectURL(imageSrc);
-      }
-    };
-  }, [imageSrc]);
+    if (col.type !== "image") return;
+
+    // If the value is a File, create an object URL for preview
+    if (value instanceof File) {
+      const url = URL.createObjectURL(value);
+      setImageSrc(url);
+      // Revoke the created URL when value changes or component unmounts
+      return () => URL.revokeObjectURL(url);
+    }
+
+    // For string values (already uploaded images), just use the raw value
+    setImageSrc(value || null);
+  }, [value, col.type]);
 
   // Helpers
   const normalizeInputType = (t) => (t === "input" ? "text" : t || "text");
