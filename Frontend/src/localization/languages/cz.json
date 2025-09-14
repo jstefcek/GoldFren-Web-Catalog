@@ -186,6 +186,11 @@
       "year_from": "Rok výroby od",
       "year_to": "Rok výroby do",
       "publish": "Publikovat"
+    },
+    "manufacturer_admin": {
+      "name": "Název výrobce",
+      "category": "Kategorie vozidla",
+      "updated_at": "Aktualizováno"
     }
   },
   "error": {

@@ -186,6 +186,11 @@
       "year_from": "Year of manufacture from",
       "year_to": "Year of manufacture to",
       "publish": "Publish"
+    },
+    "manufacturer_admin": {
+      "name": "Manufacturer Name",
+      "category": "Vehicle Category",
+      "updated_at": "Updated At"
     }
   },
   "contact": {

@@ -40,6 +40,7 @@ import Users_Detail from "./pages/AdminDashboard/Users_Detail";
 import Vehicle_Detail from "./pages/AdminDashboard/Vehicle_Detail";
 import Sortiment_Detail from "./pages/AdminDashboard/Sortiment_Detail";
 import VyrobceSortimentPage from "./pages/AdminDashboard/Vyrobce_Sortiment";
+import Vyrobce from "./pages/AdminDashboard/Vyrobce";
 
 // Import authContext for user authentication
 import { AuthProvider } from './services/authContext';
@@ -129,10 +130,11 @@ function App() {
             <Route path="/admin/import-data" element={<NotFound />} />
 
             {/* Manufacturer Management Section */}
-            <Route path="/admin/manufacturer" element={<VyrobceSortimentPage />} />
+            <Route path="/admin/manufacturer-data" element={<VyrobceSortimentPage />} />
             
             {/* Sortiment & Vehicle Manage Sections */}
             <Route path="/admin/sortiment/*" element={<Sortiment_Detail />} />
+            <Route path="/admin/manufacturer" element={<Vyrobce />} />
             <Route path="/admin/vehicles/*" element={<Vehicle_Detail />} />
 
             {/* Account Management Section */}

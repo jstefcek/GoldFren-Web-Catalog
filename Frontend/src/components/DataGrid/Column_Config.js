@@ -326,4 +326,12 @@ export const columnsConfig = {
     {key: "typ_uchyceni", label: "datagrid.attached_type", sortable: true, filterable: true },
     {key: "roztec_brzdice", label: "datagrid.brakepad_spacing", sortable: true, filterable: true },
   ],
+
+  // Vyrobce custom page
+  vyrobce: [
+    //{key: "kod", label: "datagrid.manufacturer_code", sortable: true, filterable: true },
+    {key: "nazev", label: "datagrid.manufacturer_admin.name", sortable: true, filterable: true, link: true,},
+    {key: "kategorie_nazev", label: "datagrid.manufacturer_admin.category", sortable: true, filterable: true },
+    {key: "aktualizovano", label: "datagrid.manufacturer_admin.updated_at", type: "date", sortable: true, filterable: true,},
+  ]
 };

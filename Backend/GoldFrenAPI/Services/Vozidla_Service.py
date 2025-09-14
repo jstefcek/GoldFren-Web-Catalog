@@ -25,7 +25,10 @@ def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
     Function to get all vyrobce by kategorie ID
     """
     # Prepare SQL query
-    query = """SELECT * FROM d_vyrobce"""
+    query = """SELECT dv.kod, dv.kategorie, ck.nazev as kategorie_nazev, dv.nazev, dv.aktualizovano , dv.aktualizoval
+from d_vyrobce dv 
+left join c_kategorie ck on dv.kategorie = ck.kod"""
+    
     # Add filtering for specific kategorie
     if kategorie_id != "All":
         query += " WHERE kategorie = %s"
@@ -46,12 +49,16 @@ def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
         vyrobce_obj = Vyrobce(
             kod=record["kod"],
             kategorie=record["kategorie"],
+            kategorie_nazev=record["kategorie_nazev"],
             nazev=record["nazev"],
             aktualizoval=record["aktualizoval"],
             aktualizovano=record["aktualizovano"]
         )
-        
-        # Append vyrobce object to list withozt unnecessary attributes
+
+        # Change category name
+        vyrobce_obj.kategorie_nazev = change_category_label(record["kategorie_nazev"])
+
+        # Append vyrobce object to list without unnecessary attributes
         if not all_params:
             del vyrobce_obj.aktualizoval
             del vyrobce_obj.aktualizovano

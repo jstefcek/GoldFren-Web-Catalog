@@ -186,6 +186,11 @@
       "year_from": "Baujahr ab",
       "year_to": "Baujahr bis",
       "publish": "Veröffentlichen"
+    },
+    "manufacturer_admin": {
+      "name": "Herstellername",
+      "category": "Kategorie",
+      "updated_at": "Aktualisiert am"
     }
   },
   "contact": {

@@ -15,7 +15,7 @@ export const topNavigationConfig = [
     label: "Sortiment Výrobce",
     icon: PackageSearch,
     type: "link",
-    to: "/admin/manufacturer",
+    to: "/admin/manufacturer-data",
     permissions: ["isInternal", "isActive"],
   },
   {
@@ -41,6 +41,7 @@ export const topNavigationConfig = [
     type: "dropdown",
     permissions: ["isInternal", "isActive"],
     items: [
+      { label: "Výrobce Vozidel", to: "/admin/manufacturer", iconPath: "/icons/manufacturer.svg" },
       { label: "Automobily", to: "/admin/vehicles/automobily", iconPath: "/icons/car.svg" },
       { label: "Motocykly", to: "/admin/vehicles/motocykly", iconPath: "/icons/motorbike.svg" },
       { label: "Motokáry", to: "/admin/vehicles/motokary", iconPath: "/icons/kart.svg" },
