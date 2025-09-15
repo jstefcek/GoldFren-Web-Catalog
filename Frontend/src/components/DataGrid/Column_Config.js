@@ -329,9 +329,8 @@ export const columnsConfig = {
 
   // Vyrobce custom page
   vyrobce: [
-    //{key: "kod", label: "datagrid.manufacturer_code", sortable: true, filterable: true },
-    {key: "nazev", label: "datagrid.manufacturer_admin.name", sortable: true, filterable: true, link: true,},
     {key: "kategorie_nazev", label: "datagrid.manufacturer_admin.category", sortable: true, filterable: true },
+    {key: "nazev", label: "datagrid.manufacturer_admin.name", sortable: true, filterable: true, link: true,},
     {key: "aktualizovano", label: "datagrid.manufacturer_admin.updated_at", type: "date", sortable: true, filterable: true,},
   ]
 };

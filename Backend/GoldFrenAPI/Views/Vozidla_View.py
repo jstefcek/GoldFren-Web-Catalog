@@ -11,7 +11,9 @@ from GoldFrenAPI.Services.Vozidla_Service import (
     get_vozidlo_sortiment_all,
     get_vozidlo_by_category,
     update_vozidlo,
-    create_vozidlo
+    create_vozidlo,
+    update_vyrobce,
+    create_vyrobce
 )
 
 # Cache timeout settings
@@ -162,6 +164,28 @@ def update_vozidlo_view(request, vozidlo_id):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def update_vyrobce_view(request, vyrobce_kod):
+    # Check vyrobce kod if is provided
+    if not vyrobce_kod:
+        return JsonResponse({"error": "vyrobce_kod is required"}, status=400)
+
+    # Get the data to update from the request
+    data = request.data
+    if not data:
+        return JsonResponse({"error": "No data provided"}, status=400)
+    
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
+
+    # Update the vyrobce
+    status = update_vyrobce(vyrobce_kod, data)
+    if status:
+        return JsonResponse({"message": "Vyrobce updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update vyrobce"}, status=400)
+    
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def create_vozidlo_view(request):
@@ -186,3 +210,25 @@ def create_vozidlo_view(request):
     if new_id:
         return JsonResponse({"message": "Vozidlo created successfully", "vozidlo_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create vozidlo"}, status=500)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def create_vyrobce_view(request):
+    if request.method != "POST":
+        return HttpResponseBadRequest("Invalid request method")
+    
+    # Get the data to create from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
+
+    # Create the vyrobce
+    new_id = create_vyrobce(data)
+    if new_id:
+        return JsonResponse({"message": "Vyrobce created successfully", "vyrobce_id": new_id}, status=201)
+    return JsonResponse({"error": f"Failed to create vyrobce: {new_id}"}, status=400)

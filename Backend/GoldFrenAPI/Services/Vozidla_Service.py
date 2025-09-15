@@ -68,6 +68,44 @@ left join c_kategorie ck on dv.kategorie = ck.kod"""
     # Return list of vyrobce objects
     return vyrobce
 
+# Update vyrobce data from API
+def update_vyrobce(kod:int, data: dict):
+    """
+    Function to update vyrobce data
+    """
+    # Prepare SQL query for updating vyrobce
+    sql_query = """
+        UPDATE d_vyrobce
+        SET kategorie = %s, nazev = %s, aktualizovano = NOW(), aktualizoval = %s
+        WHERE kod = %s
+    """
+    # Prepare parameters for the query
+    params = [
+        data.get("kategorie"), data.get("nazev"), data.get("aktualizoval"), kod
+    ]
+    
+    # Execute the update query
+    status = execute_update(sql_query=sql_query, params=params)
+    return status
+
+def create_vyrobce(data: dict):
+    """
+    Create new vyrobce in DB
+    """
+    # Prepare SQL query for inserting new vyrobce
+    sql_query = """
+        INSERT INTO d_vyrobce (kategorie, nazev, aktualizovano, aktualizoval)
+        VALUES (%s, %s, NOW(), %s)
+    """
+    # Prepare parameters for the query
+    params = [
+        data.get("kategorie"), data.get("nazev"), data.get("aktualizoval")
+    ]
+
+    # Execute the insert query
+    new_id = insert_record(sql_query=sql_query, params=params, return_id=True)
+    return new_id
+
 def get_vozidlo_filtered(kategorie_kod: int, vyrobce_kod: int = None, objem: str = None, model: str = None, rok_vyroby: str = None):
     """
     Function to get vozidlo by optional filters

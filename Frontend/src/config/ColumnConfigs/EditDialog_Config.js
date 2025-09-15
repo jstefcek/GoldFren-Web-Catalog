@@ -293,6 +293,18 @@ export const dialogColumnsConfig = {
       {key: "publikovat", label: "Publikovat vozidlo?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
       {key: "aktualizovano", label: "Aktualizováno", type: "text", editable: false, show: true, dataType: "date", },
     ],
+  },
+
+  // Vyrobce configuration
+  vyrobce: {
+    primaryKey: "kod",
+    editEndpoint: (kod) => `${serverUrl}/api/goldfren/internal/vyrobce/update/${kod}`,
+    fields: [
+      {key: "kod", label: "ID", type: "text", editable: false, show: false, dataType: "string", },
+      {key: "nazev", label: "Název výrobce", type: "input", editable: true, show: true, dataType: "string", required: true},
+      {key: "kategorie", label: "Kategorie výrobce", placeholder: "Vyberte kategorii výrobce", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", required: true},
+      {key: "aktualizovano", label: "Aktualizováno", type: "text", editable: false, show: true, dataType: "date", },
+    ],
   }
 
 };
