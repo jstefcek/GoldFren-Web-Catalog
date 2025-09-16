@@ -1,8 +1,10 @@
+import { isFileObject } from "../utils/utils";
+
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export async function uploadImage(file, sortiment, componentId, access_token) {
   // Skip if no file
-  if (!file || !(file instanceof File)) return;
+  if (!isFileObject(file)) return;
 
   // Prepare form data
   const formData = new FormData();

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff, ImageOff } from "lucide-react";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
-import { formatDateLong } from "../../utils/utils";
+import { formatDateLong, isFileObject } from "../../utils/utils";
 
 // Reusable field renderer with wrapper
 export default function FieldRenderer({
@@ -25,8 +25,8 @@ export default function FieldRenderer({
   useEffect(() => {
     if (col.type !== "image") return;
 
-    // If the value is a File, create an object URL for preview
-    if (value instanceof File) {
+    // If the value is a File (or file-like), create an object URL for preview
+    if (isFileObject(value)) {
       const url = URL.createObjectURL(value);
       setImageSrc(url);
       // Revoke the created URL when value changes or component unmounts
