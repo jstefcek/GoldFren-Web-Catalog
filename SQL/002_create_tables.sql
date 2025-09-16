@@ -246,6 +246,7 @@ CREATE TABLE `d_vyrobce` (
   `nazev` varchar(255) DEFAULT NULL COMMENT 'Nazev vyrobce',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
   `aktualizoval` int DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  `publikovat` tinyint DEFAULT NULL COMMENT 'Zda se ma vyrobce publikovat',
   PRIMARY KEY (`kod`),
   UNIQUE KEY `UQ_VYRO_kategorie` (`kategorie`,`nazev`),
   KEY `kategorie` (`kategorie`),
