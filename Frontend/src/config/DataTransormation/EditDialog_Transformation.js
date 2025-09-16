@@ -1,4 +1,4 @@
-import { extractFileName } from "../../utils/utils";
+import { extractFileName, isFileObject } from "../../utils/utils";
 
 // Helper function to generate filename from component ID and file extension
 const generateFilename = (file, componentId) => {
@@ -25,8 +25,8 @@ export function transformFormData(category, formData, componentId = null) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
-        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
+        obrazek: isFileObject(formData.obrazek) ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: isFileObject(formData.vektor) ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: parseInt(formData.typ) || null,
         publikovat: !!formData.publikovat,
@@ -45,8 +45,8 @@ export function transformFormData(category, formData, componentId = null) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
-        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
+        obrazek: isFileObject(formData.obrazek) ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: isFileObject(formData.vektor) ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         publikovat: !!formData.publikovat,
         aktualizovano: new Date().toISOString(),
@@ -63,8 +63,8 @@ export function transformFormData(category, formData, componentId = null) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
-        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
+        obrazek: isFileObject(formData.obrazek) ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: isFileObject(formData.vektor) ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: parseInt(formData.typ) || null,
         publikovat: !!formData.publikovat,
@@ -126,8 +126,8 @@ export function transformFormData(category, formData, componentId = null) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
-        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
+        obrazek: isFileObject(formData.obrazek) ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: isFileObject(formData.vektor) ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: formData.typ || null,
         publikovat: !!formData.publikovat,
@@ -148,8 +148,8 @@ export function transformFormData(category, formData, componentId = null) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
-        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
+        obrazek: isFileObject(formData.obrazek) ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: isFileObject(formData.vektor) ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: parseInt(formData.typ) || null,
         publikovat: !!formData.publikovat,
@@ -165,8 +165,8 @@ export function transformFormData(category, formData, componentId = null) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
-        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
+        obrazek: isFileObject(formData.obrazek) ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: isFileObject(formData.vektor) ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: parseInt(formData.typ) || null,
         publikovat: !!formData.publikovat,
@@ -183,8 +183,8 @@ export function transformFormData(category, formData, componentId = null) {
       return {
         // Default data fields
         kategorie: parseInt(formData.kategorie) || null,
-        obrazek: formData.obrazek instanceof File ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
-        vektor: formData.vektor instanceof File ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
+        obrazek: isFileObject(formData.obrazek) ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
+        vektor: isFileObject(formData.vektor) ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
         typ: formData.typ || null,
         publikovat: !!formData.publikovat,

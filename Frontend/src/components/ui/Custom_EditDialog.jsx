@@ -7,7 +7,8 @@ import { dialogColumnsConfig } from "../../config/ColumnConfigs/EditDialog_Confi
 import { SelectValueConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { transformFormData } from "../../config/DataTransormation/EditDialog_Transformation";
 import FieldRenderer from "../FolderComponents/Field_Renderer";
-import { uploadImage } from '../../hooks/UploadImage_APIHook';
+import { uploadImage } from "../../hooks/UploadImage_APIHook";
+import { isFileObject } from "../../utils/utils";
 
 const toStr = (v) => (v === null || v === undefined ? "" : String(v));
 const norm = (v) => toStr(v).trim().toLowerCase();
@@ -327,11 +328,11 @@ export default function CustomEditDialog({
       if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu.");
 
       // First upload images if they exist and are File objects
-      if (formData.obrazek instanceof File) {
+      if (isFileObject(formData.obrazek)) {
         await uploadImage(formData.obrazek, category, id, access_token);
       }
-      
-      if (formData.vektor instanceof File) {
+
+      if (isFileObject(formData.vektor)) {
         await uploadImage(formData.vektor, category, id, access_token);
       }
 
