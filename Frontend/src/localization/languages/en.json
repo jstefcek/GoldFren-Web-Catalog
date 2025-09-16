@@ -190,7 +190,8 @@
     "manufacturer_admin": {
       "name": "Manufacturer Name",
       "category": "Vehicle Category",
-      "updated_at": "Updated At"
+      "updated_at": "Updated At",
+      "publish": "Publish"
     }
   },
   "contact": {

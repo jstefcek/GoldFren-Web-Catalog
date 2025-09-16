@@ -190,7 +190,8 @@
     "manufacturer_admin": {
       "name": "Název výrobce",
       "category": "Kategorie vozidla",
-      "updated_at": "Aktualizováno"
+      "updated_at": "Aktualizováno",
+      "publish": "Publikovat"
     }
   },
   "error": {

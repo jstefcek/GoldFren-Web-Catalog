@@ -25,7 +25,7 @@ def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
     Function to get all vyrobce by kategorie ID
     """
     # Prepare SQL query
-    query = """SELECT dv.kod, dv.kategorie, ck.nazev as kategorie_nazev, dv.nazev, dv.aktualizovano , dv.aktualizoval
+    query = """SELECT dv.kod, dv.kategorie, ck.nazev as kategorie_nazev, dv.nazev, dv.aktualizovano , dv.aktualizoval, dv.publikovat
 from d_vyrobce dv 
 left join c_kategorie ck on dv.kategorie = ck.kod"""
     
@@ -52,7 +52,8 @@ left join c_kategorie ck on dv.kategorie = ck.kod"""
             kategorie_nazev=record["kategorie_nazev"],
             nazev=record["nazev"],
             aktualizoval=record["aktualizoval"],
-            aktualizovano=record["aktualizovano"]
+            aktualizovano=record["aktualizovano"],
+            publikovat=bool(record.get("publikovat", False))
         )
 
         # Change category name
@@ -63,6 +64,7 @@ left join c_kategorie ck on dv.kategorie = ck.kod"""
             del vyrobce_obj.aktualizoval
             del vyrobce_obj.aktualizovano
             del vyrobce_obj.kategorie
+            del vyrobce_obj.publikovat
         vyrobce.append(vyrobce_obj)
         
     # Return list of vyrobce objects
@@ -76,12 +78,12 @@ def update_vyrobce(kod:int, data: dict):
     # Prepare SQL query for updating vyrobce
     sql_query = """
         UPDATE d_vyrobce
-        SET kategorie = %s, nazev = %s, aktualizovano = NOW(), aktualizoval = %s
+        SET kategorie = %s, nazev = %s, aktualizovano = NOW(), aktualizoval = %s, publikovat = %s
         WHERE kod = %s
     """
     # Prepare parameters for the query
     params = [
-        data.get("kategorie"), data.get("nazev"), data.get("aktualizoval"), kod
+        data.get("kategorie"), data.get("nazev"), data.get("aktualizoval"), data.get("publikovat"), kod
     ]
     
     # Execute the update query
@@ -94,12 +96,12 @@ def create_vyrobce(data: dict):
     """
     # Prepare SQL query for inserting new vyrobce
     sql_query = """
-        INSERT INTO d_vyrobce (kategorie, nazev, aktualizovano, aktualizoval)
-        VALUES (%s, %s, NOW(), %s)
+        INSERT INTO d_vyrobce (kategorie, nazev, aktualizovano, aktualizoval, publikovat)
+        VALUES (%s, %s, NOW(), %s, %s)
     """
     # Prepare parameters for the query
     params = [
-        data.get("kategorie"), data.get("nazev"), data.get("aktualizoval")
+        data.get("kategorie"), data.get("nazev"), data.get("aktualizoval"), data.get("publikovat")
     ]
 
     # Execute the insert query

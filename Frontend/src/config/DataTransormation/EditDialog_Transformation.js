@@ -214,6 +214,14 @@ export function transformFormData(category, formData, componentId = null) {
         aktualizovano: new Date().toISOString(),
     };
 
+    // Vyrobce category data transformation
+    case "vyrobce":
+      return {
+        kategorie: parseInt(formData.kategorie) || null,
+        nazev: formData.nazev || "",
+        publikovat: !!formData.publikovat,
+    };
+
     // Default case for unsupported categories
     default:
       throw new Error(`Unsupported category to edit data: ${category}`);

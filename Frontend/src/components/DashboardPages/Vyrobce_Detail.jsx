@@ -37,6 +37,7 @@ export default function Vyrobce_Detail_Layout() {
             category="vyrobce"
             apiUrl={`${serverUrl}/api/goldfren/internal/vozidla/vyrobce?all_params=true`}
             show_checkbox={false}
+            access_token={userInfo?.access_token}
             refreshToken={refreshToken}
             dialogMode={true}
             dialogTitle="Editace výrobce vozidla"
@@ -54,13 +55,20 @@ export default function Vyrobce_Detail_Layout() {
           onSuccess={() => {
             setShowDialog(false);
             setRefreshToken(Date.now());
+            setAlertData({
+              title: "Úspěch",
+              message: "Výrobce byl úspěšně vytvořen.",
+              type: "success",
+              duration: 7,
+              onClose: () => setAlertData(null),
+            });
           }}
           onError={(errMsg) =>
             setAlertData({
               title: "Chyba",
-              message: errMsg,
+              message: typeof errMsg === 'string' ? errMsg : 'Nastala neočekávaná chyba.',
               type: "error",
-              duration: 5,
+              duration: 7,
               onClose: () => setAlertData(null),
             })
           }

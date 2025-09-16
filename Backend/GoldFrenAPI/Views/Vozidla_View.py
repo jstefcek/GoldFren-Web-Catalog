@@ -29,17 +29,10 @@ def get_vyrobce_names(request):
     if not kategorie_kod:
         kategorie_kod = "All"
 
-    # Check if there is a cached version of the vyrobce names
-    cache_key = f"vyrobce_names_{kategorie_kod}_{all_params}"
-    cached_data = cache.get(cache_key)
-    if cached_data:
-        return JsonResponse(cached_data, safe=False, status=200)
-
     # If not cached, fetch the vyrobce names from the database
     vyrobce_objects = get_vyrobce_by_kategorie(kategorie_kod, all_params=all_params)
     if vyrobce_objects:
         vyrobce_list = [v.to_dict() for v in vyrobce_objects]
-        cache.set(cache_key, vyrobce_list, timeout=CACHE_TIMEOUT)
         return JsonResponse(vyrobce_list, safe=False, status=200)
     return JsonResponse({"error": "Vyrobce not found"}, status=404)
 

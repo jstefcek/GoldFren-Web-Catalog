@@ -190,7 +190,8 @@
     "manufacturer_admin": {
       "name": "Herstellername",
       "category": "Kategorie",
-      "updated_at": "Aktualisiert am"
+      "updated_at": "Aktualisiert am",
+      "publish": "Veröffentlichen"
     }
   },
   "contact": {

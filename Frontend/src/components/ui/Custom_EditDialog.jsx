@@ -346,11 +346,17 @@ export default function CustomEditDialog({
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Chyba při ukládání dat.");
+        // Handle specific 401 error
+        if (response.status === 401) {
+          throw new Error("Nemáte oprávnění k provedení této operace. Zkuste se znovu přihlásit.");
+        }
+        
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Chyba při ukládání dat (${response.status}).`);
       }
 
       // Close the dialog
+      setShowConfirm(false);
       onClose();
       onSuccess();
       
@@ -359,19 +365,24 @@ export default function CustomEditDialog({
         title: "Úspěch",
         message: "Záznam byl úspěšně upraven.",
         type: "success",
+        duration: 3,
         onClose: () => setAlert(null),
       });
     } catch (error) {
       console.error("Error during edit:", error);
       
-      // Call the onError callback with the error
-      onError(error);
+      // Extract error message string
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      // Call the onError callback with the error message string
+      onError(errorMessage);
       
       // Show error in AlertDialog
       setAlert({
         title: "Chyba",
-        message: error.message || "Nastala neočekávaná chyba.",
+        message: errorMessage,
         type: "error",
+        duration: 5,
         onClose: () => setAlert(null),
       });
     } finally {

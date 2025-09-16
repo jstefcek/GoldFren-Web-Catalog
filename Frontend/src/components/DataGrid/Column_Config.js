@@ -332,5 +332,6 @@ export const columnsConfig = {
     {key: "kategorie_nazev", label: "datagrid.manufacturer_admin.category", sortable: true, filterable: true },
     {key: "nazev", label: "datagrid.manufacturer_admin.name", sortable: true, filterable: true, link: true,},
     {key: "aktualizovano", label: "datagrid.manufacturer_admin.updated_at", type: "date", sortable: true, filterable: true,},
+    {key: "publikovat", label: "datagrid.manufacturer_admin.publish", type: "boolean", sortable: true, filterable: true },
   ]
 };

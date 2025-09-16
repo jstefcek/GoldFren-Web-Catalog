@@ -69,7 +69,7 @@ export default function CustomAddDialog({
 
   // Init/reset + static fallback
   useEffect(() => {
-    if (!config) return;
+    if (!config || !isOpen) return;
     const initial = {};
     config.fields.forEach((col) => (initial[col.key] = ""));
     initial.vyrobce_label = "";
@@ -80,7 +80,7 @@ export default function CustomAddDialog({
     const staticVyrobce =
       Array.isArray(SelectValueConfig.vyrobce) ? SelectValueConfig.vyrobce : [];
     setVyrobceOptions(staticVyrobce.map((o) => ({ ...o, value: String(o.value) })));
-  }, [category, config]);
+  }, [category, config, isOpen]);
 
   // Subkategorie when kategorie changes
   useEffect(() => {
@@ -287,7 +287,7 @@ export default function CustomAddDialog({
   const handleConfirm = async () => {
     try {
       // First create the record to get the ID
-      const response = await fetch(config.addEndpoint(""), {
+      const response = await fetch(config.addEndpoint(), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -296,13 +296,20 @@ export default function CustomAddDialog({
         body: JSON.stringify(transformFormData(category, formData)),
       });
 
-      if (!response.ok) throw new Error("Chyba při odeslání dat");
+      if (!response.ok) {
+        // try to extract server error message
+        const errBody = await response.json().catch(() => ({}));
+        const errMsg = errBody?.message || `Chyba při odeslání dat (${response.status})`;
+        throw new Error(errMsg);
+      }
       
-      const newRecord = await response.json();
-      const newId = newRecord.id;
+      // Try to read response JSON; if none, treat as success without id
+      const newRecord = await response.json().catch(() => ({}));
+      if (!newRecord?.id) console.warn("Add returned no id:", newRecord);
+      const newId = newRecord?.id;
 
-      // Then upload the image if exists
-      if (formData.obrazek instanceof File) {
+      // Then upload the image if exists and we have an id
+      if (newId && formData.obrazek instanceof File) {
         await uploadImage(
           formData.obrazek,
           category,
@@ -311,7 +318,7 @@ export default function CustomAddDialog({
         );
       }
 
-      if (formData.vektor instanceof File) {
+      if (newId && formData.vektor instanceof File) {
         await uploadImage(
           formData.vektor,
           category,
@@ -322,14 +329,19 @@ export default function CustomAddDialog({
 
       onSuccess();
     } catch (error) {
+      // normalize error message string
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
       setAlert({
         title: t("Chyba"),
-        message: error.message,
+        message: errorMessage,
         type: "error",
         duration: 5,
         onClose: () => setAlert(null),
       });
-      onError(error);
+
+      // pass string to parent so parent can show it directly
+      onError(errorMessage);
     } finally {
       setShowConfirm(false);
     }
