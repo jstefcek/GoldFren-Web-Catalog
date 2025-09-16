@@ -7,7 +7,8 @@ import { dialogColumnsConfig } from "../../config/ColumnConfigs/AddDialog_Config
 import { SelectValueConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { transformFormData } from "../../config/DataTransormation/AddDialog_Transformation";
 import FieldRenderer from "../FolderComponents/Field_Renderer";
-import { uploadImage } from '../../hooks/UploadImage_APIHook';
+import { uploadImage } from "../../hooks/UploadImage_APIHook";
+import { isFileObject } from "../../utils/utils";
 
 export default function CustomAddDialog({
   isOpen,
@@ -309,7 +310,7 @@ export default function CustomAddDialog({
       const newId = newRecord?.id;
 
       // Then upload the image if exists and we have an id
-      if (newId && formData.obrazek instanceof File) {
+      if (newId && isFileObject(formData.obrazek)) {
         await uploadImage(
           formData.obrazek,
           category,
@@ -318,7 +319,7 @@ export default function CustomAddDialog({
         );
       }
 
-      if (newId && formData.vektor instanceof File) {
+      if (newId && isFileObject(formData.vektor)) {
         await uploadImage(
           formData.vektor,
           category,

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Eye, EyeOff, ImageOff } from "lucide-react";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
-import { formatDateLong } from "../../utils/utils";
+import { formatDateLong, isFileObject } from "../../utils/utils";
 
 // Reusable field renderer with wrapper
 export default function FieldRenderer({
@@ -21,20 +21,38 @@ export default function FieldRenderer({
 
   // Keep a stable preview URL for image fields
   const [imageSrc, setImageSrc] = useState(null);
+  const objectUrlRef = useRef(null);
 
   useEffect(() => {
     if (col.type !== "image") return;
 
-    // If the value is a File, create an object URL for preview
-    if (value instanceof File) {
-      const url = URL.createObjectURL(value);
-      setImageSrc(url);
-      // Revoke the created URL when value changes or component unmounts
-      return () => URL.revokeObjectURL(url);
+    let nextUrl = null;
+
+    if (!value) {
+      setImageSrc(null);
+    } else if (typeof value === "string") {
+      setImageSrc(value);
+    } else if (isFileObject(value)) {
+      nextUrl = URL.createObjectURL(value);
+      setImageSrc(nextUrl);
+    } else {
+      // Unsupported value type – clear the preview so stale images aren't shown
+      setImageSrc(null);
     }
 
-    // For string values (already uploaded images), just use the raw value
-    setImageSrc(value || null);
+    // Revoke the previous object URL if we created one
+    if (objectUrlRef.current && objectUrlRef.current !== nextUrl) {
+      URL.revokeObjectURL(objectUrlRef.current);
+    }
+
+    objectUrlRef.current = nextUrl;
+
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
+    };
   }, [value, col.type]);
 
   // Helpers

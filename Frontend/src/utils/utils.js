@@ -44,6 +44,39 @@ export function extractFileName(urlOrPath) {
   return urlOrPath?.split("/").pop();
 }
 
+// Detect if a value behaves like a browser File/Blob object
+export const isFileObject = (value) => {
+  if (!value) return false;
+
+  const hasFileCtor = typeof File !== "undefined";
+  const hasBlobCtor = typeof Blob !== "undefined";
+
+  if (hasFileCtor && value instanceof File) {
+    return true;
+  }
+
+  if (hasBlobCtor && value instanceof Blob && typeof value.name === "string") {
+    return true;
+  }
+
+  if (typeof value !== "object") return false;
+
+  const hasName = typeof value.name === "string" && value.name.length > 0;
+  const hasSize = typeof value.size === "number" && Number.isFinite(value.size);
+  const hasType = typeof value.type === "string";
+  const hasSlice = typeof value.slice === "function";
+  const hasArrayBuffer = typeof value.arrayBuffer === "function";
+  const hasStream = typeof value.stream === "function";
+  const hasLastModified = typeof value.lastModified === "number";
+
+  return (
+    hasName &&
+    hasSize &&
+    hasType &&
+    (hasSlice || hasArrayBuffer || hasStream || hasLastModified)
+  );
+};
+
 // Format a string to be safe for use in file names
 export const fileSafe = (file_name) => (file_name || "vyrobce").replace(/[\\/:*?"<>|]/g, "_");
 
