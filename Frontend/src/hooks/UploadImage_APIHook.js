@@ -2,14 +2,14 @@ import { isFileObject } from "../utils/utils";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
-export async function uploadImage(file, sortiment, componentId, access_token) {
+export async function uploadImage(file, sortiment, file_type, componentId, access_token) {
   // Skip if no file
   if (!isFileObject(file)) return;
 
   // Prepare form data
   const formData = new FormData();
   formData.append('sortiment', sortiment);
-  formData.append('file_type', file.type.includes('svg') ? 'vector' : 'image');
+  formData.append('file_type', file_type);
   formData.append('component_id', componentId);
   formData.append('file_object', file);
 

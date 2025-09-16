@@ -311,21 +311,11 @@ export default function CustomAddDialog({
 
       // Then upload the image if exists and we have an id
       if (newId && isFileObject(formData.obrazek)) {
-        await uploadImage(
-          formData.obrazek,
-          category,
-          newId,
-          access_token
-        );
+        await uploadImage(formData.obrazek, category, 'image', newId, access_token);
       }
 
       if (newId && isFileObject(formData.vektor)) {
-        await uploadImage(
-          formData.vektor,
-          category,
-          newId,
-          access_token
-        );
+        await uploadImage(formData.vektor, category, 'vector', newId, access_token);
       }
 
       onSuccess();

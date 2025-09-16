@@ -18,7 +18,7 @@ def save_image_file(sortiment: str, file_object, file_type: str, component_id: s
         if ext not in ['.jpg', '.jpeg', '.png']:
             raise ValueError("Unsupported file extension for image")
     elif file_type == 'vector':
-        if ext not in ['.svg']:
+        if ext not in ['.svg', '.jpg', '.jpeg', '.png']:
             raise ValueError("Unsupported file extension for vector")
     else:
         raise ValueError("Unsupported file type")
@@ -59,8 +59,8 @@ def update_component_image(sortiment: str, component_id: str, file_type: str, fi
             # Determine the column name based on file type
             column_name = "obrazek" if file_type == "image" else "vektor"
             
-            # Update the record
-            query = f"UPDATE {sortiment} SET {column_name} = %s WHERE id = %s"
+            # Update the record in the database 
+            query = f"UPDATE d_{sortiment} SET {column_name} = %s WHERE kod = %s"
             cursor.execute(query, (filename, component_id))
             conn.commit()
             

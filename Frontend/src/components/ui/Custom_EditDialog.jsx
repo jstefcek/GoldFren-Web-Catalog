@@ -329,11 +329,11 @@ export default function CustomEditDialog({
 
       // First upload images if they exist and are File objects
       if (isFileObject(formData.obrazek)) {
-        await uploadImage(formData.obrazek, category, id, access_token);
+        await uploadImage(formData.obrazek, category, 'image', id, access_token);
       }
 
       if (isFileObject(formData.vektor)) {
-        await uploadImage(formData.vektor, category, id, access_token);
+        await uploadImage(formData.vektor, category, 'vector', id, access_token);
       }
 
       // Then save the record (pass the component ID for filename generation)
