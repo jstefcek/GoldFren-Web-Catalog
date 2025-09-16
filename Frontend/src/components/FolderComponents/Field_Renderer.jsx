@@ -55,6 +55,7 @@ export default function FieldRenderer({
     };
   }, [value, col.type]);
 
+
   // Helpers
   const normalizeInputType = (t) => (t === "input" ? "text" : t || "text");
   const hasError = !!error;

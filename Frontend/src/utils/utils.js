@@ -55,27 +55,28 @@ export const isFileObject = (value) => {
     return true;
   }
 
-  if (hasBlobCtor && value instanceof Blob && typeof value.name === "string") {
-    return true;
-  }
+if (hasBlobCtor && value instanceof Blob && typeof value.name === "string") {
+  return true;
+}
 
-  if (typeof value !== "object") return false;
+if (typeof value !== "object") return false;
 
-  const hasName = typeof value.name === "string" && value.name.length > 0;
-  const hasSize = typeof value.size === "number" && Number.isFinite(value.size);
-  const hasType = typeof value.type === "string";
-  const hasSlice = typeof value.slice === "function";
-  const hasArrayBuffer = typeof value.arrayBuffer === "function";
-  const hasStream = typeof value.stream === "function";
-  const hasLastModified = typeof value.lastModified === "number";
+const hasName = typeof value.name === "string" && value.name.length > 0;
+const hasSize = typeof value.size === "number" && Number.isFinite(value.size);
+const hasType = typeof value.type === "string";
 
-  return (
-    hasName &&
-    hasSize &&
-    hasType &&
-    (hasSlice || hasArrayBuffer || hasStream || hasLastModified)
-  );
-};
+// accept if it has any of these Blob-like APIs
+const hasSlice = typeof value.slice === "function";
+const hasArrayBuffer = typeof value.arrayBuffer === "function";
+const hasStream = typeof value.stream === "function";
+const hasLastModified = typeof value.lastModified === "number";
+
+return (
+  hasName &&
+  hasSize &&
+  hasType &&
+  (hasSlice || hasArrayBuffer || hasStream || hasLastModified)
+);
 
 // Format a string to be safe for use in file names
 export const fileSafe = (file_name) => (file_name || "vyrobce").replace(/[\\/:*?"<>|]/g, "_");
