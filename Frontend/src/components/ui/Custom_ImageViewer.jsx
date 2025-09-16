@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { X, Download, Upload, Eye, Trash2 } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { X, Download, RefreshCw, Eye, Trash2 } from "lucide-react";
 import ConfirmDialog from "./Custom_ConfirmDialog";
 
 export function CustomImageViewer({ 
@@ -12,17 +12,17 @@ export function CustomImageViewer({
   allowDelete = false,
   onDelete = null
 }) {
-  // Custom states to keep track
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  const fileInputRef = useRef(null);
+  const modalFileInputRef = useRef(null);
 
-  // Handle escape key
   const handleKeyDown = useCallback((e) => {
     if (e.key === "Escape") setIsOpen(false);
   }, []);
 
-  // Lock body scroll
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -34,7 +34,6 @@ export function CustomImageViewer({
     };
   }, [isOpen, handleKeyDown]);
 
-  // Handle download button
   const handleDownload = () => {
     const link = document.createElement("a");
     link.href = src;
@@ -44,18 +43,28 @@ export function CustomImageViewer({
     document.body.removeChild(link);
   };
 
-  // Handle upload button
-  const handleUpload = (e) => {
+  const handleReplaceClick = (e) => {
     e.stopPropagation();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleModalReplaceClick = (e) => {
+    e.stopPropagation();
+    if (modalFileInputRef.current) {
+      modalFileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file && onUpload) {
       onUpload(file);
-      // Reset the input value so the same file can be selected again
       e.target.value = '';
     }
   };
 
-  // Handle delete button
   const handleDeleteClick = (e) => {
     e.stopPropagation();
     setShowDeleteConfirm(true);
@@ -76,13 +85,27 @@ export function CustomImageViewer({
 
   return (
     <>
-      {/* Thumbnail with hover controls */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        accept="image/*,.svg"
+        onChange={handleFileChange}
+      />
+
+      <input
+        ref={modalFileInputRef}
+        type="file"
+        className="hidden"
+        accept="image/*,.svg"
+        onChange={handleFileChange}
+      />
+
       <div 
         className="relative group"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Image */}
         <img
           src={src}
           alt={alt}
@@ -90,85 +113,109 @@ export function CustomImageViewer({
           className={`rounded shadow object-contain ${
             fullSize
               ? `${className}`
-              : "max-w-[100px] sm:max-w-[120px] max-h-[80px] sm:max-h-[100px]"
+              : "max-w-[80px] sm:max-w-[96px] max-h-[64px] sm:max-h-[80px]" // Smaller default sizes
           }`}
         />
 
-        {/* Hover Controls */}
-        {isHovered && (
-          <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center gap-3 transition-opacity">
-            {/* View Button */}
-            <button
-              onClick={() => setIsOpen(true)}
-              className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-              aria-label={`View ${alt}`}
-            >
-              <Eye className="w-5 h-5 text-gray-700" />
-            </button>
-
-            {/* Upload Button */}
-            {allowUpload && (
-              <label className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-                <Upload className="w-5 h-5 text-gray-700" />
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*,.svg"
-                  onChange={handleUpload}
-                />
-              </label>
+        {isHovered && (allowUpload || allowDelete || fullSize) && (
+          <div className="absolute inset-0 bg-black/50 rounded flex items-center justify-center gap-2 transition-opacity">
+            {/* Always show view button when fullSize is enabled */}
+            {fullSize && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(true);
+                }}
+                className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
+                aria-label={`View ${alt}`}
+                title="View full size"
+              >
+                <Eye className="w-4 h-4 text-gray-700" />
+              </button>
             )}
 
-            {/* Delete Button */}
-            {allowDelete && (
+            {/* Show replace button only when upload is allowed */}
+            {allowUpload && onUpload && (
+              <button
+                onClick={handleReplaceClick}
+                className="p-2 bg-green-600 rounded-full hover:bg-green-700 transition-colors cursor-pointer" 
+                title="Replace image"
+              >
+                <RefreshCw className="w-4 h-4 text-white" />
+              </button>
+            )}
+
+            {/* Show delete button only when delete is allowed */}
+            {allowDelete && onDelete && (
               <button
                 onClick={handleDeleteClick}
-                className="p-2 bg-white rounded-full hover:bg-red-50 transition-colors cursor-pointer"
+                className="p-2 bg-red-600 rounded-full hover:bg-red-700 transition-colors cursor-pointer"
                 aria-label={`Delete ${alt}`}
+                title="Delete image"
               >
-                <Trash2 className="w-5 h-5 text-red-600" />
+                <Trash2 className="w-4 h-4 text-white" />
               </button>
             )}
           </div>
         )}
       </div>
 
-      {/* Modal */}
-      {isOpen && (
+      {isOpen && fullSize && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           onClick={() => setIsOpen(false)}
           aria-modal="true"
           role="dialog"
         >
-          {/* Top right group */}
           <div className="absolute top-4 right-4 sm:top-6 sm:right-6 flex gap-2 z-50">
-            {/* Download Button */}
+            {/* Show replace button in modal only when upload is allowed */}
+            {allowUpload && onUpload && (
+              <button
+                onClick={handleModalReplaceClick}
+                className="p-3 text-white bg-green-600/80 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer transition-colors" 
+                title="Replace image"
+              >
+                <RefreshCw size={20} />
+              </button>
+            )}
+
+            {/* Show delete button in modal only when delete is allowed */}
+            {allowDelete && onDelete && (
+              <button
+                onClick={handleDeleteClick}
+                className="p-3 text-white bg-red-600/80 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer transition-colors"
+                aria-label="Delete image"
+                title="Delete image"
+              >
+                <Trash2 size={20} />
+              </button>
+            )}
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleDownload();
               }}
-              className="p-2 text-white bg-black/60 rounded-full hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer"
+              className="p-3 text-white bg-gray-600/80 rounded-full hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer transition-colors"
               aria-label="Download image"
+              title="Download image"
             >
-              <Download size={22} />
+              <Download size={20} />
             </button>
 
-            {/* Close Button */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setIsOpen(false);
               }}
-              className="p-2 text-white bg-black/60 rounded-full hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer"
+              className="p-3 text-white bg-gray-600/80 rounded-full hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-white cursor-pointer transition-colors"
               aria-label="Close image viewer"
+              title="Close"
             >
-              <X size={22} />
+              <X size={20} />
             </button>
           </div>
 
-          {/* Image wrapper */}
           <div
             className="relative w-full h-full flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
@@ -183,7 +230,6 @@ export function CustomImageViewer({
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
         <ConfirmDialog
           title="Smazat obrázek"

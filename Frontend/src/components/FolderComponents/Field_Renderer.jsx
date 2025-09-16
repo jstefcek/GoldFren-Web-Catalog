@@ -21,10 +21,17 @@ export default function FieldRenderer({
 
   // Keep a stable preview URL for image fields
   const [imageSrc, setImageSrc] = useState(null);
+  const [imageKey, setImageKey] = useState(0);
   const objectUrlRef = useRef(null);
 
   useEffect(() => {
     if (col.type !== "image") return;
+
+    // Clean up previous object URL first
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
 
     let nextUrl = null;
 
@@ -35,17 +42,13 @@ export default function FieldRenderer({
     } else if (isFileObject(value)) {
       nextUrl = URL.createObjectURL(value);
       setImageSrc(nextUrl);
+      objectUrlRef.current = nextUrl;
     } else {
-      // Unsupported value type – clear the preview so stale images aren't shown
       setImageSrc(null);
     }
 
-    // Revoke the previous object URL if we created one
-    if (objectUrlRef.current && objectUrlRef.current !== nextUrl) {
-      URL.revokeObjectURL(objectUrlRef.current);
-    }
-
-    objectUrlRef.current = nextUrl;
+    // Force component re-render by updating the key
+    setImageKey(prev => prev + 1);
 
     return () => {
       if (objectUrlRef.current) {
@@ -53,8 +56,7 @@ export default function FieldRenderer({
         objectUrlRef.current = null;
       }
     };
-  }, [value, col.type]);
-
+  }, [value, col.type, col.key]);
 
   // Helpers
   const normalizeInputType = (t) => (t === "input" ? "text" : t || "text");
@@ -86,9 +88,18 @@ export default function FieldRenderer({
     </div>
   );
 
+  // Handle image replacement
+  const handleImageReplace = (file) => {
+    onChange(col.key, file);
+  };
+
+  // Handle image deletion
+  const handleImageDelete = () => {
+    onChange(col.key, null);
+  };
+
   // Invisible field: reserve layout space but render a non-interactive placeholder
   if (col.type === "invisible" || col.key === "invisible") {
-    // Keep the same vertical space as a normal field, but don't render label or border.
     return (
       <div className="flex flex-col" aria-hidden="true">
         <div className="h-5 mb-1" />
@@ -103,36 +114,36 @@ export default function FieldRenderer({
   // --- Controls ---
   // Image preview field
   if (col.type === "image") {
+    const componentKey = `${col.key}-${imageKey}`;
+    const disabled = isDisabled(col);
+
     return wrapper(
       <div className="relative">
         {imageSrc ? (
           <CustomImageViewer
-            key={`${col.key}-${imageSrc}`} // Force re-render when imageSrc changes
+            key={componentKey}
             src={imageSrc}
             alt={col.label}
             fullSize={true}
             className="h-64 w-full object-contain border border-gray-300 rounded-md bg-white"
-            allowUpload={!isDisabled(col)}
-            onUpload={(file) => {
-              onChange(col.key, file);
-            }}
-            allowDelete={!isDisabled(col)}
-            onDelete={() => {
-              onChange(col.key, null);
-            }}
+            allowUpload={!disabled}
+            onUpload={handleImageReplace}
+            allowDelete={!disabled}
+            onDelete={handleImageDelete}
           />
         ) : (
+          // Show upload area when NO image
           <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md 
             ${hasError ? 'border-red-600' : 'border-gray-300'} 
-            ${isDisabled(col) ? 'cursor-not-allowed bg-gray-50' : 'cursor-pointer hover:border-gray-400'}`}
+            ${disabled ? 'cursor-not-allowed bg-gray-50' : 'cursor-pointer hover:border-gray-400'}`}
           >
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <ImageOff className="w-8 h-8 text-gray-400 mb-2" />
-              {!isDisabled(col) && (
+              {!disabled && (
                 <p className="text-sm text-gray-500">{t("Klikněte pro nahrání obrázku")}</p>
               )}
             </div>
-            {!isDisabled(col) && (
+            {!disabled && (
               <input
                 type="file"
                 className="hidden"

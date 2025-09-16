@@ -375,6 +375,8 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
                           <CustomImageViewer
                             src={row[col.key]}
                             alt={`${category} ${col.type}`}
+                            fullSize={true}
+                            className="h-24 w-24 max-h-24 max-w-24 object-contain"
                           />
                         </div>
                       ) : col.link ? (
