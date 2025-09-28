@@ -238,5 +238,30 @@
     "my_account": "Můj účet",
     "logout": "Odhlásit se",
     "language": "Jazyk"
+  },
+  "cookies": {
+    "title": "Používáme soubory cookie 🍪",
+    "message": "Tato webová stránka používá soubory cookie ke zlepšení vašeho zážitku.",
+    "buttonText": "Přijmout",
+    "declineButtonText": "Odmítnout",
+    "manageButtonText": "Spravovat cookies",
+    "privacyPolicyText": "Zásady ochrany osobních údajů",
+    "manageTitle": "Nastavení cookies",
+    "manageMessage": "Spravujte své preference cookies níže. Základní cookies jsou vždy povoleny, protože jsou nezbytné pro správnou funkci webových stránek.",
+    "manageEssentialTitle": "Základní",
+    "manageEssentialSubtitle": "Vyžaduje se pro správnou funkci webových stránek",
+    "manageEssentialStatus": "Status: Vždy povoleno",
+    "manageEssentialStatusButtonText": "Vždy zapnuto",
+    "manageAnalyticsTitle": "Analytické",
+    "manageAnalyticsSubtitle": "Pomozte nám pochopit, jak návštěvníci interagují s našimi webovými stránkami",
+    "manageSocialTitle": "Sociální",
+    "manageSocialSubtitle": "Povolit funkce a sdílení na sociálních médiích",
+    "manageAdvertTitle": "Reklamní",
+    "manageAdvertSubtitle": "Personalizovat reklamy a měřit jejich výkon",
+    "manageCookiesStatus": "Status: {{status}} on {{date}}",
+    "manageCookiesStatusConsented": "Souhlasit",
+    "manageCookiesStatusDeclined": "Odmítnout",
+    "manageCancelButtonText": "Zrušit",
+    "manageSaveButtonText": "Uložit preference"
   }
 }  

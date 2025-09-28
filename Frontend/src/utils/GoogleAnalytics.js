@@ -3,16 +3,25 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 const GA_ID = import.meta.env.VITE_GA_ID;
 
-// Initialize Google Analytics with the provided ID
-ReactGA.initialize(GA_ID);
+// Track GA initialization
+let gaInitialized = false;
 
-// Component to track page views
+// Initialize Google Analytics
+export function initializeGA() {
+  if (!gaInitialized) {
+    ReactGA.initialize(GA_ID);
+    gaInitialized = true;
+  }
+}
+
+// Component to track page views (only if GA initialized)
 export function GAnalytics() {
   const location = useLocation();
 
-  // Track page views on location change
   useEffect(() => {
-    ReactGA.send({ hitType: "pageview", page: location.pathname });
+    if (gaInitialized) {
+      ReactGA.send({ hitType: "pageview", page: location.pathname });
+    }
   }, [location]);
 
   return null;
@@ -20,17 +29,21 @@ export function GAnalytics() {
 
 // Track vehicle search data
 export function trackVehicleSearch({ vyrobce, objem, model, rok_vyroby }) {
-  ReactGA.event("vehicle_search", {
-    vyrobce,
-    objem,
-    model,
-    rok_vyroby,
-  });
+  if (gaInitialized) {
+    ReactGA.event("vehicle_search", {
+      vyrobce,
+      objem,
+      model,
+      rok_vyroby,
+    });
+  }
 }
 
 // Track sortiment search data
-export function trackSortimentSearch({ category}) {
-  ReactGA.event("sortiment_search", {
-    category,
-  });
+export function trackSortimentSearch({ category }) {
+  if (gaInitialized) {
+    ReactGA.event("sortiment_search", {
+      category,
+    });
+  }
 }

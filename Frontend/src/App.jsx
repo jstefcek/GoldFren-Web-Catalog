@@ -2,7 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "/src/localization/language_setup";
-import { GAnalytics } from "/src/utils/GoogleAnalytics";
+import { GAnalytics, initializeGA } from "/src/utils/GoogleAnalytics";
+import { CookieManager } from "react-cookie-manager";
 
 // Layouts
 import Header from "/src/layouts/Header";
@@ -32,6 +33,7 @@ import Prislusenstvi_Detail from "./pages/DetailPages/Prislusenstvi_Detail";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFoundPage";
 import Login from "./pages/Login";
+import CookiesPolicy from "./pages/Cookies/CookiesPolicy";
 
 // Admin Dashboard
 import MainDashboard from "./pages/AdminDashboard/MainDashboard";
@@ -43,7 +45,7 @@ import VyrobceSortimentPage from "./pages/AdminDashboard/Vyrobce_Sortiment";
 import Vyrobce from "./pages/AdminDashboard/Vyrobce";
 
 // Import authContext for user authentication
-import { AuthProvider } from './services/authContext';
+import { AuthProvider } from "./services/authContext";
 
 // Main layout with header and footer
 const MainLayout = () => (
@@ -85,8 +87,59 @@ function App() {
   return (
     <>
       <AuthProvider>
+        {/* Cookie Manager */}
+        <CookieManager
+          translations={t}
+          translationI18NextPrefix="cookies."
+          privacyPolicyLink="/privacy"
+          cookiePolicyLink="/cookies"
+          enableFloatingButton={true}
+          privacyPolicyUrl="/cookies"
+          displayType="popup"
+          // Initial cookie preferences
+          initialPreferences={{
+            Analytics: true,
+            Social: true,
+            Advertising: true,
+          }}
+          // Cookie categories
+          cookieCategories={{
+            Analytics: true,
+            Social: false, 
+            Advertising: false,
+          }}
+          // Cookies setup
+          cookieExpiration={30}
+          cookieKey="cookie-consent"
+          // Cookie consent callbacks
+          onAccept={() => {
+            console.debug("All cookies accepted");
+            window.gtag?.("consent", "update", { analytics_storage: "granted" });
+            initializeGA();
+          }}
+          onDecline={() => {
+            console.debug("All cookies declined");
+            window.gtag?.("consent", "update", { analytics_storage: "denied" });
+          }}
+          // Manage cookie preferences when changed
+          onManage={(preferences) => {
+            console.debug("Custom preferences saved:", preferences);
+            if (preferences?.Analytics) {
+              window.gtag?.("consent", "update", { analytics_storage: "granted" });
+              initializeGA();
+            } else {
+              window.gtag?.("consent", "update", { analytics_storage: "denied" });
+            }
+            if (preferences?.Advertising) {
+              window.gtag?.("consent", "update", { ad_storage: "granted" });
+            } else {
+              window.gtag?.("consent", "update", { ad_storage: "denied" });
+            }
+          }}
+        />
+
         {/* Google Analytics tracking for every route change */}
-        <GAnalytics /> 
+        <GAnalytics />
 
         <Routes>
           {/* Main routes with header and footer */}
@@ -105,10 +158,8 @@ function App() {
             <Route path="/pumpy" element={<Pumpy />} />
             <Route path="/pumpy/:id" element={<Pumpa_Detail />} />
             <Route path="/prislusenstvi" element={<Prislusenstvi />} />
-            <Route
-              path="/prislusenstvi/:id"
-              element={<Prislusenstvi_Detail />}
-            />
+            <Route path="/prislusenstvi/:id" element={<Prislusenstvi_Detail />} />
+            <Route path="/cookies" element={<CookiesPolicy />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Route>
@@ -130,8 +181,11 @@ function App() {
             <Route path="/admin/import-data" element={<NotFound />} />
 
             {/* Manufacturer Management Section */}
-            <Route path="/admin/manufacturer-data" element={<VyrobceSortimentPage />} />
-            
+            <Route
+              path="/admin/manufacturer-data"
+              element={<VyrobceSortimentPage />}
+            />
+
             {/* Sortiment & Vehicle Manage Sections */}
             <Route path="/admin/sortiment/*" element={<Sortiment_Detail />} />
             <Route path="/admin/manufacturer" element={<Vyrobce />} />
