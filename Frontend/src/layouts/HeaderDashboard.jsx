@@ -4,13 +4,10 @@ import { topNavigationConfig } from "./DashboardConfig/topNavigationConfig";
 import { NavigationItem } from "./DashboardConfig/NavigationItem";
 import { bottomNavigationConfig } from "./DashboardConfig/bottomNavigationConfig";
 import { useAuth } from "../services/authContext";
-import { useAdminTokenValidation } from "../hooks/useAdminTokenValidation";
 
 const HeaderDashboard = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const handleAdminInteraction = useAdminTokenValidation();
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -24,11 +21,7 @@ const HeaderDashboard = ({ children }) => {
   };
 
   return (
-    <div
-      className="flex h-screen w-full bg-gray-50 overflow-hidden"
-      onClickCapture={handleAdminInteraction}
-      onPointerDownCapture={handleAdminInteraction}
-    >
+    <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
       {/* Top Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 h-16 bg-white border-b border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3 h-full">

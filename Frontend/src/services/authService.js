@@ -7,39 +7,6 @@ export class AuthService {
     this.abortController = null;
   }
 
-  // Retrieve the stored access token if it looks valid
-  getStoredAccessToken() {
-    const token = sessionStorage.getItem("access_token");
-    if (!securityUtils.validateJWTFormat(token)) {
-      return null;
-    }
-    return token;
-  }
-
-  // Safely clear all session data associated with authentication
-  clearSessionData({ silent = false } = {}) {
-    const authKeys = [
-      "user_logged_in",
-      "access_token",
-      "session_data",
-      "token_expire",
-      "login_attempts",
-      "login_block_until",
-    ];
-
-    authKeys.forEach((key) => {
-      try {
-        sessionStorage.removeItem(key);
-      } catch (error) {
-        console.error(`Failed to remove session key ${key}`, error);
-      }
-    });
-
-    if (!silent) {
-      window.dispatchEvent(new Event("userLoginChange"));
-    }
-  }
-
   // Create secure request headers
   createHeaders(credentials) {
     const headers = {
@@ -83,91 +50,18 @@ export class AuthService {
     }
 
     try {
-      // Ensure previous session data is cleared before storing a new one
-      this.clearSessionData({ silent: true });
+        // Store in sessionStorage
+        sessionStorage.setItem("user_logged_in", "true");
+        sessionStorage.setItem("access_token", data.access);
+        sessionStorage.setItem("session_data", JSON.stringify(data));
+        sessionStorage.setItem("token_expire", data.expire);
 
-      // Store in sessionStorage
-      sessionStorage.setItem("user_logged_in", "true");
-      sessionStorage.setItem("access_token", data.access);
-      sessionStorage.setItem("session_data", JSON.stringify(data));
-      if (data.expire) {
-        sessionStorage.setItem("token_expire", String(data.expire));
-      }
-
-      // Notify about user login state change
-      window.dispatchEvent(new Event("userLoginChange"));
+        // Notify about user login state change
+        window.dispatchEvent(new Event("userLoginChange"));
     } catch (storageError) {
-      console.error("Storage error:", storageError);
+        console.error("Storage error:", storageError);
       throw new Error("Failed to store session data");
     }
-  }
-
-  async verifyAccessToken(accessToken, { signal } = {}) {
-    if (!accessToken || !securityUtils.validateJWTFormat(accessToken)) {
-      return {
-        success: false,
-        status: 0,
-        reason: "invalid-token",
-      };
-    }
-
-    if (!securityUtils.validateServerURL(serverUrl)) {
-      return {
-        success: false,
-        status: 0,
-        reason: "invalid-server-config",
-      };
-    }
-
-    let response;
-
-    try {
-      response = await fetch(`${serverUrl}/api/goldfren/internal/auth/verify/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          "X-Requested-With": "XMLHttpRequest",
-        },
-        credentials: "include",
-        signal,
-        cache: "no-store",
-        body: JSON.stringify({ token: accessToken }),
-      });
-    } catch (error) {
-      if (error.name === "AbortError") {
-        throw error;
-      }
-
-      return {
-        success: false,
-        status: 0,
-        reason: "network-error",
-        networkError: true,
-        message: error.message,
-      };
-    }
-
-    if (response.status === 401 || response.status === 403) {
-      return {
-        success: false,
-        status: response.status,
-        reason: "unauthorized",
-      };
-    }
-
-    if (!response.ok) {
-      return {
-        success: false,
-        status: response.status,
-        reason: "server-error",
-      };
-    }
-
-    return {
-      success: true,
-      status: response.status,
-    };
   }
 
   // Log errors securely

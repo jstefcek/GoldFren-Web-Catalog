@@ -1,16 +1,12 @@
 import base64
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
+from rest_framework.permissions import IsAdminUser
 import logging
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.views import TokenVerifyView
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import UntypedToken
-from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework import status
 from .Auth_Serializers import GroupBasedTokenObtainPairSerializer, RegisterUserSerializer, ChangePasswordSerializer
+from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from GoldFrenAPI.Authentication.Auth_Serializers import UserSerializer
 from django.contrib.auth.models import User, Group
@@ -112,45 +108,3 @@ def get_users(request):
 
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class AdminTokenVerifyView(TokenVerifyView):
-    authentication_classes = (JWTAuthentication,)
-    permission_classes = (IsAuthenticated, IsAdminUser)
-
-    def post(self, request, *args, **kwargs):
-        token = request.data.get("token")
-        if not token:
-            raise AuthenticationFailed("Token payload is required.")
-
-        try:
-            UntypedToken(token)
-        except InvalidToken as exc:
-            raise AuthenticationFailed("Invalid or expired token supplied.") from exc
-
-        if request.auth is None:
-            raise AuthenticationFailed("Missing authentication token in request.")
-
-        request_token = getattr(request.auth, "token", None)
-        if request_token is None:
-            request_token = str(request.auth)
-
-        if request_token != token:
-            raise AuthenticationFailed("Supplied token does not match the authenticated session.")
-
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        user = request.user
-        if not user.is_active:
-            raise PermissionDenied("User account is inactive.")
-
-        return Response({
-            "detail": "Token is valid",
-            "user": {
-                "username": user.username,
-                "is_active": user.is_active,
-                "is_staff": user.is_staff,
-            }
-        }, status=status.HTTP_200_OK)
-
