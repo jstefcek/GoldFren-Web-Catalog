@@ -241,10 +241,10 @@
   },
   "cookies": {
     "title": "Používáme soubory cookie 🍪",
-    "message": "Tato webová stránka používá soubory cookie ke zlepšení vašeho zážitku.",
+    "message": "Používáme soubory cookie pro správné fungování webu a zlepšení vašeho zážitku. Nastavení nebo odvolání souhlasu je možné kdykoli v sekci „Nastavení cookies“.",
     "buttonText": "Přijmout",
     "declineButtonText": "Odmítnout",
-    "manageButtonText": "Spravovat cookies",
+    "manageButtonText": "Nastavení cookies",
     "privacyPolicyText": "Zásady ochrany osobních údajů",
     "manageTitle": "Nastavení cookies",
     "manageMessage": "Spravujte své preference cookies níže. Základní cookies jsou vždy povoleny, protože jsou nezbytné pro správnou funkci webových stránek.",
