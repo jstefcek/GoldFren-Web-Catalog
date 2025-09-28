@@ -127,13 +127,9 @@ function App() {
             if (preferences?.Analytics) {
               window.gtag?.("consent", "update", { analytics_storage: "granted" });
               initializeGA();
-            } else {
+            } 
+            else {
               window.gtag?.("consent", "update", { analytics_storage: "denied" });
-            }
-            if (preferences?.Advertising) {
-              window.gtag?.("consent", "update", { ad_storage: "granted" });
-            } else {
-              window.gtag?.("consent", "update", { ad_storage: "denied" });
             }
           }}
         />
