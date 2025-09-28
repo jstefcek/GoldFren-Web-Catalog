@@ -141,7 +141,6 @@ function Header() {
 
   // Function to handle logout
   const handleLogout = () => {
-    sessionStorage.clear();
     logout();
     setUserMenuOpen(false);
     setUserClicked(false);
