@@ -25,11 +25,23 @@ export default function LoginLayout() {
 
   // Initialize form reference
   useEffect(() => {
-    if (location.state?.message) {
-      setError(location.state.message);
-      // Clear the message after use
+    const locationMessage = location.state?.message;
+
+    if (locationMessage) {
+      setError(locationMessage);
+      sessionStorage.removeItem("logout_message");
       window.history.replaceState({}, document.title);
+      return;
     }
+
+    const storedMessage = sessionStorage.getItem("logout_message");
+    if (storedMessage) {
+      setError(storedMessage);
+      sessionStorage.removeItem("logout_message");
+      return;
+    }
+
+    setError(null);
   }, [location.state]);
 
   // Cleanup on unmount

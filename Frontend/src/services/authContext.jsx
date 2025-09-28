@@ -1,7 +1,10 @@
 // AuthContext.js
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
+import { authService } from "./authService";
+import { securityUtils } from "../utils/security";
 
 const AuthContext = createContext();
 
@@ -11,21 +14,40 @@ export function AuthProvider({ children }) {
   const logoutTimerRef = useRef(null);
   const { t } = useTranslation();
 
-  const logout = (reason = "") => {
-    sessionStorage.clear();
-    setUserInfo(null);
-    window.dispatchEvent(new Event("userLoginChange"));
-    
-    // Redirect user to login page
-    navigate("/login", {
-      replace: true,
-      state: reason ? { message: reason } : undefined
-      });
-  };
+  const logout = useCallback((reason = "", options = {}) => {
+    const {
+      redirectTo = "/login",
+      replace = true,
+    } = options;
 
-  const setupAutoLogout = () => {
-    const expire = parseInt(sessionStorage.getItem("token_expire"));
-    if (!expire || isNaN(expire)) return;
+    authService.clearSessionData();
+    setUserInfo(null);
+
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+      logoutTimerRef.current = null;
+    }
+
+    if (reason) {
+      try {
+        sessionStorage.setItem("logout_message", reason);
+      } catch (error) {
+        console.error("Failed to persist logout message", error);
+      }
+    } else {
+      sessionStorage.removeItem("logout_message");
+    }
+
+    navigate(redirectTo, {
+      replace,
+      state: reason ? { message: reason } : undefined,
+    });
+  }, [navigate]);
+
+  const setupAutoLogout = useCallback(() => {
+    const tokenExpire = sessionStorage.getItem("token_expire");
+    const expire = tokenExpire ? parseInt(tokenExpire, 10) : NaN;
+    if (!expire || Number.isNaN(expire)) return;
 
     const now = Math.floor(Date.now() / 1000); // current time in seconds
     const delay = (expire - now) * 1000;
@@ -35,22 +57,41 @@ export function AuthProvider({ children }) {
       clearTimeout(logoutTimerRef.current);
     }
 
-    if (delay <= 0) {
+    const handleSessionTimeout = () => {
       logout(t("login_screen.session_expired"));
-    } else {
-      logoutTimerRef.current = setTimeout(() => {
-        logout(t("login_screen.session_expired"));
-      }, delay);
-    }
-  };
+    };
 
-  const loadUser = () => {
+    if (delay <= 0) {
+      handleSessionTimeout();
+    } else {
+      logoutTimerRef.current = setTimeout(handleSessionTimeout, delay);
+    }
+  }, [logout, t]);
+
+  const loadUser = useCallback(() => {
     const loggedIn = sessionStorage.getItem("user_logged_in") === "true";
     if (loggedIn) {
+      const accessToken = authService.getStoredAccessToken();
+      if (!accessToken) {
+        authService.clearSessionData({ silent: true });
+        setUserInfo(null);
+        return;
+      }
+
       const sessionDataRaw = sessionStorage.getItem("session_data");
+      if (!sessionDataRaw) {
+        authService.clearSessionData({ silent: true });
+        setUserInfo(null);
+        return;
+      }
       try {
         // Parse the session data and extract user information
         const sessionData = JSON.parse(sessionDataRaw);
+        if (!securityUtils.validateJWTFormat(sessionData?.access)) {
+          authService.clearSessionData({ silent: true });
+          setUserInfo(null);
+          return;
+        }
         const firstname = sessionData?.user?.first_name || "User";
         const surname = sessionData?.user?.last_name || "";
         const username = sessionData?.user?.username || "";
@@ -78,7 +119,7 @@ export function AuthProvider({ children }) {
     } else {
       setUserInfo(null);
     }
-  };
+  }, [setupAutoLogout]);
 
   useEffect(() => {
     loadUser();
@@ -91,7 +132,7 @@ export function AuthProvider({ children }) {
       }
       window.removeEventListener("userLoginChange", loadUser);
     };
-  }, []);
+  }, [loadUser]);
 
   return (
     <AuthContext.Provider value={{ userInfo, logout }}>
