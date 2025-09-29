@@ -118,7 +118,6 @@ function App() {
             manageButton: "manage-button",
             manageSaveButton: "manageSaveButton",
             manageCookieToggle: "manageCookieToggle",
-            //manageCookieToggle: "manageCookieToggle",
             manageCookieToggleChecked: "manageCookieToggleChecked",
           }}
           // Cookie consent callbacks

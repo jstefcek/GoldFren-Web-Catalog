@@ -258,9 +258,9 @@
     "manageSocialSubtitle": "Povolit funkce a sdílení na sociálních médiích",
     "manageAdvertTitle": "Reklamní",
     "manageAdvertSubtitle": "Personalizovat reklamy a měřit jejich výkon",
-    "manageCookiesStatus": "Status: {{status}} on {{date}}",
-    "manageCookiesStatusConsented": "Souhlasit",
-    "manageCookiesStatusDeclined": "Odmítnout",
+    "manageCookiesStatus": "Status: {{status}} v {{date}}",
+    "manageCookiesStatusConsented": "Odsouhlaseno",
+    "manageCookiesStatusDeclined": "Odmítnuto",
     "manageCancelButtonText": "Zrušit",
     "manageSaveButtonText": "Uložit preference"
   }
