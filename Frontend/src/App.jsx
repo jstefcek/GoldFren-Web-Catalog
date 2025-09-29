@@ -111,6 +111,16 @@ function App() {
           // Cookies setup
           cookieExpiration={30}
           cookieKey="cookie-consent"
+          // UI custom design
+          classNames={{
+            acceptButton: "accept-button",
+            declineButton: "decline-button",
+            manageButton: "manage-button",
+            manageSaveButton: "manageSaveButton",
+            manageCookieToggle: "manageCookieToggle",
+            //manageCookieToggle: "manageCookieToggle",
+            manageCookieToggleChecked: "manageCookieToggleChecked",
+          }}
           // Cookie consent callbacks
           onAccept={() => {
             console.debug("All cookies accepted");

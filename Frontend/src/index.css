@@ -48,4 +48,36 @@
   .link {
     @apply text-blue-600 underline hover:text-blue-800;
   }
+
+  .accept-button {
+    @apply !bg-red-600 hover:!bg-red-700 !text-white !font-bold !text-xs !py-2 !px-10 !rounded-lg;
+  }
+
+  .decline-button {
+    @apply !bg-gray-200 hover:!bg-gray-300 !text-black !font-bold !text-xs !py-2 !px-10 !rounded-lg;
+  }
+
+  .manage-button {
+    @apply !border-1 !border-red-600 hover:!border-red-700 !text-red-600 hover:!text-red-700 !text-xs !font-bold !py-1 !px-4 !rounded-lg hover:!bg-red-50;
+  }
+
+  .manageSaveButton {
+    @apply !bg-red-600 hover:!bg-red-700 !text-white !font-bold !text-xs !py-2 !px-10 !rounded-lg;
+  }
+
+  .manageCookieToggle {
+    @apply !w-14 !h-8 !bg-gray-200 !rounded-full !relative !transition-colors !duration-200 !ease-in-out;
+  }
+
+  .manageCookieToggle::after {
+    @apply content-[''] !absolute !top-1 !left-1 !w-6 !h-6 !bg-white !rounded-full !transition-transform !duration-200 !ease-in-out !shadow-md;
+  }
+
+  .manageCookieToggleChecked {
+    @apply !w-14 !h-8 !bg-red-700;
+  }
+
+  .manageCookieToggleChecked::after {
+    @apply !transform !translate-x-6;
+  }
 }
