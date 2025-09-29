@@ -10,9 +10,12 @@ from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from GoldFrenAPI.Authentication.Auth_Serializers import UserSerializer
 from django.contrib.auth.models import User, Group
+from rest_framework.throttling import ScopedRateThrottle
 
 class Login_View(TokenObtainPairView):
     serializer_class = GroupBasedTokenObtainPairSerializer
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "login"
     
     def post(self, request, *args, **kwargs):
         logger = logging.getLogger(__name__)
