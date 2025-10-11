@@ -409,7 +409,7 @@ FROM (
 	INNER JOIN d_vozidlo vz ON vr.kod = vz.vyrobce
 	ORDER BY
 		vyrobce ASC,
-		CAST(objem AS UNSIGNED) ASC,
+		objem ASC,
 		model ASC
 ) data
 WHERE data.publikovat = 1;

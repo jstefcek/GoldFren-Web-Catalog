@@ -38,6 +38,7 @@ def save_image_file(sortiment: str, file_object, file_type: str, component_id: s
             if os.path.exists(existing_file):
                 os.remove(existing_file)
     
+    # Save as new file
     with open(file_path, 'wb+') as file:
         for chunk in file_object.chunks():
             file.write(chunk)
