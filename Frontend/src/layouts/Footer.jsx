@@ -11,7 +11,7 @@ function Footer() {
 
   return (
     <footer className="w-full min-h-[48px] text-center text-sm text-gray-500 py-4 bg-white border-t border-gray-200">
-      ©{currentYear} Andrea Špačková - PRODUCT SPACEK – All rights reserved – Version: {version} – {t("footer_created")}:{" "}
+      © {currentYear} GOLD FREN s.r.o. • All rights reserved • v{version} • {t("footer_created")}:{" "}
       <a
         href={linkedinUrl}
         target="_blank"
