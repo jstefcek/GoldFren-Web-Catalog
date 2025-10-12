@@ -1,0 +1,22 @@
+# Use alpine Python image
+FROM python:3.13.8-alpine
+WORKDIR /goldfren
+
+# Install build dependencies for mysqlclient
+RUN apk add --no-cache --update gcc musl-dev mariadb-dev pkgconf
+
+# Install dependencies
+COPY Backend/requirements.txt /goldfren/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY ./Backend /goldfren
+
+# Create logs directory
+RUN mkdir -p /goldfren/logs
+
+# Expose Django port
+EXPOSE 8000
+
+# Start Gunicorn server
+CMD ["gunicorn", "--config", "Docker/backend/gunicorn.conf.py", "GoldFren.wsgi:application"]

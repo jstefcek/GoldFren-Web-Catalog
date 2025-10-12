@@ -8,6 +8,11 @@ export default defineConfig({
     tailwindcss(),
   ],
   build: {
+    // Minification and source map settings
+    minify: 'terser',
+    sourcemap: false,
+    cssCodeSplit: true,
+    // Bundle analysis configuration
     rollupOptions: {
       output: {
         manualChunks: {
@@ -17,8 +22,11 @@ export default defineConfig({
           analytics: ['react-ga4'],
           xlsx: ['xlsx'],
           icons: ['lucide-react'],
+          react_cookie_manager: ['react-cookie-manager'],
         },
       },
     },
+    // Ensure compatibility with modern browsers
+    target: 'esnext',
   },
 })

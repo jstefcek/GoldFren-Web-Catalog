@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { Input } from "./ui/Custom_Input";
 import { Button } from "./ui/Custom_Button";
+import CustomFilter from "./ui/Custom_Filter";
 import {
   ArrowDownUp,
   Search,
   SlidersHorizontal,
-  X,
   ChevronLeft,
   ChevronRight,
   FileSpreadsheet,
@@ -22,9 +21,18 @@ import { TextTruncate } from "./ui/Custom_TextTruncate";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 import { Link } from "react-router-dom";
 
-export default function DataGrid({ category = "", apiCategory=null, apiUrl = null, filters = {}, apiData = null, listAll = false, }) {
+export default function DataGrid({ 
+  category = "", 
+  apiCategory = null, 
+  apiUrl = null, 
+  filters = {}, 
+  apiData = null, 
+  listAll = false,
+}) {
   const [data, setData] = useState([]);
-  const [search, setSearch] = useState("");
+  const [searchFilters, setSearchFilters] = useState([
+    { id: Date.now(), column: "all", value: "" },
+  ]);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState(null);
@@ -33,7 +41,7 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
-  // If api category isnt defined choose category insteed
+  // If api category isnt defined choose category instead
   const resolvedCategory = apiCategory || category;
   const columns = columnsConfig[resolvedCategory] || [];
 
@@ -79,10 +87,11 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
 
   // Reset filters and sorting
   const handleReset = () => {
-    setSearch("");
+    setSearchFilters([{ id: Date.now(), column: "all", value: "" }]);
     setSortColumn(null);
     setSortDirection("asc");
     setSelectedRows([]);
+    setCurrentPage(1);
   };
 
   // Get ID of selected row/rows
@@ -92,28 +101,49 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
     );
   };
 
-  // Check if any filter is active to show/hide reset button
-  const isFilterActive = search !== "" || sortColumn !== null || selectedRows.length > 0;
+  const handleFiltersChange = (newFilters) => {
+    setSearchFilters(newFilters);
+    setCurrentPage(1);
+  };
 
-  // Filter data
-  const filtered = data.filter((row) =>
-    columns.some((col) => {
-      const value = row[col.key];
-      return (
-        value !== null &&
-        value !== undefined &&
-        value.toString().toLowerCase().includes(search.toLowerCase())
-      );
-    })
-  );
+  // Check if any filter is active to show/hide reset button
+  const hasActiveFilter = searchFilters.some((f) => f.value.trim() !== "");
+
+  // Filtering logic
+  const norm = (v) => {
+    if (v === null || v === undefined) return "";
+    if (typeof v === "boolean") return v ? "true" : "false";
+    return String(v).toLowerCase();
+  };
+
+  const filtered = data.filter((row) => {
+    return searchFilters.every((filter) => {
+      const term = filter.value.trim().toLowerCase();
+      if (term === "") return true;
+
+      const searchableColumns = columns.filter((c) => c.searchable !== false);
+      const keysToCheck =
+        filter.column === "all"
+          ? searchableColumns.map((c) => c.key)
+          : [filter.column];
+
+      const keys = keysToCheck.length ? keysToCheck : columns.map((c) => c.key);
+
+      return keys.some((key) => norm(row[key]).includes(term));
+    });
+  });
 
   // Sorting values
   const sorted = sortColumn
     ? [...filtered].sort((a, b) => {
         const aVal =
-          a[sortColumn] !== null ? a[sortColumn]?.toString().toLowerCase() : "";
+          a[sortColumn] !== null && a[sortColumn] !== undefined
+            ? a[sortColumn]?.toString().toLowerCase()
+            : "";
         const bVal =
-          b[sortColumn] !== null ? b[sortColumn]?.toString().toLowerCase() : "";
+          b[sortColumn] !== null && b[sortColumn] !== undefined
+            ? b[sortColumn]?.toString().toLowerCase()
+            : "";
 
         if (aVal === bVal) return 0;
 
@@ -165,36 +195,15 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
 
   return (
     <div className="w-full">
-      <div className="flex flex-col md:flex-row md:flex-wrap gap-4 justify-between mb-6 items-start md:items-center">
-        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
-          <div className="relative w-full sm:w-64">
-            
-            {/* INPUT - Search input */}
-            <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+      <div className="flex flex-col gap-4 mb-6">
+        {/* Advanced Filter Section */}
+        <CustomFilter
+          columns={columns}
+          onFiltersChange={handleFiltersChange}
+          onReset={handleReset}
+        />
 
-            <Input
-              placeholder={t("datagrid.search_placeholder")}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 h-10 text-sm sm:text-base bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500"
-              aria-label="Search data"
-            />
-          </div>
-
-          {/* BTN - Reset filters and sorting - Only show when filters are active */}
-          {isFilterActive && (
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              className="h-10 text-sm sm:text-base flex gap-1 items-center border border-gray-300 hover:bg-gray-50 px-3"
-            >
-              <X className="w-4 h-4 sm:w-5 sm:h-5" />
-              {t("datagrid.reset")}
-            </Button>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+        <div className="flex flex-wrap items-center gap-3 w-full justify-between">
           <div className="flex items-center gap-2">
             {selectedRows.length > 0 && (
               <span className="text-sm font-medium text-gray-700 mr-2">
@@ -238,32 +247,31 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
                   <Printer className="w-4 h-4 sm:w-6 sm:h-6" />
                   <span className="hidden sm:inline">Print</span>
                 </Button>
-            </div>
-            
+              </div>
             )}
           </div>
 
           {!listAll && (
-          <div className="flex items-center gap-2 ml-2">
-            <SlidersHorizontal className="text-gray-500" size={18} />
-            <select
-              className="border border-gray-300 bg-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              aria-label="Items per page"
-            >
-              {[10, 25, 50, 100].map((size) => (
-                <option key={size} value={size}>
-                  {size} {t("datagrid.entries")} {t("datagrid.on")}{" "}
-                  {t("datagrid.page")}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="text-gray-500" size={18} />
+              <select
+                className="border border-gray-300 bg-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                aria-label="Items per page"
+              >
+                {[10, 25, 50, 100].map((size) => (
+                  <option key={size} value={size}>
+                    {size} {t("datagrid.entries")} {t("datagrid.on")}{" "}
+                    {t("datagrid.page")}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -282,9 +290,9 @@ export default function DataGrid({ category = "", apiCategory=null, apiUrl = nul
               {t("datagrid.no_results_found")}
             </h3>
             <p className="text-gray-500 mt-1">
-              {search ? `No matches for "${search}"` : "No data available"}
+              {hasActiveFilter ? "No matches for your filters" : "No data available"}
             </p>
-            {search && (
+            {hasActiveFilter && (
               <Button
                 variant="outline"
                 onClick={handleReset}

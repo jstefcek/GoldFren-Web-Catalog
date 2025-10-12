@@ -172,6 +172,7 @@ function App() {
           {/* Clean route without header and footer */}
           <Route element={<CleanLayout />}>
             <Route path="/login" element={<Login />} />
+            <Route path="/search" element={<Home />} />
           </Route>
 
           {/* Admin routes with dashboard header */}

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { Input } from "./ui/Custom_Input";
 import { Button } from "./ui/Custom_Button";
+import CustomFilter from "./ui/Custom_Filter";
 import {
   ArrowDownUp,
   Search,
   SlidersHorizontal,
-  X,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
@@ -35,8 +34,9 @@ export default function DataGrid_Admin({
   dialogTitle = "Detail",
 }) {
   const [data, setData] = useState([]);
-  const [search, setSearch] = useState("");
-  const [filterColumn, setFilterColumn] = useState("all"); // NEW
+  const [searchFilters, setSearchFilters] = useState([
+    { id: Date.now(), column: "all", value: "" },
+  ]);
   const [pageSize, setPageSize] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState(null);
@@ -49,12 +49,9 @@ export default function DataGrid_Admin({
   const [refreshTokenInternal, setRefreshTokenInternal] = useState(Date.now());
   const [alertDialog, setAlertDialog] = useState(null);
 
-  // If api category isnt defined choose category insteed
   const resolvedCategory = apiCategory || category;
   const columns = columnsConfig[resolvedCategory] || [];
-  const searchableColumns = columns.filter((c) => c.searchable !== false); // NEW
 
-  // Call API to get data or set data from already call API
   useEffect(() => {
     if (apiUrl) {
       const loadData = async () => {
@@ -64,7 +61,6 @@ export default function DataGrid_Admin({
           const queryParams = new URLSearchParams(filters).toString();
           const fullUrl = queryParams ? `${apiUrl}&${queryParams}` : apiUrl;
 
-          // If access token is provided, add it to headers
           const headers = access_token
             ? { Authorization: `Bearer ${access_token}` }
             : {};
@@ -83,7 +79,6 @@ export default function DataGrid_Admin({
         loadData();
       }
     } else {
-      // Set already fetchData
       setData(apiData || []);
       setIsLoading(false);
     }
@@ -95,7 +90,6 @@ export default function DataGrid_Admin({
     refreshTokenInternal,
   ]);
 
-  // Sorting type ASC or DESC
   const handleSort = (colKey) => {
     if (sortColumn === colKey) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -105,53 +99,51 @@ export default function DataGrid_Admin({
     }
   };
 
-  // Reset filters and sorting
   const handleReset = () => {
-    setSearch("");
-    setFilterColumn("all"); // NEW
+    setSearchFilters([{ id: Date.now(), column: "all", value: "" }]);
     setSortColumn(null);
     setSortDirection("asc");
     setSelectedRows([]);
+    setCurrentPage(1);
   };
 
-  // Get ID of selected row/rows
   const handleSelectRow = (id) => {
     setSelectedRows((prev) =>
       prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
     );
   };
 
-  // Check if any filter is active to show/hide reset button
-  const isFilterActive =
-    search !== "" ||
-    sortColumn !== null ||
-    selectedRows.length > 0 ||
-    filterColumn !== "all";
+  const handleFiltersChange = (newFilters) => {
+    setSearchFilters(newFilters);
+    setCurrentPage(1);
+  };
 
-  // Filtering helpers + logic
+  const hasActiveFilter = searchFilters.some((f) => f.value.trim() !== "");
+
+  // Filtering logic
   const norm = (v) => {
     if (v === null || v === undefined) return "";
     if (typeof v === "boolean") return v ? "true" : "false";
     return String(v).toLowerCase();
   };
 
-  const term = search.trim().toLowerCase();
-  const filtered =
-    term === ""
-      ? data
-      : data.filter((row) => {
-          const keysToCheck =
-            filterColumn === "all"
-              ? searchableColumns.map((c) => c.key)
-              : [filterColumn];
+  const filtered = data.filter((row) => {
+    return searchFilters.every((filter) => {
+      const term = filter.value.trim().toLowerCase();
+      if (term === "") return true;
 
-          const keys = keysToCheck.length
-            ? keysToCheck
-            : columns.map((c) => c.key);
-          return keys.some((key) => norm(row[key]).includes(term));
-        });
+      const searchableColumns = columns.filter((c) => c.searchable !== false);
+      const keysToCheck =
+        filter.column === "all"
+          ? searchableColumns.map((c) => c.key)
+          : [filter.column];
 
-  // Sorting values
+      const keys = keysToCheck.length ? keysToCheck : columns.map((c) => c.key);
+
+      return keys.some((key) => norm(row[key]).includes(term));
+    });
+  });
+
   const sorted = sortColumn
     ? [...filtered].sort((a, b) => {
         const aVal =
@@ -165,7 +157,6 @@ export default function DataGrid_Admin({
 
         if (aVal === bVal) return 0;
 
-        // Handle numeric values for proper sorting
         if (!isNaN(aVal) && !isNaN(bVal)) {
           return sortDirection === "asc"
             ? parseFloat(aVal) - parseFloat(bVal)
@@ -178,7 +169,6 @@ export default function DataGrid_Admin({
       })
     : filtered;
 
-  // Calculate total pages
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const paged = listAll
     ? sorted
@@ -186,67 +176,15 @@ export default function DataGrid_Admin({
 
   return (
     <div className="w-full">
-      <div className="flex flex-col md:flex-row md:flex-wrap gap-4 justify-between mb-4 items-start md:items-center">
-        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full md:w-auto">
-          <div className="relative w-full sm:w-48">
-            {/* Left icon */}
-            <SlidersHorizontal className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
-            {/* Right chevron */}
-            <ChevronRight className="absolute right-3 top-2.5 rotate-90 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
+      <div className="flex flex-col gap-4 mb-4">
+        {/* Advanced Filter Section */}
+        <CustomFilter
+          columns={columns}
+          onFiltersChange={handleFiltersChange}
+          onReset={handleReset}
+        />
 
-            <select
-              className={`w-full appearance-none border border-gray-300 rounded-xl pl-10 pr-10 h-10 text-sm sm:text-base bg-white
-                shadow-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 focus:shadow-md
-                transition ${
-                  filterColumn === "all" ? "text-gray-400" : "text-gray-900"
-                }`}
-              value={filterColumn}
-              onChange={(e) => {
-                setFilterColumn(e.target.value);
-                setCurrentPage(1);
-              }}
-              aria-label="Choose column to filter"
-            >
-              <option value="all" disabled>
-                {t("datagrid.all_columns") || "Filtrovat všechny sloupce"}
-              </option>
-              {searchableColumns.map((c) => (
-                <option key={c.key} value={c.key} className="text-gray-900">
-                  {t(c.label)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="relative w-full sm:w-56">
-            <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
-            <Input
-              placeholder={t("datagrid.search_placeholder")}
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="pl-10 pr-3 h-10 text-sm sm:text-base bg-white text-gray-600 border border-gray-300 rounded-xl
-               shadow-sm focus:ring-1 focus:ring-red-500 focus:border-red-500 focus:shadow-md transition"
-              aria-label="Search data"
-            />
-          </div>
-
-          {/* BTN - Reset filters and sorting - Only show when filters are active */}
-          {isFilterActive && (
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              className="h-10 text-sm sm:text-base flex gap-1 items-center border border-gray-300 hover:bg-gray-50 px-3 cursor-pointer"
-            >
-              <X className="w-4 h-4 sm:w-5 sm:h-5" />
-              {t("datagrid.reset")}
-            </Button>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+        <div className="flex flex-wrap items-center gap-3 w-full justify-between">
           <div className="flex items-center gap-2">
             {selectedRows.length > 0 && (
               <span className="text-sm font-medium text-gray-700 mr-2">
@@ -256,7 +194,7 @@ export default function DataGrid_Admin({
           </div>
 
           {!listAll && (
-            <div className="flex items-center gap-2 ml-2">
+            <div className="flex items-center gap-2">
               <SlidersHorizontal className="text-gray-500" size={18} />
               <select
                 className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -279,7 +217,6 @@ export default function DataGrid_Admin({
         </div>
       </div>
 
-      {/* When filter returns no data */}
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200 bg-white">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -294,9 +231,11 @@ export default function DataGrid_Admin({
               {t("datagrid.no_results_found")}
             </h3>
             <p className="text-gray-500 mt-1">
-              {search ? `No matches for "${search}"` : "No data available"}
+              {hasActiveFilter
+                ? "No matches for your filters"
+                : "No data available"}
             </p>
-            {search && (
+            {hasActiveFilter && (
               <Button
                 variant="outline"
                 onClick={handleReset}
@@ -391,7 +330,6 @@ export default function DataGrid_Admin({
                     </td>
                   )}
 
-                  {/* Columns - Setting */}
                   {columns.map((col) => (
                     <td
                       key={col.key}
@@ -403,7 +341,7 @@ export default function DataGrid_Admin({
                           <CustomImageViewer
                             src={row[col.key]}
                             alt={`${category} ${col.type}`}
-                            fullSize={true} 
+                            fullSize={true}
                             className="h-24 w-24 max-h-24 max-w-24 object-contain"
                           />
                         </div>
@@ -435,16 +373,13 @@ export default function DataGrid_Admin({
                         (() => {
                           const value = row[col.key];
 
-                          // Handle date values
                           if (
                             typeof value === "string" &&
                             col.type === "date"
                           ) {
-                            // Format to czech long date format
                             return formatDateLong(value);
                           }
 
-                          // Handle boolean values for icons
                           if (typeof value === "boolean") {
                             const Icon = value ? ShieldCheck : ShieldClose;
                             const color = value
@@ -453,7 +388,6 @@ export default function DataGrid_Admin({
                             return <Icon className={`w-6 h-6 ${color}`} />;
                           }
 
-                          // Handle null, undefined, or empty values
                           if (
                             value === null ||
                             value === undefined ||
@@ -474,7 +408,6 @@ export default function DataGrid_Admin({
         )}
       </div>
 
-      {/* Pagination */}
       <div className="text-sm text-gray-500 order-2 sm:order-1 mt-4">
         {filtered.length > 0 ? (
           listAll ? (
@@ -502,7 +435,6 @@ export default function DataGrid_Admin({
           <>{t("datagrid.nothing_to_display")}</>
         )}
 
-        {/* Total pages */}
         {!listAll && totalPages > 1 && (
           <div className="flex items-center gap-1 order-1 sm:order-2 mt-4">
             <Button
@@ -517,7 +449,6 @@ export default function DataGrid_Admin({
 
             <div className="flex gap-1">
               {totalPages <= 5 ? (
-                // Show all pages if 5 or fewer
                 Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (page) => (
                     <Button
@@ -537,7 +468,6 @@ export default function DataGrid_Admin({
                   )
                 )
               ) : (
-                // Show pagination with ellipsis for more than 7 pages
                 <>
                   {[1, 2].includes(currentPage) || currentPage === 1 ? (
                     <>
@@ -651,7 +581,6 @@ export default function DataGrid_Admin({
               )}
             </div>
 
-            {/* BTN - Next page */}
             <Button
               variant="outline"
               onClick={() =>
@@ -666,7 +595,6 @@ export default function DataGrid_Admin({
           </div>
         )}
 
-        {/* Dialog for detailed view */}
         {dialogMode && openDialog && dialogRow && (
           <CustomEditDialog
             isOpen={dialogMode && openDialog}
@@ -696,7 +624,6 @@ export default function DataGrid_Admin({
           />
         )}
 
-        {/* Alert Dialog for errors or confirmations */}
         {alertDialog && (
           <AlertDialog
             title={alertDialog.title}

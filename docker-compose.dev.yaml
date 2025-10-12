@@ -1,0 +1,108 @@
+services:
+  # Backend service (Django)
+  # This service is used to run the Django backend application
+  backend:
+    build:
+      context: .
+      dockerfile: Docker/backend/DockerFile.dev
+    container_name: goldfren_backend
+    env_file:
+      - .env.dev
+    volumes:
+      - ./Backend:/goldfren
+      - goldfren_media:/goldfren/GoldFren_Media  
+      - static_volume:/goldfren/static
+      - ./djangocache:/tmp/django_cache
+      - ./logs:/goldfren/logs
+    depends_on:
+      goldfren_mysql:
+        condition: service_healthy
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "python", "manage.py", "check"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # Frontend service (React)
+  # This service is used to run the React frontend application
+  frontend:
+    build:
+      context: .
+      dockerfile: Docker/frontend/DockerFile.dev
+    container_name: goldfren_frontend
+    env_file:
+      - .env.dev
+    volumes:
+      - ./Frontend:/goldfren_frontend
+      - frontend_node_modules:/goldfren_frontend/node_modules
+      - ./Frontend/public:/shared/public:ro
+      - ./.env.dev:/goldfren_frontend/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - mynetwork
+
+  # MySQL service
+  # This service is used to run the MySQL database
+  goldfren_mysql:
+    image: mysql:8.0
+    container_name: goldfren_mysql
+    hostname: ${MYSQL_HOSTNAME}
+    environment:
+      MYSQL_DATABASE: ${MYSQL_CORE_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      TZ: Europe/Prague
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./SQL:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_ROOT_USER}", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # Nginx service
+  # This service is used to serve static files and proxy requests to the backend
+  nginx:
+    image: nginx:1.29.1-alpine
+    container_name: goldfren_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./Docker/nginx/default.dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - goldfren_media:/GoldFren_Media
+      - static_volume:/usr/share/nginx/html/static
+      - ./Frontend/public:/shared/public:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - mynetwork
+
+# Networks definition
+# This section defines the custom network used by the services
+networks:
+  mynetwork:
+    driver: bridge
+
+# Volumes definition
+# This section defines the named volumes used by the services
+volumes:
+  mysql_data:
+  goldfren_media:
+  static_volume:
+  frontend_node_modules:
