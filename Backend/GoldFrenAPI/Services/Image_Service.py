@@ -1,5 +1,7 @@
 import os
+import io
 from django.conf import settings
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 
 def save_image_file(sortiment: str, file_object, file_type: str, component_id: str) -> str:
@@ -57,13 +59,20 @@ def optimize_image(file_object, file_ext: str):
     # Check which file extension we are working with and optimize file
     if file_ext == 'png':
         image = Image.open(file_object)
-        image.save(image, format='png', optimize=True)
-        return open(image, 'rb')
+        output = io.BytesIO()
+        image.save(output, format='PNG', optimize=True, compress_level=7)
+        output.seek(0)
+        return InMemoryUploadedFile(output, 'ImageField', file_object.name, 'image/png', output.getvalue().__len__(), None)
     
     elif file_ext in ['jpg', 'jpeg']:
         image = Image.open(file_object)
-        image.save(image, format='jpeg', optimize=True)
-        return open(image, 'rb')
+        output = io.BytesIO()
+        image.save(output, format='JPEG', optimize=True, quality=75)
+        output.seek(0)
+        return InMemoryUploadedFile(output, 'ImageField', file_object.name, 'image/jpeg', output.getvalue().__len__(), None)
     
+    # Do not optimize SVG files
     elif file_ext == 'svg':
         return file_object
+    
+    return file_object
