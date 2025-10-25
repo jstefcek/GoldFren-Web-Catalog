@@ -32,9 +32,17 @@ services:
     build:
       context: .
       dockerfile: Docker/frontend/DockerFile.prod
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_APP_VERSION=${VITE_APP_VERSION}
+        - VITE_GA_ID=${VITE_GA_ID}
     container_name: goldfren_frontend
     env_file:
       - .env.prod
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+      - VITE_APP_VERSION=${VITE_APP_VERSION}
+      - VITE_GA_ID=${VITE_GA_ID}
     volumes:
       - ./Frontend:/goldfren_frontend
       - frontend_node_modules:/goldfren_frontend/node_modules
