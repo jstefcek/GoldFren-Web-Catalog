@@ -5,7 +5,6 @@ import {
   Plane,
   AlertCircle,
   Loader2,
-  ArrowLeft,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
@@ -14,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { NavigationStrip } from "../ui/Custom_NavigationStrip";
 import DataGrid from "../DataGrid/DataGrid";
 import DetailImage from "../ui/Custom_DetailImage";
+import { trackSortimentItemView } from '../../utils/GoogleAnalytics';
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function BrakePadDetail({ category = "", apiUrl = null }) {
@@ -22,6 +22,11 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
   // Validate that ID is a number
   const isValidId = !isNaN(id) && id.trim() !== "";
+
+  // Track if ID of item is valid
+  if (isValidId) {
+    trackSortimentItemView({ category: "desticky", item: id });
+  }
 
   // State for controlling vehicle compatibility loading
   const [showVehicles, setShowVehicles] = useState(false);

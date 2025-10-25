@@ -14,7 +14,7 @@ export function initializeGA() {
   }
 }
 
-// Component to track page views (only if GA initialized)
+// Component to track page views
 export function GAnalytics() {
   const location = useLocation();
 
@@ -44,6 +44,25 @@ export function trackSortimentSearch({ category }) {
   if (gaInitialized) {
     ReactGA.event("sortiment_search", {
       category,
+    });
+  }
+}
+
+// Track most sortiment categories manually viewed on the site
+export function trackTopSortimentCategory({ category }) {
+  if (gaInitialized) {
+    ReactGA.event("top_sortiment_category", {
+      category: category.join(", "),
+    });
+  }
+}
+
+// Sortiments specific item page view tracking
+export function trackSortimentItemView({ category, sortimentId }) {
+  if (gaInitialized) {
+    ReactGA.event("sortiment_item_view", {
+      category: category,
+      sortimentId: sortimentId,
     });
   }
 }

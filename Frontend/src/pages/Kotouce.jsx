@@ -1,10 +1,14 @@
-import React from 'react';
 import DataGrid from "../components/DataGrid/DataGrid"
 import { useTranslation } from 'react-i18next';
+import { trackTopSortimentCategory } from '../utils/GoogleAnalytics';
 const serverUrl = import.meta.env.VITE_API_URL;
 
 function Kotouce() {
+  // Translation hook
   const { t } = useTranslation();
+
+  // Track category viewed
+  trackTopSortimentCategory({ category: ['kotouce'] });
 
   return (
     <div className="container mx-auto">
