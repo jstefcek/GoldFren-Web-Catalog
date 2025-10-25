@@ -117,7 +117,6 @@ services:
   certbot:
     image: certbot/certbot
     container_name: goldfren_certbot
-    restart: always
     volumes:
       - ./nginx/certbot/conf:/etc/letsencrypt
       - ./nginx/certbot/www:/var/www/certbot
