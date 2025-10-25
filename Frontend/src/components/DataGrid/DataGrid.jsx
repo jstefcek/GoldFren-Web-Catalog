@@ -14,9 +14,9 @@ import {
 import { columnsConfig } from "./Column_Config";
 import { useTranslation } from "react-i18next";
 import { fetchData } from "../../hooks/Data_APIHook";
-import { exportToCSV } from "./functions/ExportCSV";
-import { exportToExcel } from "./functions/ExportExcel";
-import { PrintData } from "./functions/ExportPrint";
+import { ExportToCSV } from "../../utils/ExportFunctions/ExportCSV";
+import { ExportToExcel } from "../../utils/ExportFunctions/ExportExcel";
+import { PrintData } from "../../utils/ExportFunctions/ExportPrint";
 import { TextTruncate } from "./ui/Custom_TextTruncate";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 import { Link } from "react-router-dom";
@@ -174,22 +174,39 @@ export default function DataGrid({
 
   // Print data to Excel
   const handleExportToExcel = () => {
-    const itemsToExport =
-      selectedRows.length > 0 ? getSelectedItemsData() : sorted;
-    exportToExcel(itemsToExport);
+    // Determine data to export
+    const itemsToExport = selectedRows.length > 0 ? getSelectedItemsData() : sorted;
+
+    // Export to Excel
+    ExportToExcel({
+      data: itemsToExport,
+      category: category + "_public",
+      t,
+      fileName: `goldfren_${category}_export`,
+      onError: (err) => console.error("Export failed:", err),
+    });
   };
 
   // Export selected data to CSV
   const handleExportToCSV = () => {
-    const itemsToExport =
-      selectedRows.length > 0 ? getSelectedItemsData() : sorted;
-    exportToCSV(itemsToExport);
+    // Determine data to export
+    const itemsToExport = selectedRows.length > 0 ? getSelectedItemsData() : sorted;
+    
+    // Export data to CSV
+    ExportToCSV({
+      data: itemsToExport,
+      category: category + "_public",
+      t,
+      fileName: `goldfren_${category}_export`,
+      onError: (err) => console.error("Export failed:", err),
+    });
   };
 
   // Print selected data with print function
   const handlePrint = () => {
-    const itemsToPrint =
-      selectedRows.length > 0 ? getSelectedItemsData() : sorted;
+    const itemsToPrint = selectedRows.length > 0 ? getSelectedItemsData() : sorted;
+    
+    // Print data
     PrintData(itemsToPrint, columns, category, t);
   };
 

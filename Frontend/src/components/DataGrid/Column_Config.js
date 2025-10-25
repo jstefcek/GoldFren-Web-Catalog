@@ -83,7 +83,7 @@ export const columnsConfig = {
     {key: "roztecny_prumer", label: "datagrid.pitch_diameter", sortable: true, filterable: true,},
     {key: "vnitrni_prumer", label: "datagrid.inside_diameter", sortable: true, filterable: true,},
     {key: "tloustka", label: "datagrid.thickness", sortable: true, filterable: true,},
-    {key: "konkurence_branking", label: "Braking", sortable: true, filterable: true,},
+    {key: "konkurence_braking", label: "Braking", sortable: true, filterable: true,},
     {key: "konkurence_ngbrakes", label: "NGBrakes", sortable: true, filterable: true,},
     {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
   ],

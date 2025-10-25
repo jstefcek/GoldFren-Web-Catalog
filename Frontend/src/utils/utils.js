@@ -85,3 +85,7 @@ export const fileSafe = (file_name) =>
 
 // Format today's date as YYYY-MM-DD
 export const todayStr = () => new Date().toISOString().slice(0, 10);
+
+// Make first letter uppercase
+export const CapFirstLetter = (string) =>
+  string.charAt(0).toUpperCase() + string.slice(1);

@@ -4,8 +4,7 @@ import DataGrid from "../DataGrid/DataGrid";
 import AlertDialog from "../ui/Custom_AlertDialog";
 import { CustomSelect } from "../SearchForm/ui/CustomSelect";
 import { FileSpreadsheet, Search } from "lucide-react";
-import { fileSafe, todayStr } from "../../utils/utils";
-import { EXCEL_COLUMN_CONFIG } from '../../config/export_excel_config';
+import { ExportToExcel } from "../../utils/ExportFunctions/ExportExcel";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -173,104 +172,27 @@ export default function VyrobceSortimentDetail() {
     !!transformedSortimentData &&
     Object.values(transformedSortimentData).some((c) => c.items?.length > 0);
 
-  // Replace your handleExport function with this improved version
+  // Export to Excel
   const handleExport = useCallback(async () => {
     if (!transformedSortimentData) return;
-    
-    try {
-      setExporting(true);
-      const { writeFile, utils } = await import("xlsx");
-      const wb = utils.book_new();
-      
-      // Initialize workbook properties
-      wb.Workbook = { Tables: [] };
 
-      // Process each category
-      for (const [catKey, catData] of Object.entries(transformedSortimentData)) {
-        const items = catData?.items || [];
-        if (!items.length) continue;
-
-        const sheetName = (t(catKey) || catKey).toString();
-        
-        // Get category-specific column config
-        const categoryConfig = EXCEL_COLUMN_CONFIG[`${catKey}_sortiment`];
-        if (!categoryConfig) {
-          throw new Error(`No column configuration found for category: ${catKey}`);
-        }
-
-        const { columns } = categoryConfig;
-        const { tableStyle } = EXCEL_COLUMN_CONFIG;
-        
-        // Map data to include only configured columns
-        const rows = items.map(item => 
-          columns.reduce((acc, col) => ({
-            ...acc,
-            [col.header]: item[col.key]
-          }), {})
-        );
-
-        // Create headers array
-        const headers = columns.map(col => col.header);
-
-        // Create worksheet with headers
-        const ws = utils.json_to_sheet(rows, { 
-          header: headers,
-          skipHeader: false 
-        });
-
-        // Set column widths
-        ws['!cols'] = headers.map(h => ({ 
-          wch: Math.min(Math.max(h.length + 6, 12), 40) 
-        }));
-
-        // Calculate range
-        const lastCol = utils.encode_col(headers.length - 1);
-        const lastRow = rows.length + 1;
-        const range = `A1:${lastCol}${lastRow}`;
-
-        // Set autofilter
-        ws['!autofilter'] = { ref: range };
-
-        // Create table name
-        let tableName = `Table_${sheetName.replace(/[^A-Za-z0-9]/g, '')}`;
-        
-        // Add table definition
-        ws['!table'] = {
-          ref: range,
-          name: tableName,
-          totalsRow: false,
-          headerRow: true,
-          style: tableStyle,
-          columns: headers.map(h => ({ name: h }))
-        };
-
-        // Add worksheet to workbook
-        utils.book_append_sheet(wb, ws, sheetName);
-
-        // Add table to workbook's table collection
-        wb.Workbook.Tables.push({
-          name: tableName,
-          ref: range,
-          ...tableStyle
+    await ExportToExcel({
+      data: transformedSortimentData,
+      t,
+      fileName: `goldfren_${selectedMfr?.label || "export"}`,
+      onStart: () => setExporting(true),
+      onFinish: () => setExporting(false),
+      onError: (err) => {
+        setExporting(false);
+        setAlertData({
+          title: "Export selhal",
+          message: err?.message || "Nepodařilo se vytvořit Excel soubor.",
+          type: "error",
+          duration: 7,
+          onClose: () => setAlertData(null),
         });
       }
-
-      // Generate filename and save
-      const mfrLabel = fileSafe(selectedMfr?.label);
-      const fname = `goldfren_${mfrLabel.toLowerCase()}_${todayStr()}.xlsx`;
-      writeFile(wb, fname, { compression: true });
-
-    } catch (e) {
-      setAlertData({
-        title: "Export selhal",
-        message: e?.message || "Nepodařilo se vytvořit Excel soubor.",
-        type: "error",
-        duration: 6,
-        onClose: () => setAlertData(null)
-      });
-    } finally {
-      setExporting(false);
-    }
+    });
   }, [transformedSortimentData, selectedMfr, t]);
 
   return (
