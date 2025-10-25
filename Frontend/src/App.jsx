@@ -43,6 +43,8 @@ import Vehicle_Detail from "./pages/AdminDashboard/Vehicle_Detail";
 import Sortiment_Detail from "./pages/AdminDashboard/Sortiment_Detail";
 import VyrobceSortimentPage from "./pages/AdminDashboard/Vyrobce_Sortiment";
 import Vyrobce from "./pages/AdminDashboard/Vyrobce";
+import ImportData_Page from "./pages/AdminDashboard/ImportData_Page";
+import Statistics_Page from "./pages/AdminDashboard/Statistics_Page";
 
 // Import authContext for user authentication
 import { AuthProvider } from "./services/authContext";
@@ -183,9 +185,6 @@ function App() {
             {/* User Managment Section */}
             <Route path="/admin/users" element={<Users_Detail />} />
 
-            {/* Batch Import Data Section */}
-            <Route path="/admin/import-data" element={<NotFound />} />
-
             {/* Manufacturer Management Section */}
             <Route
               path="/admin/manufacturer-data"
@@ -196,6 +195,10 @@ function App() {
             <Route path="/admin/sortiment/*" element={<Sortiment_Detail />} />
             <Route path="/admin/manufacturer" element={<Vyrobce />} />
             <Route path="/admin/vehicles/*" element={<Vehicle_Detail />} />
+
+            {/* Import Data Section & Statistics page */}
+            <Route path="/admin/import-data" element={<ImportData_Page />} />
+            <Route path="/admin/statistics" element={<Statistics_Page />} />
 
             {/* Account Management Section */}
             <Route path="/admin/account" element={<Account />} />

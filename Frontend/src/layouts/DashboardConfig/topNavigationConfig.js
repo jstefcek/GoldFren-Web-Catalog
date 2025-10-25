@@ -1,5 +1,5 @@
-import { Home, Package, Users, 
-  ImportIcon, Car, PackageSearch
+import { 
+  Home, Package, Users, ImportIcon, Car, PackageSearch, ChartArea
 } from "lucide-react";
 
 export const topNavigationConfig = [
@@ -63,6 +63,14 @@ export const topNavigationConfig = [
     label: "Import dat",
     icon: ImportIcon,
     to: "/admin/import-data",
+    permissions: ["isAdmin", "isActive"],
+    type: "link"
+  },
+  {
+    id: "statistics",
+    label: "Statistiky",
+    icon: ChartArea,
+    to: "/admin/statistics",
     permissions: ["isAdmin", "isActive"],
     type: "link"
   }
