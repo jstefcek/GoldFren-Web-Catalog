@@ -1,0 +1,121 @@
+# robots.txt for GoldFren Web Catalog
+
+User-agent: *
+# Allow essential assets and all public catalog pages for indexing.
+Allow: /
+
+# Protect sensitive endpoints from crawling.
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /auth/
+Disallow: /login/
+Disallow: /register/
+Disallow: /profile/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /api/
+Disallow: /internal/
+
+# Disallow access to sensitive file types
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*.log$
+Disallow: /*.txt$
+Disallow: /*.env$
+Allow: /sitemap.xml
+Allow: /robots.txt
+
+# Block URLs with search/filter
+Disallow: /*?*
+Disallow: /*&*
+Allow: /*?page=*
+Allow: /*?category=*
+
+# Clean URLs
+Disallow: /*#
+Disallow: /*.php$
+Disallow: /temp/
+Disallow: /tmp/
+Disallow: /.well-known/
+
+Crawl-delay: 10
+
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /auth/
+Disallow: /login/
+Disallow: /register/
+Disallow: /profile/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /api/
+Disallow: /internal/
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /auth/
+Disallow: /login/
+Disallow: /register/
+Disallow: /profile/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /api/
+Disallow: /internal/
+Crawl-delay: 5
+
+# Yandex
+User-agent: Yandex
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /auth/
+Disallow: /login/
+Disallow: /register/
+Disallow: /profile/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /api/
+Disallow: /internal/
+Crawl-delay: 10
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /auth/
+Disallow: /login/
+Disallow: /register/
+Disallow: /profile/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /api/
+Disallow: /internal/
+
+# Block aggressive crawlers and scrapers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Sitemap
+Sitemap: https://catalog.goldfren.com/sitemap.xml
+Sitemap: https://catalog.goldfren.cz/sitemap.xml
