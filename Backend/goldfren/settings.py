@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
 # Load environment variables
 load_dotenv()
@@ -117,6 +119,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://catalog.goldfren.cz",
     "https://catalog.goldfren.cz",
+    "http://katalog.goldfren.cz",
+    "https://katalog.goldfren.cz",
     "http://catalog.goldfren.com",
     "https://catalog.goldfren.com",
     "http://185.80.30.44",
@@ -127,6 +131,8 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "http://catalog.goldfren.cz",
     "https://catalog.goldfren.cz",
+    "http://katalog.goldfren.cz",
+    "https://katalog.goldfren.cz",
     "http://catalog.goldfren.com",
     "https://catalog.goldfren.com",
     "http://185.80.30.44",
@@ -223,62 +229,61 @@ MEDIA_URL = '/GoldFren_Media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'GoldFren_Media')
 
 # Logging configuration
+LOG_DIR = Path("/goldfren/logs")
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '[{levelname}] {asctime} {name} {process:d} {thread:d} {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {name}: {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
-        'simple': {
-            'format': '[{levelname}] {asctime} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
-            'maxBytes': 10 * 1024 * 1024,  # 10 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-        'error_file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django_errors.log'),
-            'maxBytes': 10 * 1024 * 1024,  # 10 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-            'level': 'ERROR',
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
         },
     },
-    'root': {
-        'handlers': ['console', 'file'],
-        'level': 'INFO',
+
+    "handlers": {
+        "file_django": {
+            "level": "INFO",
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": str(LOG_DIR / "django.log"),
+            "when": "midnight",              # Rotate every midnight
+            "backupCount": 14,               # Keep 14 days of logs
+            "formatter": "verbose",
+            "encoding": "utf-8",
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file', 'error_file'],
-            'level': 'INFO',
-            'propagate': False,
+
+    "loggers": {
+        "django": {
+            "handlers": ["file_django", "console"],
+            "level": "INFO",
+            "propagate": True,
         },
-        'django.request': {
-            'handlers': ['error_file'],
-            'level': 'ERROR',
-            'propagate': False,
+        "django.request": {
+            "handlers": ["file_django", "console"],
+            "level": "ERROR",
+            "propagate": False,
         },
-        'GoldFrenAPI': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'propagate': False,
+        "django.db.backends": {
+            "handlers": ["file_django"],
+            "level": "ERROR",
+            "propagate": False,
         },
+    },
+
+    "root": {
+        "handlers": ["file_django", "console"],
+        "level": "INFO",
     },
 }
-
-# Create logs directory if it doesn't exist yet
-os.makedirs(os.path.join(BASE_DIR, 'logs'), exist_ok=True)

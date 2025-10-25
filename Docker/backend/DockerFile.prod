@@ -19,4 +19,4 @@ RUN mkdir -p /goldfren/logs
 EXPOSE 8000
 
 # Start Gunicorn server
-CMD ["gunicorn", "--config", "Docker/backend/gunicorn.conf.py", "GoldFren.wsgi:application"]
+CMD ["gunicorn", "--config", "gunicorn.conf.py", "GoldFren.wsgi:application"]

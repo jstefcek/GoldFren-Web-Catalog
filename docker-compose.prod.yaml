@@ -15,7 +15,7 @@ services:
       - ./djangocache:/tmp/django_cache
       - ./logs:/goldfren/logs
     depends_on:
-      mysql:
+      goldfren_mysql:
         condition: service_healthy
     networks:
       - mynetwork
@@ -30,8 +30,8 @@ services:
   # This service is used to run the React frontend application
   frontend:
     build:
-      context: ./Frontend
-      dockerfile: ../Docker/frontend/DockerFile.prod
+      context: .
+      dockerfile: Docker/frontend/DockerFile.prod
     container_name: goldfren_frontend
     env_file:
       - .env.prod
@@ -40,6 +40,7 @@ services:
       - frontend_node_modules:/goldfren_frontend/node_modules
       - ./Frontend/public:/shared/public:ro
       - frontend_build:/goldfren_frontend/dist
+      - ./.env.prod:/goldfren_frontend/.env
     depends_on:
       - backend
     networks:

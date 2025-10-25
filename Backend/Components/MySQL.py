@@ -3,13 +3,10 @@
 # Importing required libraries
 import MySQLdb
 import os
-from dotenv import load_dotenv
+import MySQLdb.cursors
 
 # Function to connect to MySQL database
 def connect():
-    # Load environment variables
-    load_dotenv()
-    
     # Get environment variables
     MYSQL_HOST = os.getenv("MYSQL_HOSTNAME")
     MYSQL_USER = os.getenv("MYSQL_USER")

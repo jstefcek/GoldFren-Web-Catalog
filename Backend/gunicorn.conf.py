@@ -14,8 +14,8 @@ max_requests_jitter = 200
 
 # Logging settings
 preload_app = True
-accesslog = "/goldfren/logs/gunicorn_access.log"
-errorlog = "/goldfren/logs/gunicorn_error.log"
+accesslog = "-"
+errorlog = "-"
 loglevel = "info"
 
 # Enable output capturing
