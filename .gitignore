@@ -164,3 +164,4 @@ cython_debug/
 #.idea/
 /Backend/GoldFren_Media
 .DS_Store
+logs/django.log.*

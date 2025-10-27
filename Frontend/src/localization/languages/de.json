@@ -32,6 +32,10 @@
   "back_to_list": "Zurück zur Liste",
   "selectLanguage": "Sprache auswählen",
   "search_by_manufacturer": "Suche nach Hersteller",
+  "noVehicleResults": "Kein Sortiment für dieses Fahrzeug gefunden",
+  "noSortimentResults": "Kein Sortiment gefunden",
+  "noVehicleResultsDescription": "Kein unterstütztes Sortiment für die angegebenen Fahrzeug-Suchkriterien gefunden. Bitte versuchen Sie, Ihre Kriterien anzupassen und erneut zu suchen.",
+  "noSortimentResultsDescription": "Kein unterstütztes Sortiment für die angegebenen Suchkriterien gefunden. Bitte versuchen Sie, Ihre Kriterien anzupassen und erneut zu suchen.",
   "category": {
     "motorbike": "Motorrad",
     "car": "Auto",

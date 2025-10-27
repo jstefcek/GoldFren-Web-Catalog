@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import DataGrid from '../components/DataGrid/DataGrid';
 import { useCategoryResults } from "../hooks/Categories_APIHook";
 import { trackVehicleSearch, trackSortimentSearch } from '../utils/GoogleAnalytics';
+import { SearchX } from 'lucide-react';
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -74,6 +75,9 @@ function Home() {
       const hasItems = Object.values(transformedSortimentData).some(category => category.items.length > 0);
       if (hasItems) {
         setIsDataReady(true);
+      } else {
+        // Set data ready even if no items to show no results message
+        setIsDataReady(true);
       }
     } else {
       setIsDataReady(true);
@@ -116,6 +120,33 @@ function Home() {
     return result;
   };
 
+  // Check if vehicle search has no results
+  const hasVehicleResults = transformedSortimentData && 
+    Object.values(transformedSortimentData).some(category => category.items.length > 0);
+
+  // No Data Found Component
+  const NoDataFound = ({ type }) => (
+    <div className="flex flex-col items-center justify-center py-8 px-4">
+      <div className="bg-white rounded-2xl shadow-lg p-8 w-full mx-auto text-center border border-gray-200">
+        <div className="text-red-600 mb-6">
+          <SearchX 
+            size={80} 
+            className="mx-auto animate-bounce-horizontal hover:animate-pulse transition-all duration-300" 
+          />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-700 mb-4">
+          {type === 'vehicle' ? t('noVehicleResults') : t('noSortimentResults')}
+        </h3>
+        <p className="text-gray-500">
+          {type === 'vehicle' 
+            ? t('noVehicleResultsDescription') 
+            : t('noSortimentResultsDescription')
+          }
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <div className="container mx-auto bg-white">
       <h1 className="text-3xl font-bold mb-8 text-center mt-8">{t('searchTitle')}</h1>
@@ -127,7 +158,7 @@ function Home() {
       {searchData && (
         searchData.type === "vehicle" && searchData.vozidlo_kod ? (
           <div>
-            {/* Vehicel title */}
+            {/* Vehicle title */}
             {isDataReady && (
               <div>
               <h2 ref={vehicleTitleRef} className="text-3xl font-bold mt-4 text-left ml-4 mr-4">
@@ -137,6 +168,11 @@ function Home() {
                   {searchData.filters.year?.label || searchData.filters.year}
                 </p>
               </div>
+            )}
+
+            {/* Show no results message if no data found */}
+            {isDataReady && !hasVehicleResults && (
+              <NoDataFound type="vehicle" />
             )}
 
             {/* Show sortiment data */}

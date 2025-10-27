@@ -32,6 +32,10 @@
   "back_to_list": "Back to ",
   "selectLanguage": "Select language",
   "search_by_manufacturer": "Search sortiment by manufacturer name",
+  "noVehicleResults": "No sortiment found for vehicle",
+  "noSortimentResults": "No sortiment found",
+  "noVehicleResultsDescription": "No supported sortiment found for the specified vehicle search criteria. Please try adjusting your criteria and search again.",
+  "noSortimentResultsDescription": "No supported sortiment found for the specified sortiment search criteria. Please try adjusting your criteria and search again.",
   "category": {
     "motorbike": "Motorbike",
     "car": "Car",
