@@ -126,7 +126,7 @@ function Home() {
 
   // No Data Found Component
   const NoDataFound = ({ type }) => (
-    <div className="flex flex-col items-center justify-center py-8 px-4">
+    <div className="flex flex-col items-center justify-center px-4 mb-12 mt-8">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full mx-auto text-center border border-gray-200">
         <div className="text-red-600 mb-6">
           <SearchX 
@@ -199,20 +199,38 @@ function Home() {
           
           // If not vehicle search, show category data
           <div>
-            {/* Sortiment title */}
-            <h2 ref={sortimentTitleRef} className="text-3xl font-bold mt-4 mb-4 text-left ml-4 mr-4">
-              {t(`search.${searchData.category}.title`)}
-            </h2>
+            {/* Sortiment title - only show if there are results else show placeholder */}
+            {isDataReady && searchData.hasResults ? (
+              <h2 ref={sortimentTitleRef} className="text-3xl font-bold mt-4 mb-4 text-left ml-4 mr-4">
+                {t(`search.${searchData.category}.title`)}
+              </h2>
+            ) : (
+              <div>
+                <h2 className="text-3xl font-bold mt-4 text-left ml-4 mr-4">
+                  {t(`search.${searchData.category}.not_found`)}
+                </h2>
+                <p className="font-light text-sm text-left ml-4 mr-4">
+                  {t(`search.try_again`)}
+                </p>
+              </div>
+            )}
 
-            {/* Display the data with Datagrid component */}
-            <div className="p-4 md:p-6">
-              <DataGrid
-                category={searchData.page_category}
-                apiCategory={searchData.category}
-                apiUrl={serverUrl + searchData.api}
-                filters={flattenFilters(searchData.filters)}
-              />
-            </div>
+            {/* Show no results message if no data found */}
+            {isDataReady && !searchData.hasResults && (
+              <NoDataFound type="sortiment" />
+            )}
+
+            {/* Display the data with Datagrid component only if there are results */}
+            {searchData.hasResults && (
+              <div className="p-4 md:p-6">
+                <DataGrid
+                  category={searchData.page_category}
+                  apiCategory={searchData.category}
+                  apiUrl={serverUrl + searchData.api}
+                  filters={flattenFilters(searchData.filters)}
+                />
+              </div>
+            )}
           </div>
         )
       )}

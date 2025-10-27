@@ -83,13 +83,15 @@
     "required_fields_warning": "Pro vyhledaní je potřeba splnit následující podmínky:",
     "at_least_one_required": "alespoň jedno z polí",
     "fill_required_text": "Vyplňte prosím ",
+    "try_again": "Zkuste to prosím znovu",
     "adapter": {
       "title": "Nalezené brzdové adaptéry GOLDfren",
       "position": "Pozice adaptéru",
       "position_placeholder": "Vyberte prosím pozici adaptéru",
       "diameter": "Průměr adaptéru [mm]",
       "attachment": "Typ uchycení brzdiče",
-      "bolt_spacing": "Rozteč šroubů pro brzdiče [mm]"
+      "bolt_spacing": "Rozteč šroubů pro brzdiče [mm]",
+      "not_found": "Brzdové adaptéry nenalezeny"
     },
     "disc": {
       "title": "Nalezené brzdové kotouče GOLDfren",
@@ -98,7 +100,8 @@
       "inner_diameter": "Vnitřní průměr kotouče [mm]",
       "thickness": "Tloušťka kotouče [mm]",
       "type": "Typ kotouče",
-      "type_placeholder": "Vyberte prosím typ kotouče"
+      "type_placeholder": "Vyberte prosím typ kotouče",
+      "not_found": "Brzdové kotouče nenalezeny"
     },
     "pad": {
       "title": "Nalezené brzdové destičky GOLDfren",
@@ -107,7 +110,8 @@
       "material": "Materiál brzdové destičky",
       "material_placeholder": "Vyberte prosím materiál brzdové destičky",
       "oem_numbers": "OEM výrobní čísla",
-      "oem_numbers_placeholder": "Vyberte prosím OEM výrobní čísla"
+      "oem_numbers_placeholder": "Vyberte prosím OEM výrobní čísla",
+      "not_found": "Brzdové destičky nenalezeny"
     },
     "caliper": {
       "title": "Nalezené brzdové třmeny GOLDfren",
@@ -116,7 +120,8 @@
       "piston_count": "Počet pístků",
       "piston_count_placeholder": "Vyberte prosím počet pístků",
       "attachment_type": "Typ uchycení brzdového třmenu",
-      "attachment_type_placeholder": "Vyberte prosím typ uchycení brzdového třmenu"
+      "attachment_type_placeholder": "Vyberte prosím typ uchycení brzdového třmenu",
+      "not_found": "Brzdové třmeny nenalezeny"
     }
   },
   "datagrid": {

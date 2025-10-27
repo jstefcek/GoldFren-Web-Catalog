@@ -83,13 +83,15 @@
     "required_fields_warning": "Für die Suche müssen die folgenden Bedingungen erfüllt sein:",
     "at_least_one_required": "mindestens eines der Felder",
     "fill_required_text": "Bitte ausfüllen ",
+    "try_again": "Bitte versuchen Sie es erneut.",
     "adapter": {
       "title": "Bremsenadapter GOLDfren gefunden",
       "position": "Position des Adapters",
       "position_placeholder": "Bitte wählen Sie die Position des Adapters",
       "diameter": "Durchmesser des Adapters [mm]",
       "attachment": "Befestigungsart der Bremse",
-      "bolt_spacing": "Bolzenabstand für Bremsen [mm]"
+      "bolt_spacing": "Bolzenabstand für Bremsen [mm]",
+      "not_found": "Bremsadapter nicht gefunden"
     },
     "discs": {
       "title": "GOLDfren Bremsscheiben gefunden",
@@ -98,7 +100,8 @@
       "inner_diameter": "Innendurchmesser der Scheibe [mm]",
       "thickness": "Raddicke [mm]",
       "type": "Typ der Scheibe",
-      "type_placeholder": "Bitte Disc-Typ auswählen"
+      "type_placeholder": "Bitte Disc-Typ auswählen",
+      "not_found": "Bremsscheiben nicht gefunden"
     },
     "pad": {
       "title": "Bremsbeläge GOLDfren gefunden",
@@ -107,7 +110,8 @@
       "material": "Material der Bremsbeläge",
       "material_placeholder": "Bitte wählen Sie Bremsbelagmaterial",
       "oem_numbers": "OEM-Seriennummern",
-      "oem_numbers_placeholder": "Bitte wählen Sie OEM-Seriennummern"
+      "oem_numbers_placeholder": "Bitte wählen Sie OEM-Seriennummern",
+      "not_found": "Bremsbeläge nicht gefunden"
     },
     "caliper": {
       "title": "Bremssattel GOLDfren gefunden",
@@ -116,7 +120,8 @@
       "piston_count": "Anzahl der Kolben",
       "piston_count_placeholder": "Bitte wählen Sie die Anzahl der Kolben",
       "attachment_type": "Befestigungsart des Bremssattels",
-      "attachment_type_placeholder": "Bitte wählen Sie die Montageart"
+      "attachment_type_placeholder": "Bitte wählen Sie die Montageart",
+      "not_found": "Bremssättel nicht gefunden"
     }
   },
   "datagrid": {

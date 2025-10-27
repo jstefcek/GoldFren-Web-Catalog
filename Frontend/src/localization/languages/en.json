@@ -83,13 +83,15 @@
       "required_fields_warning": "To search, the following conditions must be met:",
       "at_least_one_required": "at least one of the fields",
       "fill_required_text": "Please fill in ",
+      "try_again": "Please try again",
       "adapter": {
         "title": "Found GOLDfren brake adapters",
         "position": "Adapter position",
         "position_placeholder": "Please choose adapter position",
         "diameter": "Adapter diameter [mm]",
         "attachment": "Brake attachment type",
-        "bolt_spacing": "Brake bolt spacing [mm]"
+        "bolt_spacing": "Brake bolt spacing [mm]",
+        "not_found": "Brake adapters not found"
       },
       "discs": {
         "title": "Found GOLDfren brake discs",
@@ -98,7 +100,8 @@
         "inner_diameter": "Disc inside diameter [mm]",
         "thickness": "Disc thickness [mm]",
         "type": "Disc type",
-        "type_placeholder": "Please choose disc type"
+        "type_placeholder": "Please choose disc type",
+        "not_found": "Brake discs not found"
       },
       "pad": {
         "title": "Found GOLDfren brake pads",
@@ -107,7 +110,8 @@
         "material": "Brake pad material",
         "material_placeholder": "Please choose brake pad material",
         "oem_numbers": "OEM production numbers",
-        "oem_numbers_placeholder": "Please choose OEM production numbers"
+        "oem_numbers_placeholder": "Please choose OEM production numbers",
+        "not_found": "Brake pads not found"
       },
       "caliper": {
         "title": "Found GOLDfren brake calipers",
@@ -116,7 +120,8 @@
         "piston_count": "Piston count",
         "piston_count_placeholder": "Please choose piston count",
         "attachment_type": "Attachment type of brake caliper",
-        "attachment_type_placeholder": "Please choose brake caliper attachment type"
+        "attachment_type_placeholder": "Please choose brake caliper attachment type",
+        "not_found": "Brake calipers not found"
       }
     },
   "datagrid": {
