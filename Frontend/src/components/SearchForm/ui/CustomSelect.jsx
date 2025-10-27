@@ -36,6 +36,7 @@ export const CustomSelect = ({
   const [dynamicOptions, setDynamicOptions] = useState([]);
   const [loadedKey, setLoadedKey] = useState("");
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [isSearching, setIsSearching] = useState(false);
   const wrapperRef = useRef(null);
   const buttonRef = useRef(null);
   const inputRef = useRef(null);
@@ -62,6 +63,7 @@ export const CustomSelect = ({
         setOpen(false);
         setSearchTerm("");
         setFocusedIndex(-1);
+        setIsSearching(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -105,6 +107,7 @@ export const CustomSelect = ({
           setOpen(false);
           setSearchTerm("");
           setFocusedIndex(-1);
+          setIsSearching(false);
           inputRef.current?.blur();
           break;
       }
@@ -134,6 +137,40 @@ export const CustomSelect = ({
     setOpen(false);
     setSearchTerm("");
     setFocusedIndex(-1);
+    setIsSearching(false);
+  };
+
+  // Handle input change for search
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    setSearchTerm(newValue);
+    setIsSearching(true);
+    
+    if (!open) {
+      setOpen(true);
+    }
+  };
+
+  // Handle input click
+  const handleInputClick = () => {
+    if (!disabled) {
+      setOpen(true);
+      setIsSearching(true);
+    }
+  };
+
+  // Get display value for input
+  const getDisplayValue = () => {
+    if (isSearching) {
+      return searchTerm;
+    }
+    
+    if (typeof value === "object" && value !== null) {
+      return value.label || "";
+    }
+    
+    const foundOption = allOptions.find((opt) => opt.value === value);
+    return foundOption?.label || "";
   };
 
   // Prepare static options on mount
@@ -186,6 +223,7 @@ export const CustomSelect = ({
       setSearchTerm("");
       setOpen(false);
       setFocusedIndex(-1);
+      setIsSearching(false);
     }
   }, [resetSignal]);
 
@@ -222,14 +260,9 @@ export const CustomSelect = ({
             disabled ? "bg-gray-100 cursor-not-allowed opacity-50" : value ? "bg-white" : ""
           } ${value ? "text-black" : "text-gray-700"}`}
           placeholder={i18next.t(placeholder)}
-          onClick={() => !disabled && setOpen(true)}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          value={
-            searchTerm ||
-            (typeof value === "object" && value !== null
-              ? value.label
-              : allOptions.find((opt) => opt.value === value)?.label || "")
-          }
+          onClick={handleInputClick}
+          onChange={handleInputChange}
+          value={getDisplayValue()}
           disabled={disabled}
         />
         {open ? (
