@@ -34,8 +34,8 @@
   "search_by_manufacturer": "Vyhledávání sortimentu podle názvu výrobce",
   "noVehicleResults": "Nenalezen žádný sortiment pro vozidlo",
   "noSortimentResults": "Nenalezen žádný sortiment",
-  "noVehicleResultsDescription": "Nebyl nalezen žádný podporovaný sortiment pro zadaná kritéria vyhledávání vozidel. Zkuste prosím upravit svá kritéria a vyhledat znovu.",
-  "noSortimentResultsDescription": "Nebyl nalezen žádný podporovaný sortiment pro zadaná kritéria vyhledávání sortimentu. Zkuste prosím upravit svá kritéria a vyhledat znovu.",
+  "noVehicleResultsDescription": "Nebyl nalezen žádný podporovaný sortiment pro vámi hledané vozidlo. Zkuste prosím upravit své parametry a vyhledat znovu.",
+  "noSortimentResultsDescription": "Nebyl nalezen žádný podporovaný sortiment pro zadané parametry vyhledávání. Zkuste prosím upravit svá parametry a vyhledat znovu.",
   "category": {
     "motorbike": "Motorka",
     "car": "Auto",
