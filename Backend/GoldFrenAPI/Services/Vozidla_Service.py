@@ -19,6 +19,10 @@ from GoldFrenAPI.Services.Service_utils import (
     insert_record
 )
 from GoldFrenAPI.utils.utils import change_category_label
+import logging
+
+# Add after imports:
+logger = logging.getLogger(__name__)
 
 def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
     """
@@ -270,3 +274,86 @@ def create_vozidlo(data: dict):
     )
     
     return new_id
+
+def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
+    """
+    Function would update vozidlo sortiment data
+    
+    Params:
+    - vozidlo_id: int - ID of the vozidlo to update sortiment for
+    - data: dict - Dictionary containing sortiment data to update, create or delete
+    """
+    # Get who update the record
+    operation_status = False
+    aktualizoval_id = data.get("aktualizoval")
+    
+    # In cycle go through each sortiment type and update DB records
+    for sortiment_type, sortiment_operations in data.items():
+        # Skip the aktualizoval field
+        if sortiment_type == "aktualizoval":
+            continue
+            
+        table_name = f"c_vozidlo_{sortiment_type}"
+        logger.info(f"Param table_name is: {table_name}")
+        
+        # Get record operation (INS, UPD, DEL)
+        for operation, item_values in sortiment_operations.items():
+            # Loop through items inside operation groups
+            for value in item_values:
+                # Get sortiment detailed values
+                sortiment_kod = value[0]
+                sortiment_pos = value[1]
+                logger.info(f"Param operation is: {operation}")
+                logger.info(f"Param sortiment_kod is: {sortiment_kod}")
+                logger.info(f"Param sortiment_pos is: {sortiment_pos}")
+
+                # Delete record if specified
+                if operation == "DEL":
+                    # Prepare DEL query
+                    del_query = f"""DELETE FROM {table_name} 
+                    WHERE vozidlo = %s 
+                    AND {sortiment_type} = %s
+                    AND pozice = %s"""
+                    logger.info(f"Param del_query is: {del_query}")
+                    
+                    # Prepare query params
+                    del_params = [vozidlo_id, sortiment_kod, sortiment_pos]
+                    logger.info(f"Param del_params is: {del_params}")
+
+                    # Execute query
+                    operation_status = execute_update(sql_query=del_query, params=del_params)
+                
+                # Insert new sortiment for vozidlo
+                elif operation == "INS":
+                    # Prepare INS query
+                    ins_query = f"""INSERT INTO {table_name} 
+                    (vozidlo, {sortiment_type}, pozice, aktualizovano, aktualizoval) 
+                    values (%s, %s, %s, CURRENT_TIMESTAMP(), %s)"""
+                    logger.info(f"Param ins_query is: {ins_query}")
+                    
+                    # Prepare query params
+                    ins_params = [vozidlo_id, sortiment_kod, sortiment_pos, aktualizoval_id]
+                    logger.info(f"Param ins_params is: {ins_params}")
+
+                    # Execute sortiment insert
+                    insert_record(sql_query=ins_query, params=ins_params)
+                    operation_status = True
+                
+                # Update existing sortiment for vozidlo
+                elif operation == "UPD":
+                    # Prepare UPD query
+                    upd_query = f"""UPDATE {table_name}
+                    SET pozice = %s, aktualizovano = CURRENT_TIMESTAMP(), aktualizoval = %s
+                    WHERE vozidlo = %s 
+                    AND {sortiment_type} = %s 
+                    AND pozice = %s"""
+                    logger.info(f"Param upd_query is: {upd_query}")
+                    
+                    # Prepare query params
+                    upd_params = [sortiment_pos, aktualizoval_id, vozidlo_id, sortiment_kod, sortiment_pos]
+                    logger.info(f"Param upd_params is: {upd_params}")
+
+                    # Execute update to DB
+                    operation_status = execute_update(sql_query=upd_query, params=upd_params)
+                
+    return operation_status
