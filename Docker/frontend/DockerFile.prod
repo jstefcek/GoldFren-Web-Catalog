@@ -1,5 +1,5 @@
 # Use alpine Node.js image
-FROM node:24.10.0-alpine
+FROM node:25.1.0-alpine
 WORKDIR /goldfren_frontend
 
 # Declare build argument and environment variables
@@ -15,8 +15,7 @@ ENV VITE_GA_ID=$VITE_GA_ID
 COPY Frontend/package.json Frontend/package-lock.json ./
 
 # 2. Install dependencies
-RUN npm install -g npm@11.6.2 && \
-    npm cache clean --force && \
+RUN npm cache clean --force && \
     npm install --include=optional && \
     npm install --save-dev terser 
 
