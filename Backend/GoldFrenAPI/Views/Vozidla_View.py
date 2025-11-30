@@ -180,7 +180,7 @@ def update_vyrobce_view(request, vyrobce_kod):
         return JsonResponse({"message": "Vyrobce updated successfully"}, status=200)
     return JsonResponse({"error": "Failed to update vyrobce"}, status=400)
 
-@api_view(['PUT'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def update_vozidlo_sortiment_view(request, vozidlo_id):
     """

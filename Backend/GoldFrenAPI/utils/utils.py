@@ -125,6 +125,7 @@ def prepare_sql_filters(filters: dict, filter_condition: list, params: list):
     return filter_condition, params
 
 def change_category_label(kategorie: str):
+    """Change category label to label inside DB"""
     if kategorie == "Auto":
         return "Automobily"
     elif kategorie == "Motocykl":
@@ -133,3 +134,20 @@ def change_category_label(kategorie: str):
         return "Jízdní kola"
     elif kategorie == "Letadlo":
         return "Letadla"
+    
+def change_sortiment_label(kategorie: str):
+    """Change sortiment label to match DB label"""
+    if kategorie == "adaptery":
+        return "adapter"
+    elif kategorie == "brzdice":
+        return "brzdic"
+    elif kategorie == "desticky":
+        return "desticka"
+    elif kategorie == "hadicky":
+        return "hadicka"
+    elif kategorie == "kotouce":
+        return "kotouc"
+    elif kategorie == "pumpy":
+        return "pumpa"
+    elif kategorie == "prislusenstvi":
+        return "prislusenstvi"

@@ -18,7 +18,7 @@ from GoldFrenAPI.Services.Service_utils import (
     execute_update,
     insert_record
 )
-from GoldFrenAPI.utils.utils import change_category_label
+from GoldFrenAPI.utils.utils import change_category_label, change_sortiment_label
 import logging
 
 # Add after imports:
@@ -292,7 +292,9 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
         # Skip the aktualizoval field
         if sortiment_type == "aktualizoval":
             continue
-            
+        
+        # Construct table name 
+        sortiment_type = change_sortiment_label(sortiment_type)
         table_name = f"c_vozidlo_{sortiment_type}"
         logger.info(f"Param table_name is: {table_name}")
         
@@ -301,8 +303,9 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
             # Loop through items inside operation groups
             for value in item_values:
                 # Get sortiment detailed values
-                sortiment_kod = value[0]
-                sortiment_pos = value[1]
+                sortiment_kod = value.get("kod", None)
+                sortiment_pos = value.get("pozice", None)
+                sortiment_new_pos = value.get("new_pozice", None)
                 logger.info(f"Param operation is: {operation}")
                 logger.info(f"Param sortiment_kod is: {sortiment_kod}")
                 logger.info(f"Param sortiment_pos is: {sortiment_pos}")
@@ -350,10 +353,11 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
                     logger.info(f"Param upd_query is: {upd_query}")
                     
                     # Prepare query params
-                    upd_params = [sortiment_pos, aktualizoval_id, vozidlo_id, sortiment_kod, sortiment_pos]
+                    upd_params = [sortiment_new_pos, aktualizoval_id, vozidlo_id, sortiment_kod, sortiment_pos]
                     logger.info(f"Param upd_params is: {upd_params}")
 
                     # Execute update to DB
                     operation_status = execute_update(sql_query=upd_query, params=upd_params)
                 
+    # Return API status
     return operation_status
