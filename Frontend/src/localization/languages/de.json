@@ -204,6 +204,22 @@
       "publish": "Veröffentlichen"
     }
   },
+  "setup_board": {
+    "assigned": "Zugewiesene Einträge",
+    "changes": "Änderungen",
+    "available": "Verfügbare Einträge",
+    "no_assigned": "Keine zugewiesenen Einträge",
+    "no_changes": "Keine Änderungen",
+    "no_available": "Keine verfügbaren Einträge",
+    "remove_change": "Entfernen"
+  },
+  "error": {
+    "loading_failed": "Laden fehlgeschlagen",
+    "missing_parameters": "Fehlende Parameter",
+    "title": "Fehler beim Laden der Ergebnisse",
+    "invalid_id": "Ungültige Produkt-ID",
+    "btn_go_back": "Zurück"
+  },
   "contact": {
     "czech_republic": "Tschechische Republik",
     "main_title": "Kontaktdaten",

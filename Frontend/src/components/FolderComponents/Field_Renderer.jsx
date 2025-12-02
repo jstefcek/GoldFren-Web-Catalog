@@ -79,7 +79,7 @@ export default function FieldRenderer({
 
   const wrapper = (children) => (
     <div className="flex flex-col">
-      <label className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-1">
+      <label className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-1">
         {t(col.label)}
         {col.required && <span className="text-red-600">*</span>}
       </label>
@@ -305,6 +305,211 @@ export default function FieldRenderer({
           onChange={(e) => onChange(col.key, e.target.value)}
         />
         <span className={labelClassName}>{t(col.label)}</span>
+      </div>
+    );
+  }
+
+  // Setup board field
+  if (col.type === "setup_board") {
+    const boardValue = value || {};
+    const assigned = Array.isArray(boardValue.assigned) ? boardValue.assigned : [];
+    const changes = Array.isArray(boardValue.changes) ? boardValue.changes : [];
+    const available = Array.isArray(boardValue.available) ? boardValue.available : [];
+
+    // Labels with translations
+    const labels = {
+      assigned: col.boardLabels?.assigned ? t(col.boardLabels.assigned) : t("setup_board.assigned"),
+      changes: col.boardLabels?.changes ? t(col.boardLabels.changes) : t("setup_board.changes"),
+      available: col.boardLabels?.available ? t(col.boardLabels.available) : t("setup_board.available"),
+    };
+
+    // Badge tone based on action
+    const badgeTone = (action) => {
+      switch (action) {
+        case "added":
+          return {
+            bg: "bg-green-50",
+            text: "text-green-800",
+            chip: "bg-green-100 text-green-800 border-green-200",
+          };
+        case "removed":
+          return {
+            bg: "bg-red-50",
+            text: "text-red-800",
+            chip: "bg-red-100 text-red-800 border-red-200",
+          };
+        default:
+          return {
+            bg: "bg-amber-50",
+            text: "text-amber-800",
+            chip: "bg-amber-100 text-amber-800 border-amber-200",
+          };
+      }
+    };
+
+    // Format item display
+    const formatItem = (item) => {
+      const parts = [item.label || item.kod || item.id];
+      if (item.pozice) parts.push(`pozice ${item.pozice}`);
+      return parts.filter(Boolean).join(" • ");
+    };
+
+    // Update the entire board value
+    const updateBoard = (next) => {
+      onChange(col.key, next);
+      onBlur(col.key);
+    };
+
+    // Remove item from assigned list
+    const handleRemoveFromAssigned = (item) => {
+      const nextAssigned = assigned.filter(
+        (i) => i.kod !== item.kod || i.pozice !== item.pozice
+      );
+      const nextChanges = [
+        ...changes,
+        { ...item, action: "removed" },
+      ];
+      const nextAvailable = available.filter(
+        (i) => i.kod !== item.kod || i.pozice !== item.pozice
+      );
+      updateBoard({
+        assigned: nextAssigned,
+        changes: nextChanges,
+        available: nextAvailable,
+      });
+    };
+
+    // Add item from available list
+    const handleAddFromAvailable = (item) => {
+      const nextAvailable = available.filter(
+        (i) => i.kod !== item.kod || i.pozice !== item.pozice
+      );
+      const nextChanges = [
+        ...changes,
+        { ...item, action: "added" },
+      ];
+      const nextAssigned = assigned.filter(
+        (i) => i.kod !== item.kod || i.pozice !== item.pozice
+      );
+      updateBoard({
+        assigned: nextAssigned,
+        changes: nextChanges,
+        available: nextAvailable,
+      });
+    };
+
+    // Remove change from changes list
+    const handleChangeRemoval = (change) => {
+      const nextChanges = changes.filter(
+        (c) =>
+          !(
+            c.kod === change.kod &&
+            c.pozice === change.pozice &&
+            c.action === change.action
+          )
+      );
+
+      let nextAssigned = assigned;
+      let nextAvailable = available;
+
+      if (change.action === "added") {
+        nextAvailable = [...available, { ...change }];
+      }
+      if (change.action === "removed") {
+        nextAssigned = [...assigned, { ...change }];
+      }
+
+      updateBoard({ assigned: nextAssigned, changes: nextChanges, available: nextAvailable });
+    };
+
+    // Column component for layout
+    const Column = ({ title, children }) => (
+      <div className="flex-1 min-w-[220px]">
+        <div className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+          <div className="h-2 w-2 rounded-full bg-red-300" />
+          {t(title)}
+        </div>
+        <div className="flex flex-col gap-2 border border-gray-200 rounded-xl p-4 bg-white shadow-sm overflow-y-auto" style={{ height: "240px" }}>
+          {children}
+        </div>
+      </div>
+    );
+
+    // Item row component
+    const ItemRow = ({ item, action, onClick, buttonLabel }) => (
+      <div
+        className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-left ${
+          action ? badgeTone(action).chip : "border-gray-200 bg-gray-50"
+        }`}
+      >
+        <span className="text-sm font-medium text-gray-900 break-words leading-snug">
+          {formatItem(item)}
+        </span>
+        <button
+          type="button"
+          onClick={onClick}
+          className={`text-xs font-semibold px-2 py-1 rounded-md shadow-sm transition-colors ${
+            action === "removed"
+              ? "bg-white text-red-700 border border-red-300 hover:bg-red-50"
+              : action === "added"
+              ? "bg-white text-green-700 border border-green-300 hover:bg-green-50"
+              : "bg-gray-900 text-white border border-gray-900 hover:bg-gray-800"
+          }`}
+        >
+          {buttonLabel}
+        </button>
+      </div>
+    );
+
+    return wrapper(
+      <div className="flex flex-col gap-4 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Column title={labels.assigned}>
+            {assigned.length === 0 ? (
+              <span className="text-sm text-gray-500">{t("Žádné přiřazené záznamy")}</span>
+            ) : (
+              assigned.map((item) => (
+                <ItemRow
+                  key={`${item.kod || item.id || item.label}-assigned-${item.pozice || ""}`}
+                  item={item}
+                  buttonLabel="−"
+                  onClick={() => handleRemoveFromAssigned(item)}
+                />
+              ))
+            )}
+          </Column>
+
+          <Column title={labels.changes}>
+            {changes.length === 0 ? (
+              <span className="text-sm text-gray-500">{t("Žádné změny")}</span>
+            ) : (
+              changes.map((change) => (
+                <ItemRow
+                  key={`${change.kod || change.id || change.label}-change-${change.action}-${change.pozice || ""}`}
+                  item={change}
+                  action={change.action}
+                  buttonLabel={t("Odebrat")}
+                  onClick={() => handleChangeRemoval(change)}
+                />
+              ))
+            )}
+          </Column>
+
+          <Column title={labels.available}>
+            {available.length === 0 ? (
+              <span className="text-sm text-gray-500">{t("Žádné dostupné záznamy")}</span>
+            ) : (
+              available.map((item) => (
+                <ItemRow
+                  key={`${item.kod || item.id || item.label}-available-${item.pozice || ""}`}
+                  item={item}
+                  buttonLabel="+"
+                  onClick={() => handleAddFromAvailable(item)}
+                />
+              ))
+            )}
+          </Column>
+        </div>
       </div>
     );
   }

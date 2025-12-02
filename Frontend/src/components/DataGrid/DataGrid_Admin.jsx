@@ -9,6 +9,8 @@ import {
   ChevronRight,
   ShieldCheck,
   ShieldClose,
+  Car,
+  Boxes,
 } from "lucide-react";
 import { columnsConfig } from "./Column_Config";
 import { useTranslation } from "react-i18next";
@@ -46,12 +48,15 @@ export default function DataGrid_Admin({
   const { t } = useTranslation();
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogRow, setDialogRow] = useState(null);
+  const [dialogCategoryOverride, setDialogCategoryOverride] = useState(null);
+  const [dialogTitleOverride, setDialogTitleOverride] = useState(null);
   const [refreshTokenInternal, setRefreshTokenInternal] = useState(Date.now());
   const [alertDialog, setAlertDialog] = useState(null);
 
   const resolvedCategory = apiCategory || category;
   const columns = columnsConfig[resolvedCategory] || [];
-
+  
+  // Data loading effect
   useEffect(() => {
     if (apiUrl) {
       const loadData = async () => {
@@ -89,7 +94,8 @@ export default function DataGrid_Admin({
     refreshToken,
     refreshTokenInternal,
   ]);
-
+  
+  // Sorting handling
   const handleSort = (colKey) => {
     if (sortColumn === colKey) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -98,7 +104,8 @@ export default function DataGrid_Admin({
       setSortDirection("asc");
     }
   };
-
+  
+  // Reset handling
   const handleReset = () => {
     setSearchFilters([{ id: Date.now(), column: "all", value: "" }]);
     setSortColumn(null);
@@ -106,13 +113,15 @@ export default function DataGrid_Admin({
     setSelectedRows([]);
     setCurrentPage(1);
   };
-
+  
+  // Row selection handling
   const handleSelectRow = (id) => {
     setSelectedRows((prev) =>
       prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
     );
   };
-
+  
+  // Filters change handling
   const handleFiltersChange = (newFilters) => {
     setSearchFilters(newFilters);
     setCurrentPage(1);
@@ -143,7 +152,8 @@ export default function DataGrid_Admin({
       return keys.some((key) => norm(row[key]).includes(term));
     });
   });
-
+  
+  // Sorting logic
   const sorted = sortColumn
     ? [...filtered].sort((a, b) => {
         const aVal =
@@ -168,11 +178,27 @@ export default function DataGrid_Admin({
         return 0;
       })
     : filtered;
-
+  
+  // Pagination logic
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const paged = listAll
     ? sorted
     : sorted.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  // Dialog handling
+  const handleOpenDialog = (row, options = {}) => {
+    setDialogRow(row);
+    setDialogCategoryOverride(options.category || resolvedCategory);
+    setDialogTitleOverride(options.title || dialogTitle);
+    setOpenDialog(true);
+  };
+
+  const handleOpenDefaultDialog = (row) => {
+    setDialogCategoryOverride(null);
+    setDialogTitleOverride(null);
+    setDialogRow(row);
+    setOpenDialog(true);
+  };
 
   return (
     <div className="w-full">
@@ -349,10 +375,7 @@ export default function DataGrid_Admin({
                         dialogMode ? (
                           <span
                             className="text-red-600 hover:text-red-800 font-medium cursor-pointer focus:outline-none focus:underline"
-                            onClick={() => {
-                              setDialogRow(row);
-                              setOpenDialog(true);
-                            }}
+                            onClick={() => handleOpenDefaultDialog(row)}
                           >
                             {row[col.key] ?? `${category}/${row.id || row.kod}`}
                           </span>
@@ -364,6 +387,30 @@ export default function DataGrid_Admin({
                             {row[col.key] ?? `${category}/${row.id || row.kod}`}
                           </Link>
                         )
+                      ) : col.type === "vehicle_setup" ||
+                        col.type === "sortiment_setup" ? (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="default"
+                            onClick={() =>
+                              handleOpenDialog(row, {
+                                category: col.dialogCategory,
+                                title: col.dialogTitle,
+                              })
+                            }
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 text-xs sm:text-sm rounded-md shadow-sm transition-transform duration-150 cursor-pointer hover:-translate-y-0.5 focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
+                          >
+                            <span className="flex items-center gap-2">
+                              {col.type === "vehicle_setup" && (
+                                <Car className="w-4 h-4 text-white" />
+                              )}
+                              {col.type === "sortiment_setup" && (
+                                <Boxes className="w-4 h-4 text-white" />
+                              )}
+                              <span>{t(col.buttonLabel)}</span>
+                            </span>
+                          </Button>
+                        </div>
                       ) : col.useTruncation ? (
                         <TextTruncate
                           text={row[col.key]}
@@ -595,13 +642,13 @@ export default function DataGrid_Admin({
           </div>
         )}
 
-        {dialogMode && openDialog && dialogRow && (
+        {openDialog && dialogRow && (
           <CustomEditDialog
-            isOpen={dialogMode && openDialog}
+            isOpen={openDialog}
             onClose={() => setOpenDialog(false)}
-            dialogTitle={dialogTitle}
+            dialogTitle={dialogTitleOverride || dialogTitle}
             rowData={dialogRow}
-            category={category}
+            category={dialogCategoryOverride || category}
             access_token={access_token}
             onSuccess={() => {
               setRefreshTokenInternal(Date.now());

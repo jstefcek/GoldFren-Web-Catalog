@@ -67,6 +67,16 @@ export default function CustomEditDialog({
         rowData[col.key] !== undefined && rowData[col.key] !== null
           ? rowData[col.key]
           : "";
+
+      // Special handling for setup_board type
+      if (col.type === "setup_board") {
+        const buildInitial = col.buildInitial || (() => ({}));
+        initial[col.key] = buildInitial(rowData) || {
+          assigned: [],
+          available: [],
+          changes: [],
+        };
+      }
     });
 
     // Normalize kategorie to option.value (accept label or value)
@@ -398,7 +408,7 @@ export default function CustomEditDialog({
   return (
     <>
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4 sm:p-8">
-        <div className="bg-white w-full max-w-4xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
+        <div className="bg-white w-full max-w-7xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2">
             {dialogTitle}
           </h2>
