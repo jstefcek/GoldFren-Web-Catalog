@@ -381,10 +381,61 @@ def get_vozidlo_sortiment_by_type(vozidlo_id: int, sortiment_type: str):
     if sortiment_type not in views:
         return None
 
+    # Get view name and model class
     view_name, model_class = views[sortiment_type]
     
     # Prepare SQL query
     sql_query = f"SELECT * FROM {view_name} WHERE vozidlo = %s"
+    
+    # Fetch records from the database
+    raw_records = get_filtered_records(sql_query, [vozidlo_id])
+    
+    # If records are found, create model instances and return
+    if raw_records:
+        items = [model_class(**record).to_dict() for record in raw_records]
+        return {
+            "count": len(items),
+            "items": items
+        }
+    
+    return None
+
+def get_vozidlo_available_sortiment(vozidlo_id: int, sortiment_type: str):
+    """
+    Load available sortiment data for specific vozidlo id and sortiment type
+    The available sortiment means those items which are not yet assigned to the vozidlo and can be added and matched the vozidlo.
+    """
+    # Map sortiment type to view name and model class
+    views = {
+        "adaptery": ("v_vozidlo_adapter_available", VozidloAdapter),
+        "desticky": ("v_vozidlo_desticka_available", VozidloDesticka),
+        "brzdice": ("v_vozidlo_brzdic_available", VozidloBrzdic),
+        "hadicky": ("v_vozidlo_hadicka_available", VozidloHadicka),
+        "kotouce": ("v_vozidlo_kotouc_available", VozidloKotouc),
+        "prislusenstvi": ("v_vozidlo_prislusenstvi_available", VozidloPrislusenstvi),
+        "pumpy": ("v_vozidlo_pumpa_available", VozidloPumpa),
+    }
+
+    # Check if the provided sortiment type is valid
+    if sortiment_type not in views:
+        return None
+    
+    # Get view name and model class
+    view_name, model_class = views[sortiment_type]
+    
+    # get vozidlo category
+    vozidlo_kategorie_query = """SELECT ck.kod FROM d_vozidlo vz
+LEFT JOIN c_subkategorie cs ON vz.subkategorie = cs.kod
+LEFT JOIN c_kategorie ck ON cs.kategorie = ck.kod 
+WHERE vz.kod = %s"""
+    vozidlo_kategorie_records = get_filtered_records(sql_query=vozidlo_kategorie_query, params=[vozidlo_id])
+    
+    # If no category found, return None
+    if not vozidlo_kategorie_records:
+        return None
+    
+    # Prepare SQL query
+    sql_query = f"SELECT * FROM {view_name} WHERE vozidlo = %s AND kategorie ={vozidlo_kategorie_records[0]['kod']}"
     
     # Fetch records from the database
     raw_records = get_filtered_records(sql_query, [vozidlo_id])

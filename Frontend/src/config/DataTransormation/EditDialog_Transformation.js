@@ -7,6 +7,13 @@ const generateFilename = (file, componentId) => {
   return `${componentId}.${ext}`;
 };
 
+// Helper function to normalize board data structure
+const normalizeBoard = (board) => ({
+  assigned: Array.isArray(board?.assigned) ? board.assigned : [],
+  changes: Array.isArray(board?.changes) ? board.changes : [],
+  available: Array.isArray(board?.available) ? board.available : [],
+});
+
 export function transformFormData(category, formData, componentId = null) {
   switch (category) {
     // User category data transformation
@@ -213,6 +220,18 @@ export function transformFormData(category, formData, componentId = null) {
         publikovat: !!formData.publikovat,
         aktualizovano: new Date().toISOString(),
     };
+
+    // Vozidlo sortiment data transformation
+    case "vozidlo_sortiment":
+      return {
+        adaptery: normalizeBoard(formData.adaptery),
+        brzdice: normalizeBoard(formData.brzdice),
+        desticky: normalizeBoard(formData.desticky),
+        kotouce: normalizeBoard(formData.kotouce),
+        hadicky: normalizeBoard(formData.hadicky),
+        pumpy: normalizeBoard(formData.pumpy),
+        prislusenstvi: normalizeBoard(formData.prislusenstvi),
+      };
 
     // Vyrobce category data transformation
     case "vyrobce":

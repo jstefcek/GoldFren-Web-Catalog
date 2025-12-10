@@ -24,6 +24,9 @@ export default function FieldRenderer({
   const [imageKey, setImageKey] = useState(0);
   const objectUrlRef = useRef(null);
 
+  // Shared filters for setup boards
+  const [boardFilters, setBoardFilters] = useState({ assigned: "", changes: "", available: "" });
+
   useEffect(() => {
     if (col.type !== "image") return;
 
@@ -315,6 +318,7 @@ export default function FieldRenderer({
     const assigned = Array.isArray(boardValue.assigned) ? boardValue.assigned : [];
     const changes = Array.isArray(boardValue.changes) ? boardValue.changes : [];
     const available = Array.isArray(boardValue.available) ? boardValue.available : [];
+    const disabled = isDisabled(col);
 
     // Labels with translations
     const labels = {
@@ -354,24 +358,26 @@ export default function FieldRenderer({
       return parts.filter(Boolean).join(" • ");
     };
 
+    // Filter helper
+    const filterItems = (items, key) => {
+      const needle = (boardFilters[key] || "").toLowerCase();
+      if (!needle) return items;
+      return items.filter((item) => formatItem(item).toLowerCase().includes(needle));
+    };
+
     // Update the entire board value
     const updateBoard = (next) => {
+      if (disabled) return;
       onChange(col.key, next);
       onBlur(col.key);
     };
 
     // Remove item from assigned list
     const handleRemoveFromAssigned = (item) => {
-      const nextAssigned = assigned.filter(
-        (i) => i.kod !== item.kod || i.pozice !== item.pozice
-      );
-      const nextChanges = [
-        ...changes,
-        { ...item, action: "removed" },
-      ];
-      const nextAvailable = available.filter(
-        (i) => i.kod !== item.kod || i.pozice !== item.pozice
-      );
+      if (disabled) return;
+      const nextAssigned = assigned.filter((i) => i.kod !== item.kod || i.pozice !== item.pozice);
+      const nextChanges = [...changes, { ...item, action: "removed" }];
+      const nextAvailable = available.filter((i) => i.kod !== item.kod || i.pozice !== item.pozice);
       updateBoard({
         assigned: nextAssigned,
         changes: nextChanges,
@@ -381,16 +387,10 @@ export default function FieldRenderer({
 
     // Add item from available list
     const handleAddFromAvailable = (item) => {
-      const nextAvailable = available.filter(
-        (i) => i.kod !== item.kod || i.pozice !== item.pozice
-      );
-      const nextChanges = [
-        ...changes,
-        { ...item, action: "added" },
-      ];
-      const nextAssigned = assigned.filter(
-        (i) => i.kod !== item.kod || i.pozice !== item.pozice
-      );
+      if (disabled) return;
+      const nextAvailable = available.filter((i) => i.kod !== item.kod || i.pozice !== item.pozice);
+      const nextChanges = [...changes, { ...item, action: "added" }];
+      const nextAssigned = assigned.filter((i) => i.kod !== item.kod || i.pozice !== item.pozice);
       updateBoard({
         assigned: nextAssigned,
         changes: nextChanges,
@@ -400,13 +400,9 @@ export default function FieldRenderer({
 
     // Remove change from changes list
     const handleChangeRemoval = (change) => {
+      if (disabled) return;
       const nextChanges = changes.filter(
-        (c) =>
-          !(
-            c.kod === change.kod &&
-            c.pozice === change.pozice &&
-            c.action === change.action
-          )
+        (c) => !(c.kod === change.kod && c.pozice === change.pozice && c.action === change.action)
       );
 
       let nextAssigned = assigned;
@@ -423,13 +419,33 @@ export default function FieldRenderer({
     };
 
     // Column component for layout
-    const Column = ({ title, children }) => (
+    const Column = ({ title, filterKey, children }) => (
       <div className="flex-1 min-w-[220px]">
-        <div className="font-bold text-gray-800 mb-2 flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-red-300" />
-          {t(title)}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="font-bold text-gray-800 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-red-300" />
+            {t(title)}
+          </div>
+          {filterKey && (
+            <input
+              type="text"
+              value={boardFilters[filterKey]}
+              placeholder={t("Filtrovat")}
+              onChange={(e) =>
+                setBoardFilters((prev) => ({
+                  ...prev,
+                  [filterKey]: e.target.value,
+                }))
+              }
+              disabled={disabled}
+              className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:bg-gray-100 disabled:text-gray-500"
+            />
+          )}
         </div>
-        <div className="flex flex-col gap-2 border border-gray-200 rounded-xl p-4 bg-white shadow-sm overflow-y-auto" style={{ height: "240px" }}>
+        <div
+          className="flex flex-col gap-2 border border-gray-200 rounded-xl p-4 bg-white shadow-sm overflow-y-auto"
+          style={{ height: "240px" }}
+        >
           {children}
         </div>
       </div>
@@ -448,6 +464,7 @@ export default function FieldRenderer({
         <button
           type="button"
           onClick={onClick}
+          disabled={disabled}
           className={`text-xs font-semibold px-2 py-1 rounded-md shadow-sm transition-colors ${
             action === "removed"
               ? "bg-white text-red-700 border border-red-300 hover:bg-red-50"
@@ -461,14 +478,18 @@ export default function FieldRenderer({
       </div>
     );
 
+    const filteredAssigned = filterItems(assigned, "assigned");
+    const filteredChanges = filterItems(changes, "changes");
+    const filteredAvailable = filterItems(available, "available");
+
     return wrapper(
       <div className="flex flex-col gap-4 w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Column title={labels.assigned}>
-            {assigned.length === 0 ? (
+          <Column title={labels.assigned} filterKey="assigned">
+            {filteredAssigned.length === 0 ? (
               <span className="text-sm text-gray-500">{t("Žádné přiřazené záznamy")}</span>
             ) : (
-              assigned.map((item) => (
+              filteredAssigned.map((item) => (
                 <ItemRow
                   key={`${item.kod || item.id || item.label}-assigned-${item.pozice || ""}`}
                   item={item}
@@ -479,11 +500,11 @@ export default function FieldRenderer({
             )}
           </Column>
 
-          <Column title={labels.changes}>
-            {changes.length === 0 ? (
+          <Column title={labels.changes} filterKey="changes">
+            {filteredChanges.length === 0 ? (
               <span className="text-sm text-gray-500">{t("Žádné změny")}</span>
             ) : (
-              changes.map((change) => (
+              filteredChanges.map((change) => (
                 <ItemRow
                   key={`${change.kod || change.id || change.label}-change-${change.action}-${change.pozice || ""}`}
                   item={change}
@@ -495,11 +516,11 @@ export default function FieldRenderer({
             )}
           </Column>
 
-          <Column title={labels.available}>
-            {available.length === 0 ? (
+          <Column title={labels.available} filterKey="available">
+            {filteredAvailable.length === 0 ? (
               <span className="text-sm text-gray-500">{t("Žádné dostupné záznamy")}</span>
             ) : (
-              available.map((item) => (
+              filteredAvailable.map((item) => (
                 <ItemRow
                   key={`${item.kod || item.id || item.label}-available-${item.pozice || ""}`}
                   item={item}

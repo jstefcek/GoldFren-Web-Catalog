@@ -63,6 +63,19 @@ export default function CustomEditDialog({
 
     const initial = {};
     (config.fields || []).forEach((col) => {
+      if (col.type === "setup_board") {
+        const fallbackBoard = col.buildInitial?.(rowData) || {
+          assigned: [],
+          changes: [],
+          available: [],
+        };
+
+        const rawValue = rowData[col.key];
+        initial[col.key] =
+          rawValue && typeof rawValue === "object" ? rawValue : fallbackBoard;
+        return;
+      }
+
       initial[col.key] =
         rowData[col.key] !== undefined && rowData[col.key] !== null
           ? rowData[col.key]
@@ -425,20 +438,26 @@ export default function CustomEditDialog({
               {fields
                 .filter((f) => f.show !== false)
                 .slice(0, 1)
-                .map((col) => (
-                  <FieldRenderer
-                    key={col.key}
-                    col={col}
-                    value={formData[col.key]}
-                    t={t}
-                    isDisabled={isDisabled}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors[col.key]}
-                    vyrobceOptions={vyrobceOptions}
-                    filteredSubkategorie={filteredSubkategorie}
-                  />
-                ))}
+                .map((col) => {
+                  const isBoard = col.type === "setup_board";
+                  const spanClass = isBoard ? "md:col-span-2" : "";
+
+                  return (
+                    <div key={col.key} className={spanClass}>
+                      <FieldRenderer
+                        col={col}
+                        value={formData[col.key]}
+                        t={t}
+                        isDisabled={isDisabled}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors[col.key]}
+                        vyrobceOptions={vyrobceOptions}
+                        filteredSubkategorie={filteredSubkategorie}
+                      />
+                    </div>
+                  );
+                })}
             </div>
 
             {/* Remaining fields */}
@@ -446,20 +465,26 @@ export default function CustomEditDialog({
               {fields
                 .filter((f) => f.show !== false)
                 .slice(1)
-                .map((col) => (
-                  <FieldRenderer
-                    key={col.key}
-                    col={col}
-                    value={formData[col.key]}
-                    t={t}
-                    isDisabled={isDisabled}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors[col.key]}
-                    vyrobceOptions={vyrobceOptions}
-                    filteredSubkategorie={filteredSubkategorie}
-                  />
-                ))}
+                .map((col) => {
+                  const isBoard = col.type === "setup_board";
+                  const spanClass = isBoard ? "md:col-span-2" : "";
+
+                  return (
+                    <div key={col.key} className={spanClass}>
+                      <FieldRenderer
+                        col={col}
+                        value={formData[col.key]}
+                        t={t}
+                        isDisabled={isDisabled}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors[col.key]}
+                        vyrobceOptions={vyrobceOptions}
+                        filteredSubkategorie={filteredSubkategorie}
+                      />
+                    </div>
+                  );
+                })}
             </div>
           </div>
 
