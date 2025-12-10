@@ -361,3 +361,40 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
                 
     # Return API status
     return operation_status
+
+def get_vozidlo_sortiment_by_type(vozidlo_id: int, sortiment_type: str):
+    """
+    Load sortiment data only for specific vozidlo id and sortiment type
+    """
+    # Map sortiment type to view name and model class
+    views = {
+        "adaptery": ("v_vozidlo_adapter", VozidloAdapter),
+        "desticky": ("v_vozidlo_desticka", VozidloDesticka),
+        "brzdice": ("v_vozidlo_brzdic", VozidloBrzdic),
+        "hadicky": ("v_vozidlo_hadicka", VozidloHadicka),
+        "kotouce": ("v_vozidlo_kotouc", VozidloKotouc),
+        "prislusenstvi": ("v_vozidlo_prislusenstvi", VozidloPrislusenstvi),
+        "pumpy": ("v_vozidlo_pumpa", VozidloPumpa),
+    }
+
+    # Check if the provided sortiment type is valid
+    if sortiment_type not in views:
+        return None
+
+    view_name, model_class = views[sortiment_type]
+    
+    # Prepare SQL query
+    sql_query = f"SELECT * FROM {view_name} WHERE vozidlo = %s"
+    
+    # Fetch records from the database
+    raw_records = get_filtered_records(sql_query, [vozidlo_id])
+    
+    # If records are found, create model instances and return
+    if raw_records:
+        items = [model_class(**record).to_dict() for record in raw_records]
+        return {
+            "count": len(items),
+            "items": items
+        }
+    
+    return None

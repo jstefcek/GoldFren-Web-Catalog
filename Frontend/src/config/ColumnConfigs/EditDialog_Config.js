@@ -332,20 +332,13 @@ export const dialogColumnsConfig = {
     primaryKey: "kod",
     editEndpoint: (kod) => `${serverUrl}/api/goldfren/internal/vozidla/sortiment/update/${kod}`,
     fields: [
-      {
-        key: "sortiment_manager",
-        label: "Adaptéry",
-        type: "setup_board",
-        editable: true,
-        show: true,
-        dataType: "object",
-        boardLabels: {
-          assigned: "Již přiřazené položky",
-          changes: "Připravené změny",
-          available: "Dostupné položky",
-        },
-        buildInitial: buildSortimentBoard,
-      },
+      {key: "adaptery", label: "Adaptéry", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "brzdice", label: "Brzdiče", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "desticky", label: "Destičky", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "kotouce", label: "Kotouče", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "hadicky", label: "Hadičky", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "pumpy", label: "Pumpy", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "prislusenstvi", label: "Příslušenství", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
     ],
   },
 
