@@ -114,7 +114,7 @@ export default function CustomFilter({
               <Button
                 variant="outline"
                 onClick={() => removeFilter(filter.id)}
-                className="h-10 px-3 border border-gray-300 hover:bg-red-50 hover:border-red-300 transition shrink-0"
+                className="h-10 px-3 border border-gray-300 bg-white hover:bg-red-50 hover:border-red-300 transition shrink-0"
                 aria-label="Remove filter"
               >
                 <X className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
@@ -129,7 +129,7 @@ export default function CustomFilter({
           <Button
             variant="outline"
             onClick={addFilter}
-            className="h-10 text-sm sm:text-base flex gap-1 items-center mr-2
+            className="h-10 text-sm sm:text-base flex gap-1 items-center mr-2 bg-white
                       border border-gray-300 hover:bg-gray-50 hover:border-gray-500
                       px-3 cursor-pointer"
           >
@@ -142,7 +142,7 @@ export default function CustomFilter({
           <Button
             variant="outline"
             onClick={handleReset}
-            className="h-10 text-sm sm:text-base flex gap-1 items-center mr-2
+            className="h-10 text-sm sm:text-base flex gap-1 items-center mr-2 bg-white
                       border border-gray-300 hover:bg-red-50 hover:border-red-500
                       text-red-500 px-3 cursor-pointer"
           >

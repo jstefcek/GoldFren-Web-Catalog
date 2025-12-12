@@ -1,10 +1,588 @@
-import { useState, useEffect, useRef } from "react";
+import {useState, useEffect, useRef, useMemo, useCallback, useDeferredValue, memo,} from "react";
 import { Eye, EyeOff, ImageOff } from "lucide-react";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 import { formatDateLong, isFileObject } from "../../utils/utils";
 
-// Reusable field renderer with wrapper
+/* =========================
+   SetupBoard UI building blocks
+   ========================= */
+
+const LoadingSkeleton = memo(function LoadingSkeleton({ rows = 7 }) {
+  return (
+    <div className="flex flex-col gap-2">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="h-9 rounded-md bg-gray-100 animate-pulse" />
+      ))}
+    </div>
+  );
+});
+
+const VirtualList = memo(function VirtualList({
+  items,
+  height = 320,
+  rowHeight = 48,
+  emptyContent,
+  renderRow,
+  getKey = (item, idx) => item?.__key ?? idx,
+}) {
+  const [scrollTop, setScrollTop] = useState(0);
+
+  const onScroll = useCallback((e) => {
+    setScrollTop(e.currentTarget.scrollTop);
+  }, []);
+
+  const total = items.length;
+  const visibleCount = Math.ceil(height / rowHeight);
+  const overscan = 4;
+
+  const start = Math.max(0, Math.floor(scrollTop / rowHeight) - overscan);
+  const end = Math.min(total, start + visibleCount + overscan * 2);
+
+  const padTop = start * rowHeight;
+  const padBottom = Math.max(0, (total - end) * rowHeight);
+
+  return (
+    <div
+      onScroll={onScroll}
+      className="border border-gray-200 rounded-xl bg-white shadow-sm overflow-y-scroll"
+      style={{ height, scrollbarGutter: "stable both-edges" }}
+    >
+      <div className="p-4">
+        {total === 0 ? (
+          emptyContent
+        ) : (
+          <>
+            {padTop > 0 && <div style={{ height: padTop }} />}
+            {items.slice(start, end).map((item, idx) => (
+              <div
+                key={getKey(item, start + idx)}
+                style={{ height: rowHeight }}
+                className="flex items-center"
+              >
+                {renderRow(item)}
+              </div>
+            ))}
+            {padBottom > 0 && <div style={{ height: padBottom }} />}
+          </>
+        )}
+      </div>
+    </div>
+  );
+});
+
+const Column = memo(function Column({
+  title,
+  filterValue,
+  onFilterChange,
+  disabled,
+  countText,
+  children,
+  t,
+  dotColor = "bg-gray-300",
+}) {
+  return (
+    <div className="flex-1 min-w-[280px]">
+      {/* Title and Count Row */}
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="font-bold text-gray-800 flex items-center gap-2 min-w-0">
+          <div className={`h-2 w-2 rounded-full ${dotColor} shrink-0`} />
+          <span className="truncate">{title}</span>
+        </div>
+        <span className="text-xs font-semibold text-gray-500 tabular-nums shrink-0">
+          {countText}
+        </span>
+      </div>
+
+      {/* Filter Field */}
+      <div className="relative w-full mb-2">
+        <input
+          type="text"
+          value={filterValue}
+          placeholder={t("Filtrovat")}
+          onChange={(e) => onFilterChange(e.target.value)}
+          disabled={disabled}
+          className="w-full px-2 py-1 pr-7 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:bg-gray-100 disabled:text-gray-500"
+        />
+        <button
+          type="button"
+          onClick={() => onFilterChange("")}
+          disabled={disabled || !filterValue}
+          className={`absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 rounded 
+            text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition
+            ${filterValue && !disabled ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+          aria-label={t("Vymazat filtr")}
+        >
+          ×
+        </button>
+      </div>
+
+      {children}
+    </div>
+  );
+});
+
+const ItemRow = memo(function ItemRow({
+  itemText,
+  title,
+  mode,
+  action,
+  disabled,
+  onClick,
+  buttonLabel,
+}) {
+  const base =
+    "group w-full h-10 flex items-center justify-between gap-2 px-3 rounded-lg border text-left transition-colors select-none";
+
+  const textCls = "text-sm font-medium text-gray-900 truncate leading-snug pr-2 min-w-0";
+
+  const btnBase =
+    "h-8 text-xs font-semibold rounded-md shadow-sm transition-colors cursor-pointer flex items-center justify-center";
+
+  const hover = disabled
+    ? ""
+    : mode === "assigned"
+    ? "hover:bg-red-50 hover:border-red-200"
+    : mode === "available"
+    ? "hover:bg-green-50 hover:border-green-200"
+    : "hover:bg-blue-50 hover:border-blue-200";
+
+  const rowTone =
+    action === "added"
+      ? "bg-green-50 text-green-800 border-green-200"
+      : action === "removed"
+      ? "bg-red-50 text-red-800 border-red-200"
+      : "border-gray-200 bg-gray-50";
+
+  const btnWidth = mode === "changes" ? "min-w-[88px] px-2" : "w-10";
+
+  const btnTone =
+    mode === "assigned"
+      ? "bg-white text-red-700 border border-red-300 hover:bg-red-50"
+      : mode === "available"
+      ? "bg-white text-green-700 border border-green-300 hover:bg-green-50"
+      : "bg-white text-gray-800 border border-gray-300 hover:bg-gray-50";
+
+  const changeBtnTone =
+    action === "removed"
+      ? "bg-white text-red-700 border border-red-300 hover:bg-red-50"
+      : action === "added"
+      ? "bg-white text-green-700 border border-green-300 hover:bg-green-50"
+      : btnTone;
+
+  return (
+    <div className={`${base} ${rowTone} ${hover}`} title={title || ""}>
+      <span className={textCls}>{itemText}</span>
+
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        className={`${btnBase} ${btnWidth} ${
+          mode === "changes" ? changeBtnTone : btnTone
+        } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+      >
+        {buttonLabel}
+      </button>
+    </div>
+  );
+});
+
+/* =========================
+   SetupBoard component
+   ========================= */
+
+const SetupBoard = memo(function SetupBoard({
+  col,
+  value,
+  t,
+  disabled,
+  onChange,
+  onBlur,
+  dialogConfig,
+  rowData,
+}) {
+  const normalizeBoard = useCallback(
+    (board) => ({
+      assigned: Array.isArray(board?.assigned) ? board.assigned : [],
+      changes: Array.isArray(board?.changes) ? board.changes : [],
+      available: Array.isArray(board?.available) ? board.available : [],
+    }),
+    []
+  );
+
+  const [boardLoading, setBoardLoading] = useState(false);
+  const [boardError, setBoardError] = useState(null);
+
+  const touchedRef = useRef(false);
+  const lastEmittedRef = useRef(null);
+
+  const doneFetchKeyRef = useRef(null);
+  const inFlightFetchKeyRef = useRef(null);
+
+  const [filters, setFilters] = useState({
+    assigned: "",
+    changes: "",
+    available: "",
+  });
+
+  const deferredFilters = {
+    assigned: useDeferredValue(filters.assigned),
+    changes: useDeferredValue(filters.changes),
+    available: useDeferredValue(filters.available),
+  };
+
+  const enrichItems = useCallback((items, prefix) => {
+    const seen = new Map();
+
+    return (items || []).map((raw, idx) => {
+      const label = raw.sortiment || raw.label || raw.name || raw.id || "";
+      const base =
+        `${raw.kod ?? raw.id ?? ""}|${raw.pozice ?? ""}|${label}`.trim() ||
+        `${prefix}|${idx}`;
+
+      const count = seen.get(base) || 0;
+      seen.set(base, count + 1);
+
+      const key = count ? `${base}#${count}` : base;
+
+      return {
+        ...raw,
+        label,
+        __key: raw.__key || key,
+        __search: (raw.__search || label).toString().toLowerCase(),
+      };
+    });
+  }, []);
+
+  const enrichBoard = useCallback(
+    (b) => ({
+      assigned: enrichItems(b.assigned, "assigned"),
+      changes: enrichItems(b.changes, "changes"),
+      available: enrichItems(b.available, "available"),
+    }),
+    [enrichItems]
+  );
+
+  const [boardData, setBoardData] = useState(() =>
+    enrichBoard(normalizeBoard(value))
+  );
+
+  useEffect(() => {
+    if (value === lastEmittedRef.current) return;
+    const next = enrichBoard(normalizeBoard(value));
+    setBoardData(next);
+  }, [value, normalizeBoard, enrichBoard]);
+
+  useEffect(() => {
+    const currentEndpoint = dialogConfig?.currentEndpoint;
+    const availableEndpoint = dialogConfig?.availableEndpoint;
+    const rowId = rowData?.kod || rowData?.id;
+
+    if (!currentEndpoint || !availableEndpoint || !rowId) return;
+
+    const fetchKey = `${rowId}::${col.key}`;
+
+    if (doneFetchKeyRef.current === fetchKey) return;
+    if (inFlightFetchKeyRef.current === fetchKey) return;
+
+    inFlightFetchKeyRef.current = fetchKey;
+
+    const controller = new AbortController();
+    let cancelled = false;
+
+    const fetchBoardData = async () => {
+      setBoardLoading(true);
+      setBoardError(null);
+
+      try {
+        const [assignedRes, availableRes] = await Promise.all([
+          fetch(currentEndpoint(rowId, col.key), { signal: controller.signal }),
+          fetch(availableEndpoint(rowId, col.key), { signal: controller.signal }),
+        ]);
+
+        if (cancelled) return;
+
+        const assignedJson = assignedRes.ok ? await assignedRes.json() : [];
+        const availableJson = availableRes.ok ? await availableRes.json() : [];
+
+        const nextBoard = enrichBoard({
+          assigned: assignedJson,
+          available: availableJson,
+          changes: [],
+        });
+
+        doneFetchKeyRef.current = fetchKey;
+
+        lastEmittedRef.current = nextBoard;
+        setBoardData(nextBoard);
+        onChange(col.key, nextBoard);
+      } catch (err) {
+        if (cancelled) return;
+        if (err?.name === "AbortError") return;
+        setBoardError(err?.message || "Failed to load data");
+      } finally {
+        if (inFlightFetchKeyRef.current === fetchKey) {
+          inFlightFetchKeyRef.current = null;
+        }
+        if (!cancelled) setBoardLoading(false);
+      }
+    };
+
+    fetchBoardData();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      if (inFlightFetchKeyRef.current === fetchKey) {
+        inFlightFetchKeyRef.current = null;
+      }
+    };
+  }, [
+    col.key,
+    dialogConfig?.currentEndpoint,
+    dialogConfig?.availableEndpoint,
+    rowData?.kod,
+    rowData?.id,
+    enrichBoard,
+    onChange,
+  ]);
+
+  const labels = useMemo(
+    () => ({
+      assigned: col.boardLabels?.assigned
+        ? t(col.boardLabels.assigned)
+        : t("setup_board.assigned"),
+      changes: col.boardLabels?.changes
+        ? t(col.boardLabels.changes)
+        : t("setup_board.changes"),
+      available: col.boardLabels?.available
+        ? t(col.boardLabels.available)
+        : t("setup_board.available"),
+    }),
+    [col.boardLabels, t]
+  );
+
+  const removeByKey = useCallback((arr, k) => arr.filter((x) => x.__key !== k), []);
+
+  const markTouchedOnce = useCallback(() => {
+    if (touchedRef.current) return;
+    touchedRef.current = true;
+    queueMicrotask(() => onBlur(col.key));
+  }, [onBlur, col.key]);
+
+  const updateBoard = useCallback(
+    (next) => {
+      if (disabled) return;
+
+      const enriched = enrichBoard(next);
+      lastEmittedRef.current = enriched;
+
+
+      setBoardData(enriched);
+      onChange(col.key, enriched);
+
+      markTouchedOnce();
+    },
+    [disabled, enrichBoard, onChange, col.key, markTouchedOnce]
+  );
+
+  const handleRemoveFromAssigned = useCallback(
+    (item) => {
+      if (disabled) return;
+      const k = item.__key;
+
+      updateBoard({
+        assigned: removeByKey(boardData.assigned, k),
+        available: removeByKey(boardData.available, k),
+        changes: [...boardData.changes, { ...item, action: "removed", __key: `${k}|removed` }],
+      });
+    },
+    [disabled, boardData, removeByKey, updateBoard]
+  );
+
+  const handleAddFromAvailable = useCallback(
+    (item) => {
+      if (disabled) return;
+      const k = item.__key;
+
+      updateBoard({
+        assigned: removeByKey(boardData.assigned, k),
+        available: removeByKey(boardData.available, k),
+        changes: [...boardData.changes, { ...item, action: "added", __key: `${k}|added` }],
+      });
+    },
+    [disabled, boardData, removeByKey, updateBoard]
+  );
+
+  const handleChangeRemoval = useCallback(
+    (change) => {
+      if (disabled) return;
+
+      const nextChanges = removeByKey(boardData.changes, change.__key);
+
+      let nextAssigned = boardData.assigned;
+      let nextAvailable = boardData.available;
+
+      if (change.action === "added") {
+        nextAvailable = [
+          ...boardData.available,
+          { ...change, __key: change.__key.replace("|added", ""), action: undefined },
+        ];
+      }
+      if (change.action === "removed") {
+        nextAssigned = [
+          ...boardData.assigned,
+          { ...change, __key: change.__key.replace("|removed", ""), action: undefined },
+        ];
+      }
+
+      updateBoard({ assigned: nextAssigned, changes: nextChanges, available: nextAvailable });
+    },
+    [disabled, boardData, removeByKey, updateBoard]
+  );
+
+  const filterList = useCallback((items, needle) => {
+    const n = (needle || "").trim().toLowerCase();
+    if (!n) return items;
+    return items.filter((x) => (x.__search || "").includes(n));
+  }, []);
+
+  const filteredAssigned = useMemo(
+    () => filterList(boardData.assigned, deferredFilters.assigned),
+    [boardData.assigned, deferredFilters.assigned, filterList]
+  );
+  const filteredChanges = useMemo(
+    () => filterList(boardData.changes, deferredFilters.changes),
+    [boardData.changes, deferredFilters.changes, filterList]
+  );
+  const filteredAvailable = useMemo(
+    () => filterList(boardData.available, deferredFilters.available),
+    [boardData.available, deferredFilters.available, filterList]
+  );
+
+  const renderAssignedRow = useCallback(
+    (item) => (
+      <ItemRow
+        itemText={item.sortiment || item.label || item.name || item.id || ""}
+        title={item.label || item.sortiment || ""}
+        mode="assigned"
+        disabled={disabled}
+        buttonLabel="−"
+        onClick={() => handleRemoveFromAssigned(item)}
+      />
+    ),
+    [disabled, handleRemoveFromAssigned]
+  );
+
+  const renderChangeRow = useCallback(
+    (change) => (
+      <ItemRow
+        itemText={change.sortiment || change.label || change.name || change.id || ""}
+        title={change.label || change.sortiment || ""}
+        mode="changes"
+        action={change.action}
+        disabled={disabled}
+        buttonLabel={t("Odebrat")}
+        onClick={() => handleChangeRemoval(change)}
+      />
+    ),
+    [disabled, handleChangeRemoval, t]
+  );
+
+  const renderAvailableRow = useCallback(
+    (item) => (
+      <ItemRow
+        itemText={item.sortiment || item.label || item.name || item.id || ""}
+        title={item.label || item.sortiment || ""}
+        mode="available"
+        disabled={disabled}
+        buttonLabel="+"
+        onClick={() => handleAddFromAvailable(item)}
+      />
+    ),
+    [disabled, handleAddFromAvailable]
+  );
+
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      {/* Board error - text */}
+      {boardError && (
+        <div className="text-sm text-red-600">{t("Nepodařilo se načíst data")}</div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <Column
+          title={labels.assigned}
+          t={t}
+          disabled={disabled}
+          filterValue={filters.assigned}
+          onFilterChange={(v) => setFilters((p) => ({ ...p, assigned: v }))}
+          countText={`(${filteredAssigned.length}/${boardData.assigned.length})`}
+          dotColor="bg-gray-500"
+        >
+          <VirtualList
+            items={filteredAssigned}
+            getKey={(item) => item.__key}
+            emptyContent={
+              boardLoading ? (
+                <LoadingSkeleton />
+              ) : (
+                <span className="text-sm text-gray-500">{t("Žádné přiřazené záznamy")}</span>
+              )
+            }
+            renderRow={renderAssignedRow}
+          />
+        </Column>
+
+        <Column
+          title={labels.changes}
+          t={t}
+          disabled={disabled}
+          filterValue={filters.changes}
+          onFilterChange={(v) => setFilters((p) => ({ ...p, changes: v }))}
+          countText={`(${filteredChanges.length}/${boardData.changes.length})`}
+          dotColor="bg-blue-500"
+        >
+          <VirtualList
+            items={filteredChanges}
+            getKey={(item) => item.__key}
+            emptyContent={<span className="text-sm text-gray-500">{t("Žádné změny")}</span>}
+            renderRow={renderChangeRow}
+          />
+        </Column>
+
+        <Column
+          title={labels.available}
+          t={t}
+          disabled={disabled}
+          filterValue={filters.available}
+          onFilterChange={(v) => setFilters((p) => ({ ...p, available: v }))}
+          countText={`(${filteredAvailable.length}/${boardData.available.length})`}
+          dotColor="bg-green-600"
+        >
+          <VirtualList
+            items={filteredAvailable}
+            getKey={(item) => item.__key}
+            emptyContent={
+              boardLoading ? (
+                <LoadingSkeleton />
+              ) : (
+                <span className="text-sm text-gray-500">{t("Žádné dostupné záznamy")}</span>
+              )
+            }
+            renderRow={renderAvailableRow}
+          />
+        </Column>
+      </div>
+    </div>
+  );
+});
+
+/* =========================
+   FieldRenderer
+   ========================= */
+
 export default function FieldRenderer({
   col,
   value,
@@ -18,32 +596,15 @@ export default function FieldRenderer({
   dialogConfig = null,
   rowData = null,
 }) {
-  // Password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
 
-  // Keep a stable preview URL for image fields
   const [imageSrc, setImageSrc] = useState(null);
   const [imageKey, setImageKey] = useState(0);
   const objectUrlRef = useRef(null);
 
-  // Setup board data
-  const normalizeBoard = (board) => ({
-    assigned: Array.isArray(board?.assigned) ? board.assigned : [],
-    changes: Array.isArray(board?.changes) ? board.changes : [],
-    available: Array.isArray(board?.available) ? board.available : [],
-  });
-
-  const [boardData, setBoardData] = useState(normalizeBoard(value));
-  const [boardLoading, setBoardLoading] = useState(false);
-  const [boardError, setBoardError] = useState(null);
-
-  // Shared filters for setup boards
-  const [boardFilters, setBoardFilters] = useState({ assigned: "", changes: "", available: "" });
-
   useEffect(() => {
     if (col.type !== "image") return;
 
-    // Clean up previous object URL first
     if (objectUrlRef.current) {
       URL.revokeObjectURL(objectUrlRef.current);
       objectUrlRef.current = null;
@@ -63,8 +624,7 @@ export default function FieldRenderer({
       setImageSrc(null);
     }
 
-    // Force component re-render by updating the key
-    setImageKey(prev => prev + 1);
+    setImageKey((prev) => prev + 1);
 
     return () => {
       if (objectUrlRef.current) {
@@ -74,80 +634,18 @@ export default function FieldRenderer({
     };
   }, [value, col.type, col.key]);
 
-  useEffect(() => {
-    if (col.type !== "setup_board") return;
-    setBoardData(normalizeBoard(value));
-  }, [col.type, value]);
-
-  // Load assigned and available items for setup board
-  useEffect(() => {
-    if (col.type !== "setup_board") return;
-
-    const currentEndpoint = dialogConfig?.currentEndpoint;
-    const availableEndpoint = dialogConfig?.availableEndpoint;
-    const rowId = rowData?.kod || rowData?.id;
-
-    if (!currentEndpoint || !availableEndpoint || !rowId) return;
-
-    let cancelled = false;
-
-    const fetchBoardData = async () => {
-      setBoardLoading(true);
-      setBoardError(null);
-
-      try {
-        const [assignedRes, availableRes] = await Promise.all([
-          fetch(currentEndpoint(rowId, col.key)),
-          fetch(availableEndpoint(rowId, col.key)),
-        ]);
-
-        if (cancelled) return;
-
-        const assignedJson = assignedRes.ok ? await assignedRes.json() : [];
-        const availableJson = availableRes.ok ? await availableRes.json() : [];
-
-        const mapItems = (items) =>
-          (items || []).map((item) => ({
-            ...item,
-            label: item.sortiment || item.label || item.name || "",
-          }));
-
-        const nextBoard = {
-          assigned: mapItems(assignedJson),
-          available: mapItems(availableJson),
-          changes: [],
-        };
-
-        setBoardData(nextBoard);
-        onChange(col.key, nextBoard);
-      } catch (err) {
-        if (!cancelled) setBoardError(err.message || "Failed to load data");
-      } finally {
-        if (!cancelled) setBoardLoading(false);
-      }
-    };
-
-    fetchBoardData();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [col.key, col.type, dialogConfig, rowData]);
-
-  // Helpers
-  const normalizeInputType = (t) => (t === "input" ? "text" : t || "text");
+  const normalizeInputType = (t2) => (t2 === "input" ? "text" : t2 || "text");
   const hasError = !!error;
 
-  // Control class used between components
-  const controlClass = (col, isPlaceholder = false) => {
-    const textColor = isDisabled(col)
+  const controlClass = (col2, isPlaceholder = false) => {
+    const textColor = isDisabled(col2)
       ? "text-gray-700"
       : isPlaceholder
       ? "text-gray-400"
       : "text-gray-900";
 
     return `${textColor} ${
-      isDisabled(col) ? "bg-gray-100 cursor-not-allowed" : "bg-white focus:ring-2"
+      isDisabled(col2) ? "bg-gray-100 cursor-not-allowed" : "bg-white focus:ring-2"
     } px-3 py-2 border ${
       hasError ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-gray-600"
     } rounded-md text-sm focus:outline-none focus:ring-2`;
@@ -164,17 +662,9 @@ export default function FieldRenderer({
     </div>
   );
 
-  // Handle image replacement
-  const handleImageReplace = (file) => {
-    onChange(col.key, file);
-  };
+  const handleImageReplace = (file) => onChange(col.key, file);
+  const handleImageDelete = () => onChange(col.key, null);
 
-  // Handle image deletion
-  const handleImageDelete = () => {
-    onChange(col.key, null);
-  };
-
-  // Invisible field: reserve layout space but render a non-interactive placeholder
   if (col.type === "invisible" || col.key === "invisible") {
     return (
       <div className="flex flex-col" aria-hidden="true">
@@ -187,8 +677,6 @@ export default function FieldRenderer({
     );
   }
 
-  // --- Controls ---
-  // Image preview field
   if (col.type === "image") {
     const componentKey = `${col.key}-${imageKey}`;
     const disabled = isDisabled(col);
@@ -208,16 +696,14 @@ export default function FieldRenderer({
             onDelete={handleImageDelete}
           />
         ) : (
-          // Show upload area when NO image
-          <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md 
-            ${hasError ? 'border-red-600' : 'border-gray-300'} 
-            ${disabled ? 'cursor-not-allowed bg-gray-50' : 'cursor-pointer hover:border-gray-400'}`}
+          <label
+            className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md 
+            ${hasError ? "border-red-600" : "border-gray-300"} 
+            ${disabled ? "cursor-not-allowed bg-gray-50" : "cursor-pointer hover:border-gray-400"}`}
           >
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <ImageOff className="w-8 h-8 text-gray-400 mb-2" />
-              {!disabled && (
-                <p className="text-sm text-gray-500">{t("Klikněte pro nahrání obrázku")}</p>
-              )}
+              {!disabled && <p className="text-sm text-gray-500">{t("Klikněte pro nahrání obrázku")}</p>}
             </div>
             {!disabled && (
               <input
@@ -226,9 +712,7 @@ export default function FieldRenderer({
                 accept="image/*,.svg"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    onChange(col.key, file);
-                  }
+                  if (file) onChange(col.key, file);
                 }}
                 onBlur={() => onBlur(col.key)}
               />
@@ -239,7 +723,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Toggle buttons field
   if (col.type === "button") {
     return wrapper(
       <div onBlur={() => onBlur(col.key)}>
@@ -253,7 +736,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Manufacturer select field
   if (col.key === "vyrobce") {
     const noOptions = (vyrobceOptions || []).length === 0;
     return wrapper(
@@ -279,7 +761,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Kategorie select field
   if (col.key === "kategorie") {
     return wrapper(
       <select
@@ -290,7 +771,9 @@ export default function FieldRenderer({
         className={controlClass(col, !value)}
         style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="" className="text-gray-400">{col.placeholder || t("Vyberte kategorii")}</option>
+        <option value="" className="text-gray-400">
+          {col.placeholder || t("Vyberte kategorii")}
+        </option>
         {col.value.map((opt) => (
           <option key={opt.id} value={opt.value}>
             {t(opt.label)}
@@ -300,7 +783,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Subkategorie select field
   if (col.key === "subkategorie") {
     return wrapper(
       <select
@@ -311,7 +793,9 @@ export default function FieldRenderer({
         className={controlClass(col, !value)}
         style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="" className="text-gray-400">{col.placeholder || t("Vyberte subkategorii")}</option>
+        <option value="" className="text-gray-400">
+          {col.placeholder || t("Vyberte subkategorii")}
+        </option>
         {filteredSubkategorie.map((opt) => (
           <option key={opt.id} value={opt.value}>
             {t(opt.label)}
@@ -321,7 +805,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Static select field
   if (col.type === "select" && Array.isArray(col.value)) {
     return wrapper(
       <select
@@ -332,7 +815,9 @@ export default function FieldRenderer({
         className={controlClass(col, !value)}
         style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="" className="text-gray-400">{col.placeholder || t("Vyberte možnost")}</option>
+        <option value="" className="text-gray-400">
+          {col.placeholder || t("Vyberte možnost")}
+        </option>
         {col.value.map((opt) => (
           <option key={opt.id} value={opt.value}>
             {t(opt.label)}
@@ -342,7 +827,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Textarea field
   if (col.type === "textarea") {
     return wrapper(
       <textarea
@@ -358,10 +842,8 @@ export default function FieldRenderer({
     );
   }
 
-  // Label field
   if (col.type === "label") {
     let labelClassName = "text-gray-900 font-bold ";
-    
     switch (col.label_type) {
       case "big":
         labelClassName += "text-2xl mt-4";
@@ -375,244 +857,28 @@ export default function FieldRenderer({
 
     return (
       <div className="flex flex-col">
-        <input 
-          type="hidden"
-          value={value || ""}
-          onChange={(e) => onChange(col.key, e.target.value)}
-        />
+        <input type="hidden" value={value || ""} onChange={(e) => onChange(col.key, e.target.value)} />
         <span className={labelClassName}>{t(col.label)}</span>
       </div>
     );
   }
 
-  // Setup board field
   if (col.type === "setup_board") {
-    const assigned = Array.isArray(boardData.assigned) ? boardData.assigned : [];
-    const changes = Array.isArray(boardData.changes) ? boardData.changes : [];
-    const available = Array.isArray(boardData.available) ? boardData.available : [];
     const disabled = isDisabled(col);
-
-    // Labels with translations
-    const labels = {
-      assigned: col.boardLabels?.assigned ? t(col.boardLabels.assigned) : t("setup_board.assigned"),
-      changes: col.boardLabels?.changes ? t(col.boardLabels.changes) : t("setup_board.changes"),
-      available: col.boardLabels?.available ? t(col.boardLabels.available) : t("setup_board.available"),
-    };
-
-    // Badge tone based on action
-    const badgeTone = (action) => {
-      switch (action) {
-        case "added":
-          return {
-            bg: "bg-green-50",
-            text: "text-green-800",
-            chip: "bg-green-100 text-green-800 border-green-200",
-          };
-        case "removed":
-          return {
-            bg: "bg-red-50",
-            text: "text-red-800",
-            chip: "bg-red-100 text-red-800 border-red-200",
-          };
-        default:
-          return {
-            bg: "bg-amber-50",
-            text: "text-amber-800",
-            chip: "bg-amber-100 text-amber-800 border-amber-200",
-          };
-      }
-    };
-
-    // Format item display
-    const formatItem = (item) => {
-      return item.sortiment || item.label || item.name || item.id || "";
-    };
-
-    // Filter helper
-    const filterItems = (items, key) => {
-      const needle = (boardFilters[key] || "").toLowerCase();
-      if (!needle) return items;
-      return items.filter((item) => formatItem(item).toLowerCase().includes(needle));
-    };
-
-    // Update the entire board value
-    const updateBoard = (next) => {
-      if (disabled) return;
-      setBoardData(next);
-      onChange(col.key, next);
-      onBlur(col.key);
-    };
-
-    // Remove item from assigned list
-    const handleRemoveFromAssigned = (item) => {
-      if (disabled) return;
-      const nextAssigned = assigned.filter((i) => i.kod !== item.kod || i.pozice !== item.pozice);
-      const nextChanges = [...changes, { ...item, action: "removed" }];
-      const nextAvailable = available.filter((i) => i.kod !== item.kod || i.pozice !== item.pozice);
-      updateBoard({
-        assigned: nextAssigned,
-        changes: nextChanges,
-        available: nextAvailable,
-      });
-    };
-
-    // Add item from available list
-    const handleAddFromAvailable = (item) => {
-      if (disabled) return;
-      const nextAvailable = available.filter((i) => i.kod !== item.kod || i.pozice !== item.pozice);
-      const nextChanges = [...changes, { ...item, action: "added" }];
-      const nextAssigned = assigned.filter((i) => i.kod !== item.kod || i.pozice !== item.pozice);
-      updateBoard({
-        assigned: nextAssigned,
-        changes: nextChanges,
-        available: nextAvailable,
-      });
-    };
-
-    // Remove change from changes list
-    const handleChangeRemoval = (change) => {
-      if (disabled) return;
-      const nextChanges = changes.filter(
-        (c) => !(c.kod === change.kod && c.pozice === change.pozice && c.action === change.action)
-      );
-
-      let nextAssigned = assigned;
-      let nextAvailable = available;
-
-      if (change.action === "added") {
-        nextAvailable = [...available, { ...change }];
-      }
-      if (change.action === "removed") {
-        nextAssigned = [...assigned, { ...change }];
-      }
-
-      updateBoard({ assigned: nextAssigned, changes: nextChanges, available: nextAvailable });
-    };
-
-    // Column component for layout
-    const Column = ({ title, filterKey, children }) => (
-      <div className="flex-1 min-w-[220px]">
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <div className="font-bold text-gray-800 flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-red-300" />
-            {t(title)}
-          </div>
-          {filterKey && (
-            <input
-              type="text"
-              value={boardFilters[filterKey]}
-              placeholder={t("Filtrovat")}
-              onChange={(e) =>
-                setBoardFilters((prev) => ({
-                  ...prev,
-                  [filterKey]: e.target.value,
-                }))
-              }
-              disabled={disabled}
-              className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:bg-gray-100 disabled:text-gray-500"
-            />
-          )}
-        </div>
-        <div
-          className="flex flex-col gap-2 border border-gray-200 rounded-xl p-4 bg-white shadow-sm overflow-y-auto"
-          style={{ height: "240px" }}
-        >
-          {children}
-        </div>
-      </div>
-    );
-
-    // Item row component
-    const ItemRow = ({ item, action, onClick, buttonLabel }) => (
-      <div
-        className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-left ${
-          action ? badgeTone(action).chip : "border-gray-200 bg-gray-50"
-        }`}
-      >
-        <span className="text-sm font-medium text-gray-900 break-words leading-snug">
-          {formatItem(item)}
-        </span>
-        <button
-          type="button"
-          onClick={onClick}
-          disabled={disabled}
-          className={`text-xs font-semibold px-2 py-1 rounded-md shadow-sm transition-colors ${
-            action === "removed"
-              ? "bg-white text-red-700 border border-red-300 hover:bg-red-50"
-              : action === "added"
-              ? "bg-white text-green-700 border border-green-300 hover:bg-green-50"
-              : "bg-gray-900 text-white border border-gray-900 hover:bg-gray-800"
-          }`}
-        >
-          {buttonLabel}
-        </button>
-      </div>
-    );
-
-    const filteredAssigned = filterItems(assigned, "assigned");
-    const filteredChanges = filterItems(changes, "changes");
-    const filteredAvailable = filterItems(available, "available");
-
     return wrapper(
-      <div className="flex flex-col gap-4 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Column title={labels.assigned} filterKey="assigned">
-            {boardLoading && (
-              <span className="text-sm text-gray-500">{t("Načítám data...")}</span>
-            )}
-            {boardError && (
-              <span className="text-sm text-red-600">{t("Nepodařilo se načíst data")}</span>
-            )}
-            {!boardLoading && filteredAssigned.length === 0 ? (
-              <span className="text-sm text-gray-500">{t("Žádné přiřazené záznamy")}</span>
-            ) : (
-              filteredAssigned.map((item) => (
-                <ItemRow
-                  key={`${item.kod || item.id || item.label}-assigned-${item.pozice || ""}`}
-                  item={item}
-                  buttonLabel="−"
-                  onClick={() => handleRemoveFromAssigned(item)}
-                />
-              ))
-            )}
-          </Column>
-
-          <Column title={labels.changes} filterKey="changes">
-            {filteredChanges.length === 0 ? (
-              <span className="text-sm text-gray-500">{t("Žádné změny")}</span>
-            ) : (
-              filteredChanges.map((change) => (
-                <ItemRow
-                  key={`${change.kod || change.id || change.label}-change-${change.action}-${change.pozice || ""}`}
-                  item={change}
-                  action={change.action}
-                  buttonLabel={t("Odebrat")}
-                  onClick={() => handleChangeRemoval(change)}
-                />
-              ))
-            )}
-          </Column>
-
-          <Column title={labels.available} filterKey="available">
-            {filteredAvailable.length === 0 ? (
-              <span className="text-sm text-gray-500">{t("Žádné dostupné záznamy")}</span>
-            ) : (
-              filteredAvailable.map((item) => (
-                <ItemRow
-                  key={`${item.kod || item.id || item.label}-available-${item.pozice || ""}`}
-                  item={item}
-                  buttonLabel="+"
-                  onClick={() => handleAddFromAvailable(item)}
-                />
-              ))
-            )}
-          </Column>
-        </div>
-      </div>
+      <SetupBoard
+        col={col}
+        value={value}
+        t={t}
+        disabled={disabled}
+        onChange={onChange}
+        onBlur={onBlur}
+        dialogConfig={dialogConfig}
+        rowData={rowData}
+      />
     );
   }
 
-  // Password field
   if (col.type === "password") {
     return wrapper(
       <div className="relative">
@@ -638,7 +904,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Read-only fields
   if (col.key === "username" || col.key === "nazev_modelu") {
     return wrapper(
       <input
@@ -653,7 +918,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Transform date to czech format
   if (col.dataType === "date" && value) {
     const date = new Date(value);
     return wrapper(
@@ -669,7 +933,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Default input field
   return wrapper(
     <input
       type={normalizeInputType(col.type)}
