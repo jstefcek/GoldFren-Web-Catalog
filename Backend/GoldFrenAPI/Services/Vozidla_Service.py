@@ -330,21 +330,6 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
                     insert_record(sql_query=ins_query, params=ins_params)
                     operation_status = True
                 
-                # Update existing sortiment for vozidlo
-                elif operation == "UPD":
-                    # Prepare UPD query
-                    upd_query = f"""UPDATE {table_name}
-                    SET pozice = %s, aktualizovano = CURRENT_TIMESTAMP(), aktualizoval = %s
-                    WHERE vozidlo = %s 
-                    AND {sortiment_type} = %s 
-                    AND pozice = %s"""
-                    
-                    # Prepare query params
-                    upd_params = [sortiment_new_pos, aktualizoval_id, vozidlo_id, sortiment_kod, sortiment_pos]
-
-                    # Execute update to DB
-                    operation_status = execute_update(sql_query=upd_query, params=upd_params)
-                
     # Return API status
     return operation_status
 
