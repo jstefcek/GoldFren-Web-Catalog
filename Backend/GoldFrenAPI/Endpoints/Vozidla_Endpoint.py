@@ -9,7 +9,9 @@ from GoldFrenAPI.Views.Vozidla_View import (
     create_vozidlo_view,
     update_vyrobce_view,
     create_vyrobce_view,
-    update_vozidlo_sortiment_view
+    update_vozidlo_sortiment_view,
+    get_vozidlo_sortiment_type_view,
+    get_vozidlo_available_sortiment_view
 )
 
 # URL patterns
@@ -23,4 +25,6 @@ urlpatterns = [
     path("vyrobce/update/<int:vyrobce_kod>", update_vyrobce_view, name="update_vyrobce_view"),
     path("vyrobce/create", create_vyrobce_view, name="create_vyrobce_view"),
     path("sortiment/update/<int:vozidlo_id>", update_vozidlo_sortiment_view, name="update_vozidlo_sortiment_view"),
+    path("sortiment/assaigned/<int:vozidlo_id>/type/<str:sortiment_type>", get_vozidlo_sortiment_type_view, name="get_vozidlo_sortiment_type_view"),
+    path("sortiment/available/<int:vozidlo_id>/type/<str:sortiment_type>", get_vozidlo_available_sortiment_view, name="get_vozidlo_available_sortiment_view"),
 ]

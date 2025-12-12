@@ -19,10 +19,6 @@ from GoldFrenAPI.Services.Service_utils import (
     insert_record
 )
 from GoldFrenAPI.utils.utils import change_category_label, change_sortiment_label
-import logging
-
-# Add after imports:
-logger = logging.getLogger(__name__)
 
 def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
     """
@@ -296,7 +292,6 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
         # Construct table name 
         sortiment_type = change_sortiment_label(sortiment_type)
         table_name = f"c_vozidlo_{sortiment_type}"
-        logger.info(f"Param table_name is: {table_name}")
         
         # Get record operation (INS, UPD, DEL)
         for operation, item_values in sortiment_operations.items():
@@ -306,9 +301,6 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
                 sortiment_kod = value.get("kod", None)
                 sortiment_pos = value.get("pozice", None)
                 sortiment_new_pos = value.get("new_pozice", None)
-                logger.info(f"Param operation is: {operation}")
-                logger.info(f"Param sortiment_kod is: {sortiment_kod}")
-                logger.info(f"Param sortiment_pos is: {sortiment_pos}")
 
                 # Delete record if specified
                 if operation == "DEL":
@@ -317,11 +309,9 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
                     WHERE vozidlo = %s 
                     AND {sortiment_type} = %s
                     AND pozice = %s"""
-                    logger.info(f"Param del_query is: {del_query}")
                     
                     # Prepare query params
                     del_params = [vozidlo_id, sortiment_kod, sortiment_pos]
-                    logger.info(f"Param del_params is: {del_params}")
 
                     # Execute query
                     operation_status = execute_update(sql_query=del_query, params=del_params)
@@ -332,11 +322,9 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
                     ins_query = f"""INSERT INTO {table_name} 
                     (vozidlo, {sortiment_type}, pozice, aktualizovano, aktualizoval) 
                     values (%s, %s, %s, CURRENT_TIMESTAMP(), %s)"""
-                    logger.info(f"Param ins_query is: {ins_query}")
                     
                     # Prepare query params
                     ins_params = [vozidlo_id, sortiment_kod, sortiment_pos, aktualizoval_id]
-                    logger.info(f"Param ins_params is: {ins_params}")
 
                     # Execute sortiment insert
                     insert_record(sql_query=ins_query, params=ins_params)
@@ -350,11 +338,9 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
                     WHERE vozidlo = %s 
                     AND {sortiment_type} = %s 
                     AND pozice = %s"""
-                    logger.info(f"Param upd_query is: {upd_query}")
                     
                     # Prepare query params
                     upd_params = [sortiment_new_pos, aktualizoval_id, vozidlo_id, sortiment_kod, sortiment_pos]
-                    logger.info(f"Param upd_params is: {upd_params}")
 
                     # Execute update to DB
                     operation_status = execute_update(sql_query=upd_query, params=upd_params)
@@ -364,40 +350,49 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
 
 def get_vozidlo_sortiment_by_type(vozidlo_id: int, sortiment_type: str):
     """
-    Load sortiment data only for specific vozidlo id and sortiment type
+    Load assigned sortiment data only for specific vozidlo and its sortiment type
     """
-    # Map sortiment type to view name and model class
-    views = {
-        "adaptery": ("v_vozidlo_adapter", VozidloAdapter),
-        "desticky": ("v_vozidlo_desticka", VozidloDesticka),
-        "brzdice": ("v_vozidlo_brzdic", VozidloBrzdic),
-        "hadicky": ("v_vozidlo_hadicka", VozidloHadicka),
-        "kotouce": ("v_vozidlo_kotouc", VozidloKotouc),
-        "prislusenstvi": ("v_vozidlo_prislusenstvi", VozidloPrislusenstvi),
-        "pumpy": ("v_vozidlo_pumpa", VozidloPumpa),
+    # Map sortiment type and tables, parameters and link tables
+    tables = {
+        "adaptery": ("d_adapter", "c_vozidlo_adapter", "adapter"),
+        "desticky": ("d_desticka", "c_vozidlo_desticka", "desticka"),
+        "brzdice": ("d_brzdice", "c_vozidlo_brzdic", "brzdic"),
+        "hadicky": ("d_hadicka", "c_vozidlo_hadicka", "hadicka"),
+        "kotouce": ("d_kotouce", "c_vozidlo_kotouc", "kotouc"),
+        "prislusenstvi": ("d_prislusenstvi", "c_vozidlo_prislusenstvi", "prislusenstvi"),
+        "pumpy": ("d_pumpa", "c_vozidlo_pumpa", "pumpa"),
     }
 
     # Check if the provided sortiment type is valid
-    if sortiment_type not in views:
+    if sortiment_type not in tables:
         return None
 
-    # Get view name and model class
-    view_name, model_class = views[sortiment_type]
+    # Get table names and attribute
+    table_data_name, table_link_name, sortiment = tables[sortiment_type]
     
     # Prepare SQL query
-    sql_query = f"SELECT * FROM {view_name} WHERE vozidlo = %s"
+    sql_query = f"""SELECT
+    CONCAT(da.cislo_dilu, ' - ', cp.nazev_eng) AS sortiment,
+    da.kod,
+    cp.kod AS pozice
+FROM {table_data_name} da
+JOIN c_pozice cp ON da.sortiment = cp.sortiment
+WHERE da.publikovat = 1
+  AND EXISTS (
+        SELECT 1
+        FROM {table_link_name} cva
+        WHERE cva.vozidlo = %s
+          AND cva.{sortiment} = da.kod
+          AND cva.pozice = cp.kod
+  )
+ORDER BY da.cislo_dilu ASC, cp.kod ASC"""
     
     # Fetch records from the database
-    raw_records = get_filtered_records(sql_query, [vozidlo_id])
-    
-    # If records are found, create model instances and return
-    if raw_records:
-        items = [model_class(**record).to_dict() for record in raw_records]
-        return {
-            "count": len(items),
-            "items": items
-        }
-    
+    assigned_sortiment = get_filtered_records(sql_query, [vozidlo_id])
+
+    # If records are found return else return None
+    if assigned_sortiment:
+        return assigned_sortiment
     return None
 
 def get_vozidlo_available_sortiment(vozidlo_id: int, sortiment_type: str):
@@ -405,47 +400,58 @@ def get_vozidlo_available_sortiment(vozidlo_id: int, sortiment_type: str):
     Load available sortiment data for specific vozidlo id and sortiment type
     The available sortiment means those items which are not yet assigned to the vozidlo and can be added and matched the vozidlo.
     """
-    # Map sortiment type to view name and model class
-    views = {
-        "adaptery": ("v_vozidlo_adapter_available", VozidloAdapter),
-        "desticky": ("v_vozidlo_desticka_available", VozidloDesticka),
-        "brzdice": ("v_vozidlo_brzdic_available", VozidloBrzdic),
-        "hadicky": ("v_vozidlo_hadicka_available", VozidloHadicka),
-        "kotouce": ("v_vozidlo_kotouc_available", VozidloKotouc),
-        "prislusenstvi": ("v_vozidlo_prislusenstvi_available", VozidloPrislusenstvi),
-        "pumpy": ("v_vozidlo_pumpa_available", VozidloPumpa),
+    # Map sortiment type and tables, parameters and link tables
+    tables = {
+        "adaptery": ("d_adapter", "c_vozidlo_adapter", "adapter"),
+        "desticky": ("d_desticka", "c_vozidlo_desticka", "desticka"),
+        "brzdice": ("d_brzdice", "c_vozidlo_brzdic", "brzdic"),
+        "hadicky": ("d_hadicka", "c_vozidlo_hadicka", "hadicka"),
+        "kotouce": ("d_kotouce", "c_vozidlo_kotouc", "kotouc"),
+        "prislusenstvi": ("d_prislusenstvi", "c_vozidlo_prislusenstvi", "prislusenstvi"),
+        "pumpy": ("d_pumpa", "c_vozidlo_pumpa", "pumpa"),
     }
 
     # Check if the provided sortiment type is valid
-    if sortiment_type not in views:
+    if sortiment_type not in tables:
         return None
     
-    # Get view name and model class
-    view_name, model_class = views[sortiment_type]
+    # Get table names and attribute
+    table_data_name, table_link_name, sortiment = tables[sortiment_type]
     
-    # get vozidlo category
+    # Get vozidlo category
     vozidlo_kategorie_query = """SELECT ck.kod FROM d_vozidlo vz
 LEFT JOIN c_subkategorie cs ON vz.subkategorie = cs.kod
 LEFT JOIN c_kategorie ck ON cs.kategorie = ck.kod 
 WHERE vz.kod = %s"""
     vozidlo_kategorie_records = get_filtered_records(sql_query=vozidlo_kategorie_query, params=[vozidlo_id])
+    vozidlo_kategorie = vozidlo_kategorie_records[0]['kod'] if vozidlo_kategorie_records else None
     
     # If no category found, return None
-    if not vozidlo_kategorie_records:
+    if not vozidlo_kategorie:
         return None
     
     # Prepare SQL query
-    sql_query = f"SELECT * FROM {view_name} WHERE vozidlo = %s AND kategorie ={vozidlo_kategorie_records[0]['kod']}"
+    sql_query = f"""SELECT
+    CONCAT(da.cislo_dilu, ' - ', cp.nazev_eng) AS sortiment,
+    da.kod,
+    cp.kod AS pozice
+FROM {table_data_name} da
+JOIN c_pozice cp ON da.sortiment = cp.sortiment
+WHERE COALESCE(da.kategorie, {vozidlo_kategorie}) = {vozidlo_kategorie}
+  AND da.publikovat = 1
+  AND NOT EXISTS (
+        SELECT 1
+        FROM {table_link_name} cva
+        WHERE cva.vozidlo = %s
+          AND cva.{sortiment} = da.kod
+          AND cva.pozice = cp.kod
+  )
+ORDER BY da.cislo_dilu ASC, cp.kod ASC"""
     
     # Fetch records from the database
-    raw_records = get_filtered_records(sql_query, [vozidlo_id])
+    filtered_components = get_filtered_records(sql_query, [vozidlo_id])
     
-    # If records are found, create model instances and return
-    if raw_records:
-        items = [model_class(**record).to_dict() for record in raw_records]
-        return {
-            "count": len(items),
-            "items": items
-        }
-    
+    # If records are found return else return None
+    if filtered_components:
+        return filtered_components
     return None
