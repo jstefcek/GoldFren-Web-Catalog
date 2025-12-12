@@ -351,6 +351,30 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
 def get_vozidlo_sortiment_by_type(vozidlo_id: int, sortiment_type: str):
     """
     Load assigned sortiment data only for specific vozidlo and its sortiment type
+    
+    Example response:
+        [
+            {
+                "sortiment": "P001 - F brake pump",
+                "kod": 1,
+                "pozice": 24
+            },
+            {
+                "sortiment": "P001 - R brake pump",
+                "kod": 1,
+                "pozice": 25
+            },
+            {
+                "sortiment": "P002 - F brake pump",
+                "kod": 2,
+                "pozice": 24
+            },
+            {
+                "sortiment": "P002 - R brake pump",
+                "kod": 2,
+                "pozice": 25
+            }
+        ]
     """
     # Map sortiment type and tables, parameters and link tables
     tables = {
@@ -399,6 +423,35 @@ def get_vozidlo_available_sortiment(vozidlo_id: int, sortiment_type: str):
     """
     Load available sortiment data for specific vozidlo id and sortiment type
     The available sortiment means those items which are not yet assigned to the vozidlo and can be added and matched the vozidlo.
+    
+    Example response:
+        [
+            {
+                "sortiment": "4001CA - FR adapter",
+                "kod": 1,
+                "pozice": 19
+            },
+            {
+                "sortiment": "4001CA - RL adapter",
+                "kod": 1,
+                "pozice": 20
+            },
+            {
+                "sortiment": "4002CA - FR adapter",
+                "kod": 2,
+                "pozice": 19
+            },
+            {
+                "sortiment": "4002CA - RL adapter",
+                "kod": 2,
+                "pozice": 20
+            },
+            {
+                "sortiment": "4003CA - FL adapter",
+                "kod": 3,
+                "pozice": 18
+            }
+        ]
     """
     # Map sortiment type and tables, parameters and link tables
     tables = {
