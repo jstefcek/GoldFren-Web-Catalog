@@ -15,6 +15,8 @@ export default function FieldRenderer({
   error,
   vyrobceOptions = [],
   filteredSubkategorie = [],
+  dialogConfig = null,
+  rowData = null,
 }) {
   // Password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
@@ -23,6 +25,17 @@ export default function FieldRenderer({
   const [imageSrc, setImageSrc] = useState(null);
   const [imageKey, setImageKey] = useState(0);
   const objectUrlRef = useRef(null);
+
+  // Setup board data
+  const normalizeBoard = (board) => ({
+    assigned: Array.isArray(board?.assigned) ? board.assigned : [],
+    changes: Array.isArray(board?.changes) ? board.changes : [],
+    available: Array.isArray(board?.available) ? board.available : [],
+  });
+
+  const [boardData, setBoardData] = useState(normalizeBoard(value));
+  const [boardLoading, setBoardLoading] = useState(false);
+  const [boardError, setBoardError] = useState(null);
 
   // Shared filters for setup boards
   const [boardFilters, setBoardFilters] = useState({ assigned: "", changes: "", available: "" });
@@ -60,6 +73,66 @@ export default function FieldRenderer({
       }
     };
   }, [value, col.type, col.key]);
+
+  useEffect(() => {
+    if (col.type !== "setup_board") return;
+    setBoardData(normalizeBoard(value));
+  }, [col.type, value]);
+
+  // Load assigned and available items for setup board
+  useEffect(() => {
+    if (col.type !== "setup_board") return;
+
+    const currentEndpoint = dialogConfig?.currentEndpoint;
+    const availableEndpoint = dialogConfig?.availableEndpoint;
+    const rowId = rowData?.kod || rowData?.id;
+
+    if (!currentEndpoint || !availableEndpoint || !rowId) return;
+
+    let cancelled = false;
+
+    const fetchBoardData = async () => {
+      setBoardLoading(true);
+      setBoardError(null);
+
+      try {
+        const [assignedRes, availableRes] = await Promise.all([
+          fetch(currentEndpoint(rowId, col.key)),
+          fetch(availableEndpoint(rowId, col.key)),
+        ]);
+
+        if (cancelled) return;
+
+        const assignedJson = assignedRes.ok ? await assignedRes.json() : [];
+        const availableJson = availableRes.ok ? await availableRes.json() : [];
+
+        const mapItems = (items) =>
+          (items || []).map((item) => ({
+            ...item,
+            label: item.sortiment || item.label || item.name || "",
+          }));
+
+        const nextBoard = {
+          assigned: mapItems(assignedJson),
+          available: mapItems(availableJson),
+          changes: [],
+        };
+
+        setBoardData(nextBoard);
+        onChange(col.key, nextBoard);
+      } catch (err) {
+        if (!cancelled) setBoardError(err.message || "Failed to load data");
+      } finally {
+        if (!cancelled) setBoardLoading(false);
+      }
+    };
+
+    fetchBoardData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [col.key, col.type, dialogConfig, rowData]);
 
   // Helpers
   const normalizeInputType = (t) => (t === "input" ? "text" : t || "text");
@@ -314,10 +387,9 @@ export default function FieldRenderer({
 
   // Setup board field
   if (col.type === "setup_board") {
-    const boardValue = value || {};
-    const assigned = Array.isArray(boardValue.assigned) ? boardValue.assigned : [];
-    const changes = Array.isArray(boardValue.changes) ? boardValue.changes : [];
-    const available = Array.isArray(boardValue.available) ? boardValue.available : [];
+    const assigned = Array.isArray(boardData.assigned) ? boardData.assigned : [];
+    const changes = Array.isArray(boardData.changes) ? boardData.changes : [];
+    const available = Array.isArray(boardData.available) ? boardData.available : [];
     const disabled = isDisabled(col);
 
     // Labels with translations
@@ -353,9 +425,7 @@ export default function FieldRenderer({
 
     // Format item display
     const formatItem = (item) => {
-      const parts = [item.label || item.kod || item.id];
-      if (item.pozice) parts.push(`pozice ${item.pozice}`);
-      return parts.filter(Boolean).join(" • ");
+      return item.sortiment || item.label || item.name || item.id || "";
     };
 
     // Filter helper
@@ -368,6 +438,7 @@ export default function FieldRenderer({
     // Update the entire board value
     const updateBoard = (next) => {
       if (disabled) return;
+      setBoardData(next);
       onChange(col.key, next);
       onBlur(col.key);
     };
@@ -486,7 +557,13 @@ export default function FieldRenderer({
       <div className="flex flex-col gap-4 w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <Column title={labels.assigned} filterKey="assigned">
-            {filteredAssigned.length === 0 ? (
+            {boardLoading && (
+              <span className="text-sm text-gray-500">{t("Načítám data...")}</span>
+            )}
+            {boardError && (
+              <span className="text-sm text-red-600">{t("Nepodařilo se načíst data")}</span>
+            )}
+            {!boardLoading && filteredAssigned.length === 0 ? (
               <span className="text-sm text-gray-500">{t("Žádné přiřazené záznamy")}</span>
             ) : (
               filteredAssigned.map((item) => (

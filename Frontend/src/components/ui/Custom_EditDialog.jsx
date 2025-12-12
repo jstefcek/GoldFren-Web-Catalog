@@ -454,6 +454,8 @@ export default function CustomEditDialog({
                         error={errors[col.key]}
                         vyrobceOptions={vyrobceOptions}
                         filteredSubkategorie={filteredSubkategorie}
+                        dialogConfig={config}
+                        rowData={rowData}
                       />
                     </div>
                   );
@@ -481,6 +483,8 @@ export default function CustomEditDialog({
                         error={errors[col.key]}
                         vyrobceOptions={vyrobceOptions}
                         filteredSubkategorie={filteredSubkategorie}
+                        dialogConfig={config}
+                        rowData={rowData}
                       />
                     </div>
                   );
