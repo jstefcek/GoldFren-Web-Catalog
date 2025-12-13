@@ -351,7 +351,9 @@ export default function CustomEditDialog({
     try {
       const { primaryKey, editEndpoint } = config || {};
       const id = rowData?.[primaryKey];
-      if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu.");
+
+      // Ensure we have ID and endpoint
+      if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu nebo endpoint. ID: " + id + " Endpoint: " + editEndpoint);
 
       if (category === "vozidlo_sortiment") {
         // Call the edit endpoint
