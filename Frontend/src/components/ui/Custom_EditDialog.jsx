@@ -117,7 +117,10 @@ export default function CustomEditDialog({
     if (subOpt) initial.subkategorie = String(subOpt.value);
 
     // Normalize typ_desticky
-    const typOpt = findByValueOrLabel(SelectValueConfig.typ_desticky, rowData.typ);
+    const typOpt = findByValueOrLabel(
+      SelectValueConfig.typ_desticky,
+      rowData.typ
+    );
     if (typOpt) initial.typ = String(typOpt.value);
 
     // Manufacturer label (may not come from API yet)
@@ -350,41 +353,76 @@ export default function CustomEditDialog({
       const id = rowData?.[primaryKey];
       if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu.");
 
-      // First upload images if they exist and are File objects
-      if (isFileObject(formData.obrazek)) {
-        await uploadImage(formData.obrazek, category, 'image', id, access_token);
-      }
+      if (category === "vozidlo_sortiment") {
+        // Special handling for vozidlo_sortiment category
+        console.log("Saving edited record for vozidlo_sortiment...");
+        console.log("Transformed data:", transformFormData(category, formData, id));
+        console.log("Edit endpoint:", editEndpoint(id));
+        console.log("Category:", category);
 
-      if (isFileObject(formData.vektor)) {
-        await uploadImage(formData.vektor, category, 'vector', id, access_token);
-      }
+        const response = await fetch(editEndpoint(id), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(access_token && { Authorization: `Bearer ${access_token}` }),
+          },
+          body: JSON.stringify(transformFormData(category, formData, id)),
+        });
 
-      // Then save the record (pass the component ID for filename generation)
-      const response = await fetch(editEndpoint(id), {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(access_token && { Authorization: `Bearer ${access_token}` }),
-        },
-        body: JSON.stringify(transformFormData(category, formData, id)),
-      });
-
-      if (!response.ok) {
-        // Handle specific 401 error
-        if (response.status === 401) {
-          throw new Error("Nemáte oprávnění k provedení této operace. Zkuste se znovu přihlásit.");
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error("Nemáte oprávnění k provedení této operace. Zkuste se znovu přihlásit.");
+          }
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message || `Chyba při ukládání dat (${response.status}).`
+          );
         }
-        
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Chyba při ukládání dat (${response.status}).`);
+      } else {
+        // Standard handling for other categories - upload images first, then save
+        if (isFileObject(formData.obrazek)) {
+          console.log("Uploading image file... formData.obrazek");
+          await uploadImage(formData.obrazek, category, "image", id, access_token);
+        }
+
+        if (isFileObject(formData.vektor)) {
+          console.log("Uploading image file... formData.vektor");
+          await uploadImage(formData.vektor, category, "vector", id, access_token);
+        }
+
+        // Save the record after uploading images
+        console.log("Saving edited record...");
+        console.log("Transformed data:", transformFormData(category, formData, id));
+        console.log("Edit endpoint:", editEndpoint(id));
+        console.log("Category:", category);
+
+        const response = await fetch(editEndpoint(id), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(access_token && { Authorization: `Bearer ${access_token}` }),
+          },
+          body: JSON.stringify(transformFormData(category, formData, id)),
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error(
+              "Nemáte oprávnění k provedení této operace. Zkuste se znovu přihlásit."
+            );
+          }
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message || `Chyba při ukládání dat (${response.status}).`
+          );
+        }
       }
 
-      // Close the dialog
+      // Close the dialog and show success
       setShowConfirm(false);
       onClose();
       onSuccess();
-      
-      // Show success message
+
       setAlert({
         title: "Úspěch",
         message: "Záznam byl úspěšně upraven.",
@@ -394,14 +432,12 @@ export default function CustomEditDialog({
       });
     } catch (error) {
       console.error("Error during edit:", error);
-      
-      // Extract error message string
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      
-      // Call the onError callback with the error message string
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
       onError(errorMessage);
-      
-      // Show error in AlertDialog
+
       setAlert({
         title: "Chyba",
         message: errorMessage,
@@ -456,6 +492,7 @@ export default function CustomEditDialog({
                         filteredSubkategorie={filteredSubkategorie}
                         dialogConfig={config}
                         rowData={rowData}
+                        access_token={access_token}
                       />
                     </div>
                   );
@@ -485,6 +522,7 @@ export default function CustomEditDialog({
                         filteredSubkategorie={filteredSubkategorie}
                         dialogConfig={config}
                         rowData={rowData}
+                        access_token={access_token}
                       />
                     </div>
                   );

@@ -201,6 +201,7 @@ const SetupBoard = memo(function SetupBoard({
   onBlur,
   dialogConfig,
   rowData,
+  access_token = null,
 }) {
   const normalizeBoard = useCallback(
     (board) => ({
@@ -296,9 +297,13 @@ const SetupBoard = memo(function SetupBoard({
       setBoardError(null);
 
       try {
+        const headers = access_token
+          ? { Authorization: `Bearer ${access_token}` }
+          : {};
+        
         const [assignedRes, availableRes] = await Promise.all([
-          fetch(currentEndpoint(rowId, col.key), { signal: controller.signal }),
-          fetch(availableEndpoint(rowId, col.key), { signal: controller.signal }),
+          fetch(currentEndpoint(rowId, col.key), { signal: controller.signal, headers }),
+          fetch(availableEndpoint(rowId, col.key), { signal: controller.signal, headers }),
         ]);
 
         if (cancelled) return;
@@ -346,6 +351,7 @@ const SetupBoard = memo(function SetupBoard({
     rowData?.id,
     enrichBoard,
     onChange,
+    access_token,
   ]);
 
   const labels = useMemo(
@@ -595,6 +601,7 @@ export default function FieldRenderer({
   filteredSubkategorie = [],
   dialogConfig = null,
   rowData = null,
+  access_token = null,
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -875,6 +882,7 @@ export default function FieldRenderer({
         onBlur={onBlur}
         dialogConfig={dialogConfig}
         rowData={rowData}
+        access_token={access_token}
       />
     );
   }

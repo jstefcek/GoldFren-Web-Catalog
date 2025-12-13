@@ -14,6 +14,41 @@ const normalizeBoard = (board) => ({
   available: Array.isArray(board?.available) ? board.available : [],
 });
 
+// Helper function to transform board data into INS/DEL operations
+const transformBoardToOperations = (board) => {
+  const normalized = normalizeBoard(board);
+  const changes = normalized.changes || [];
+
+  // INS: items with action === "added" (user added from available)
+  const INS = changes
+    .filter((item) => item.action === "added")
+    .map((item) => ({
+      kod: item.kod,
+      pozice: item.pozice,
+      source: "added_from_available",
+    }));
+
+  // DEL: items with action === "removed" (user removed from assigned)
+  const DEL = changes
+    .filter((item) => item.action === "removed")
+    .map((item) => ({
+      kod: item.kod,
+      pozice: item.pozice,
+      source: "removed_from_assigned",
+    }));
+
+  // Build result object only with operations that have items
+  const result = {};
+  if (INS.length > 0) {
+    result.INS = INS;
+  }
+  if (DEL.length > 0) {
+    result.DEL = DEL;
+  }
+
+  return result;
+};
+
 export function transformFormData(category, formData, componentId = null) {
   switch (category) {
     // User category data transformation
@@ -224,13 +259,13 @@ export function transformFormData(category, formData, componentId = null) {
     // Vozidlo sortiment data transformation
     case "vozidlo_sortiment":
       return {
-        adaptery: normalizeBoard(formData.adaptery),
-        brzdice: normalizeBoard(formData.brzdice),
-        desticky: normalizeBoard(formData.desticky),
-        kotouce: normalizeBoard(formData.kotouce),
-        hadicky: normalizeBoard(formData.hadicky),
-        pumpy: normalizeBoard(formData.pumpy),
-        prislusenstvi: normalizeBoard(formData.prislusenstvi),
+        adaptery: transformBoardToOperations(formData.adaptery),
+        brzdice: transformBoardToOperations(formData.brzdice),
+        desticky: transformBoardToOperations(formData.desticky),
+        kotouce: transformBoardToOperations(formData.kotouce),
+        hadicky: transformBoardToOperations(formData.hadicky),
+        pumpy: transformBoardToOperations(formData.pumpy),
+        prislusenstvi: transformBoardToOperations(formData.prislusenstvi),
       };
 
     // Vyrobce category data transformation
