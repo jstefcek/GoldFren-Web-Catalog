@@ -354,12 +354,7 @@ export default function CustomEditDialog({
       if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu.");
 
       if (category === "vozidlo_sortiment") {
-        // Special handling for vozidlo_sortiment category
-        console.log("Saving edited record for vozidlo_sortiment...");
-        console.log("Transformed data:", transformFormData(category, formData, id));
-        console.log("Edit endpoint:", editEndpoint(id));
-        console.log("Category:", category);
-
+        // Call the edit endpoint
         const response = await fetch(editEndpoint(id), {
           method: "PUT",
           headers: {
@@ -390,12 +385,7 @@ export default function CustomEditDialog({
           await uploadImage(formData.vektor, category, "vector", id, access_token);
         }
 
-        // Save the record after uploading images
-        console.log("Saving edited record...");
-        console.log("Transformed data:", transformFormData(category, formData, id));
-        console.log("Edit endpoint:", editEndpoint(id));
-        console.log("Category:", category);
-
+        // Now save the rest of the data
         const response = await fetch(editEndpoint(id), {
           method: "PUT",
           headers: {
