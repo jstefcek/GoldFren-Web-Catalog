@@ -6,7 +6,7 @@ import AlertDialog from "../ui/Custom_AlertDialog";
 import { dialogColumnsConfig } from "../../config/ColumnConfigs/AddDialog_Config";
 import { SelectValueConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { transformFormData } from "../../config/DataTransormation/AddDialog_Transformation";
-import FieldRenderer from "../FolderComponents/Field_Renderer";
+import FieldRenderer from "../DialogField_Components/Field_Renderer";
 import { uploadImage } from "../../hooks/UploadImage_APIHook";
 import { isFileObject } from "../../utils/utils";
 
