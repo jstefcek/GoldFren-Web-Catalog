@@ -204,6 +204,22 @@
       "publish": "Publish"
     }
   },
+  "setup_board": {
+    "assigned": "Assigned items",
+    "changes": "Changes",
+    "available": "Available items",
+    "no_assigned": "No assigned records",
+    "no_changes": "No changes",
+    "no_available": "No available records",
+    "remove_change": "Remove"
+  },
+  "error": {
+    "loading_failed": "Loading failed",
+    "missing_parameters": "Missing parameters",
+    "title": "Error loading results",
+    "invalid_id": "Invalid product ID",
+    "btn_go_back": "Back"
+  },
   "contact": {
     "czech_republic": "Czech Republic",
     "main_title": "Contact information",

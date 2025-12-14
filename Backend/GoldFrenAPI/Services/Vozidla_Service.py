@@ -18,7 +18,7 @@ from GoldFrenAPI.Services.Service_utils import (
     execute_update,
     insert_record
 )
-from GoldFrenAPI.utils.utils import change_category_label
+from GoldFrenAPI.utils.utils import change_category_label, change_sortiment_label
 
 def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
     """
@@ -270,3 +270,226 @@ def create_vozidlo(data: dict):
     )
     
     return new_id
+
+def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
+    """
+    Function would update vozidlo sortiment data
+    
+    Params:
+    - vozidlo_id: int - ID of the vozidlo to update sortiment for
+    - data: dict - Dictionary containing sortiment data to update, create or delete
+    """
+    # Get who update the record
+    operation_status = False
+    aktualizoval_id = data.get("aktualizoval")
+    
+    # In cycle go through each sortiment type and update DB records
+    for sortiment_type, sortiment_operations in data.items():
+        # Skip the aktualizoval field
+        if sortiment_type == "aktualizoval":
+            continue
+        
+        # Construct table name 
+        sortiment_type = change_sortiment_label(sortiment_type)
+        table_name = f"c_vozidlo_{sortiment_type}"
+        
+        # Get record operation (INS, UPD, DEL)
+        for operation, item_values in sortiment_operations.items():
+            # Loop through items inside operation groups
+            for value in item_values:
+                # Get sortiment detailed values
+                sortiment_kod = value.get("kod", None)
+                sortiment_pos = value.get("pozice", None)
+                sortiment_new_pos = value.get("new_pozice", None)
+
+                # Delete record if specified
+                if operation == "DEL":
+                    # Prepare DEL query
+                    del_query = f"""DELETE FROM {table_name} 
+                    WHERE vozidlo = %s 
+                    AND {sortiment_type} = %s
+                    AND pozice = %s"""
+                    
+                    # Prepare query params
+                    del_params = [vozidlo_id, sortiment_kod, sortiment_pos]
+
+                    # Execute query
+                    operation_status = execute_update(sql_query=del_query, params=del_params)
+                
+                # Insert new sortiment for vozidlo
+                elif operation == "INS":
+                    # Prepare INS query
+                    ins_query = f"""INSERT INTO {table_name} 
+                    (vozidlo, {sortiment_type}, pozice, aktualizovano, aktualizoval) 
+                    values (%s, %s, %s, CURRENT_TIMESTAMP(), %s)"""
+                    
+                    # Prepare query params
+                    ins_params = [vozidlo_id, sortiment_kod, sortiment_pos, aktualizoval_id]
+
+                    # Execute sortiment insert
+                    insert_record(sql_query=ins_query, params=ins_params)
+                    operation_status = True
+                
+    # Return API status
+    return operation_status
+
+def get_vozidlo_sortiment_by_type(vozidlo_id: int, sortiment_type: str):
+    """
+    Load assigned sortiment data only for specific vozidlo and its sortiment type
+    
+    Example response:
+        [
+            {
+                "sortiment": "P001 - F brake pump",
+                "kod": 1,
+                "pozice": 24
+            },
+            {
+                "sortiment": "P001 - R brake pump",
+                "kod": 1,
+                "pozice": 25
+            },
+            {
+                "sortiment": "P002 - F brake pump",
+                "kod": 2,
+                "pozice": 24
+            },
+            {
+                "sortiment": "P002 - R brake pump",
+                "kod": 2,
+                "pozice": 25
+            }
+        ]
+    """
+    # Map sortiment type and tables, parameters and link tables
+    tables = {
+        "adaptery": ("d_adapter", "c_vozidlo_adapter", "adapter"),
+        "desticky": ("d_desticka", "c_vozidlo_desticka", "desticka"),
+        "brzdice": ("d_brzdice", "c_vozidlo_brzdic", "brzdic"),
+        "hadicky": ("d_hadicka", "c_vozidlo_hadicka", "hadicka"),
+        "kotouce": ("d_kotouce", "c_vozidlo_kotouc", "kotouc"),
+        "prislusenstvi": ("d_prislusenstvi", "c_vozidlo_prislusenstvi", "prislusenstvi"),
+        "pumpy": ("d_pumpa", "c_vozidlo_pumpa", "pumpa"),
+    }
+
+    # Check if the provided sortiment type is valid
+    if sortiment_type not in tables:
+        return None
+
+    # Get table names and attribute
+    table_data_name, table_link_name, sortiment = tables[sortiment_type]
+    
+    # Prepare SQL query
+    sql_query = f"""SELECT
+    CONCAT(da.cislo_dilu, ' - ', cp.nazev_eng) AS sortiment,
+    da.kod,
+    cp.kod AS pozice
+FROM {table_data_name} da
+JOIN c_pozice cp ON da.sortiment = cp.sortiment
+WHERE da.publikovat = 1
+  AND EXISTS (
+        SELECT 1
+        FROM {table_link_name} cva
+        WHERE cva.vozidlo = %s
+          AND cva.{sortiment} = da.kod
+          AND cva.pozice = cp.kod
+  )
+ORDER BY da.cislo_dilu ASC, cp.kod ASC"""
+    
+    # Fetch records from the database
+    assigned_sortiment = get_filtered_records(sql_query, [vozidlo_id])
+
+    # If records are found return else return None
+    if assigned_sortiment:
+        return assigned_sortiment
+    return None
+
+def get_vozidlo_available_sortiment(vozidlo_id: int, sortiment_type: str):
+    """
+    Load available sortiment data for specific vozidlo id and sortiment type
+    The available sortiment means those items which are not yet assigned to the vozidlo and can be added and matched the vozidlo.
+    
+    Example response:
+        [
+            {
+                "sortiment": "4001CA - FR adapter",
+                "kod": 1,
+                "pozice": 19
+            },
+            {
+                "sortiment": "4001CA - RL adapter",
+                "kod": 1,
+                "pozice": 20
+            },
+            {
+                "sortiment": "4002CA - FR adapter",
+                "kod": 2,
+                "pozice": 19
+            },
+            {
+                "sortiment": "4002CA - RL adapter",
+                "kod": 2,
+                "pozice": 20
+            },
+            {
+                "sortiment": "4003CA - FL adapter",
+                "kod": 3,
+                "pozice": 18
+            }
+        ]
+    """
+    # Map sortiment type and tables, parameters and link tables
+    tables = {
+        "adaptery": ("d_adapter", "c_vozidlo_adapter", "adapter"),
+        "desticky": ("d_desticka", "c_vozidlo_desticka", "desticka"),
+        "brzdice": ("d_brzdice", "c_vozidlo_brzdic", "brzdic"),
+        "hadicky": ("d_hadicka", "c_vozidlo_hadicka", "hadicka"),
+        "kotouce": ("d_kotouce", "c_vozidlo_kotouc", "kotouc"),
+        "prislusenstvi": ("d_prislusenstvi", "c_vozidlo_prislusenstvi", "prislusenstvi"),
+        "pumpy": ("d_pumpa", "c_vozidlo_pumpa", "pumpa"),
+    }
+
+    # Check if the provided sortiment type is valid
+    if sortiment_type not in tables:
+        return None
+    
+    # Get table names and attribute
+    table_data_name, table_link_name, sortiment = tables[sortiment_type]
+    
+    # Get vozidlo category
+    vozidlo_kategorie_query = """SELECT ck.kod FROM d_vozidlo vz
+LEFT JOIN c_subkategorie cs ON vz.subkategorie = cs.kod
+LEFT JOIN c_kategorie ck ON cs.kategorie = ck.kod 
+WHERE vz.kod = %s"""
+    vozidlo_kategorie_records = get_filtered_records(sql_query=vozidlo_kategorie_query, params=[vozidlo_id])
+    vozidlo_kategorie = vozidlo_kategorie_records[0]['kod'] if vozidlo_kategorie_records else None
+    
+    # If no category found, return None
+    if not vozidlo_kategorie:
+        return None
+    
+    # Prepare SQL query
+    sql_query = f"""SELECT
+    CONCAT(da.cislo_dilu, ' - ', cp.nazev_eng) AS sortiment,
+    da.kod,
+    cp.kod AS pozice
+FROM {table_data_name} da
+JOIN c_pozice cp ON da.sortiment = cp.sortiment
+WHERE COALESCE(da.kategorie, {vozidlo_kategorie}) = {vozidlo_kategorie}
+  AND da.publikovat = 1
+  AND NOT EXISTS (
+        SELECT 1
+        FROM {table_link_name} cva
+        WHERE cva.vozidlo = %s
+          AND cva.{sortiment} = da.kod
+          AND cva.pozice = cp.kod
+  )
+ORDER BY da.cislo_dilu ASC, cp.kod ASC"""
+    
+    # Fetch records from the database
+    filtered_components = get_filtered_records(sql_query, [vozidlo_id])
+    
+    # If records are found return else return None
+    if filtered_components:
+        return filtered_components
+    return None

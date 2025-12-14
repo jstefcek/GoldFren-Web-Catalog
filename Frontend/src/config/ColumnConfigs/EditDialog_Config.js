@@ -61,6 +61,38 @@ export const SelectValueConfig = {
   ]
 };
 
+// Function to build sortiment board data structure
+const buildSortimentBoard = (row = {}) => {
+  const assigned = [];
+  const groupedAssigned =
+    row.sortimenty_grouped ||
+    row.prirazene_sortimenty ||
+    row.prirazene_polozky ||
+    {};
+
+  Object.entries(groupedAssigned).forEach(([groupKey, items]) => {
+    (items || []).forEach((item) => {
+      assigned.push({
+        ...item,
+        group: item.group || groupKey,
+      });
+    });
+  });
+
+  const available = (row.dostupne_sortimenty || row.available_sortimenty || []).map(
+    (item) => ({
+      ...item,
+      group: item.group || item.type || "general",
+    })
+  );
+
+  return {
+    assigned,
+    available,
+    changes: [],
+  };
+};
+
 export const dialogColumnsConfig = {
   // Edit dialog configuration
   
@@ -292,6 +324,23 @@ export const dialogColumnsConfig = {
       {key: "objem", label: "Objem [cm3]", placeholder: "Zadejte objem vozidla", type: "input", editable: true, show: true, dataType: "string", },
       {key: "publikovat", label: "Publikovat vozidlo?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
       {key: "aktualizovano", label: "Aktualizováno", type: "text", editable: false, show: true, dataType: "date", },
+    ],
+  },
+
+  // Vozidlo sortiment configuration
+  vozidlo_sortiment: {
+    primaryKey: "kod",
+    editEndpoint: (kod) => `${serverUrl}/api/goldfren/internal/vozidla/sortiment/update/${kod}`,
+    currentEndpoint: (kod, key) => `${serverUrl}/api/goldfren/internal/vozidla/sortiment/assaigned/${kod}/type/${key}`,
+    availableEndpoint: (kod, key) => `${serverUrl}/api/goldfren/internal/vozidla/sortiment/available/${kod}/type/${key}`,
+    fields: [
+      {key: "adaptery", label: "Adaptéry", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "brzdice", label: "Brzdiče", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "desticky", label: "Destičky", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "kotouce", label: "Kotouče", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "hadicky", label: "Hadičky", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "pumpy", label: "Pumpy", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
+      {key: "prislusenstvi", label: "Příslušenství", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },
     ],
   },
 

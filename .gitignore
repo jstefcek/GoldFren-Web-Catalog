@@ -165,3 +165,4 @@ cython_debug/
 /Backend/GoldFren_Media
 .DS_Store
 logs/django.log.*
+Backend/Keys/ga4_key.json

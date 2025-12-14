@@ -13,7 +13,10 @@ from GoldFrenAPI.Services.Vozidla_Service import (
     update_vozidlo,
     create_vozidlo,
     update_vyrobce,
-    create_vyrobce
+    create_vyrobce,
+    update_vozidlo_sortiment,
+    get_vozidlo_sortiment_by_type,
+    get_vozidlo_available_sortiment
 )
 
 # Cache timeout settings
@@ -132,6 +135,30 @@ def get_vozidlo_by_category_view(request):
     
     return JsonResponse({"error": "Vozidla not found"}, status=404)
 
+@api_view(['GET'])
+def get_vozidlo_sortiment_type_view(request, vozidlo_id, sortiment_type):
+    # Check if parameters are provided
+    if not vozidlo_id or not sortiment_type:
+        return JsonResponse({"error": "vozidlo_id and sortiment_type are required"}, status=400)
+
+    # Get vozidlo sortiment by type
+    vozidlo_sortiment = get_vozidlo_sortiment_by_type(vozidlo_id=vozidlo_id, sortiment_type=sortiment_type)
+    if vozidlo_sortiment:
+        return JsonResponse(vozidlo_sortiment, safe=False, status=200)
+    return JsonResponse({"error": "Vozidlo sortiment not found"}, status=404)
+
+@api_view(['GET'])
+def get_vozidlo_available_sortiment_view(request, vozidlo_id, sortiment_type):
+    # Check if parameters are provided
+    if not vozidlo_id or not sortiment_type:
+        return JsonResponse({"error": "vozidlo_id and sortiment_type are required"}, status=400)
+
+    # Get vozidlo sortiment by type
+    vozidlo_sortiment = get_vozidlo_available_sortiment(vozidlo_id=vozidlo_id, sortiment_type=sortiment_type)
+    if vozidlo_sortiment:
+        return JsonResponse(vozidlo_sortiment, safe=False, status=200)
+    return JsonResponse({"error": "Vozidlo sortiment not found"}, status=404)
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def update_vozidlo_view(request, vozidlo_id):
@@ -178,6 +205,31 @@ def update_vyrobce_view(request, vyrobce_kod):
     if status:
         return JsonResponse({"message": "Vyrobce updated successfully"}, status=200)
     return JsonResponse({"error": "Failed to update vyrobce"}, status=400)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def update_vozidlo_sortiment_view(request, vozidlo_id):
+    """
+    This function update sortiment records for given vozidlo id
+    """
+    # Check vyrobce kod if is provided
+    if not vozidlo_id:
+        return JsonResponse({"error": "vozidlo_id is required"}, status=400)
+    
+    # Get the data to update from the request
+    data = request.data
+    if not data:
+        return JsonResponse({"error": "No sortiment data provided"}, status=400)
+    
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
+    
+    # Update the vyrobce
+    status = update_vozidlo_sortiment(vozidlo_id, data)
+    if status:
+        return JsonResponse({"message": "Vozidlo sortiment updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update vozidlo sortiment"}, status=400)
     
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsInternalUser])

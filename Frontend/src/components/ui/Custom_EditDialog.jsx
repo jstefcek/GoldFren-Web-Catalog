@@ -6,7 +6,7 @@ import AlertDialog from "../ui/Custom_AlertDialog";
 import { dialogColumnsConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { SelectValueConfig } from "../../config/ColumnConfigs/EditDialog_Config";
 import { transformFormData } from "../../config/DataTransormation/EditDialog_Transformation";
-import FieldRenderer from "../FolderComponents/Field_Renderer";
+import FieldRenderer from "../DialogField_Components/Field_Renderer";
 import { uploadImage } from "../../hooks/UploadImage_APIHook";
 import { isFileObject } from "../../utils/utils";
 
@@ -63,10 +63,33 @@ export default function CustomEditDialog({
 
     const initial = {};
     (config.fields || []).forEach((col) => {
+      if (col.type === "setup_board") {
+        const fallbackBoard = col.buildInitial?.(rowData) || {
+          assigned: [],
+          changes: [],
+          available: [],
+        };
+
+        const rawValue = rowData[col.key];
+        initial[col.key] =
+          rawValue && typeof rawValue === "object" ? rawValue : fallbackBoard;
+        return;
+      }
+
       initial[col.key] =
         rowData[col.key] !== undefined && rowData[col.key] !== null
           ? rowData[col.key]
           : "";
+
+      // Special handling for setup_board type
+      if (col.type === "setup_board") {
+        const buildInitial = col.buildInitial || (() => ({}));
+        initial[col.key] = buildInitial(rowData) || {
+          assigned: [],
+          available: [],
+          changes: [],
+        };
+      }
     });
 
     // Normalize kategorie to option.value (accept label or value)
@@ -94,7 +117,10 @@ export default function CustomEditDialog({
     if (subOpt) initial.subkategorie = String(subOpt.value);
 
     // Normalize typ_desticky
-    const typOpt = findByValueOrLabel(SelectValueConfig.typ_desticky, rowData.typ);
+    const typOpt = findByValueOrLabel(
+      SelectValueConfig.typ_desticky,
+      rowData.typ
+    );
     if (typOpt) initial.typ = String(typOpt.value);
 
     // Manufacturer label (may not come from API yet)
@@ -325,43 +351,70 @@ export default function CustomEditDialog({
     try {
       const { primaryKey, editEndpoint } = config || {};
       const id = rowData?.[primaryKey];
-      if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu.");
 
-      // First upload images if they exist and are File objects
-      if (isFileObject(formData.obrazek)) {
-        await uploadImage(formData.obrazek, category, 'image', id, access_token);
-      }
+      // Ensure we have ID and endpoint
+      if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu nebo endpoint. ID: " + id + " Endpoint: " + editEndpoint);
 
-      if (isFileObject(formData.vektor)) {
-        await uploadImage(formData.vektor, category, 'vector', id, access_token);
-      }
+      if (category === "vozidlo_sortiment") {
+        // Call the edit endpoint
+        const response = await fetch(editEndpoint(id), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(access_token && { Authorization: `Bearer ${access_token}` }),
+          },
+          body: JSON.stringify(transformFormData(category, formData, id)),
+        });
 
-      // Then save the record (pass the component ID for filename generation)
-      const response = await fetch(editEndpoint(id), {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(access_token && { Authorization: `Bearer ${access_token}` }),
-        },
-        body: JSON.stringify(transformFormData(category, formData, id)),
-      });
-
-      if (!response.ok) {
-        // Handle specific 401 error
-        if (response.status === 401) {
-          throw new Error("Nemáte oprávnění k provedení této operace. Zkuste se znovu přihlásit.");
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error("Nemáte oprávnění k provedení této operace. Zkuste se znovu přihlásit.");
+          }
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message || `Chyba při ukládání dat (${response.status}).`
+          );
         }
-        
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Chyba při ukládání dat (${response.status}).`);
+      } else {
+        // Standard handling for other categories - upload images first, then save
+        if (isFileObject(formData.obrazek)) {
+          console.log("Uploading image file... formData.obrazek");
+          await uploadImage(formData.obrazek, category, "image", id, access_token);
+        }
+
+        if (isFileObject(formData.vektor)) {
+          console.log("Uploading image file... formData.vektor");
+          await uploadImage(formData.vektor, category, "vector", id, access_token);
+        }
+
+        // Now save the rest of the data
+        const response = await fetch(editEndpoint(id), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(access_token && { Authorization: `Bearer ${access_token}` }),
+          },
+          body: JSON.stringify(transformFormData(category, formData, id)),
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error(
+              "Nemáte oprávnění k provedení této operace. Zkuste se znovu přihlásit."
+            );
+          }
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message || `Chyba při ukládání dat (${response.status}).`
+          );
+        }
       }
 
-      // Close the dialog
+      // Close the dialog and show success
       setShowConfirm(false);
       onClose();
       onSuccess();
-      
-      // Show success message
+
       setAlert({
         title: "Úspěch",
         message: "Záznam byl úspěšně upraven.",
@@ -371,14 +424,12 @@ export default function CustomEditDialog({
       });
     } catch (error) {
       console.error("Error during edit:", error);
-      
-      // Extract error message string
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      
-      // Call the onError callback with the error message string
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
       onError(errorMessage);
-      
-      // Show error in AlertDialog
+
       setAlert({
         title: "Chyba",
         message: errorMessage,
@@ -398,7 +449,7 @@ export default function CustomEditDialog({
   return (
     <>
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4 sm:p-8">
-        <div className="bg-white w-full max-w-4xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
+        <div className="bg-white w-full max-w-7xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2">
             {dialogTitle}
           </h2>
@@ -415,20 +466,29 @@ export default function CustomEditDialog({
               {fields
                 .filter((f) => f.show !== false)
                 .slice(0, 1)
-                .map((col) => (
-                  <FieldRenderer
-                    key={col.key}
-                    col={col}
-                    value={formData[col.key]}
-                    t={t}
-                    isDisabled={isDisabled}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors[col.key]}
-                    vyrobceOptions={vyrobceOptions}
-                    filteredSubkategorie={filteredSubkategorie}
-                  />
-                ))}
+                .map((col) => {
+                  const isBoard = col.type === "setup_board";
+                  const spanClass = isBoard ? "md:col-span-2" : "";
+
+                  return (
+                    <div key={col.key} className={spanClass}>
+                      <FieldRenderer
+                        col={col}
+                        value={formData[col.key]}
+                        t={t}
+                        isDisabled={isDisabled}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors[col.key]}
+                        vyrobceOptions={vyrobceOptions}
+                        filteredSubkategorie={filteredSubkategorie}
+                        dialogConfig={config}
+                        rowData={rowData}
+                        access_token={access_token}
+                      />
+                    </div>
+                  );
+                })}
             </div>
 
             {/* Remaining fields */}
@@ -436,20 +496,29 @@ export default function CustomEditDialog({
               {fields
                 .filter((f) => f.show !== false)
                 .slice(1)
-                .map((col) => (
-                  <FieldRenderer
-                    key={col.key}
-                    col={col}
-                    value={formData[col.key]}
-                    t={t}
-                    isDisabled={isDisabled}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors[col.key]}
-                    vyrobceOptions={vyrobceOptions}
-                    filteredSubkategorie={filteredSubkategorie}
-                  />
-                ))}
+                .map((col) => {
+                  const isBoard = col.type === "setup_board";
+                  const spanClass = isBoard ? "md:col-span-2" : "";
+
+                  return (
+                    <div key={col.key} className={spanClass}>
+                      <FieldRenderer
+                        col={col}
+                        value={formData[col.key]}
+                        t={t}
+                        isDisabled={isDisabled}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors[col.key]}
+                        vyrobceOptions={vyrobceOptions}
+                        filteredSubkategorie={filteredSubkategorie}
+                        dialogConfig={config}
+                        rowData={rowData}
+                        access_token={access_token}
+                      />
+                    </div>
+                  );
+                })}
             </div>
           </div>
 

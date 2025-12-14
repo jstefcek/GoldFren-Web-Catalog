@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import {useState, useEffect, useRef} from "react";
 import { Eye, EyeOff, ImageOff } from "lucide-react";
 import BooleanToggleButton from "../ui/Custom_ButtonToggle";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
 import { formatDateLong, isFileObject } from "../../utils/utils";
+import SetupBoard from "../DialogField_Components/Setup_Board";
 
-// Reusable field renderer with wrapper
 export default function FieldRenderer({
   col,
   value,
@@ -15,11 +15,12 @@ export default function FieldRenderer({
   error,
   vyrobceOptions = [],
   filteredSubkategorie = [],
+  dialogConfig = null,
+  rowData = null,
+  access_token = null,
 }) {
-  // Password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
 
-  // Keep a stable preview URL for image fields
   const [imageSrc, setImageSrc] = useState(null);
   const [imageKey, setImageKey] = useState(0);
   const objectUrlRef = useRef(null);
@@ -27,7 +28,6 @@ export default function FieldRenderer({
   useEffect(() => {
     if (col.type !== "image") return;
 
-    // Clean up previous object URL first
     if (objectUrlRef.current) {
       URL.revokeObjectURL(objectUrlRef.current);
       objectUrlRef.current = null;
@@ -47,8 +47,7 @@ export default function FieldRenderer({
       setImageSrc(null);
     }
 
-    // Force component re-render by updating the key
-    setImageKey(prev => prev + 1);
+    setImageKey((prev) => prev + 1);
 
     return () => {
       if (objectUrlRef.current) {
@@ -58,20 +57,18 @@ export default function FieldRenderer({
     };
   }, [value, col.type, col.key]);
 
-  // Helpers
-  const normalizeInputType = (t) => (t === "input" ? "text" : t || "text");
+  const normalizeInputType = (t2) => (t2 === "input" ? "text" : t2 || "text");
   const hasError = !!error;
 
-  // Control class used between components
-  const controlClass = (col, isPlaceholder = false) => {
-    const textColor = isDisabled(col)
+  const controlClass = (col2, isPlaceholder = false) => {
+    const textColor = isDisabled(col2)
       ? "text-gray-700"
       : isPlaceholder
       ? "text-gray-400"
       : "text-gray-900";
 
     return `${textColor} ${
-      isDisabled(col) ? "bg-gray-100 cursor-not-allowed" : "bg-white focus:ring-2"
+      isDisabled(col2) ? "bg-gray-100 cursor-not-allowed" : "bg-white focus:ring-2"
     } px-3 py-2 border ${
       hasError ? "border-red-600 focus:ring-red-600" : "border-gray-300 focus:ring-gray-600"
     } rounded-md text-sm focus:outline-none focus:ring-2`;
@@ -79,7 +76,7 @@ export default function FieldRenderer({
 
   const wrapper = (children) => (
     <div className="flex flex-col">
-      <label className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-1">
+      <label className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-1">
         {t(col.label)}
         {col.required && <span className="text-red-600">*</span>}
       </label>
@@ -88,17 +85,9 @@ export default function FieldRenderer({
     </div>
   );
 
-  // Handle image replacement
-  const handleImageReplace = (file) => {
-    onChange(col.key, file);
-  };
+  const handleImageReplace = (file) => onChange(col.key, file);
+  const handleImageDelete = () => onChange(col.key, null);
 
-  // Handle image deletion
-  const handleImageDelete = () => {
-    onChange(col.key, null);
-  };
-
-  // Invisible field: reserve layout space but render a non-interactive placeholder
   if (col.type === "invisible" || col.key === "invisible") {
     return (
       <div className="flex flex-col" aria-hidden="true">
@@ -111,8 +100,6 @@ export default function FieldRenderer({
     );
   }
 
-  // --- Controls ---
-  // Image preview field
   if (col.type === "image") {
     const componentKey = `${col.key}-${imageKey}`;
     const disabled = isDisabled(col);
@@ -132,16 +119,14 @@ export default function FieldRenderer({
             onDelete={handleImageDelete}
           />
         ) : (
-          // Show upload area when NO image
-          <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md 
-            ${hasError ? 'border-red-600' : 'border-gray-300'} 
-            ${disabled ? 'cursor-not-allowed bg-gray-50' : 'cursor-pointer hover:border-gray-400'}`}
+          <label
+            className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md 
+            ${hasError ? "border-red-600" : "border-gray-300"} 
+            ${disabled ? "cursor-not-allowed bg-gray-50" : "cursor-pointer hover:border-gray-400"}`}
           >
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <ImageOff className="w-8 h-8 text-gray-400 mb-2" />
-              {!disabled && (
-                <p className="text-sm text-gray-500">{t("Klikněte pro nahrání obrázku")}</p>
-              )}
+              {!disabled && <p className="text-sm text-gray-500">{t("Klikněte pro nahrání obrázku")}</p>}
             </div>
             {!disabled && (
               <input
@@ -150,9 +135,7 @@ export default function FieldRenderer({
                 accept="image/*,.svg"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    onChange(col.key, file);
-                  }
+                  if (file) onChange(col.key, file);
                 }}
                 onBlur={() => onBlur(col.key)}
               />
@@ -163,7 +146,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Toggle buttons field
   if (col.type === "button") {
     return wrapper(
       <div onBlur={() => onBlur(col.key)}>
@@ -177,7 +159,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Manufacturer select field
   if (col.key === "vyrobce") {
     const noOptions = (vyrobceOptions || []).length === 0;
     return wrapper(
@@ -203,7 +184,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Kategorie select field
   if (col.key === "kategorie") {
     return wrapper(
       <select
@@ -214,7 +194,9 @@ export default function FieldRenderer({
         className={controlClass(col, !value)}
         style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="" className="text-gray-400">{col.placeholder || t("Vyberte kategorii")}</option>
+        <option value="" className="text-gray-400">
+          {col.placeholder || t("Vyberte kategorii")}
+        </option>
         {col.value.map((opt) => (
           <option key={opt.id} value={opt.value}>
             {t(opt.label)}
@@ -224,7 +206,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Subkategorie select field
   if (col.key === "subkategorie") {
     return wrapper(
       <select
@@ -235,7 +216,9 @@ export default function FieldRenderer({
         className={controlClass(col, !value)}
         style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="" className="text-gray-400">{col.placeholder || t("Vyberte subkategorii")}</option>
+        <option value="" className="text-gray-400">
+          {col.placeholder || t("Vyberte subkategorii")}
+        </option>
         {filteredSubkategorie.map((opt) => (
           <option key={opt.id} value={opt.value}>
             {t(opt.label)}
@@ -245,7 +228,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Static select field
   if (col.type === "select" && Array.isArray(col.value)) {
     return wrapper(
       <select
@@ -256,7 +238,9 @@ export default function FieldRenderer({
         className={controlClass(col, !value)}
         style={!value ? { color: "#8b919cff" } : undefined}
       >
-        <option value="" className="text-gray-400">{col.placeholder || t("Vyberte možnost")}</option>
+        <option value="" className="text-gray-400">
+          {col.placeholder || t("Vyberte možnost")}
+        </option>
         {col.value.map((opt) => (
           <option key={opt.id} value={opt.value}>
             {t(opt.label)}
@@ -266,7 +250,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Textarea field
   if (col.type === "textarea") {
     return wrapper(
       <textarea
@@ -282,10 +265,8 @@ export default function FieldRenderer({
     );
   }
 
-  // Label field
   if (col.type === "label") {
     let labelClassName = "text-gray-900 font-bold ";
-    
     switch (col.label_type) {
       case "big":
         labelClassName += "text-2xl mt-4";
@@ -299,17 +280,29 @@ export default function FieldRenderer({
 
     return (
       <div className="flex flex-col">
-        <input 
-          type="hidden"
-          value={value || ""}
-          onChange={(e) => onChange(col.key, e.target.value)}
-        />
+        <input type="hidden" value={value || ""} onChange={(e) => onChange(col.key, e.target.value)} />
         <span className={labelClassName}>{t(col.label)}</span>
       </div>
     );
   }
 
-  // Password field
+  if (col.type === "setup_board") {
+    const disabled = isDisabled(col);
+    return wrapper(
+      <SetupBoard
+        col={col}
+        value={value}
+        t={t}
+        disabled={disabled}
+        onChange={onChange}
+        onBlur={onBlur}
+        dialogConfig={dialogConfig}
+        rowData={rowData}
+        access_token={access_token}
+      />
+    );
+  }
+
   if (col.type === "password") {
     return wrapper(
       <div className="relative">
@@ -335,7 +328,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Read-only fields
   if (col.key === "username" || col.key === "nazev_modelu") {
     return wrapper(
       <input
@@ -350,7 +342,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Transform date to czech format
   if (col.dataType === "date" && value) {
     const date = new Date(value);
     return wrapper(
@@ -366,7 +357,6 @@ export default function FieldRenderer({
     );
   }
 
-  // Default input field
   return wrapper(
     <input
       type={normalizeInputType(col.type)}

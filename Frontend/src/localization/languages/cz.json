@@ -195,7 +195,8 @@
       "model": "Model",
       "year_from": "Rok výroby od",
       "year_to": "Rok výroby do",
-      "publish": "Publikovat"
+      "publish": "Publikovat",
+      "sortiment_setup_open_text": "Sortiment"
     },
     "manufacturer_admin": {
       "name": "Název výrobce",
@@ -203,6 +204,15 @@
       "updated_at": "Aktualizováno",
       "publish": "Publikovat"
     }
+  },
+  "setup_board": {
+    "assigned": "Přiřazené položky",
+    "changes": "Změny",
+    "available": "Dostupné položky",
+    "no_assigned": "Žádné přiřazené záznamy",
+    "no_changes": "Žádné změny",
+    "no_available": "Žádné dostupné záznamy",
+    "remove_change": "Odebrat"
   },
   "error": {
     "loading_failed": "Načítání selhalo",

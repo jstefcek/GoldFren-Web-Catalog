@@ -286,6 +286,7 @@ export const columnsConfig = {
     {key: "model", label: "datagrid.vehicle.model", sortable: true, filterable: true },
     {key: "rok_od", label: "datagrid.vehicle.year_from", sortable: true, filterable: true },
     {key: "rok_do", label: "datagrid.vehicle.year_to", sortable: true, filterable: true },
+    {key: "sortiment_setup", label: null, type: "sortiment_setup", dialogCategory: "vozidlo_sortiment", dialogTitle: "Úprava sortimentu vozidla", buttonLabel: "datagrid.vehicle.sortiment_setup_open_text", sortable: false, filterable: false },
     {key: "publikovat", label: "datagrid.vehicle.publish", type: "boolean", sortable: true, filterable: true },
   ],
 
