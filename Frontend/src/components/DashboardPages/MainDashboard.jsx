@@ -70,9 +70,7 @@ export default function DashboardMain_Layout() {
     const loadMetrics = async () => {
       try {
         setLoading(true);
-        const data = await fetchMetrics(
-          "/api/goldfren/internal/metrics/homepage"
-        );
+        const data = await fetchMetrics("/api/goldfren/internal/metrics/homepage");
         setMetrics(data);
 
         // Calculate percentage changes
