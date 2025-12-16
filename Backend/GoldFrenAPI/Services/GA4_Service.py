@@ -8,7 +8,6 @@ from zoneinfo import ZoneInfo
 from Components.GA4 import connect
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import DateRange, Dimension, Metric, RunReportRequest
-import logging
 
 def get_home_page_metrics() -> dict:
     """

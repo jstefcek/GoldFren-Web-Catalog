@@ -8,7 +8,7 @@ from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from GoldFrenAPI.Services.GA4_Service import get_home_page_metrics
 
 # Cache timeout settings - 1 hour 
-CACHE_TIMEOUT_HOME = int(os.getenv("DJANGO_CACHE_TIMEOUT", 3600))
+CACHE_TIMEOUT_HOME = int(os.getenv("GA4_CACHE_TIMEOUT", 3600))
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
