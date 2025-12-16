@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Minus, Globe, Car, Bolt } from "lucide-react";
+import { ArrowDown, ArrowUp, Minus, Globe, Car, Bolt, Info } from "lucide-react";
 import { useFetchMetrics } from "../../hooks/HomePage_APIHook.jsx";
 import { getCountryFlag } from "../../utils/GetCountryFlags";
 
@@ -154,14 +154,28 @@ export default function DashboardMain_Layout() {
     );
   }
 
+  // Format generated_at timestamp
+  const formatGeneratedAt = (isoDate) => {
+  if (!isoDate) return null;
+
+  const date = new Date(isoDate);
+  return date.toLocaleString("cs-CZ", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
   return (
     <div className="min-h-auto px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
+      <div className="bg-white rounded-lg shadow-sm pt-8 pl-8 pr-8 border border-gray-200">
         <h1 className="text-3xl font-bold text-gray-900">
-          Přehled webu GOLDfren katalog
+          GOLDfren webový katalog
         </h1>
         <p className="text-gray-600 text-lg">
-          Vítejte na administrační stránce webu!
+          Vítejte na administrační stránce vašeho webového katalogu
         </p>
 
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -286,6 +300,19 @@ export default function DashboardMain_Layout() {
             )}
           </div>
         </div>
+
+        {!loading && metrics?.generated_at && (
+          <div className="flex items-center justify-end gap-2 my-2">
+            <Info className="w-4 h-4 text-gray-500 shrink-0" />
+            <p className="text-sm text-gray-500 text-right leading-tight">
+              Data jsou aktualizována jednou za hodinu. Poslední aktualizace:{" "}
+              <span className="font-medium text-gray-600">
+                {formatGeneratedAt(metrics.generated_at)}
+              </span>
+            </p>
+          </div>
+        )}
+
       </div>
 
       <div className="bg-white rounded-lg shadow-sm p-8 mt-8 mb-8 border border-gray-200">

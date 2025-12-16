@@ -103,6 +103,9 @@ def get_home_page_metrics() -> dict:
     
     # Add countries to results
     results["countries"] = countries
+    
+    # Add generated timestamp info
+    results["generated_at"] = now_tz
 
     # Return compiled results
     return results
