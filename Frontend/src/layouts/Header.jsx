@@ -418,6 +418,7 @@ function Header() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-lg hover:bg-red-50 transition"
+              aria-label="Mobile Menu"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
