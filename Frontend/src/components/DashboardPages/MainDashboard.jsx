@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, Minus, Globe, Car, Bolt, Info } from "lucide-react";
 import { useFetchMetrics } from "../../hooks/HomePage_APIHook.jsx";
 import { getCountryFlag } from "../../utils/GetCountryFlags";
-const api_key = import.meta.env.VITE_LOGO_DEV_API_KEY;
 
 export default function DashboardMain_Layout() {
   const [metrics, setMetrics] = useState(null);
@@ -163,23 +162,57 @@ export default function DashboardMain_Layout() {
     </div>
   );
 
+  // Function to get initials from company name
+  const getInitials = (companyName) => {
+    if (!companyName) return "?";
+
+    // 1. Handle the "&" case specifically
+    if (companyName.includes('&')) {
+      const parts = companyName.split('&');
+      const firstInitial = parts[0].trim()[0];
+      const secondInitial = parts[1].trim()[0];
+      return `${firstInitial}&${secondInitial}`.toUpperCase();
+    }
+
+    // 2. Standard logic for multiple words (Harley Davidson -> HD)
+    const cleanName = companyName.replace(/[^a-zA-Z0-9\s]/g, '');
+    const words = cleanName.trim().split(/\s+/).filter(word => word.length > 0);
+
+    // Get first letters of first two words
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    } else if (words.length === 1) {
+      return words[0][0].toUpperCase();
+    }
+    
+    // Fallback
+    return "?";
+  };
+
+  // Company logo component
   const CompanyLogo = ({ name }) => {
     const [hasError, setHasError] = useState(false);
     
     // Format the name to create a domain
-    const domain = `${name.toLowerCase().replace(/\s+/g, '')}.com`;
-    const logoUrl = `https://img.logo.dev/${domain}?token=${api_key}`;
+    const initials = getInitials(name);
+    const domain = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const logoUrl = `https://cdn.simpleicons.org/${domain}`;
 
     // Fallback to globe icon on error
     if (hasError) {
-      return <Globe className="w-8 h-8 text-gray-400" />;
+      // Return first or two letters of the name as a placeholder
+      return (
+        <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded border border-gray-200 text-gray-500 text-xs font-bold select-none">
+          {initials}
+        </div>
+      );
     }
 
     return (
       <img
         src={logoUrl}
         alt={`${name} logo`}
-        className="w-8 h-8 object-contain"
+        className="w-8 h-8 object-contain bg-white"
         crossOrigin="anonymous"
         onError={() => setHasError(true)}
       />
@@ -417,43 +450,6 @@ export default function DashboardMain_Layout() {
 
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-8 mt-8 mb-8 border border-gray-200">
-        <div className="flex items-center gap-2 mb-4">
-          <Bolt className="w-8 h-8 text-gray-800" />
-          <h3 className="text-xl font-bold text-gray-800">
-            Nejčastěji vyhledavaný sortiment
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-            <h3 className="text-lg font-semibold text-blue-900 mb-2">
-              Quick Stats
-            </h3>
-            <div className="text-blue-700">
-              Dashboard statistics will appear here
-            </div>
-          </div>
-
-          <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-            <h3 className="text-lg font-semibold text-green-900 mb-2">
-              Recent Activity
-            </h3>
-            <div className="text-green-700">
-              Recent activity will appear here
-            </div>
-          </div>
-
-          <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
-            <h3 className="text-lg font-semibold text-purple-900 mb-2">
-              Notifications
-            </h3>
-            <div className="text-purple-700">
-              Notifications will appear here
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
