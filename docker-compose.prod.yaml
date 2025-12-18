@@ -93,8 +93,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Docker/nginx/default.prod.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf
+      - ./Docker/nginx/default.prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf:ro
       - ./nginx/certbot/conf:/etc/letsencrypt
       - ./nginx/certbot/www:/var/www/certbot
       - goldfren_media:/GoldFren_Media
