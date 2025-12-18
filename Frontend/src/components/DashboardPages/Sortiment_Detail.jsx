@@ -5,6 +5,7 @@ import DataGrid_Admin from "../DataGrid/DataGrid_Admin";
 import { useAuth } from "../../services/authContext";
 import CustomAddDialog from "../ui/Custom_AddDialog";
 import AlertDialog from "../ui/Custom_AlertDialog";
+import { useTranslation } from "react-i18next";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -16,6 +17,7 @@ export default function SortimentLayout() {
   const [showDialog, setShowDialog] = useState(false);
   const [refreshToken, setRefreshToken] = useState(Date.now());
   const [alertDialog, setAlertDialog] = useState(null);
+  const { t } = useTranslation();
 
   // Format the sortiment type to label
   const sortimentLabel = formatUrlLinkPathtoLable(sortimentType);
@@ -25,7 +27,7 @@ export default function SortimentLayout() {
       <div className="max-w-auto mx-auto mt-4">
         {/* Page label */}
         <h2 className="text-3xl font-bold text-gray-900">
-          {sortimentLabel}
+          {t("admin.sortiment." + sortimentType)}
         </h2>
 
         {/* Add button */}
@@ -33,7 +35,7 @@ export default function SortimentLayout() {
           onClick={() => setShowDialog(true)}
           className="mt-2 mb-4 px-6 py-4 bg-red-600 text-white font-bold rounded-md cursor-pointer hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
         >
-          Přidat {sortimentLabel}
+          {t("admin.sortiment." + sortimentType + "_add_button")}
         </button>
 
         {/* DataGrid */}

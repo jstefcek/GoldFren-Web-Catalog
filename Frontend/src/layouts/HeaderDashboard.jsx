@@ -4,11 +4,12 @@ import { topNavigationConfig } from "./DashboardConfig/topNavigationConfig";
 import { NavigationItem } from "./DashboardConfig/NavigationItem";
 import { bottomNavigationConfig } from "./DashboardConfig/bottomNavigationConfig";
 import { useAuth } from "../services/authContext";
+import { useTranslation } from "react-i18next";
 
 const HeaderDashboard = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-
+  const { t } = useTranslation();
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
@@ -70,8 +71,8 @@ const HeaderDashboard = ({ children }) => {
             <div className="flex items-center gap-3">
               <img src="/logo/goldfren.ico" alt="Logo" className="w-8 h-8" />
               <div>
-                <h2 className="text-lg font-semibold text-gray-800">Admin Panel</h2>
-                <p className="text-xs text-gray-500">Administrace webu</p>
+                <h2 className="text-lg font-semibold text-gray-800">{t("admin.layout.admin_title_text")}</h2>
+                <p className="text-xs text-gray-500">{t("admin.layout.admin_paragraph_text")}</p>
               </div>
             </div>
           )}

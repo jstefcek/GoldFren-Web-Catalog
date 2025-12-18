@@ -12,6 +12,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -28,6 +29,7 @@ export default function AccountLayout() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const { t } = useTranslation();
 
   const passwordsMatch = form.new && form.confirm && form.new === form.confirm;
 
@@ -143,7 +145,7 @@ export default function AccountLayout() {
     return (
       <div className="p-8 text-center text-gray-700">
         <p className="text-xl">
-          Nejste přihlášeni. Přihlaste se pro zobrazení účtu.
+          {t("admin.account.not_logged_in_text")}
         </p>
       </div>
     );
@@ -160,12 +162,12 @@ export default function AccountLayout() {
             />
             <div>
               <div className="text-xl font-bold text-yellow-900">
-                Administrátorský účet
+                {t("admin.account.admin_dialog_title_text")}
               </div>
               <div className="text-yellow-800 mt-1 text-sm">
-                Máte oprávnění administrátora. <br />
+                {t("admin.account.admin_dialog_paragraph_text")} <br />
                 <span className="italic text-sm">
-                  Máte k dispozici speciální funkce a ovládací prvky.
+                  {t("admin.account.admin_dialog_paragraph_text_next")}
                 </span>
               </div>
             </div>
@@ -174,10 +176,10 @@ export default function AccountLayout() {
 
         <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200 mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-1">
-            Přehled účtu
+            {t("admin.account.page_title")}
           </h1>
           <p className="text-gray-600 text-lg mb-4">
-            Podrobnosti o vašem profilu
+            {t("admin.account.page_title_paragraph")}
           </p>
 
           {/* Display username */}
@@ -185,7 +187,7 @@ export default function AccountLayout() {
             <User className="w-8 h-8 text-red-700" />
             <div>
               <div className="text-gray-700 font-medium">
-                Přihlašovací jméno
+                {t("admin.account.username")}
               </div>
               <div className="text-gray-900 font-bold text-lg">
                 {user.username || "XNA"}
@@ -198,7 +200,7 @@ export default function AccountLayout() {
             <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
               <User className="w-8 h-8 text-red-700" />
               <div>
-                <div className="text-gray-700 font-medium">Křestní jméno</div>
+                <div className="text-gray-700 font-medium">{t("admin.account.first_name")}</div>
                 <div className="text-gray-900 font-bold text-lg">
                   {user.first_name || "XNA"}
                 </div>
@@ -209,7 +211,7 @@ export default function AccountLayout() {
             <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
               <User className="w-8 h-8 text-red-700" />
               <div>
-                <div className="text-gray-700 font-medium">Příjmení</div>
+                <div className="text-gray-700 font-medium">{t("admin.account.last_name")}</div>
                 <div className="text-gray-900 font-bold text-lg">
                   {user.last_name || "XNA"}
                 </div>
@@ -221,7 +223,7 @@ export default function AccountLayout() {
               <Mail className="w-8 h-8 text-red-700" />
               <div>
                 <div className="text-gray-700 font-medium">
-                  E-mailová adresa
+                  {t("admin.account.email")}
                 </div>
                 <div className="text-gray-900 font-bold text-lg">
                   {user.email || "XNA"}
@@ -233,12 +235,12 @@ export default function AccountLayout() {
             <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
               <Shield className="w-8 h-8 text-red-700" />
               <div>
-                <div className="text-gray-700 font-medium">Status účtu</div>
+                <div className="text-gray-700 font-medium">{t("admin.account.status")}</div>
                 <div className="text-gray-900 font-bold text-lg">
                   {user.isActive ? (
-                    <span className="text-green-600">Aktivní</span>
+                    <span className="text-green-600">{t("admin.account.active")}</span>
                   ) : (
-                    <span className="text-red-800">Neaktivní</span>
+                    <span className="text-red-800">{t("admin.account.inactive")}</span>
                   )}
                 </div>
               </div>
@@ -272,19 +274,19 @@ export default function AccountLayout() {
         )}
 
         <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Změna hesla</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("admin.account.password_change_text")}</h2>
           <p className="text-gray-600 mb-6">
-            Níže můžete aktualizovat heslo k vašemu účtu.
+            {t("admin.account.password_change_paragraph_text")}
           </p>
           <div className="grid grid-cols-1 gap-5 max-w-md">
             {["current", "new", "confirm"].map((field) => (
               <div key={field}>
                 <label className="block text-gray-700 font-medium mb-1">
                   {field === "current"
-                    ? "Vaše aktuální heslo"
+                    ? t("admin.account.password_actual_text")
                     : field === "new"
-                    ? "Nové heslo"
-                    : "Potvrzení nového hesla"}
+                    ? t("admin.account.password_new_text")
+                    : t("admin.account.password_confirm_text")}
                 </label>
                 <div
                   className={`flex items-center gap-2 rounded-lg px-3 py-2 bg-gray-50 ${
@@ -308,10 +310,10 @@ export default function AccountLayout() {
                     }
                     placeholder={
                       field === "current"
-                        ? "Vložte aktuální heslo"
+                        ? t("admin.account.password_current_placeholder")
                         : field === "new"
-                        ? "Zadejte nové heslo (alespoň 8 znaků)"
-                        : "Zadejte znovu nové heslo"
+                        ? t("admin.account.password_new_placeholder")
+                        : t("admin.account.password_confirm_placeholder")
                     }
                     disabled={isLoading}
                   />
@@ -335,8 +337,8 @@ export default function AccountLayout() {
                     }`}
                   >
                     {passwordsMatch
-                      ? "✓ Hesla se shodují"
-                      : "✗ Hesla se neshodují"}
+                      ? t("admin.account.password_change_match_correct_text")
+                      : t("admin.account.password_change_match_incorrect_text")}
                   </div>
                 )}
               </div>
@@ -351,7 +353,7 @@ export default function AccountLayout() {
                   : "bg-red-700 hover:bg-red-800 text-white cursor-pointer"
               }`}
             >
-              {isLoading ? "Mění se heslo..." : "Změnit heslo"}
+              {isLoading ? t("admin.account.password_change_loading_text") : t("admin.account.password_change_submit_changed_text")}
             </button>
           </div>
         </div>
@@ -362,12 +364,11 @@ export default function AccountLayout() {
               <div className="flex items-center gap-3 mb-4">
                 <ShieldCheck className="w-6 h-6 text-yellow-600" />
                 <h3 className="text-lg font-bold text-gray-900">
-                  Potvrzení změny hesla
+                  {t("admin.account.password_change_submit_text")}
                 </h3>
               </div>
               <p className="text-gray-600 mb-6">
-                Opravdu chcete změnit heslo? Tato akce je nevratná a budete se
-                muset přihlásit znovu s novým heslem.
+                {t("admin.account.password_change_submit_paragraph_text")}
               </p>
               <div className="flex gap-3 justify-end">
                 <button
@@ -375,7 +376,7 @@ export default function AccountLayout() {
                   disabled={isLoading}
                   className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium disabled:opacity-50"
                 >
-                  Zrušit
+                  {t("admin.account.password_change_decline_text")}
                 </button>
                 <button
                   onClick={handleConfirmPasswordChange}
@@ -386,7 +387,7 @@ export default function AccountLayout() {
                       : "bg-red-700 hover:bg-red-800 text-white"
                   }`}
                 >
-                  {isLoading ? "Mění se..." : "Potvrdit změnu"}
+                  {isLoading ? t("admin.account.password_change_loading_text") : t("admin.account.password_change_confirm_change_text")}
                 </button>
               </div>
             </div>

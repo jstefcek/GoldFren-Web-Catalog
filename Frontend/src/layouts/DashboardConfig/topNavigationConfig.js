@@ -5,14 +5,14 @@ import {
 export const topNavigationConfig = [
   {
     id: "dashboard",
-    label: "Přehled webu",
+    label: "dashboard",
     icon: Home,
     to: "/admin/dashboard",
     type: "link"
   },
   {
     id: "sortiment-vyrobce",
-    label: "Sortiment Výrobce",
+    label: "sortiment-vyrobce",
     icon: PackageSearch,
     type: "link",
     to: "/admin/manufacturer-data",
@@ -41,18 +41,18 @@ export const topNavigationConfig = [
     type: "dropdown",
     permissions: ["isInternal", "isActive"],
     items: [
-      { label: "Výrobce Vozidel", to: "/admin/manufacturer", iconPath: "/icons/manufacturer.svg" },
+      { label: "Výrobce_vozidel", to: "/admin/manufacturer", iconPath: "/icons/manufacturer.svg" },
       { label: "Automobily", to: "/admin/vehicles/automobily", iconPath: "/icons/car.svg" },
       { label: "Motocykly", to: "/admin/vehicles/motocykly", iconPath: "/icons/motorbike.svg" },
       { label: "Motokáry", to: "/admin/vehicles/motokary", iconPath: "/icons/kart.svg" },
-      { label: "Jízdní kola", to: "/admin/vehicles/kola", iconPath: "/icons/bike.svg" },
+      { label: "Jízdní_kola", to: "/admin/vehicles/kola", iconPath: "/icons/bike.svg" },
       { label: "Letadla", to: "/admin/vehicles/letadla", iconPath: "/icons/plane.svg" },
       { label: "Průmysl", to: "/admin/vehicles/prumysl", iconPath: "/icons/industry.svg" }
     ]
   },
   {
     id: "users",
-    label: "Uživatelé",
+    label: "users",
     icon: Users,
     to: "/admin/users",
     permissions: ["isAdmin", "isActive"],
@@ -60,7 +60,7 @@ export const topNavigationConfig = [
   },
   {
     id: "import",
-    label: "Import dat",
+    label: "import_data",
     icon: ImportIcon,
     to: "/admin/import-data",
     permissions: ["isAdmin", "isActive"],
@@ -68,7 +68,7 @@ export const topNavigationConfig = [
   },
   {
     id: "statistics",
-    label: "Statistiky",
+    label: "statistics",
     icon: ChartArea,
     to: "/admin/statistics",
     permissions: ["isAdmin", "isActive"],

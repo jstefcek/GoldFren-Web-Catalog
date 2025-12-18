@@ -46,7 +46,7 @@ function Home() {
       const category = data.page_category;
       
       // Track sortiment search event
-      trackSortimentSearch({ category });
+      trackSortimentSearch({ sortiment_category: category });
     }
 };
 

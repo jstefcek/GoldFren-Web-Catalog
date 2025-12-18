@@ -1,12 +1,14 @@
 import { useState } from "react";
 //import { useAuth } from "../../services/authContext";
 import AlertDialog from "../ui/Custom_AlertDialog";
+import { useTranslation } from "react-i18next";
 
 //const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function StatisticsPage_Layout() {
   //const { userInfo } = useAuth();
   const [alertData, setAlertData] = useState(null);
+  const { t } = useTranslation();
 
   const handleCloseAlert = () => {
     setAlertData(null);
@@ -17,7 +19,7 @@ export default function StatisticsPage_Layout() {
       <div className="max-w-auto mx-auto mt-4">
         {/* Display page label */}
         <h2 className="text-3xl font-bold text-gray-900">
-          Statistická data o webu
+          {t("admin.statistics.page_title")}
         </h2>
       </div>
 
