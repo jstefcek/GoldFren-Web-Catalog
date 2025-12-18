@@ -43,7 +43,7 @@ export function trackVehicleSearch({ vyrobce, objem, model, rok_vyroby }) {
 export function trackSortimentSearch({ category }) {
   if (gaInitialized) {
     ReactGA.event("sortiment_search", {
-      category,
+      sortiment_category: category,
     });
   }
 }
@@ -52,7 +52,7 @@ export function trackSortimentSearch({ category }) {
 export function trackTopSortimentCategory({ category }) {
   if (gaInitialized) {
     ReactGA.event("top_sortiment_category", {
-      category: category.join(", "),
+      sortiment_category: category,
     });
   }
 }
@@ -61,8 +61,8 @@ export function trackTopSortimentCategory({ category }) {
 export function trackSortimentItemView({ category, sortimentId }) {
   if (gaInitialized) {
     ReactGA.event("sortiment_item_view", {
-      category: category,
-      sortimentId: sortimentId,
+      sortiment_category: category,
+      sortiment_id: sortimentId,
     });
   }
 }

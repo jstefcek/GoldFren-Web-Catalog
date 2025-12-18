@@ -17,7 +17,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
 
   // Track if ID of item is valid
   if (isValidId) {
-    trackSortimentItemView({ category: "hadicky", item: id });
+    trackSortimentItemView({ sortiment_category: "hadicky", sortiment_id: id });
   }
 
   // State for controlling vehicle compatibility loading
