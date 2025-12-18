@@ -9,7 +9,7 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
   const IconComponent = item.icon;
   const theme = colorThemes[item.colorTheme] || colorThemes.default;
   const [isLangOpen, setIsLangOpen] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Determine which type of item it is and handle click accordingly
   const handleClick = () => {
@@ -36,9 +36,9 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
   );
 
   const currentLangCode = useMemo(() => {
-    const lng = (t.language || "cs").split("-")[0];
+    const lng = (i18n.language || "cs").split("-")[0];
     return lng;
-  }, [t.language]);
+  }, [i18n.language]);
 
   const currentLanguageInfo = useMemo(() => {
     return languages.find((l) => l.code === currentLangCode) || languages[0];
@@ -57,7 +57,7 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
   }, []);
 
   const handleLanguageChange = (lng) => {
-    t.changeLanguage(lng);
+    i18n.changeLanguage(lng);
     setIsLangOpen(false);
     if (onLinkClick) onLinkClick();
   };
@@ -209,7 +209,7 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
           className={({ isActive }) => getItemClasses(isActive)}
         >
           {IconComponent && <IconComponent className="h-5 w-5" />}
-          {!isCollapsed && <span className="text-sm lg:text-sm">{item.label}</span>}
+          {!isCollapsed && <span className="text-sm lg:text-sm">{t("admin.layout." + item.label + "_text")}</span>}
         </NavLink>
       </div>
     );

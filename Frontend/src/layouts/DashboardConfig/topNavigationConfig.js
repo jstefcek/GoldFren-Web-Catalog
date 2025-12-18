@@ -5,14 +5,14 @@ import {
 export const topNavigationConfig = [
   {
     id: "dashboard",
-    label: "Přehled webu",
+    label: "dashboard",
     icon: Home,
     to: "/admin/dashboard",
     type: "link"
   },
   {
     id: "sortiment-vyrobce",
-    label: "Sortiment výrobců",
+    label: "sortiment-vyrobce",
     icon: PackageSearch,
     type: "link",
     to: "/admin/manufacturer-data",
@@ -52,7 +52,7 @@ export const topNavigationConfig = [
   },
   {
     id: "users",
-    label: "Uživatelé",
+    label: "users",
     icon: Users,
     to: "/admin/users",
     permissions: ["isAdmin", "isActive"],
@@ -60,7 +60,7 @@ export const topNavigationConfig = [
   },
   {
     id: "import",
-    label: "Import dat",
+    label: "import_data",
     icon: ImportIcon,
     to: "/admin/import-data",
     permissions: ["isAdmin", "isActive"],
@@ -68,7 +68,7 @@ export const topNavigationConfig = [
   },
   {
     id: "statistics",
-    label: "Statistiky webu",
+    label: "statistics",
     icon: ChartArea,
     to: "/admin/statistics",
     permissions: ["isAdmin", "isActive"],
