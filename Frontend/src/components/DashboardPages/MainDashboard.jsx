@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, Minus, Globe, Car, Bolt, Info } from "lucide-react";
 import { useFetchMetrics } from "../../hooks/HomePage_APIHook.jsx";
 import { getCountryFlag } from "../../utils/GetCountryFlags";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardMain_Layout() {
   const [metrics, setMetrics] = useState(null);
@@ -11,6 +12,7 @@ export default function DashboardMain_Layout() {
   const [todaysChangePercentage, setTodaysChangePercentage] = useState(0);
   const [monthlyChangePercentage, setMonthlyChangePercentage] = useState(0);
   const { fetchMetrics } = useFetchMetrics();
+  const { t } = useTranslation();
 
   // Czech month names
   const czechMonths = [
@@ -223,7 +225,7 @@ export default function DashboardMain_Layout() {
   if (error) {
     return (
       <div className="min-h-screen px-4 sm:px-6 lg:px-8 bg-gray-50 flex items-center justify-center">
-        <div className="text-xl text-red-600">Chyba: {error}</div>
+        <div className="text-xl text-red-600">{t("admin.error_fetching_data")}: {error}</div>
       </div>
     );
   }
@@ -246,10 +248,10 @@ export default function DashboardMain_Layout() {
     <div className="min-h-auto px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="bg-white rounded-lg shadow-sm pt-8 pl-8 pr-8 border border-gray-200">
         <h1 className="text-3xl font-bold text-gray-900">
-          GOLDfren webový katalog
+          {t("admin.home_title")}
         </h1>
         <p className="text-gray-600 text-lg">
-          Vítejte na administrační stránce vašeho webového katalogu
+          {t("admin.home_title_paragraph")}
         </p>
 
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -265,7 +267,7 @@ export default function DashboardMain_Layout() {
                 {/* Today's visitors */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h3 className="text-sm font-medium text-gray-500 mb-1">
-                    Návštěvníků dnes
+                    {t("admin.home_metrics_visitors_today")}
                   </h3>
                   <div className="text-gray-700 text-[36px] font-black flex items-center gap-1">
                     <span>{metrics?.today || 0}</span>
@@ -276,7 +278,7 @@ export default function DashboardMain_Layout() {
                 {/* Yesterdays visitors */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h3 className="text-sm font-medium text-gray-500 mb-1">
-                    Návštěvníků včera
+                    {t("admin.home_metrics_visitors_yesterday")}
                   </h3>
                   <div className="text-gray-700 text-[36px] font-black flex items-center gap-1">
                     <span>{metrics?.yesterday || 0}</span>
@@ -286,7 +288,7 @@ export default function DashboardMain_Layout() {
                 {/* This month's visitors */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h3 className="text-sm font-medium text-gray-500 mb-1">
-                    Návštěvníků tento měsíc
+                    {t("admin.home_metrics_visitors_this_month")}
                   </h3>
                   <div className="text-gray-700 text-[36px] font-black flex items-center gap-1">
                     <span>{metrics?.this_month || 0}</span>
@@ -300,7 +302,7 @@ export default function DashboardMain_Layout() {
                 {/* Last month's visitors */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h3 className="text-sm font-medium text-gray-500 mb-1">
-                    Návštěvníků minulý měsíc
+                    {t("admin.home_metrics_visitors_last_month")}
                   </h3>
                   <div className="text-gray-700 text-[36px] font-black flex items-center gap-1">
                     <span>{metrics?.last_month || 0}</span>
@@ -318,7 +320,7 @@ export default function DashboardMain_Layout() {
             <div className="flex items-center gap-2 mb-4">
               <Globe className="w-6 h-6 text-gray-800" />
               <h3 className="text-lg font-bold text-gray-800">
-                Návštěvníci webu během 30 dnů
+                {t("admin.home_metrics_visitors_country")}
               </h3>
             </div>
 
@@ -354,14 +356,14 @@ export default function DashboardMain_Layout() {
             {!loading && metrics?.countries?.length > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">Celkem zemí:</span>
+                  <span className="text-gray-600">{t("admin.home_metrics_visitors_country_count_text")}</span>
                   <span className="font-bold text-gray-800">
                     {metrics.countries.length}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-sm mt-1">
                   <span className="text-gray-600">
-                    Celkem unikátních uživatelů:
+                    {t("admin.home_metrics_visitors_country_unique_text")}
                   </span>
                   <span className="font-bold text-gray-800">
                     {metrics.countries.reduce(
@@ -381,7 +383,7 @@ export default function DashboardMain_Layout() {
           <div className="flex items-center justify-end gap-2 mt-2 mb-4 min-h-[24px]">
             <Info className="w-4 h-4 text-gray-500 shrink-0" />
             <p className="text-sm text-gray-500 text-right leading-tight">
-              Data jsou aktualizována jednou za hodinu. Poslední aktualizace:{" "}
+              {t("admin.home_metrics_update_text")}{" "}
               <span className="font-medium text-gray-600">
                 {formatGeneratedAt(metrics.generated_at)}
               </span>
@@ -397,7 +399,7 @@ export default function DashboardMain_Layout() {
         <div className="flex items-center gap-2 mb-4">
           <Car className="w-8 h-8 text-gray-800" />
           <h3 className="text-xl font-bold text-gray-800">
-            Nejčastěji vyhledavané značky vozidel během 30 dnů
+            {t("admin.home_metrics_manufacturers_title")}
           </h3>
         </div>
 
@@ -438,7 +440,7 @@ export default function DashboardMain_Layout() {
           <div className="flex items-center justify-end gap-2 mt-2 mb-4 min-h-[24px]">
             <Info className="w-4 h-4 text-gray-500 shrink-0" />
             <p className="text-sm text-gray-500 text-right leading-tight">
-              Data jsou aktualizována jednou za hodinu. Poslední aktualizace:{" "}
+              {t("admin.home_metrics_update_text")}{" "}
               <span className="font-medium text-gray-600">
                 {formatGeneratedAt(manufacturesData.generated_at)}
               </span>

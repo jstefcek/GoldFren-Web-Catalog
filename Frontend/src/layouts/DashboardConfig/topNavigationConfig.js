@@ -41,11 +41,11 @@ export const topNavigationConfig = [
     type: "dropdown",
     permissions: ["isInternal", "isActive"],
     items: [
-      { label: "Výrobce vozidel", to: "/admin/manufacturer", iconPath: "/icons/manufacturer.svg" },
+      { label: "Výrobce_vozidel", to: "/admin/manufacturer", iconPath: "/icons/manufacturer.svg" },
       { label: "Automobily", to: "/admin/vehicles/automobily", iconPath: "/icons/car.svg" },
       { label: "Motocykly", to: "/admin/vehicles/motocykly", iconPath: "/icons/motorbike.svg" },
       { label: "Motokáry", to: "/admin/vehicles/motokary", iconPath: "/icons/kart.svg" },
-      { label: "Jízdní kola", to: "/admin/vehicles/kola", iconPath: "/icons/bike.svg" },
+      { label: "Jízdní_kola", to: "/admin/vehicles/kola", iconPath: "/icons/bike.svg" },
       { label: "Letadla", to: "/admin/vehicles/letadla", iconPath: "/icons/plane.svg" },
       { label: "Průmysl", to: "/admin/vehicles/prumysl", iconPath: "/icons/industry.svg" }
     ]

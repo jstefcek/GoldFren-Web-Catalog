@@ -200,20 +200,20 @@ export default function VyrobceSortimentDetail() {
       <div className="max-w-auto mx-auto mt-4">
         {/* Title */}
         <h2 className="text-3xl font-bold text-gray-900" ref={titleRef}>
-          {t("search_by_manufacturer")}
+          {t("admin.sortiment_vyrobce.page_title")}
         </h2>
 
         {/* Search component and button to search */}
         <div className="mt-2 mb-4 grid gap-3 md:grid-cols-[1fr_auto]">
           <div>
             <CustomSelect
-              label="Vyberte výrobce"
+              label="admin.sortiment_vyrobce.select_text"
               name="vyrobce"
               value={selectedMfr}
               onChange={(e) => setSelectedMfr(e.target.value)}
               options={manufacturers}
               optional={false}
-              placeholder="Vyberte výrobce pro dohledání sortimentu"
+              placeholder="admin.sortiment_vyrobce.select_text_placeholder"
               disabled={loadingManufacturers}
             />
           </div>
@@ -223,7 +223,7 @@ export default function VyrobceSortimentDetail() {
             disabled={!selectedMfr || searching}
             className="ml-4 px-12 py-4 bg-red-700 text-white inline-flex items-center gap-2 font-bold rounded-md cursor-pointer hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:bg-red-600"
           >
-            <Search className="w-4 h-4 sm:w-6 sm:h-6" /> Vyhledat
+            <Search className="w-4 h-4 sm:w-6 sm:h-6" /> {t("admin.sortiment_vyrobce.search_text")}
           </button>
         </div>
 
@@ -285,12 +285,12 @@ export default function VyrobceSortimentDetail() {
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.25" />
                 <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="4" />
               </svg>
-              Exportuji…
+              {t("admin.sortiment_vyrobce.exporting_text")}
             </>
           ) : (
             <>
               <FileSpreadsheet className="w-4 h-4 sm:w-6 sm:h-6" />
-              Exportovat Data
+              {t("admin.sortiment_vyrobce.export_button_text")}
             </>
           )}
         </button>
