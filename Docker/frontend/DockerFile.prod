@@ -1,5 +1,5 @@
 # Use alpine Node.js image
-FROM node:25.1.0-alpine
+FROM node:24.11.0-alpine
 WORKDIR /goldfren_frontend
 
 # Declare build argument and environment variables

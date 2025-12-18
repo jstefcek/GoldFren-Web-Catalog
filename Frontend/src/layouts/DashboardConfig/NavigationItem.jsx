@@ -223,7 +223,7 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
         title={isCollapsed ? item.label : ""}
       >
         <IconComponent className="h-5 w-5" />
-        {!isCollapsed && <span className="text-sm lg:text-sm">{item.label}</span>}
+        {!isCollapsed && <span className="text-sm lg:text-sm">{t("admin.layout." + item.label + "_text")}</span>}
       </button>
     </div>
   );
