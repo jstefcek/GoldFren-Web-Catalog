@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from Components.GA4 import connect
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
-from google.analytics.data_v1beta.types import DateRange, Dimension, Metric, RunReportRequest
+from google.analytics.data_v1beta.types import DateRange, Dimension, Metric, RunReportRequest, FilterExpression, Filter, OrderBy
 
 def get_home_page_metrics() -> dict:
     """
@@ -76,12 +76,16 @@ def get_home_page_metrics() -> dict:
             results[period] = int(res.rows[0].metric_values[0].value)
         else:
             results[period] = 0
+            
+    # Calculate date ranges based on GA4 timezone
+    last_30_days_start = (now_tz - timedelta(days=30)).strftime("%Y-%m-%d")
+    last_30_days_end = now_tz.strftime("%Y-%m-%d")
 
     # Build GA4 report request for country breakdown this month
     req_countries = RunReportRequest(
         property=f"properties/{GA4_PROPERTY_ID}",
         date_ranges=[
-            DateRange(start_date=this_month_start, end_date=this_month_end),
+            DateRange(start_date=last_30_days_start, end_date=last_30_days_end),
         ],
         dimensions=[Dimension(name="country")],
         metrics=[Metric(name="activeUsers")],
@@ -108,3 +112,68 @@ def get_home_page_metrics() -> dict:
 
     # Return compiled results
     return results
+
+def get_top_searched_manufacturers(limit: int = 20) -> dict:
+    """
+    Function returned top searched manufacturers from Google Analytics 4 for the last 30 days.
+    """
+    # Connect to GA4
+    CLIENT: BetaAnalyticsDataClient
+    GA4_PROPERTY_ID: str
+    GA4_TIMEZONE: str
+    CLIENT, GA4_PROPERTY_ID, GA4_TIMEZONE = connect()
+    
+    # Current time localized to GA4 timezone
+    now_tz = datetime.now(ZoneInfo(GA4_TIMEZONE))
+    
+    # Calculate date ranges based on GA4 timezone
+    last_30_days_start = (now_tz - timedelta(days=30)).strftime("%Y-%m-%d")
+    last_30_days_end = now_tz.strftime("%Y-%m-%d")
+    
+    # Prepare GA4 request
+    req = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=last_30_days_start, end_date=last_30_days_end)],
+        dimensions=[Dimension(name="customEvent:vyrobce")],
+        metrics=[Metric(name="eventCount")],
+        dimension_filter=FilterExpression(
+            filter=Filter(
+                field_name="eventName",
+                string_filter=Filter.StringFilter(value="vehicle_search"),
+            )
+        ),
+        order_bys=[
+            OrderBy(
+                metric=OrderBy.MetricOrderBy(metric_name="eventCount"),
+                desc=True,
+            )
+        ],
+        limit=limit,
+    )
+    
+    # Run report
+    res = CLIENT.run_report(req)
+    
+    # Extract response data
+    result = {
+        "manufacturers": {}
+    }
+    
+    for row in res.rows:
+        vyrobce = (row.dimension_values[0].value or "").strip()
+        count_raw = row.metric_values[0].value or "0"
+        
+        # Safely convert count to integer
+        try:
+            searches = int(float(count_raw))
+        except ValueError:
+            searches = 0
+
+        # Add to manufacturers dictionary
+        result["manufacturers"][vyrobce] = searches
+        
+    # Add generated timestamp info
+    result["generated_at"] = now_tz
+    
+    # Return compiled manufacturers data    
+    return result

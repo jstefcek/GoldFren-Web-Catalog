@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, Minus, Globe, Car, Bolt, Info } from "lucide-react";
 import { useFetchMetrics } from "../../hooks/HomePage_APIHook.jsx";
 import { getCountryFlag } from "../../utils/GetCountryFlags";
+const api_key = import.meta.env.VITE_LOGO_DEV_API_KEY;
 
 export default function DashboardMain_Layout() {
   const [metrics, setMetrics] = useState(null);
+  const [manufacturesData, setManufactures] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [todaysChangePercentage, setTodaysChangePercentage] = useState(0);
@@ -57,6 +59,7 @@ export default function DashboardMain_Layout() {
     };
   };
 
+  // Get formatted dates
   const dates = getFormattedDates();
 
   // Percentage change calculation
@@ -69,8 +72,13 @@ export default function DashboardMain_Layout() {
   useEffect(() => {
     const loadMetrics = async () => {
       try {
+        // Fetch metrics data
         setLoading(true);
         const data = await fetchMetrics("/api/goldfren/internal/metrics/homepage");
+        const manu = await fetchMetrics("/api/goldfren/internal/metrics/homepage/manufacturers");
+
+        // Set state with fetched data
+        setManufactures(manu);
         setMetrics(data);
 
         // Calculate percentage changes
@@ -136,6 +144,7 @@ export default function DashboardMain_Layout() {
     </div>
   );
 
+  // Skeleton for country card
   const SkeletonCountryCard = () => (
     <div className="flex items-center justify-between bg-white p-3 rounded-md border border-gray-200">
       <div className="animate-pulse flex items-center gap-3 w-full">
@@ -146,6 +155,38 @@ export default function DashboardMain_Layout() {
     </div>
   );
 
+  // Data freshness skeleton
+  const DataFreshnessSkeleton = () => (
+    <div className="flex items-center justify-end gap-2 mt-2 mb-4 min-h-[24px]">
+      <div className="h-4 w-40 bg-gray-200 rounded animate-pulse" />
+      <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+    </div>
+  );
+
+  const CompanyLogo = ({ name }) => {
+    const [hasError, setHasError] = useState(false);
+    
+    // Format the name to create a domain
+    const domain = `${name.toLowerCase().replace(/\s+/g, '')}.com`;
+    const logoUrl = `https://img.logo.dev/${domain}?token=${api_key}`;
+
+    // Fallback to globe icon on error
+    if (hasError) {
+      return <Globe className="w-8 h-8 text-gray-400" />;
+    }
+
+    return (
+      <img
+        src={logoUrl}
+        alt={`${name} logo`}
+        className="w-8 h-8 object-contain"
+        crossOrigin="anonymous"
+        onError={() => setHasError(true)}
+      />
+    );
+  };
+
+  // Error handling
   if (error) {
     return (
       <div className="min-h-screen px-4 sm:px-6 lg:px-8 bg-gray-50 flex items-center justify-center">
@@ -244,7 +285,7 @@ export default function DashboardMain_Layout() {
             <div className="flex items-center gap-2 mb-4">
               <Globe className="w-6 h-6 text-gray-800" />
               <h3 className="text-lg font-bold text-gray-800">
-                Návštěvníci webu dle zemí
+                Návštěvníci webu během 30 dnů
               </h3>
             </div>
 
@@ -301,8 +342,10 @@ export default function DashboardMain_Layout() {
           </div>
         </div>
 
-        {!loading && metrics?.generated_at && (
-          <div className="flex items-center justify-end gap-2 my-2">
+        {loading ? (
+          <DataFreshnessSkeleton />
+        ) : metrics?.generated_at ? (
+          <div className="flex items-center justify-end gap-2 mt-2 mb-4 min-h-[24px]">
             <Info className="w-4 h-4 text-gray-500 shrink-0" />
             <p className="text-sm text-gray-500 text-right leading-tight">
               Data jsou aktualizována jednou za hodinu. Poslední aktualizace:{" "}
@@ -311,46 +354,67 @@ export default function DashboardMain_Layout() {
               </span>
             </p>
           </div>
+        ) : (
+          <DataFreshnessSkeleton />
         )}
 
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-8 mt-8 mb-8 border border-gray-200">
+      <div className="bg-white rounded-lg shadow-sm pt-8 pl-8 pr-8 mt-8 mb-8 border border-gray-200">
         <div className="flex items-center gap-2 mb-4">
           <Car className="w-8 h-8 text-gray-800" />
           <h3 className="text-xl font-bold text-gray-800">
-            Nejčastěji vyhledavané značky vozidel
+            Nejčastěji vyhledavané značky vozidel během 30 dnů
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-            <h3 className="text-lg font-semibold text-blue-900 mb-2">
-              Quick Stats
-            </h3>
-            <div className="text-blue-700">
-              Dashboard statistics will appear here
-            </div>
-          </div>
-
-          <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-            <h3 className="text-lg font-semibold text-green-900 mb-2">
-              Recent Activity
-            </h3>
-            <div className="text-green-700">
-              Recent activity will appear here
-            </div>
-          </div>
-
-          <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
-            <h3 className="text-lg font-semibold text-purple-900 mb-2">
-              Notifications
-            </h3>
-            <div className="text-purple-700">
-              Notifications will appear here
-            </div>
+        <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[360px] overflow-y-auto">
+            {loading ? (
+              <>
+                {[...Array(8)].map((_, i) => (
+                  <SkeletonCountryCard key={i} />
+                ))}
+              </>
+            ) : (
+                Object.entries(manufacturesData?.manufacturers ?? {}).map(([name, count], index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-white p-3 rounded-md border border-gray-200 hover:border-gray-300 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded">
+                        <CompanyLogo name={name} />
+                    </div>
+                    <span className="text-gray-800 font-medium">
+                      {name}
+                    </span>
+                  </div>
+                  <span className="text-gray-600 font-semibold text-lg">
+                    {count}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
+
+        {loading ? (
+          <DataFreshnessSkeleton />
+        ) : manufacturesData?.generated_at ? (
+          <div className="flex items-center justify-end gap-2 mt-2 mb-4 min-h-[24px]">
+            <Info className="w-4 h-4 text-gray-500 shrink-0" />
+            <p className="text-sm text-gray-500 text-right leading-tight">
+              Data jsou aktualizována jednou za hodinu. Poslední aktualizace:{" "}
+              <span className="font-medium text-gray-600">
+                {formatGeneratedAt(manufacturesData.generated_at)}
+              </span>
+            </p>
+          </div>
+        ) : (
+          <DataFreshnessSkeleton />
+        )}
+
       </div>
 
       <div className="bg-white rounded-lg shadow-sm p-8 mt-8 mb-8 border border-gray-200">
