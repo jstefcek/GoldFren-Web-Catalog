@@ -12,7 +12,7 @@ export const topNavigationConfig = [
   },
   {
     id: "sortiment-vyrobce",
-    label: "Sortiment Výrobce",
+    label: "Sortiment výrobců",
     icon: PackageSearch,
     type: "link",
     to: "/admin/manufacturer-data",
@@ -41,7 +41,7 @@ export const topNavigationConfig = [
     type: "dropdown",
     permissions: ["isInternal", "isActive"],
     items: [
-      { label: "Výrobce Vozidel", to: "/admin/manufacturer", iconPath: "/icons/manufacturer.svg" },
+      { label: "Výrobce vozidel", to: "/admin/manufacturer", iconPath: "/icons/manufacturer.svg" },
       { label: "Automobily", to: "/admin/vehicles/automobily", iconPath: "/icons/car.svg" },
       { label: "Motocykly", to: "/admin/vehicles/motocykly", iconPath: "/icons/motorbike.svg" },
       { label: "Motokáry", to: "/admin/vehicles/motokary", iconPath: "/icons/kart.svg" },
@@ -68,7 +68,7 @@ export const topNavigationConfig = [
   },
   {
     id: "statistics",
-    label: "Statistiky",
+    label: "Statistiky webu",
     icon: ChartArea,
     to: "/admin/statistics",
     permissions: ["isAdmin", "isActive"],
