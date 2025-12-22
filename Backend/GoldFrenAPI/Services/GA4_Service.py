@@ -113,9 +113,10 @@ def get_home_page_metrics() -> dict:
     # Return compiled results
     return results
 
-def get_top_searched_manufacturers(limit: int = 20) -> dict:
+def get_top_searched_manufacturers(limit: int = 20, days: int = 30) -> dict:
     """
-    Function returned top searched manufacturers from Google Analytics 4 for the last 30 days.
+    Function returned top searched manufacturers from Google Analytics 4.
+    For default, it returns top 20 manufacturers for the last 30 days,
     """
     # Connect to GA4
     CLIENT: BetaAnalyticsDataClient
@@ -127,13 +128,13 @@ def get_top_searched_manufacturers(limit: int = 20) -> dict:
     now_tz = datetime.now(ZoneInfo(GA4_TIMEZONE))
     
     # Calculate date ranges based on GA4 timezone
-    last_30_days_start = (now_tz - timedelta(days=30)).strftime("%Y-%m-%d")
-    last_30_days_end = now_tz.strftime("%Y-%m-%d")
+    start_date = (now_tz - timedelta(days=days)).strftime("%Y-%m-%d")
+    end_date = now_tz.strftime("%Y-%m-%d")
     
     # Prepare GA4 request
     req = RunReportRequest(
         property=f"properties/{GA4_PROPERTY_ID}",
-        date_ranges=[DateRange(start_date=last_30_days_start, end_date=last_30_days_end)],
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
         dimensions=[Dimension(name="customEvent:vyrobce")],
         metrics=[Metric(name="eventCount")],
         dimension_filter=FilterExpression(
@@ -176,4 +177,206 @@ def get_top_searched_manufacturers(limit: int = 20) -> dict:
     result["generated_at"] = now_tz
     
     # Return compiled manufacturers data    
+    return result
+
+def get_sessions_manual_source(limit: int = 10, days: int = 7) -> dict:
+    """
+    Return sessions by manual source for the last X days from GA4 with X limit of results.
+    By default, it returns data for the last 7 days but can be adjusted via the 'days' parameter
+    and limit the results via the 'limit' parameter with default value of 10.
+    """
+    # Connect to GA4
+    CLIENT: BetaAnalyticsDataClient
+    GA4_PROPERTY_ID: str
+    GA4_TIMEZONE: str
+    CLIENT, GA4_PROPERTY_ID, GA4_TIMEZONE = connect()
+    
+    # Current time localized to GA4 timezone
+    now_tz = datetime.now(ZoneInfo(GA4_TIMEZONE))
+    
+    # Calculate date ranges based on GA4 timezone
+    start_date = (now_tz - timedelta(days=days)).strftime("%Y-%m-%d")
+    end_date = now_tz.strftime("%Y-%m-%d")
+    
+    # Prepare GA4 request
+    req = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        dimensions=[Dimension(name="sessionManualSource")],
+        metrics=[Metric(name="screenPageViews")],
+        dimension_filter=FilterExpression(
+            filter=Filter(
+                field_name="sessionManualSource",
+                string_filter=Filter.StringFilter(value=".+", match_type=Filter.StringFilter.MatchType.FULL_REGEXP),
+            )
+        ),
+        order_bys=[
+            OrderBy(
+                metric=OrderBy.MetricOrderBy(metric_name="screenPageViews"),
+                desc=True,
+            )
+        ],
+        limit=limit,
+    )
+    
+    # Run report
+    res = CLIENT.run_report(req)
+    
+    # Extract response data
+    result = {
+        "sources": {}
+    }
+    for row in res.rows:
+        source = (row.dimension_values[0].value or "").strip()
+        count_raw = row.metric_values[0].value or "0"
+        
+        # Safely convert count to integer
+        try:
+            sessions = int(float(count_raw))
+        except ValueError:
+            sessions = 0
+            
+        # Handle empty or not set sources
+        if not source or source.lower() == "(not set)":
+            source = "Direct visit"
+
+        # Add to manual sources dictionary
+        result["sources"][source] = sessions
+        
+    # Add generated timestamp info
+    result["generated_at"] = now_tz
+    
+    # Return data    
+    return result
+
+def get_language_sessions(limit: int = 10, days: int = 7) -> dict:
+    """
+    Return sessions by language for the last X days from GA4 with X limit of results.
+    By default, it returns data for the last 7 days but can be adjusted via the 'days' parameter
+    and limit the results via the 'limit' parameter with default value of 10.
+    """
+    # Connect to GA4
+    CLIENT: BetaAnalyticsDataClient
+    GA4_PROPERTY_ID: str
+    GA4_TIMEZONE: str
+    CLIENT, GA4_PROPERTY_ID, GA4_TIMEZONE = connect()
+    
+    # Current time localized to GA4 timezone
+    now_tz = datetime.now(ZoneInfo(GA4_TIMEZONE))
+    
+    # Calculate date ranges based on GA4 timezone
+    start_date = (now_tz - timedelta(days=days)).strftime("%Y-%m-%d")
+    end_date = now_tz.strftime("%Y-%m-%d")
+    
+    # Prepare GA4 request
+    req = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        dimensions=[Dimension(name="language")],
+        metrics=[Metric(name="ActiveUsers")],
+        order_bys=[
+            OrderBy(
+                metric=OrderBy.MetricOrderBy(metric_name="ActiveUsers"),
+                desc=True,
+            )
+        ],
+        limit=limit,
+    )
+    
+    # Run report
+    res = CLIENT.run_report(req)
+    
+    # Extract response data
+    result = {
+        "languages": {}
+    }
+    for row in res.rows:
+        language = (row.dimension_values[0].value or "").strip()
+        count_raw = row.metric_values[0].value or "0"
+        
+        # Safely convert count to integer
+        try:
+            sessions = int(float(count_raw))
+        except ValueError:
+            sessions = 0
+
+        # Add to languages dictionary
+        result["languages"][language] = sessions
+        
+    # Add generated timestamp info
+    result["generated_at"] = now_tz
+    
+    # Return data    
+    return result
+
+def get_top_view_pages(limit: int = 10, days: int = 7) -> dict:
+    """
+    Return top viewed pages for the last X days from GA4 with X limit of results.
+    By default, it returns data for the last 7 days but can be adjusted via the 'days' parameter
+    and limit the results via the 'limit' parameter with default value of 10.
+    """
+    # Connect to GA4
+    CLIENT: BetaAnalyticsDataClient
+    GA4_PROPERTY_ID: str
+    GA4_TIMEZONE: str
+    CLIENT, GA4_PROPERTY_ID, GA4_TIMEZONE = connect()
+    
+    # Current time localized to GA4 timezone
+    now_tz = datetime.now(ZoneInfo(GA4_TIMEZONE))
+    
+    # Calculate date ranges based on GA4 timezone
+    start_date = (now_tz - timedelta(days=days)).strftime("%Y-%m-%d")
+    end_date = now_tz.strftime("%Y-%m-%d")
+    
+    # Prepare GA4 request
+    req = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        dimensions=[Dimension(name="pagePath")],
+        metrics=[Metric(name="screenPageViews")],
+        order_bys=[
+            OrderBy(
+                metric=OrderBy.MetricOrderBy(metric_name="screenPageViews"),
+                desc=True,
+            )
+        ],
+        limit=limit,
+    )
+    
+    # Run report
+    res = CLIENT.run_report(req)
+    
+    # Extract response data
+    result = {
+        "pages": {}
+    }
+    for row in res.rows:
+        page_path = (row.dimension_values[0].value or "").strip()
+        count_raw = row.metric_values[0].value or "0"
+        
+        # Safely convert count to integer
+        try:
+            views = int(float(count_raw))
+        except ValueError:
+            views = 0
+            
+        # Replace / to home page
+        if page_path == "/":
+            page_path = "Home page"
+        
+        # Remove leading slash
+        if page_path.startswith("/"):
+            page_path = page_path[1:]
+            
+        # Renamed old php index page name
+        if page_path == "index.php":
+            page_path = "Old Web Catalog Page"
+
+        # Add to pages dictionary
+        result["pages"][page_path] = views
+        
+    # Add generated timestamp info
+    result["generated_at"] = now_tz
+    
+    # Return data    
     return result
