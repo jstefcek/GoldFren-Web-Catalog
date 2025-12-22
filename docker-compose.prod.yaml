@@ -131,6 +131,29 @@ services:
     networks:
       - mynetwork
 
+  # MySQL backup service
+  # This service is used to back up the MySQL database periodically
+  mysql_backup:
+    image: databack/mysql-backup:latest
+    container_name: goldfren_mysql_backup
+    restart: always
+    environment:
+      DB_SERVER: ${MYSQL_HOSTNAME}
+      DB_PORT: ${MYSQL_PORT}
+      DB_USER: ${MYSQL_ROOT_USER}
+      DB_PASS: ${MYSQL_ROOT_PASSWORD}
+      DB_DUMP_TARGET: ${DB_DUMP_TARGET}
+      DB_DUMP_FREQUENCY: ${DB_DUMP_FREQUENCY}
+      DB_DUMP_BEGIN: ${DB_DUMP_BEGIN}
+      DB_DUMP_RETENTION: ${DB_DUMP_RETENTION}
+    depends_on:
+      goldfren_mysql:
+        condition: service_healthy
+    volumes:
+      - /home/backup/mysql:/backup/mysql
+    networks:
+      - mynetwork
+
 # Networks definition
 # This section defines the custom network used by the services
 networks:
