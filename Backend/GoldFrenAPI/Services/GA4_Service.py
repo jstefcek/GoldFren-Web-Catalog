@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 from Components.GA4 import connect
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import DateRange, Dimension, Metric, RunReportRequest, FilterExpression, Filter, OrderBy
+from GoldFrenAPI.utils.ga4_utils import prepare_request
 
 def get_home_page_metrics() -> dict:
     """
@@ -112,6 +113,18 @@ def get_home_page_metrics() -> dict:
 
     # Return compiled results
     return results
+
+def get_visitor_metrics(limit: int = 1, days: int = 30):
+    """
+    Function would return number of visitors for the specific date
+    For default, it returns one record for the last 30 days
+    """
+
+def get_countries_metrics(limit: int = 10, days: int = 30):
+    """
+    Function would return countires with most viewed users on web
+    For default, it returns top 10 countries for the last 30 days
+    """
 
 def get_top_searched_manufacturers(limit: int = 20, days: int = 30) -> dict:
     """
@@ -269,19 +282,12 @@ def get_language_sessions(limit: int = 10, days: int = 7) -> dict:
     end_date = now_tz.strftime("%Y-%m-%d")
     
     # Prepare GA4 request
-    req = RunReportRequest(
-        property=f"properties/{GA4_PROPERTY_ID}",
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[Dimension(name="language")],
-        metrics=[Metric(name="ActiveUsers")],
-        order_bys=[
-            OrderBy(
-                metric=OrderBy.MetricOrderBy(metric_name="ActiveUsers"),
-                desc=True,
-            )
-        ],
-        limit=limit,
-    )
+    req = prepare_request(property_id=GA4_PROPERTY_ID, 
+                          dimension_name="language",
+                          metrics_name="ActiveUsers",
+                          start_date=start_date,
+                          end_date=end_date,
+                          limit=limit)
     
     # Run report
     res = CLIENT.run_report(req)
@@ -329,19 +335,12 @@ def get_top_view_pages(limit: int = 10, days: int = 7) -> dict:
     end_date = now_tz.strftime("%Y-%m-%d")
     
     # Prepare GA4 request
-    req = RunReportRequest(
-        property=f"properties/{GA4_PROPERTY_ID}",
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[Dimension(name="pagePath")],
-        metrics=[Metric(name="screenPageViews")],
-        order_bys=[
-            OrderBy(
-                metric=OrderBy.MetricOrderBy(metric_name="screenPageViews"),
-                desc=True,
-            )
-        ],
-        limit=limit,
-    )
+    req = prepare_request(property_id=GA4_PROPERTY_ID, 
+                          dimension_name="pagePath",
+                          metrics_name="screenPageViews",
+                          start_date=start_date,
+                          end_date=end_date,
+                          limit=limit)
     
     # Run report
     res = CLIENT.run_report(req)
