@@ -60,8 +60,9 @@ export default function DashboardMain_Layout() {
 
   const dates = getFormattedDates();
 
+  // Calcuate precentage of change 
   const calculatePercentageChange = (current, previous) => {
-    if (previous === 0) return 0;
+    if (previous === 0) return ((current - previous) / 1) * 100;
     return ((current - previous) / previous) * 100;
   };
 
@@ -76,13 +77,13 @@ export default function DashboardMain_Layout() {
       setManufactures(manu);
       setMetrics(data);
 
-      if (data.today && data.yesterday > 0) {
+      if (data.today && data.yesterday >= 0) {
         setTodaysChangePercentage(
           calculatePercentageChange(data.today, data.yesterday)
         );
       }
 
-      if (data.this_month && data.last_month > 0) {
+      if (data.this_month && data.last_month >= 0) {
         setMonthlyChangePercentage(
           calculatePercentageChange(data.this_month, data.last_month)
         );
