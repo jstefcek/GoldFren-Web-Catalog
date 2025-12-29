@@ -404,7 +404,10 @@
       "Motokáry_text": "Karts",
       "Jízdní_kola_text": "Fahrräder",
       "Letadla_text": "Flugzeuge",
-      "Průmysl_text": "Industrie"
+      "Průmysl_text": "Industrie",
+      "web-views_text": "Besucherzahlen",
+      "vehicle_search_text": "Fahrzeuge",
+      "sortiment_search_text": "Sortiment"
     }
   }
 }

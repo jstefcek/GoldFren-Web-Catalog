@@ -404,7 +404,10 @@
       "Motokáry_text": "Motorcars",
       "Jízdní_kola_text": "Bikes",
       "Letadla_text": "Aircraft",
-      "Průmysl_text": "Industrial Vehicles"
+      "Průmysl_text": "Industrial Vehicles",
+      "web-views_text": "Visits",
+      "vehicle_search_text": "Vehicles",
+      "sortiment_search_text": "Sortiment"
     }
   }
 }

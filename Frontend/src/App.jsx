@@ -177,26 +177,17 @@ function App() {
           <Route element={<AdminLayout />}>
             {/* Main Dashboard with statistics */}
             <Route path="/admin/dashboard" element={<MainDashboard />} />
-
-            {/* User Managment Section */}
             <Route path="/admin/users" element={<Users_Detail />} />
-
-            {/* Manufacturer Management Section */}
-            <Route
-              path="/admin/manufacturer-data"
-              element={<VyrobceSortimentPage />}
-            />
-
-            {/* Sortiment & Vehicle Manage Sections */}
+            <Route path="/admin/manufacturer-data" element={<VyrobceSortimentPage />} />
             <Route path="/admin/sortiment/*" element={<Sortiment_Detail />} />
             <Route path="/admin/manufacturer" element={<Vyrobce />} />
             <Route path="/admin/vehicles/*" element={<Vehicle_Detail />} />
-
-            {/* Import Data Section & Statistics page */}
             <Route path="/admin/import-data" element={<ImportData_Page />} />
             <Route path="/admin/statistics" element={<Statistics_Page />} />
+            <Route path="/admin/stats/web-views" element={<NotFound />} />
+            <Route path="/admin/stats/vehicle-search" element={<NotFound />} />
+            <Route path="/admin/stats/sortiment-search" element={<NotFound />} />
 
-            {/* Account Management Section */}
             <Route path="/admin/account" element={<Account />} />
           </Route>
         </Routes>

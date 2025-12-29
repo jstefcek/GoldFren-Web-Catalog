@@ -187,7 +187,7 @@ export const NavigationItem = ({ item, isCollapsed, onLinkClick }) => {
                 {subItem.iconPath ? (
                   <img src={subItem.iconPath} alt="" className="h-5 w-5" />
                 ) : (
-                  subItem.icon && <subItem.icon className="h-5 w-5" />
+                  subItem.icon && <subItem.icon className="h-4 w-4" />
                 )}
                 {!isCollapsed && <span className="text-sm lg:text-sm">{t("admin.layout." + subItem.label + "_text")}</span>}
               </NavLink>
