@@ -292,7 +292,7 @@
     "home_metrics_visitors_country_count_text": "Total countries:",
     "home_metrics_visitors_country_unique_text": "Total unique users:",
     "home_metrics_update_text": "Data is updated once per hour. Last update:",
-    "home_metrics_manufacturers_title": "Most frequently searched vehicle brands in the last 30 days",
+    "home_metrics_manufacturers_title": "Top 10 most searched vehicle brands in 30 days",
     "sortiment_vyrobce": {
       "page_title": "Searching for products by manufacturer name",
       "search_text": "Search",

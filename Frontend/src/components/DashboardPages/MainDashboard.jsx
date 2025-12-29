@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Minus, Globe, Car, Bolt, Info } from "lucide-react";
+import { ArrowDown, ArrowUp, Minus, Globe, Car, Bolt, Info, AlertCircle, RefreshCw } from "lucide-react";
 import { useFetchMetrics } from "../../hooks/HomePage_APIHook.jsx";
 import { getCountryFlag } from "../../utils/GetCountryFlags";
 import { useTranslation } from "react-i18next";
@@ -36,7 +36,6 @@ export default function DashboardMain_Layout() {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    // Format: DD.MM.YYYY
     const formatDate = (date) => {
       const day = String(date.getDate()).padStart(2, "0");
       const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -44,7 +43,6 @@ export default function DashboardMain_Layout() {
       return `${day}.${month}.${year}`;
     };
 
-    // Get current and previous month names
     const currentMonth = czechMonths[today.getMonth()];
     const currentYear = today.getFullYear();
 
@@ -60,52 +58,47 @@ export default function DashboardMain_Layout() {
     };
   };
 
-  // Get formatted dates
   const dates = getFormattedDates();
 
-  // Percentage change calculation
   const calculatePercentageChange = (current, previous) => {
     if (previous === 0) return 0;
     return ((current - previous) / previous) * 100;
   };
 
   // Fetch data from API
-  useEffect(() => {
-    const loadMetrics = async () => {
-      try {
-        // Fetch metrics data
-        setLoading(true);
-        const data = await fetchMetrics("/api/goldfren/internal/metrics/homepage");
-        const manu = await fetchMetrics("/api/goldfren/internal/metrics/homepage/manufacturers");
+  const loadMetrics = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await fetchMetrics("/api/goldfren/internal/metrics/homepage");
+      const manu = await fetchMetrics("/api/goldfren/internal/metrics/homepage/manufacturers");
 
-        // Set state with fetched data
-        setManufactures(manu);
-        setMetrics(data);
+      setManufactures(manu);
+      setMetrics(data);
 
-        // Calculate percentage changes
-        if (data.today && data.yesterday > 0) {
-          setTodaysChangePercentage(
-            calculatePercentageChange(data.today, data.yesterday)
-          );
-        }
-
-        if (data.this_month && data.last_month > 0) {
-          setMonthlyChangePercentage(
-            calculatePercentageChange(data.this_month, data.last_month)
-          );
-        }
-
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
+      if (data.today && data.yesterday > 0) {
+        setTodaysChangePercentage(
+          calculatePercentageChange(data.today, data.yesterday)
+        );
       }
-    };
 
+      if (data.this_month && data.last_month > 0) {
+        setMonthlyChangePercentage(
+          calculatePercentageChange(data.this_month, data.last_month)
+        );
+      }
+
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadMetrics();
   }, []);
 
-  // Render change indicator
   const renderChangeIndicator = (percentage) => {
     if (percentage === 0) {
       return (
@@ -145,7 +138,6 @@ export default function DashboardMain_Layout() {
     </div>
   );
 
-  // Skeleton for country card
   const SkeletonCountryCard = () => (
     <div className="flex items-center justify-between bg-white p-3 rounded-md border border-gray-200">
       <div className="animate-pulse flex items-center gap-3 w-full">
@@ -156,7 +148,6 @@ export default function DashboardMain_Layout() {
     </div>
   );
 
-  // Data freshness skeleton
   const DataFreshnessSkeleton = () => (
     <div className="flex items-center justify-end gap-2 mt-2 mb-4 min-h-[24px]">
       <div className="h-4 w-40 bg-gray-200 rounded animate-pulse" />
@@ -164,11 +155,36 @@ export default function DashboardMain_Layout() {
     </div>
   );
 
-  // Function to get initials from company name
+  // Error state components
+  const ErrorMetricCard = () => (
+    <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+      <div className="flex items-center gap-2 mb-2">
+        <AlertCircle className="w-4 h-4 text-red-600" />
+        <h3 className="text-sm font-medium text-red-800">
+          {t("admin.error_loading_data")}
+        </h3>
+      </div>
+      <div className="text-gray-500 text-2xl font-bold">--</div>
+    </div>
+  );
+
+  const ErrorCountrySection = () => (
+    <div className="bg-red-50 p-6 rounded-lg border border-red-200">
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <AlertCircle className="w-12 h-12 text-red-600 mb-3" />
+        <h3 className="text-lg font-semibold text-red-800 mb-1">
+          {t("admin.error_loading_data")}
+        </h3>
+        <p className="text-sm text-red-600 max-w-md">
+          {t("admin.error_fetching_data")}: {error}
+        </p>
+      </div>
+    </div>
+  );
+
   const getInitials = (companyName) => {
     if (!companyName) return "?";
 
-    // 1. Handle the "&" case specifically
     if (companyName.includes('&')) {
       const parts = companyName.split('&');
       const firstInitial = parts[0].trim()[0];
@@ -176,33 +192,26 @@ export default function DashboardMain_Layout() {
       return `${firstInitial}&${secondInitial}`.toUpperCase();
     }
 
-    // 2. Standard logic for multiple words (Harley Davidson -> HD)
     const cleanName = companyName.replace(/[^a-zA-Z0-9\s]/g, '');
     const words = cleanName.trim().split(/\s+/).filter(word => word.length > 0);
 
-    // Get first letters of first two words
     if (words.length >= 2) {
       return (words[0][0] + words[1][0]).toUpperCase();
     } else if (words.length === 1) {
       return words[0][0].toUpperCase();
     }
     
-    // Fallback
     return "?";
   };
 
-  // Company logo component
   const CompanyLogo = ({ name }) => {
     const [hasError, setHasError] = useState(false);
     
-    // Format the name to create a domain
     const initials = getInitials(name);
     const domain = name.toLowerCase().replace(/[^a-z0-9]/g, '');
     const logoUrl = `https://cdn.simpleicons.org/${domain}`;
 
-    // Fallback to globe icon on error
     if (hasError) {
-      // Return first or two letters of the name as a placeholder
       return (
         <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded border border-gray-200 text-gray-500 text-xs font-bold select-none">
           {initials}
@@ -221,28 +230,18 @@ export default function DashboardMain_Layout() {
     );
   };
 
-  // Error handling
-  if (error) {
-    return (
-      <div className="min-h-screen px-4 sm:px-6 lg:px-8 bg-gray-50 flex items-center justify-center">
-        <div className="text-xl text-red-600">{t("admin.error_fetching_data")}: {error}</div>
-      </div>
-    );
-  }
-
-  // Format generated_at timestamp
   const formatGeneratedAt = (isoDate) => {
-  if (!isoDate) return null;
+    if (!isoDate) return null;
 
-  const date = new Date(isoDate);
-  return date.toLocaleString("cs-CZ", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+    const date = new Date(isoDate);
+    return date.toLocaleString("cs-CZ", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <div className="min-h-auto px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -254,6 +253,27 @@ export default function DashboardMain_Layout() {
           {t("admin.home_title_paragraph")}
         </p>
 
+        {error && (
+          <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-red-800 mb-1">
+                {t("admin.error_loading_data")}
+              </h3>
+              <p className="text-sm text-red-600 mb-3">
+                {t("admin.error_fetching_data")}: {error}
+              </p>
+              <button
+                onClick={loadMetrics}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                {t("admin.retry_loading")}
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left column - Metrics */}
           <div className="lg:col-span-1 space-y-4">
@@ -261,6 +281,13 @@ export default function DashboardMain_Layout() {
               <>
                 <SkeletonMetricCard />
                 <SkeletonMetricCard />
+              </>
+            ) : error ? (
+              <>
+                <ErrorMetricCard />
+                <ErrorMetricCard />
+                <ErrorMetricCard />
+                <ErrorMetricCard />
               </>
             ) : (
               <>
@@ -324,61 +351,69 @@ export default function DashboardMain_Layout() {
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[360px] overflow-y-auto">
-              {loading ? (
-                <>
-                  {[...Array(8)].map((_, i) => (
-                    <SkeletonCountryCard key={i} />
-                  ))}
-                </>
-              ) : (
-                metrics?.countries?.map((country, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between bg-white p-3 rounded-md border border-gray-200 hover:border-gray-300 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="text-3xl">
-                        {getCountryFlag(country.country)}
+            {error ? (
+              <ErrorCountrySection />
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[360px] overflow-y-auto">
+                  {loading ? (
+                    <>
+                      {[...Array(8)].map((_, i) => (
+                        <SkeletonCountryCard key={i} />
+                      ))}
+                    </>
+                  ) : (
+                    metrics?.countries?.map((country, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between bg-white p-3 rounded-md border border-gray-200 hover:border-gray-300 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="text-3xl">
+                            {getCountryFlag(country.country)}
+                          </div>
+                          <span className="text-gray-800 font-medium">
+                            {country.country}
+                          </span>
+                        </div>
+                        <span className="text-gray-600 font-semibold text-lg">
+                          {country.activeUsers}
+                        </span>
                       </div>
-                      <span className="text-gray-800 font-medium">
-                        {country.country}
+                    ))
+                  )}
+                </div>
+
+                {!loading && metrics?.countries?.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600">{t("admin.home_metrics_visitors_country_count_text")}</span>
+                      <span className="font-bold text-gray-800">
+                        {metrics.countries.length}
                       </span>
                     </div>
-                    <span className="text-gray-600 font-semibold text-lg">
-                      {country.activeUsers}
-                    </span>
+                    <div className="flex justify-between items-center text-sm mt-1">
+                      <span className="text-gray-600">
+                        {t("admin.home_metrics_visitors_country_unique_text")}
+                      </span>
+                      <span className="font-bold text-gray-800">
+                        {metrics.countries.reduce(
+                          (sum, c) => sum + c.activeUsers,
+                          0
+                        )}
+                      </span>
+                    </div>
                   </div>
-                ))
-              )}
-            </div>
-
-            {!loading && metrics?.countries?.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">{t("admin.home_metrics_visitors_country_count_text")}</span>
-                  <span className="font-bold text-gray-800">
-                    {metrics.countries.length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-sm mt-1">
-                  <span className="text-gray-600">
-                    {t("admin.home_metrics_visitors_country_unique_text")}
-                  </span>
-                  <span className="font-bold text-gray-800">
-                    {metrics.countries.reduce(
-                      (sum, c) => sum + c.activeUsers,
-                      0
-                    )}
-                  </span>
-                </div>
-              </div>
+                )}
+              </>
             )}
           </div>
         </div>
 
         {loading ? (
           <DataFreshnessSkeleton />
+        ) : error ? (
+          <div className="mt-2 mb-4 min-h-[24px]" />
         ) : metrics?.generated_at ? (
           <div className="flex items-center justify-end gap-2 mt-2 mb-4 min-h-[24px]">
             <Info className="w-4 h-4 text-gray-500 shrink-0" />
@@ -392,7 +427,6 @@ export default function DashboardMain_Layout() {
         ) : (
           <DataFreshnessSkeleton />
         )}
-
       </div>
 
       <div className="bg-white rounded-lg shadow-sm pt-8 pl-8 pr-8 mt-8 mb-8 border border-gray-200">
@@ -404,38 +438,44 @@ export default function DashboardMain_Layout() {
         </div>
 
         <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[360px] overflow-y-auto">
-            {loading ? (
-              <>
-                {[...Array(8)].map((_, i) => (
-                  <SkeletonCountryCard key={i} />
-                ))}
-              </>
-            ) : (
+          {error ? (
+            <ErrorCountrySection />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[360px] overflow-y-auto">
+              {loading ? (
+                <>
+                  {[...Array(8)].map((_, i) => (
+                    <SkeletonCountryCard key={i} />
+                  ))}
+                </>
+              ) : (
                 Object.entries(manufacturesData?.manufacturers ?? {}).map(([name, count], index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between bg-white p-3 rounded-md border border-gray-200 hover:border-gray-300 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between bg-white p-3 rounded-md border border-gray-200 hover:border-gray-300 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded">
                         <CompanyLogo name={name} />
+                      </div>
+                      <span className="text-gray-800 font-medium">
+                        {name}
+                      </span>
                     </div>
-                    <span className="text-gray-800 font-medium">
-                      {name}
+                    <span className="text-gray-600 font-semibold text-lg">
+                      {count}
                     </span>
                   </div>
-                  <span className="text-gray-600 font-semibold text-lg">
-                    {count}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         {loading ? (
           <DataFreshnessSkeleton />
+        ) : error ? (
+          <div className="mt-2 mb-4 min-h-[24px]" />
         ) : manufacturesData?.generated_at ? (
           <div className="flex items-center justify-end gap-2 mt-2 mb-4 min-h-[24px]">
             <Info className="w-4 h-4 text-gray-500 shrink-0" />
@@ -449,9 +489,7 @@ export default function DashboardMain_Layout() {
         ) : (
           <DataFreshnessSkeleton />
         )}
-
       </div>
-
     </div>
   );
 }

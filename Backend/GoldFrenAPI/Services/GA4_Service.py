@@ -21,9 +21,6 @@ def get_home_page_metrics() -> dict:
     GA4_TIMEZONE: str
     CLIENT, GA4_PROPERTY_ID, GA4_TIMEZONE = connect()
 
-    # Define metrics to query
-    metrics = ["screenPageViews"]
-
     # Current time localized to GA4 timezone
     now_tz = datetime.now(ZoneInfo(GA4_TIMEZONE))
 
@@ -43,19 +40,15 @@ def get_home_page_metrics() -> dict:
     requests = {
         "today": {
             "date_ranges": [{"start_date": today, "end_date": today}],
-            "metrics": metrics,
         },
         "yesterday": {
             "date_ranges": [{"start_date": yesterday, "end_date": yesterday}],
-            "metrics": metrics,
         },
         "this_month": {
             "date_ranges": [{"start_date": this_month_start, "end_date": this_month_end}],
-            "metrics": metrics,
         },
         "last_month": {
             "date_ranges": [{"start_date": last_month_start, "end_date": last_month_end}],
-            "metrics": metrics,
         },
     }
 
@@ -66,7 +59,13 @@ def get_home_page_metrics() -> dict:
         req = RunReportRequest(
             property=f"properties/{GA4_PROPERTY_ID}",
             date_ranges=[DateRange(start_date=params["date_ranges"][0]["start_date"], end_date=params["date_ranges"][0]["end_date"],)],
-            metrics=[Metric(name=metric) for metric in metrics],
+            metrics=[Metric(name="screenPageViews")],
+            order_bys=[
+                OrderBy(
+                    metric=OrderBy.MetricOrderBy(metric_name="screenPageViews"),
+                    desc=True,
+                )
+            ],
         )
         
         # Run report
@@ -90,6 +89,12 @@ def get_home_page_metrics() -> dict:
         ],
         dimensions=[Dimension(name="country")],
         metrics=[Metric(name="activeUsers")],
+        order_bys=[
+            OrderBy(
+                metric=OrderBy.MetricOrderBy(metric_name="activeUsers"),
+                desc=True,
+            )
+        ],
     )
     
     # Run report for country breakdown
@@ -114,22 +119,10 @@ def get_home_page_metrics() -> dict:
     # Return compiled results
     return results
 
-def get_visitor_metrics(limit: int = 1, days: int = 30):
-    """
-    Function would return number of visitors for the specific date
-    For default, it returns one record for the last 30 days
-    """
-
-def get_countries_metrics(limit: int = 10, days: int = 30):
-    """
-    Function would return countires with most viewed users on web
-    For default, it returns top 10 countries for the last 30 days
-    """
-
-def get_top_searched_manufacturers(limit: int = 20, days: int = 30) -> dict:
+def get_top_searched_manufacturers(limit: int = 10, days: int = 30) -> dict:
     """
     Function returned top searched manufacturers from Google Analytics 4.
-    For default, it returns top 20 manufacturers for the last 30 days,
+    For default, it returns top 10 manufacturers for the last 30 days,
     """
     # Connect to GA4
     CLIENT: BetaAnalyticsDataClient
@@ -172,7 +165,6 @@ def get_top_searched_manufacturers(limit: int = 20, days: int = 30) -> dict:
     result = {
         "manufacturers": {}
     }
-    
     for row in res.rows:
         vyrobce = (row.dimension_values[0].value or "").strip()
         count_raw = row.metric_values[0].value or "0"
