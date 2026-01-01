@@ -285,6 +285,8 @@
     "manageSaveButtonText": "Uložit preference"
   },
   "admin": {
+    "error_loading_data": "Chyba při načítání dat",
+    "retry_loading": "Opakovat načítání",
     "error_fetching_data": "Chyba při načítání dat",
     "home_title": "GOLDfren webový katalog",
     "home_title_paragraph": "Vítejte na administrační stránce vašeho webového katalogu",
@@ -346,7 +348,31 @@
       "password_confirm_text": "Potvrzení vašeho nového hesla"
     },
     "statistics": {
-      "page_title": "Statistická data o webu"
+      "web": {
+        "page_title": "Přehled webové návštěvnosti",
+        "title_paragraph": "Statistiky návštěvnosti webového katalogu",
+        "search_text": "Vyhledat",
+        "select_text": "Vyberte časové období",
+        "select_text_placeholder": "Vyberte časové období pro zobrazení statistik",
+        "today": "Dnes",
+        "last_7_days": "Posledních 7 dnů",
+        "last_14_days": "Posledních 14 dnů",
+        "last_30_days": "Posledních 30 dnů",
+        "this_month": "Tento měsíc",
+        "half_year": "Tento půl rok",
+        "this_year": "Tento rok",
+        "last_365_days": "Posledních 365 dnů",
+        "unique_web_visit_title": "Návštěvnost webu",
+        "visitors_languages_title": "Nejčastější jazyky návštěvníků",
+        "unique_visitors_x_axis": "Datum",
+        "unique_visitors_y_axis": "Počet návštěvníků"
+      },
+      "vehicle": {
+        "page_title": "Přehled vyhledávání vozidel na webu"
+      },
+      "sortiment": {
+        "page_title": "Přehled vyhledávání sortimentu na webu"
+      }
     },
     "vehicle_manufacturer": {
       "page_title": "Přehled výrobců vozidel",

@@ -19,7 +19,7 @@ export default function StatisticsPage_Layout() {
       <div className="max-w-auto mx-auto mt-4">
         {/* Display page label */}
         <h2 className="text-3xl font-bold text-gray-900">
-          {t("admin.statistics.page_title")}
+          {t("admin.statistics.sortiment.page_title")}
         </h2>
       </div>
 

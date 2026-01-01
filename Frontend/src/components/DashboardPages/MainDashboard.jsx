@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Minus, Globe, Car, Bolt, Info, AlertCircle, RefreshCw } from "lucide-react";
+import { ArrowDown, ArrowUp, Minus, Globe, Car, Info, AlertCircle, RefreshCw } from "lucide-react";
 import { useFetchMetrics } from "../../hooks/HomePage_APIHook.jsx";
 import { getCountryFlag } from "../../utils/GetCountryFlags";
 import { useTranslation } from "react-i18next";
@@ -63,7 +63,8 @@ export default function DashboardMain_Layout() {
   // Calcuate precentage of change 
   const calculatePercentageChange = (current, previous) => {
     if (previous === 0) return ((current - previous) / 1) * 100;
-    return ((current - previous) / previous) * 100;
+    else if (current === 0) return -100;
+    else return ((current - previous) / previous) * 100;
   };
 
   // Fetch data from API
@@ -77,15 +78,15 @@ export default function DashboardMain_Layout() {
       setManufactures(manu);
       setMetrics(data);
 
-      if (data.today && data.yesterday >= 0) {
+      if (Number.isFinite(data.today) && Number.isFinite(data.yesterday)) {
         setTodaysChangePercentage(
-          calculatePercentageChange(data.today, data.yesterday)
+          calculatePercentageChange(Number(data.today), Number(data.yesterday))
         );
       }
 
-      if (data.this_month && data.last_month >= 0) {
+      if (Number.isFinite(data.this_month) && Number.isFinite(data.last_month)) {
         setMonthlyChangePercentage(
-          calculatePercentageChange(data.this_month, data.last_month)
+          calculatePercentageChange(Number(data.this_month), Number(data.last_month))
         );
       }
 
@@ -183,6 +184,7 @@ export default function DashboardMain_Layout() {
     </div>
   );
 
+  // Company logo component with fallback to initials
   const getInitials = (companyName) => {
     if (!companyName) return "?";
 
@@ -205,6 +207,7 @@ export default function DashboardMain_Layout() {
     return "?";
   };
 
+  // Company logo component
   const CompanyLogo = ({ name }) => {
     const [hasError, setHasError] = useState(false);
     
@@ -231,6 +234,7 @@ export default function DashboardMain_Layout() {
     );
   };
 
+  // Format generated_at date
   const formatGeneratedAt = (isoDate) => {
     if (!isoDate) return null;
 
@@ -266,7 +270,7 @@ export default function DashboardMain_Layout() {
               </p>
               <button
                 onClick={loadMetrics}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors cursor-pointer"
               >
                 <RefreshCw className="w-4 h-4" />
                 {t("admin.retry_loading")}

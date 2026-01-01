@@ -10,7 +10,11 @@ from GoldFrenAPI.Services.GA4_Service import (
     get_top_searched_manufacturers,
     get_sessions_manual_source,
     get_language_sessions,
-    get_top_view_pages
+    get_top_view_pages,
+    get_web_stats_summary,
+    get_traffic_over_time,
+    get_engagment_quality,
+    get_device_engagment
 )
 
 # Cache timeout settings for home page
@@ -69,12 +73,11 @@ def get_top_searched_manufacturers_view(request):
 @permission_classes([IsAuthenticated, IsInternalUser])
 def get_sessions_manual_source_view(request):
     try:
-        # Try to get limit and days from request parameters
-        limit = int(request.GET.get('limit', 10))
-        days = int(request.GET.get('days', 7))
+        # Try to get days from request parameters
+        days = int(request.GET.get('days', 30))
         
         # Try to get cached manual sources
-        cache_key = f"sessions_manual_source_limit_{limit}_days_{days}"
+        cache_key = f"sessions_manual_source_days_{days}"
         cached_sources = cache.get(cache_key)
 
         # If cached sources exist, return them
@@ -82,7 +85,7 @@ def get_sessions_manual_source_view(request):
             return JsonResponse(cached_sources, safe=False)
 
         # If not cached, fetch fresh sources
-        sources = get_sessions_manual_source(limit=limit, days=days)
+        sources = get_sessions_manual_source(days=days)
 
         # Cache the results
         cache.set(cache_key, sources, CACHE_TIMEOUT_METRICS)
@@ -99,7 +102,7 @@ def get_language_sessions_view(request):
     try:
         # Try to get limit and days from request parameters
         limit = int(request.GET.get('limit', 10))
-        days = int(request.GET.get('days', 7))
+        days = int(request.GET.get('days', 30))
         
         # Try to get cached language sessions
         cache_key = f"language_sessions_limit_{limit}_days_{days}"
@@ -127,7 +130,7 @@ def get_top_view_pages_view(request):
     try:
         # Try to get limit and days from request parameters
         limit = int(request.GET.get('limit', 10))
-        days = int(request.GET.get('days', 7))
+        days = int(request.GET.get('days', 30))
         
         # Try to get cached top viewed pages
         cache_key = f"top_view_pages_limit_{limit}_days_{days}"
@@ -148,3 +151,111 @@ def get_top_view_pages_view(request):
     
     except Exception as ex:
         return HttpResponseBadRequest(f"Error fetching top view pages: {str(ex)}")
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def get_web_stats_summary_view(request):
+    try:
+        # Try to get days and limit from request parameters
+        days = int(request.GET.get('days', 30))
+        
+        # Try to get cached web stats summary
+        cache_key = f"web_stats_summary_days_{days}"
+        cached_summary = cache.get(cache_key)
+
+        # If cached summary exists, return it
+        if cached_summary is not None:
+            return JsonResponse(cached_summary, safe=False)
+
+        # If not cached, fetch fresh web stats summary
+        summary = get_web_stats_summary(days=days)
+
+        # Cache the results
+        cache.set(cache_key, summary, CACHE_TIMEOUT_METRICS)
+
+        # Return the fresh web stats summary
+        return JsonResponse(summary, safe=False)
+    
+    except Exception as ex:
+        return HttpResponseBadRequest(f"Error fetching web stats summary: {str(ex)}")
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def get_traffic_over_time_view(request):
+    try:
+        # Try to get days and limit from request parameters
+        days = int(request.GET.get('days', 30))
+
+        # Try to get cached traffic over time data
+        cache_key = f"traffic_over_time_days_{days}"
+        cached_summary = cache.get(cache_key)
+
+        # If cached summary exists, return it
+        if cached_summary is not None:
+            return JsonResponse(cached_summary, safe=False)
+
+        # If not cached, fetch fresh traffic over time data
+        summary = get_traffic_over_time(days=days)
+
+        # Cache the results
+        cache.set(cache_key, summary, CACHE_TIMEOUT_METRICS)
+
+        # Return the fresh traffic over time data
+        return JsonResponse(summary, safe=False)
+    
+    except Exception as ex:
+        return HttpResponseBadRequest(f"Error fetching traffic over time data: {str(ex)}")
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def get_engagment_quality_view(request):
+    try:
+        # Try to get days from request parameters
+        days = int(request.GET.get('days', 30))
+        
+        # Try to get cached engagement quality data
+        cache_key = f"engagment_quality_days_{days}"
+        cached_data = cache.get(cache_key)
+
+        # If cached data exists, return it
+        if cached_data is not None:
+            return JsonResponse(cached_data, safe=False)
+
+        # If not cached, fetch fresh engagement quality data
+        data = get_engagment_quality(days=days)
+
+        # Cache the results
+        cache.set(cache_key, data, CACHE_TIMEOUT_METRICS)
+
+        # Return the fresh engagement quality data
+        return JsonResponse(data, safe=False)
+    
+    except Exception as ex:
+        return HttpResponseBadRequest(f"Error fetching engagement quality data: {str(ex)}")
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsInternalUser])
+def get_device_engagment_view(request):
+    try:
+        # Try to get days from request parameters
+        days = int(request.GET.get('days', 30))
+        
+        # Try to get cached device engagement data
+        cache_key = f"device_engagment_days_{days}"
+        cached_data = cache.get(cache_key)
+
+        # If cached data exists, return it
+        if cached_data is not None:
+            return JsonResponse(cached_data, safe=False)
+
+        # If not cached, fetch fresh device engagement data
+        data = get_device_engagment(days=days)
+
+        # Cache the results
+        cache.set(cache_key, data, CACHE_TIMEOUT_METRICS)
+
+        # Return the fresh device engagement data
+        return JsonResponse(data, safe=False)
+    
+    except Exception as ex:
+        return HttpResponseBadRequest(f"Error fetching device engagement data: {str(ex)}")
