@@ -166,14 +166,12 @@ def get_top_searched_manufacturers(limit: int = 10, days: int = 30) -> dict:
         "manufacturers": {}
     }
     for row in res.rows:
+        # Extract values
         vyrobce = (row.dimension_values[0].value or "").strip()
         count_raw = row.metric_values[0].value or "0"
         
-        # Safely convert count to integer
-        try:
-            searches = int(float(count_raw))
-        except ValueError:
-            searches = 0
+        # Safely convert values
+        searches = int(float(count_raw)) if count_raw else 0
 
         # Add to manufacturers dictionary
         result["manufacturers"][vyrobce] = searches
@@ -203,21 +201,14 @@ def get_sessions_manual_source(days: int) -> dict:
     end_date = now_tz.strftime("%Y-%m-%d")
     
     # Prepare GA4 request
-    req = RunReportRequest(
-        property=f"properties/{GA4_PROPERTY_ID}",
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[Dimension(name="sessionManualSource")],
-        metrics=[
-            Metric(name="sessions"),
-            Metric(name="engagementRate"),
-        ],
-        order_bys=[
-            OrderBy(
-                metric=OrderBy.MetricOrderBy(metric_name="sessions"),
-                desc=True,
-            )
-        ],
-    )
+    req = prepare_request(property_id=GA4_PROPERTY_ID, 
+                          dimension_name="sessionManualSource",
+                          metrics_name=["sessions", "engagementRate"],
+                          order_by_metric="sessions",
+                          start_date=start_date,
+                          end_date=end_date,
+                          limit=10,
+                          desc=True)
     
     # Run report
     res = CLIENT.run_report(req)
@@ -230,27 +221,21 @@ def get_sessions_manual_source(days: int) -> dict:
         # Extract values
         sessions_name_str = row.dimension_values[0].value or ""
         sessions_raw = row.metric_values[0].value or "0"
-        engagementRate_raw = row.metric_values[1].value or "0"
+        engagement_rate_raw = row.metric_values[1].value or "0"
         
         # Safely convert values
+        sessions = int(float(sessions_raw)) if sessions_raw else 0
+        engagement_rate = round(float(engagement_rate_raw) * 100.0, 2) if engagement_rate_raw else 0
+            
+        # Rename not set value to direct
         if sessions_name_str == "(not set)":
             sessions_name_str = "Direct"
-        
-        try:
-            sessions = int(float(sessions_raw))
-        except ValueError:
-            sessions = 0
-            
-        try:
-            engagementRate = round(float(engagementRate_raw) * 100.0, 2) # Convert to percentage
-        except ValueError:
-            engagementRate = 0
 
         # Append to result list
         result["sessions"].append({
             "name": sessions_name_str,
             "sessions": sessions,
-            "engagementRate": engagementRate,
+            "engagementRate": engagement_rate,
         })
         
     # Add generated timestamp info
@@ -281,30 +266,36 @@ def get_language_sessions(limit: int = 10, days: int = 30) -> dict:
     # Prepare GA4 request
     req = prepare_request(property_id=GA4_PROPERTY_ID, 
                           dimension_name="language",
-                          metrics_name="ActiveUsers",
+                          metrics_name=["screenPageViews", "ActiveUsers"],
+                          order_by_metric="screenPageViews",
                           start_date=start_date,
                           end_date=end_date,
-                          limit=limit)
+                          limit=limit,
+                          desc=True)
     
     # Run report
     res = CLIENT.run_report(req)
     
     # Extract response data
     result = {
-        "languages": {}
+        "languages": []
     }
     for row in res.rows:
+        # Extract values
         language = (row.dimension_values[0].value or "").strip()
-        count_raw = row.metric_values[0].value or "0"
+        screen_page_views_raw = row.metric_values[0].value or "0"
+        active_users_raw = row.metric_values[1].value or "0"
         
-        # Safely convert count to integer
-        try:
-            sessions = int(float(count_raw))
-        except ValueError:
-            sessions = 0
+        # Safely convert values
+        screen_page_views = int(float(screen_page_views_raw)) if screen_page_views_raw else 0
+        active_users = int(float(active_users_raw)) if active_users_raw else 0
 
         # Add to languages dictionary
-        result["languages"][language] = sessions
+        result["languages"].append({
+            "name": language,
+            "screenPageViews": screen_page_views,
+            "activeUsers": active_users,
+        })
         
     # Add generated timestamp info
     result["generated_at"] = now_tz
@@ -334,27 +325,31 @@ def get_top_view_pages(limit: int = 10, days: int = 30) -> dict:
     # Prepare GA4 request
     req = prepare_request(property_id=GA4_PROPERTY_ID, 
                           dimension_name="pagePath",
-                          metrics_name="screenPageViews",
+                          metrics_name=["screenPageViews", "activeUsers", "averageSessionDuration"],
+                          order_by_metric="screenPageViews",
                           start_date=start_date,
                           end_date=end_date,
-                          limit=limit)
+                          limit=limit,
+                          desc=True)
     
     # Run report
     res = CLIENT.run_report(req)
     
     # Extract response data
     result = {
-        "pages": {}
+        "pages": []
     }
     for row in res.rows:
+        # Extract values
         page_path = (row.dimension_values[0].value or "").strip()
-        count_raw = row.metric_values[0].value or "0"
+        screen_page_views_raw = row.metric_values[0].value or "0"
+        active_users_raw = row.metric_values[1].value or "0"
+        average_session_duration_raw = row.metric_values[2].value or "0"
         
-        # Safely convert count to integer
-        try:
-            views = int(float(count_raw))
-        except ValueError:
-            views = 0
+        # Safely convert values
+        screen_page_views = int(float(screen_page_views_raw)) if screen_page_views_raw else 0
+        active_users = int(float(active_users_raw)) if active_users_raw else 0
+        average_session_duration = round(float(average_session_duration_raw), 2) if average_session_duration_raw else 0
             
         # Replace / to home page
         if page_path == "/":
@@ -369,7 +364,12 @@ def get_top_view_pages(limit: int = 10, days: int = 30) -> dict:
             page_path = "Old Web Catalog Page"
 
         # Add to pages dictionary
-        result["pages"][page_path] = views
+        result["pages"].append({
+            "name": page_path,
+            "screenPageViews": screen_page_views,
+            "activeUsers": active_users,
+            "averageSessionDuration": average_session_duration,
+        })
         
     # Add generated timestamp info
     result["generated_at"] = now_tz
@@ -457,22 +457,13 @@ def get_traffic_over_time(days: int) -> dict:
     end_date = now_tz.strftime("%Y-%m-%d")
     
     # Prepare GA4 request
-    req = RunReportRequest(
-        property=f"properties/{GA4_PROPERTY_ID}",
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[Dimension(name="date")],
-        metrics=[
-            Metric(name="activeUsers"),
-            Metric(name="sessions"),
-            Metric(name="screenPageViews"),
-        ],
-        order_bys=[
-            OrderBy(
-                dimension=OrderBy.DimensionOrderBy(dimension_name="date"),
-                desc=False,
-            )
-        ],
-    )
+    req = prepare_request(property_id=GA4_PROPERTY_ID, 
+                          dimension_name="date",
+                          metrics_name=["activeUsers", "sessions", "screenPageViews"],
+                          start_date=start_date,
+                          end_date=end_date,
+                          order_by_dimension=True,
+                          desc=False)
     
     # Run report
     res = CLIENT.run_report(req)
@@ -482,39 +473,24 @@ def get_traffic_over_time(days: int) -> dict:
         "traffic_over_time": []
     }
     for row in res.rows:
+        # Extract values
         date_str = row.dimension_values[0].value or ""
         active_users_raw = row.metric_values[0].value or "0"
         sessions_raw = row.metric_values[1].value or "0"
-        screenPageViews_raw = row.metric_values[2].value or "0"
+        screen_page_views_raw = row.metric_values[2].value or "0"
         
         # Safely convert values
-        try:
-            active_users = int(float(active_users_raw))
-        except ValueError:
-            active_users = 0
-            
-        try:
-            sessions = int(float(sessions_raw))
-        except ValueError:
-            sessions = 0
-            
-        try:
-            screenPageViews = int(float(screenPageViews_raw))
-        except ValueError:
-            screenPageViews = 0
-            
-        # Format date
-        try:
-            date_formatted = datetime.strptime(date_str, "%Y%m%d").strftime("%d.%m.%Y")
-        except ValueError:
-            date_formatted = date_str
+        active_users = int(float(active_users_raw)) if active_users_raw else 0
+        sessions = int(float(sessions_raw)) if sessions_raw else 0
+        screen_page_views = int(float(screen_page_views_raw)) if screen_page_views_raw else 0
+        date_formatted = datetime.strptime(date_str, "%Y%m%d").strftime("%d.%m.%Y") if date_str else date_str
 
         # Append to result list
         result["traffic_over_time"].append({
             "date": date_formatted,
             "activeUsers": active_users,
             "sessions": sessions,
-            "screenPageViews": screenPageViews,
+            "screenPageViews": screen_page_views,
         })
         
     # Add generated timestamp info
@@ -541,21 +517,13 @@ def get_engagment_quality(days: int) -> dict:
     end_date = now_tz.strftime("%Y-%m-%d")
     
     # Prepare GA4 request
-    req = RunReportRequest(
-        property=f"properties/{GA4_PROPERTY_ID}",
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[Dimension(name="date")],
-        metrics=[
-            Metric(name="engagementRate"),
-            Metric(name="averageSessionDuration"),
-        ],
-        order_bys=[
-            OrderBy(
-                dimension=OrderBy.DimensionOrderBy(dimension_name="date"),
-                desc=False,
-            )
-        ],
-    )
+    req = prepare_request(property_id=GA4_PROPERTY_ID, 
+                          dimension_name="date",
+                          metrics_name=["engagementRate", "averageSessionDuration"],
+                          start_date=start_date,
+                          end_date=end_date,
+                          order_by_dimension=True,
+                          desc=False)
     
     # Run report
     res = CLIENT.run_report(req)
@@ -565,32 +533,21 @@ def get_engagment_quality(days: int) -> dict:
         "engagment_quality": []
     }
     for row in res.rows:
+        # Extract values
         date_str = row.dimension_values[0].value or ""
-        engagementRate_raw = row.metric_values[0].value or "0"
-        averageSessionDuration_raw = row.metric_values[1].value or "0"
+        engagement_rate_raw = row.metric_values[0].value or "0"
+        average_session_duration_raw = row.metric_values[1].value or "0"
         
         # Safely convert values
-        try:
-            engagementRate = round(float(engagementRate_raw) * 100.0, 2)  # Convert to percentage
-        except ValueError:
-            engagementRate = 0
-            
-        try:
-            averageSessionDuration = round(float(averageSessionDuration_raw), 2)
-        except ValueError:
-            averageSessionDuration = 0
-
-        # Format date
-        try:
-            date_formatted = datetime.strptime(date_str, "%Y%m%d").strftime("%d.%m.%Y")
-        except ValueError:
-            date_formatted = date_str
+        engagement_rate = round(float(engagement_rate_raw) * 100.0, 2) if engagement_rate_raw else 0.0
+        average_session_duration = round(float(average_session_duration_raw), 2) if average_session_duration_raw else 0.0
+        date_formatted = datetime.strptime(date_str, "%Y%m%d").strftime("%d.%m.%Y") if date_str else date_str
 
         # Append to result list
         result["engagment_quality"].append({
             "date": date_formatted,
-            "engagementRate": engagementRate,
-            "averageSessionDuration": averageSessionDuration,
+            "engagementRate": engagement_rate,
+            "averageSessionDuration": average_session_duration,
         })
         
     # Add generated timestamp info
@@ -617,22 +574,13 @@ def get_device_engagment(days: int) -> dict:
     end_date = now_tz.strftime("%Y-%m-%d")
     
     # Prepare GA4 request
-    req = RunReportRequest(
-        property=f"properties/{GA4_PROPERTY_ID}",
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[Dimension(name="deviceCategory")],
-        metrics=[
-            Metric(name="sessions"),
-            Metric(name="engagementRate"),
-            Metric(name="averageSessionDuration"),
-        ],
-        order_bys=[
-            OrderBy(
-                metric=OrderBy.MetricOrderBy(metric_name="sessions"),
-                desc=True,
-            )
-        ],
-    )
+    req = prepare_request(property_id=GA4_PROPERTY_ID, 
+                          dimension_name="deviceCategory",
+                          metrics_name=["sessions", "engagementRate", "averageSessionDuration"],
+                          order_by_metric="sessions",
+                          start_date=start_date,
+                          end_date=end_date,
+                          desc=True)
     
     # Run report
     res = CLIENT.run_report(req)
@@ -658,8 +606,8 @@ def get_device_engagment(days: int) -> dict:
         result["device_engagement"].append({
             "deviceCategory": device_category,
             "sessions": sessions,
-            "engagementRate": engagement_rate_pct, # percentage
-            "averageSessionDuration": avg_session_duration_sec,  # seconds
+            "engagementRate": engagement_rate_pct,
+            "averageSessionDuration": avg_session_duration_sec,
         })
 
     # Return data
