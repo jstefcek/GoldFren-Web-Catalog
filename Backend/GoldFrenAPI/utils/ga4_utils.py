@@ -4,6 +4,7 @@
 # Libraries
 # ------------------------------------------------------------------
 from google.analytics.data_v1beta.types import DateRange, Dimension, Metric, RunReportRequest, OrderBy
+from datetime import datetime, timedelta
 
 # Functions
 # ------------------------------------------------------------------
