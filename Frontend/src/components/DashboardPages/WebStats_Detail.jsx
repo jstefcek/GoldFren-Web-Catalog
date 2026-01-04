@@ -213,7 +213,7 @@ export default function StatisticsPage_Layout() {
                   data={LineData}
                   margin={{ top: 10, right: 30, bottom: 80, left: 60 }}
                   yScale={{ type: "linear", min: "auto", max: "auto", stacked: false, reverse: false }}
-                  axisBottom={{ legend: t("admin.statistics.web.traffic_chart_legend_y"), legendOffset: 45 }}
+                  axisBottom={{ legend: t("admin.statistics.web.traffic_chart_legend_y"), legendOffset: 45, tickValues: 5 }}
                   axisLeft={{ legend: t("admin.statistics.web.traffic_chart_legend_x"), legendOffset: -45 }}
                   enableSlices="x"
                   useMesh={false}
@@ -352,7 +352,7 @@ export default function StatisticsPage_Layout() {
                   data={EngagementLineData}
                   margin={{ top: 10, right: 30, bottom: 80, left: 60 }}
                   yScale={{ type: 'linear', min: 'auto', max: 100, stacked: false, reverse: false }}
-                  axisBottom={{ legend: t("admin.statistics.web.engagement_trend_chart_legend_y"), legendOffset: 45 }}
+                  axisBottom={{ legend: t("admin.statistics.web.engagement_trend_chart_legend_y"), legendOffset: 45, tickValues: 5 }}
                   axisLeft={{ legend: t("admin.statistics.web.engagement_trend_chart_legend_x"), legendOffset: -45 }}
                   theme={{
                     axis: {
@@ -429,7 +429,7 @@ export default function StatisticsPage_Layout() {
                   data={TimeSpentLineData}
                   margin={{ top: 10, right: 30, bottom: 80, left: 60 }}
                   yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
-                  axisBottom={{ legend: t("admin.statistics.web.engagement_time_spend_chart_legend_y"), legendOffset: 45 }}
+                  axisBottom={{ legend: t("admin.statistics.web.engagement_time_spend_chart_legend_y"), legendOffset: 45, tickValues: 5 }}
                   axisLeft={{ legend: t("admin.statistics.web.engagement_time_spend_chart_legend_x"), legendOffset: -45 }}
                   theme={{
                     axis: {
