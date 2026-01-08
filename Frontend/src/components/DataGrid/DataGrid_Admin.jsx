@@ -136,20 +136,34 @@ export default function DataGrid_Admin({
     return String(v).toLowerCase();
   };
 
+  // Apply filters to data
   const filtered = data.filter((row) => {
-    return searchFilters.every((filter) => {
+    // Group non-empty filter terms by column
+    const groups = {};
+    searchFilters.forEach((filter) => {
       const term = filter.value.trim().toLowerCase();
-      if (term === "") return true;
+      if (!term) return;
+      const key = filter.column || "all";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(term);
+    });
 
-      const searchableColumns = columns.filter((c) => c.searchable !== false);
-      const keysToCheck =
-        filter.column === "all"
-          ? searchableColumns.map((c) => c.key)
-          : [filter.column];
+    // No active filter terms -> include row
+    if (Object.keys(groups).length === 0) return true;
 
-      const keys = keysToCheck.length ? keysToCheck : columns.map((c) => c.key);
+    const searchableColumns = columns.filter((c) => c.searchable !== false);
+    const allKeys = (searchableColumns.length ? searchableColumns : columns).map((c) => c.key);
 
-      return keys.some((key) => norm(row[key]).includes(term));
+    // Check that all groups are satisfied
+    return Object.entries(groups).every(([key, terms]) => {
+      if (key === "all") {
+        // Any term matching any searchable column satisfies the 'all' group
+        return terms.some((term) =>
+          allKeys.some((k) => norm(row[k]).includes(term))
+        );
+      }
+      // For a specific column: match if any term matches the column value
+      return terms.some((term) => norm(row[key]).includes(term));
     });
   });
   
