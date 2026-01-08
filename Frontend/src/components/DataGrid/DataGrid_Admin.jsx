@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/Custom_Button";
 import CustomFilter from "./ui/Custom_Filter";
 import {
@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { fetchData } from "../../hooks/Data_APIHook";
 import { TextTruncate } from "./ui/Custom_TextTruncate";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import CustomEditDialog from "../ui/Custom_EditDialog";
 import { formatDateLong } from "../../utils/utils";
 import AlertDialog from "../ui/Custom_AlertDialog";
@@ -52,6 +52,8 @@ export default function DataGrid_Admin({
   const [dialogTitleOverride, setDialogTitleOverride] = useState(null);
   const [refreshTokenInternal, setRefreshTokenInternal] = useState(Date.now());
   const [alertDialog, setAlertDialog] = useState(null);
+  const location = useLocation();
+  const lastPathnameRef = useRef(location.pathname);
 
   const resolvedCategory = apiCategory || category;
   const columns = columnsConfig[resolvedCategory] || [];
@@ -105,14 +107,27 @@ export default function DataGrid_Admin({
     }
   };
   
-  // Reset handling
-  const handleReset = () => {
+  // Reset filters and sorting
+  const resetState = useCallback(() => {
     setSearchFilters([{ id: Date.now(), column: "all", value: "" }]);
     setSortColumn(null);
     setSortDirection("asc");
     setSelectedRows([]);
     setCurrentPage(1);
+  }, []);
+
+  // Reset when category or apiUrl changes
+  const handleReset = () => {
+    resetState();
   };
+
+  // Reset when pathname changes
+  useEffect(() => {
+    if (lastPathnameRef.current !== location.pathname) {
+      resetState();
+      lastPathnameRef.current = location.pathname;
+    }
+  }, [location.pathname, resetState]);
   
   // Row selection handling
   const handleSelectRow = (id) => {
@@ -221,6 +236,7 @@ export default function DataGrid_Admin({
         <CustomFilter
           columns={columns}
           onFiltersChange={handleFiltersChange}
+          filters={searchFilters}
           onReset={handleReset}
         />
 

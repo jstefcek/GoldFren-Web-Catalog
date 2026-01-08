@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/Custom_Button";
 import CustomFilter from "./ui/Custom_Filter";
 import {
@@ -19,7 +19,7 @@ import { ExportToExcel } from "../../utils/ExportFunctions/ExportExcel";
 import { PrintData } from "../../utils/ExportFunctions/ExportPrint";
 import { TextTruncate } from "./ui/Custom_TextTruncate";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function DataGrid({ 
   category = "", 
@@ -40,6 +40,8 @@ export default function DataGrid({
   const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
+  const location = useLocation();
+  const lastPathnameRef = useRef(location.pathname);
 
   // If api category isnt defined choose category instead
   const resolvedCategory = apiCategory || category;
@@ -86,13 +88,26 @@ export default function DataGrid({
   };
 
   // Reset filters and sorting
-  const handleReset = () => {
+  const resetState = useCallback(() => {
     setSearchFilters([{ id: Date.now(), column: "all", value: "" }]);
     setSortColumn(null);
     setSortDirection("asc");
     setSelectedRows([]);
     setCurrentPage(1);
+  }, []);
+
+  // Reset when category or apiUrl changes
+  const handleReset = () => {
+    resetState();
   };
+
+  // Reset when pathname changes
+  useEffect(() => {
+    if (lastPathnameRef.current !== location.pathname) {
+      resetState();
+      lastPathnameRef.current = location.pathname;
+    }
+  }, [location.pathname, resetState]);
 
   // Get ID of selected row/rows
   const handleSelectRow = (id) => {
@@ -231,6 +246,7 @@ export default function DataGrid({
         <CustomFilter
           columns={columns}
           onFiltersChange={handleFiltersChange}
+          filters={searchFilters}
           onReset={handleReset}
         />
 

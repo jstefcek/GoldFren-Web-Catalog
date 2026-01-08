@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./Custom_Input";
 import { Button } from "./Custom_Button";
 import {
@@ -10,12 +10,21 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export default function CustomFilter({columns = [], onFiltersChange, onReset,}) {
+export default function CustomFilter({ columns = [], filters, onFiltersChange, onReset }) {
   // State to hold current search filters
   const [searchFilters, setSearchFilters] = useState([
     { id: Date.now(), column: "all", value: "" },
   ]);
+
+  // Translation hook
   const { t } = useTranslation();
+
+  // Sync internal state when filters prop changes
+  useEffect(() => {
+    if (Array.isArray(filters)) {
+      setSearchFilters(filters);
+    }
+  }, [filters]);
 
   // Filter columns that are searchable
   const searchableColumns = columns.filter((c) => c.searchable !== false);
