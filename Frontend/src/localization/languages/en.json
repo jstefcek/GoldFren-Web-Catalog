@@ -292,7 +292,7 @@
     "home_metrics_visitors_country_count_text": "Total countries:",
     "home_metrics_visitors_country_unique_text": "Total unique users:",
     "home_metrics_update_text": "Data is updated once per hour. Last update:",
-    "home_metrics_manufacturers_title": "Most frequently searched vehicle brands in the last 30 days",
+    "home_metrics_manufacturers_title": "Top 10 most searched vehicle brands in 30 days",
     "sortiment_vyrobce": {
       "page_title": "Searching for products by manufacturer name",
       "search_text": "Search",
@@ -384,12 +384,12 @@
       "logout_text": "Logout",
       "account_text": "My Account",
       "homepage_text": "Back to Catalog",
-      "dashboard_text": "Website Overview",
+      "dashboard_text": "Home Page",
       "sortiment-vyrobce_text": "Manufacturer Sortiment",
       "Sortiment_text": "Sortiment",
       "Vozidla_text": "Vehicles",
       "users_text": "Users",
-      "statistics_text": "Website Statistics",
+      "statistics_text": "Statistics",
       "import_data_text": "Import Data",
       "Adaptéry_text": "Adapters",
       "Brzdiče_text": "Brake Calipers",
@@ -404,7 +404,10 @@
       "Motokáry_text": "Motorcars",
       "Jízdní_kola_text": "Bikes",
       "Letadla_text": "Aircraft",
-      "Průmysl_text": "Industrial Vehicles"
+      "Průmysl_text": "Industrial Vehicles",
+      "web-views_text": "Visits",
+      "vehicle_search_text": "Vehicles",
+      "sortiment_search_text": "Sortiment"
     }
   }
 }

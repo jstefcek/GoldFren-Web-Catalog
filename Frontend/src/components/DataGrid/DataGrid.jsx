@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/Custom_Button";
 import CustomFilter from "./ui/Custom_Filter";
 import {
@@ -19,7 +19,7 @@ import { ExportToExcel } from "../../utils/ExportFunctions/ExportExcel";
 import { PrintData } from "../../utils/ExportFunctions/ExportPrint";
 import { TextTruncate } from "./ui/Custom_TextTruncate";
 import { CustomImageViewer } from "../ui/Custom_ImageViewer";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function DataGrid({ 
   category = "", 
@@ -40,6 +40,8 @@ export default function DataGrid({
   const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
+  const location = useLocation();
+  const lastPathnameRef = useRef(location.pathname);
 
   // If api category isnt defined choose category instead
   const resolvedCategory = apiCategory || category;
@@ -86,13 +88,26 @@ export default function DataGrid({
   };
 
   // Reset filters and sorting
-  const handleReset = () => {
+  const resetState = useCallback(() => {
     setSearchFilters([{ id: Date.now(), column: "all", value: "" }]);
     setSortColumn(null);
     setSortDirection("asc");
     setSelectedRows([]);
     setCurrentPage(1);
+  }, []);
+
+  // Reset when category or apiUrl changes
+  const handleReset = () => {
+    resetState();
   };
+
+  // Reset when pathname changes
+  useEffect(() => {
+    if (lastPathnameRef.current !== location.pathname) {
+      resetState();
+      lastPathnameRef.current = location.pathname;
+    }
+  }, [location.pathname, resetState]);
 
   // Get ID of selected row/rows
   const handleSelectRow = (id) => {
@@ -116,20 +131,34 @@ export default function DataGrid({
     return String(v).toLowerCase();
   };
 
+  // Apply filters to data
   const filtered = data.filter((row) => {
-    return searchFilters.every((filter) => {
+    // Group non-empty filter terms by column
+    const groups = {};
+    searchFilters.forEach((filter) => {
       const term = filter.value.trim().toLowerCase();
-      if (term === "") return true;
+      if (!term) return;
+      const key = filter.column || "all";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(term);
+    });
 
-      const searchableColumns = columns.filter((c) => c.searchable !== false);
-      const keysToCheck =
-        filter.column === "all"
-          ? searchableColumns.map((c) => c.key)
-          : [filter.column];
+    // No active filter terms -> include row
+    if (Object.keys(groups).length === 0) return true;
 
-      const keys = keysToCheck.length ? keysToCheck : columns.map((c) => c.key);
+    const searchableColumns = columns.filter((c) => c.searchable !== false);
+    const allKeys = (searchableColumns.length ? searchableColumns : columns).map((c) => c.key);
 
-      return keys.some((key) => norm(row[key]).includes(term));
+    // Check that all groups are satisfied
+    return Object.entries(groups).every(([key, terms]) => {
+      if (key === "all") {
+        // Any term matching any searchable column satisfies the 'all' group
+        return terms.some((term) =>
+          allKeys.some((k) => norm(row[k]).includes(term))
+        );
+      }
+      // For a specific column: match if any term matches the column value
+      return terms.some((term) => norm(row[key]).includes(term));
     });
   });
 
@@ -217,6 +246,7 @@ export default function DataGrid({
         <CustomFilter
           columns={columns}
           onFiltersChange={handleFiltersChange}
+          filters={searchFilters}
           onReset={handleReset}
         />
 

@@ -40,7 +40,9 @@ import Sortiment_Detail from "./pages/AdminDashboard/Sortiment_Detail";
 import VyrobceSortimentPage from "./pages/AdminDashboard/Vyrobce_Sortiment";
 import Vyrobce from "./pages/AdminDashboard/Vyrobce";
 import ImportData_Page from "./pages/AdminDashboard/ImportData_Page";
-import Statistics_Page from "./pages/AdminDashboard/Statistics_Page";
+import WebStats_Page from "./pages/AdminDashboard/WebStats_Page";
+import VehicleStats_Page from "./pages/AdminDashboard/VehicleStats_Page";
+import SortimentStats_Page from "./pages/AdminDashboard/SortimentStats_Page";
 
 // Import authContext for user authentication
 import { AuthProvider } from "./services/authContext";
@@ -175,28 +177,25 @@ function App() {
 
           {/* Admin routes with dashboard header */}
           <Route element={<AdminLayout />}>
-            {/* Main Dashboard with statistics */}
+            {/* Main Dashboard and users page */}
             <Route path="/admin/dashboard" element={<MainDashboard />} />
-
-            {/* User Managment Section */}
             <Route path="/admin/users" element={<Users_Detail />} />
-
-            {/* Manufacturer Management Section */}
-            <Route
-              path="/admin/manufacturer-data"
-              element={<VyrobceSortimentPage />}
-            />
-
-            {/* Sortiment & Vehicle Manage Sections */}
+            
+            {/* Sortiment and vehicle pages */}
+            <Route path="/admin/manufacturer-data" element={<VyrobceSortimentPage />} />
             <Route path="/admin/sortiment/*" element={<Sortiment_Detail />} />
             <Route path="/admin/manufacturer" element={<Vyrobce />} />
             <Route path="/admin/vehicles/*" element={<Vehicle_Detail />} />
-
-            {/* Import Data Section & Statistics page */}
+            
+            {/* Import data page */}
             <Route path="/admin/import-data" element={<ImportData_Page />} />
-            <Route path="/admin/statistics" element={<Statistics_Page />} />
 
-            {/* Account Management Section */}
+            {/* Statistics pages */}
+            <Route path="/admin/stats/web-views" element={<WebStats_Page />} />
+            <Route path="/admin/stats/vehicle-search" element={<VehicleStats_Page />} />
+            <Route path="/admin/stats/sortiment-search" element={<SortimentStats_Page />} />
+
+            {/* Account page */}
             <Route path="/admin/account" element={<Account />} />
           </Route>
         </Routes>

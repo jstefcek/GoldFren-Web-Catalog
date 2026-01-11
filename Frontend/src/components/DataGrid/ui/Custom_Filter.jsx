@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./Custom_Input";
 import { Button } from "./Custom_Button";
 import {
@@ -10,59 +10,85 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export default function CustomFilter({
-  columns = [],
-  onFiltersChange,
-  onReset,
-}) {
+export default function CustomFilter({ columns = [], filters, onFiltersChange, onReset }) {
+  // State to hold current search filters
   const [searchFilters, setSearchFilters] = useState([
     { id: Date.now(), column: "all", value: "" },
   ]);
+
+  // Translation hook
   const { t } = useTranslation();
 
+  // Sync internal state when filters prop changes
+  useEffect(() => {
+    if (Array.isArray(filters)) {
+      setSearchFilters(filters);
+    }
+  }, [filters]);
+
+  // Filter columns that are searchable
   const searchableColumns = columns.filter((c) => c.searchable !== false);
 
+  // Maximum number of same column filters allowed
+  const MAX_SAME_PER_COLUMN = 5;
+
+  // Function to add a new filter
   const addFilter = () => {
     const newFilters = [
       ...searchFilters,
       { id: Date.now(), column: "all", value: "" },
     ];
     setSearchFilters(newFilters);
+    if (onFiltersChange) onFiltersChange(newFilters);
   };
 
+  // Function to remove a filter by id
   const removeFilter = (id) => {
     if (searchFilters.length > 1) {
       const newFilters = searchFilters.filter((f) => f.id !== id);
       setSearchFilters(newFilters);
-      onFiltersChange(newFilters);
+      if (onFiltersChange) onFiltersChange(newFilters);
     }
   };
 
+  // Function to update a filter's field (column or value)
   const updateFilter = (id, field, value) => {
     const newFilters = searchFilters.map((f) =>
       f.id === id ? { ...f, [field]: value } : f
     );
     setSearchFilters(newFilters);
-    onFiltersChange(newFilters);
+    if (onFiltersChange) onFiltersChange(newFilters);
   };
 
+  // Function to get available columns for selection
   const getAvailableColumns = (currentFilterId) => {
-    const usedColumns = searchFilters
+    const counts = {};
+    searchFilters
       .filter((f) => f.id !== currentFilterId && f.column !== "all")
-      .map((f) => f.column);
-    return searchableColumns.filter((c) => !usedColumns.includes(c.key));
+      .forEach((f) => {
+        counts[f.column] = (counts[f.column] || 0) + 1;
+      });
+    return searchableColumns.filter((c) => (counts[String(c.key)] || 0) < MAX_SAME_PER_COLUMN);
   };
 
+  // Determine if there are any active filters
   const hasActiveFilter = searchFilters.some((f) => f.value.trim() !== "");
+  
+  // Determine if a new filter can be added
+  const totalSlots = searchableColumns.length * MAX_SAME_PER_COLUMN;
+  
+  // Check if we can add another filter
   const canAddFilter =
-    searchFilters.length < searchableColumns.length &&
-    searchFilters[searchFilters.length - 1].value.trim() !== "";
+    searchFilters.length < totalSlots &&
+    searchFilters[searchFilters.length - 1].value.trim() !== "" &&
+    searchableColumns.length > 0;
 
+  // Function to reset all filters
   const handleReset = () => {
     const resetFilters = [{ id: Date.now(), column: "all", value: "" }];
     setSearchFilters(resetFilters);
-    onFiltersChange(resetFilters);
-    onReset();
+    if (onFiltersChange) onFiltersChange(resetFilters);
+    if (onReset) onReset();
   };
 
   return (

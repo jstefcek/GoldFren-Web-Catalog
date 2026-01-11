@@ -40,29 +40,29 @@ export function trackVehicleSearch({ vyrobce, objem, model, rok_vyroby }) {
 }
 
 // Track sortiment search data
-export function trackSortimentSearch({ category }) {
+export function trackSortimentSearch({ sortiment_category }) {
   if (gaInitialized) {
     ReactGA.event("sortiment_search", {
-      sortiment_category: category,
+      sortiment_category
     });
   }
 }
 
 // Track most sortiment categories manually viewed on the site
-export function trackTopSortimentCategory({ category }) {
+export function trackTopSortimentCategory({ sortiment_category }) {
   if (gaInitialized) {
     ReactGA.event("top_sortiment_category", {
-      sortiment_category: category,
+      sortiment_category,
     });
   }
 }
 
 // Sortiments specific item page view tracking
-export function trackSortimentItemView({ category, sortimentId }) {
+export function trackSortimentItemView({ sortiment_category, sortimentId }) {
   if (gaInitialized) {
     ReactGA.event("sortiment_item_view", {
-      sortiment_category: category,
-      sortiment_id: sortimentId,
+      sortiment_category,
+      sortimentId,
     });
   }
 }

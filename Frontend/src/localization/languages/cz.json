@@ -285,6 +285,8 @@
     "manageSaveButtonText": "Uložit preference"
   },
   "admin": {
+    "error_loading_data": "Chyba při načítání dat",
+    "retry_loading": "Opakovat načítání",
     "error_fetching_data": "Chyba při načítání dat",
     "home_title": "GOLDfren webový katalog",
     "home_title_paragraph": "Vítejte na administrační stránce vašeho webového katalogu",
@@ -296,7 +298,7 @@
     "home_metrics_visitors_country_count_text": "Celkem zemí:",
     "home_metrics_visitors_country_unique_text": "Celkem unikátních uživatelů:",
     "home_metrics_update_text": "Data jsou aktualizována jednou za hodinu. Poslední aktualizace:",
-    "home_metrics_manufacturers_title": "Nejčastěji vyhledavané značky vozidel během 30 dnů",
+    "home_metrics_manufacturers_title": "Top 10 nejvyhledávanějších značek vozidel během 30 dnů",
     "sortiment_vyrobce": {
       "page_title": "Vyhledávání sortimentu podle názvu výrobce",
       "search_text": "Vyhledat",
@@ -346,7 +348,53 @@
       "password_confirm_text": "Potvrzení vašeho nového hesla"
     },
     "statistics": {
-      "page_title": "Statistická data o webu"
+      "web": {
+        "page_title": "Přehled webové návštěvnosti",
+        "title_paragraph": "Statistiky návštěvnosti webového katalogu",
+        "search_text": "Vyhledat",
+        "select_text": "Vyberte časové období",
+        "select_text_placeholder": "Vyberte časové období pro zobrazení statistik",
+        "today": "Dnes",
+        "last_7_days": "Posledních 7 dnů",
+        "last_14_days": "Posledních 14 dnů",
+        "last_30_days": "Posledních 30 dnů",
+        "last_90_days": "Posledních 90 dnů",
+        "last_180_days": "Posledních 180 dnů",
+        "last_365_days": "Posledních 365 dnů",
+        "error_title": "Nastala chyba při načítání statistik",
+        "error_select_date": "Chyba při výběru data. Zkuste to prosím znovu.",
+        "active_users": "Unikátní uživatelé",
+        "sessions": "Webové relace",
+        "page_views": "Zobrazení stránek",
+        "engagement_rate": "Míra interakce",
+        "avg_engagement_time": "Ø Stravená doba na webu",
+        "new_users": "Nový uživatelé",
+        "traffic_trend_title": "Trend návštěvnosti webu",
+        "traffic_chart_legend_y": "Datum",
+        "traffic_chart_legend_x": "Počet návštěv",
+        "engagement_trend_title": "Trend kvality interakce na webu",
+        "engagement_trend_chart_legend_y": "Datum",
+        "engagement_trend_chart_legend_x": "Průměrné zapojení [%]",
+        "engagement_time_spend_title": "Průměrný čas strávený na webu",
+        "engagement_time_spend_chart_legend_y": "Datum",
+        "engagement_time_spend_chart_legend_x": "Průměrný čas [s]",
+        "traffic_channel_distribution_title": "Zdroje návštěvnosti webu",
+        "traffic_channel_quality_title": "Návštěvnosti webu podle zdroje",
+        "traffic_channel_quality_legend_x": "Zdroj návštěvy",
+        "traffic_channel_quality_legend_y": "Míra interakce [%]",
+        "traffic_channel_quality_tooltip_name": "Interakce",
+        "top_viewed_pages_title": "TOP 10 nejnavštěvovanějších stránek webu",
+        "device_engagment_quality_title": "Interakce na webu podle typu zařízení",
+        "device_engagment_distribution_title": "Typy zařízení",
+        "device_engagment_quality_legend_x": "Typ zařízení",
+        "device_engagment_quality_legend_y": "Míra interakce [%]"
+      },
+      "vehicle": {
+        "page_title": "Přehled vyhledávání vozidel na webu"
+      },
+      "sortiment": {
+        "page_title": "Přehled vyhledávání sortimentu na webu"
+      }
     },
     "vehicle_manufacturer": {
       "page_title": "Přehled výrobců vozidel",
@@ -388,12 +436,12 @@
       "logout_text": "Odhlásit se",
       "account_text": "Můj účet",
       "homepage_text": "Zpět do katalogu",
-      "dashboard_text": "Přehled webu",
+      "dashboard_text": "Hlavní stránka",
       "sortiment-vyrobce_text": "Sortiment výrobců",
       "Sortiment_text": "Sortiment",
       "Vozidla_text": "Vozidla",
       "users_text": "Uživatelé",
-      "statistics_text": "Statistiky webu",
+      "statistics_text": "Statistiky",
       "import_data_text": "Import dat",
       "Adaptéry_text": "Adaptéry",
       "Brzdiče_text": "Brzdiče",
@@ -408,7 +456,10 @@
       "Motokáry_text": "Motokáry",
       "Jízdní_kola_text": "Jízdní Kola",
       "Letadla_text": "Letadla",
-      "Průmysl_text": "Průmysl"
+      "Průmysl_text": "Průmysl",
+      "web-views_text": "Návštěvnost",
+      "vehicle_search_text": "Vozidla",
+      "sortiment_search_text": "Sortiment"
     }
   }
 }  

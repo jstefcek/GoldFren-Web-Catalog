@@ -292,7 +292,7 @@
     "home_metrics_visitors_country_count_text": "Gesamtzahl der Länder:",
     "home_metrics_visitors_country_unique_text": "Insgesamt einzigartige Nutzer:",
     "home_metrics_update_text": "Die Daten werden einmal pro Stunde aktualisiert. Letzte Aktualisierung:",
-    "home_metrics_manufacturers_title": "Die meistgesuchten Fahrzeugmarken innerhalb von 30 Tagen",
+    "home_metrics_manufacturers_title": "Top 10 der meistgesuchten Fahrzeugmarken innerhalb von 30 Tagen",
     "sortiment_vyrobce": {
       "page_title": "Suche nach Sortiment nach Herstellername",
       "search_text": "Suchen",
@@ -404,7 +404,10 @@
       "Motokáry_text": "Karts",
       "Jízdní_kola_text": "Fahrräder",
       "Letadla_text": "Flugzeuge",
-      "Průmysl_text": "Industrie"
+      "Průmysl_text": "Industrie",
+      "web-views_text": "Besucherzahlen",
+      "vehicle_search_text": "Fahrzeuge",
+      "sortiment_search_text": "Sortiment"
     }
   }
 }

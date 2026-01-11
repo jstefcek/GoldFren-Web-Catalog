@@ -10,7 +10,7 @@ function Sortiment_Page({ sortiment_category, apiUrl }) {
 
   // Track category viewed
   useEffect(() => {
-    trackTopSortimentCategory({ category: sortiment_category });
+    trackTopSortimentCategory({ sortiment_category });
   }, []);
 
   // Build page title for translation

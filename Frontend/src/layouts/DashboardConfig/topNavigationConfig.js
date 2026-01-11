@@ -1,5 +1,5 @@
 import { 
-  Home, Package, Users, ImportIcon, Car, PackageSearch, ChartArea
+  Home, Package, Users, ImportIcon, Car, PackageSearch, ChartArea, Binoculars, Package2, Motorbike
 } from "lucide-react";
 
 export const topNavigationConfig = [
@@ -70,8 +70,13 @@ export const topNavigationConfig = [
     id: "statistics",
     label: "statistics",
     icon: ChartArea,
+    type: "dropdown",
     to: "/admin/statistics",
     permissions: ["isAdmin", "isActive"],
-    type: "link"
+    items: [
+      { label: "web-views", to: "/admin/stats/web-views", icon: Binoculars },
+      { label: "vehicle_search", to: "/admin/stats/vehicle-search", icon: Motorbike },
+      { label: "sortiment_search", to: "/admin/stats/sortiment-search", icon: Package2 },
+    ]
   }
 ];

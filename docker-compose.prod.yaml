@@ -93,8 +93,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Docker/nginx/default.prod.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf
+      - ./Docker/nginx/default.prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf:ro
       - ./nginx/certbot/conf:/etc/letsencrypt
       - ./nginx/certbot/www:/var/www/certbot
       - goldfren_media:/GoldFren_Media
@@ -117,16 +117,40 @@ services:
   certbot:
     image: certbot/certbot
     container_name: goldfren_certbot
+    restart: on-failure:3
     volumes:
       - ./nginx/certbot/conf:/etc/letsencrypt
       - ./nginx/certbot/www:/var/www/certbot
-    entrypoint: /bin/sh -c
+    entrypoint: ["/bin/sh", "-c"]
     command: >-
       trap exit TERM;
       while :; do
         certbot renew --webroot -w /var/www/certbot --quiet;
         sleep 24h;
       done
+    networks:
+      - mynetwork
+
+  # MySQL backup service
+  # This service is used to back up the MySQL database periodically
+  mysql_backup:
+    image: databack/mysql-backup:latest
+    container_name: goldfren_mysql_backup
+    restart: always
+    environment:
+      DB_SERVER: ${MYSQL_HOSTNAME}
+      DB_PORT: ${MYSQL_PORT}
+      DB_USER: ${MYSQL_ROOT_USER}
+      DB_PASS: ${MYSQL_ROOT_PASSWORD}
+      DB_DUMP_TARGET: ${DB_DUMP_TARGET}
+      DB_DUMP_FREQUENCY: ${DB_DUMP_FREQUENCY}
+      DB_DUMP_BEGIN: ${DB_DUMP_BEGIN}
+      DB_DUMP_RETENTION: ${DB_DUMP_RETENTION}
+    depends_on:
+      goldfren_mysql:
+        condition: service_healthy
+    volumes:
+      - /home/backup/mysql:/backup/mysql
     networks:
       - mynetwork
 
