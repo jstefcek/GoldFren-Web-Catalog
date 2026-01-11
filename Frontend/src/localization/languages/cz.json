@@ -363,11 +363,11 @@
         "last_365_days": "Posledních 365 dnů",
         "error_title": "Nastala chyba při načítání statistik",
         "error_select_date": "Chyba při výběru data. Zkuste to prosím znovu.",
-        "active_users": "Aktivní uživatelé",
+        "active_users": "Unikátní uživatelé",
         "sessions": "Webové relace",
         "page_views": "Zobrazení stránek",
         "engagement_rate": "Míra interakce",
-        "avg_engagement_time": "Stravená doba na webu",
+        "avg_engagement_time": "Ø Stravená doba na webu",
         "new_users": "Nový uživatelé",
         "traffic_trend_title": "Trend návštěvnosti webu",
         "traffic_chart_legend_y": "Datum",
@@ -379,7 +379,15 @@
         "engagement_time_spend_chart_legend_y": "Datum",
         "engagement_time_spend_chart_legend_x": "Průměrný čas [s]",
         "traffic_channel_distribution_title": "Zdroje návštěvnosti webu",
-        "traffic_channel_quality_title": "Kvalita návštěvnosti webu podle zdroje"
+        "traffic_channel_quality_title": "Návštěvnosti webu podle zdroje",
+        "traffic_channel_quality_legend_x": "Zdroj návštěvy",
+        "traffic_channel_quality_legend_y": "Míra interakce [%]",
+        "traffic_channel_quality_tooltip_name": "Interakce",
+        "top_viewed_pages_title": "TOP 10 nejnavštěvovanějších stránek webu",
+        "device_engagment_quality_title": "Interakce na webu podle typu zařízení",
+        "device_engagment_distribution_title": "Typy zařízení",
+        "device_engagment_quality_legend_x": "Typ zařízení",
+        "device_engagment_quality_legend_y": "Míra interakce [%]"
       },
       "vehicle": {
         "page_title": "Přehled vyhledávání vozidel na webu"

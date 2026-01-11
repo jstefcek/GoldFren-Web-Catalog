@@ -2,14 +2,14 @@ import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "../../services/authContext";
 import AlertDialog from "../ui/Custom_AlertDialog";
 import { useTranslation } from "react-i18next";
-import { Search } from "lucide-react";
 import { CustomSelect } from "../SearchForm/ui/CustomSelect";
-import { ResponsivePie } from '@nivo/pie';
-import { ResponsiveBar } from '@nivo/bar';
-import { ResponsiveLine } from '@nivo/line';
+import { Custom_ResponsiveLine } from "../ui/Custom_ResponsiveLine.jsx";
+import { Custom_ResponsivePie } from "../ui/Custom_ResponsivePie.jsx";
+import { Custom_ResponsiveBar } from "../ui/Custom_ResponsiveBar.jsx";
 import { useStatsAPI } from "../../hooks/Stats_APIHook";
 import { SkeletonMetricCard, SkeletonCountryCard, ErrorMetricCard, ErrorCountrySection } from "../ui/Custom_SkeletonUI.jsx"
-import { LineDataTransform } from "../../hooks/DataTransformers/GraphTransformer";
+import { LineDataTransform, PieDataTransform, BarDataTransform } from "../../hooks/DataTransformers/GraphTransformer";
+import { Globe, TimerIcon, User2, View } from "lucide-react";
 
 export default function StatisticsPage_Layout() {
   const { userInfo } = useAuth();
@@ -18,16 +18,10 @@ export default function StatisticsPage_Layout() {
   const [selectedDate, setSelectedDate] = useState(30);
 
   // Reusable design
-  const cardTitle = "text-sm font-medium text-gray-500 mb-1";
+  const cardTitle = "text-sm font-medium text-gray-600";
   const cardText = "text-gray-900 text-[36px] font-black flex items-center gap-1";
-  const divTitle = "text-3xl font-bold text-gray-900 mb-4";
-
-  // Series colors
-  const SERIES_COLORS = {
-  screenPageViews: "#22c55e",
-  sessions: "#3b82f6",
-  activeUsers: "#ef4444",
-};
+  const divTitle = "text-3xl font-bold text-gray-900";
+  const parGraphText = "text-gray-500 text-xs sm:text-sm mb-4";
 
   // Handle closing the alert dialog
   const handleCloseAlert = () => {
@@ -38,32 +32,52 @@ export default function StatisticsPage_Layout() {
   const days = selectedDate?.value || selectedDate;
   const summaryWebReq = `/api/goldfren/internal/metrics/stats/summary?days=${days}`;
   const trafficWebReq = `/api/goldfren/internal/metrics/stats/traffic?days=${days}`;
-  const EngagementQualityReq = `/api/goldfren/internal/metrics/stats/engagement?days=${days}`;
+  const engagementQualityReq = `/api/goldfren/internal/metrics/stats/engagement?days=${days}`;
+  const sessionWebReq = `/api/goldfren/internal/metrics/stats/sessions?days=${days}`;
+  const pagesWebReq = `/api/goldfren/internal/metrics/stats/pages?limit=11&days=${days}`;
+  const deviceWebReq = `/api/goldfren/internal/metrics/stats/device?days=${days}`;
 
   // Fetch data
   const summaryRes = useStatsAPI(summaryWebReq, userInfo?.access_token, { auto: false });
   const trafficRes = useStatsAPI(trafficWebReq, userInfo?.access_token, { auto: false });
-  const engagementRes = useStatsAPI(EngagementQualityReq, userInfo?.access_token, { auto: false });
+  const engagementRes = useStatsAPI(engagementQualityReq, userInfo?.access_token, { auto: false });
+  const sessionRes = useStatsAPI(sessionWebReq, userInfo?.access_token, { auto: false });
+  const pagesRes = useStatsAPI(pagesWebReq, userInfo?.access_token, { auto: false });
+  const deviceRes = useStatsAPI(deviceWebReq, userInfo?.access_token, { auto: false });
 
   // Destructure data and loading states
   const { data: summaryWebData } = summaryRes;
   const { data: trafficWebData } = trafficRes;
   const { data: engagementWebData } = engagementRes;
+  const { data: sessionWebData } = sessionRes;
+  const { data: pagesWebData } = pagesRes;
+  const { data: deviceWebData } = deviceRes;
 
   // Combine loading and error states
-  const loading = summaryRes.loading || trafficRes.loading || engagementRes.loading;
-  const error = summaryRes.error || trafficRes.error || engagementRes.error;
+  const loading = summaryRes.loading || trafficRes.loading || engagementRes.loading || sessionRes.loading || pagesRes.loading;
+  const error = summaryRes.error || trafficRes.error || engagementRes.error || sessionRes.error || pagesRes.error;
 
-  // Transform traffic data for line chart
+  // Transform data for line chart
   const LineData = useMemo(() => LineDataTransform(trafficWebData, "traffic_over_time", ["activeUsers", "sessions", "screenPageViews"]), [trafficWebData]);
   const EngagementLineData = useMemo(() => LineDataTransform(engagementWebData, "engagment_quality", ["engagementRate"]), [engagementWebData]);
   const TimeSpentLineData = useMemo(() => LineDataTransform(engagementWebData, "engagment_quality", ["averageSessionDuration"]), [engagementWebData]);
+
+  // Transform data for pie chart
+  const SessionNameData = useMemo(() => PieDataTransform(sessionWebData, "sessions", "sessions"), [sessionWebData]);
+  const DeviceNameData = useMemo(() => PieDataTransform(deviceWebData, "device_engagement", "sessions"), [deviceWebData]);
+
+  // Transform data for bar chart
+  const SessionEngagementData = useMemo(() => BarDataTransform(sessionWebData, "sessions", "engagementRate"), [sessionWebData]);
+  const DeviceEngagementData = useMemo(() => BarDataTransform(deviceWebData, "device_engagement", "engagementRate"), [deviceWebData]);
 
   // Initial data fetch on component mount
   useEffect(() => {
     summaryRes.refetch();
     trafficRes.refetch();
     engagementRes.refetch();
+    sessionRes.refetch();
+    pagesRes.refetch();
+    deviceRes.refetch();
   }, []);
 
   // Get today's date once
@@ -101,9 +115,6 @@ export default function StatisticsPage_Layout() {
     { value: 180, label: t("admin.statistics.web.last_180_days") + ` (${getFormattedDate(todayDate, 180)})`, },
     { value: 365, label: t("admin.statistics.web.last_365_days") + ` (${getFormattedDate(todayDate, 365)})`, },
   ];
-
-  // Sample data for the pie chart
-  const PieData = []
 
   // Bar chart data
   const BarData = []
@@ -197,7 +208,6 @@ export default function StatisticsPage_Layout() {
           </>
         )}
 
-
         {/* Traffic Trend Line Chart */}
         <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 lg:gap-4 items-center">
           <div className="lg:col-span-1">
@@ -206,129 +216,19 @@ export default function StatisticsPage_Layout() {
               <h3 className={divTitle}>
                 {t("admin.statistics.web.traffic_trend_title")}
               </h3>
+              {/* Graph description */}
+              <p className={parGraphText}>
+                Graf zobrazuje vývoj návštevnosti na webu za zvolené období. V grafu je vidět počet aktivních uživatelů, počet relací a počet zobrazení stránek.
+              </p>
 
               {/* Line Chart Graph */}
               <div className="h-[360px]">
-                <ResponsiveLine
-                  data={LineData}
-                  margin={{ top: 10, right: 30, bottom: 80, left: 60 }}
-                  yScale={{ type: "linear", min: "auto", max: "auto", stacked: false, reverse: false }}
-                  axisBottom={{ legend: t("admin.statistics.web.traffic_chart_legend_y"), legendOffset: 45, tickValues: 5 }}
-                  axisLeft={{ legend: t("admin.statistics.web.traffic_chart_legend_x"), legendOffset: -45 }}
-                  enableSlices="x"
-                  useMesh={false}
-                  theme={{
-                    axis: {
-                      legend: { text: { fontSize: 14, fontWeight: 700, fill: "#111827" } },
-                    },
-                    tooltip: {
-                      container: { background: "white", color: "#111827", fontSize: 14 },
-                    },
-                  }}
-                  sliceTooltip={({ slice }) => (
-                    <div
-                      style={{
-                        background: "white",
-                        color: "#111827",
-                        padding: 12,
-                        borderRadius: 6,
-                        boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                        minWidth: 260,
-                        boxSizing: "border-box",
-                      }}
-                    >
-                      <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 8 }}>
-                        {t("admin.statistics.web.traffic_chart_legend_y")}:{" "}
-                        <span style={{ fontWeight: 800 }}>
-                          {slice.points?.[0]?.data?.xFormatted ?? slice.points?.[0]?.data?.x}
-                        </span>
-                      </div>
-                      {slice.points
-                        .slice()
-                        .sort((a, b) => (b.data.y ?? 0) - (a.data.y ?? 0))
-                        .map((p) => {
-                          const rawLabel = p.serieId ?? p.serie?.id ?? p.serie?.label ?? p.id ?? "Series";
-                          const cleanLabel = String(rawLabel).replace(/\.\d+$/, "");
-                          const color = SERIES_COLORS[cleanLabel] ?? "#9CA3AF";
-
-                          return (
-                            <div
-                              key={p.id}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                gap: 12,
-                                marginTop: 6,
-                              }}
-                            >
-                              <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                                <span
-                                  style={{
-                                    width: 12,
-                                    height: 12,
-                                    borderRadius: 999,
-                                    backgroundColor: color,
-                                    flex: "0 0 auto",
-                                    border: "1px solid rgba(0,0,0,0.08)",
-                                  }}
-                                />
-
-                                <span
-                                  style={{
-                                    fontWeight: 700,
-                                    color: "#111827",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                  }}
-                                  title={cleanLabel}
-                                >
-                                  {cleanLabel}
-                                </span>
-                              </div>
-
-                              <span style={{ fontWeight: 800, color: "#111827" }}>
-                                {p.data.yFormatted ?? p.data.y}
-                              </span>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  )}
-                  colors={{ scheme: 'set1' }}
-                  lineWidth={2}
-                  pointSize={4}
-                  pointColor={{ theme: 'background' }}
-                  pointBorderWidth={6}
-                  pointBorderColor={{ from: 'seriesColor' }}
-                  pointLabelYOffset={-12}
-                  enableTouchCrosshair={true}
-                  legends={[
-                    {
-                      anchor: "bottom",
-                      direction: "row",
-                      justify: false,
-                      translateX: 0,
-                      translateY: 80,
-                      itemsSpacing: 16,
-                      itemWidth: 120,
-                      itemHeight: 20,
-                      symbolSize: 10,
-                      symbolShape: "circle",
-                      itemDirection: "left-to-right",
-                      itemOpacity: 1,
-                      effects: [
-                        {
-                          on: "hover",
-                          style: {
-                            itemOpacity: 1,
-                          },
-                        },
-                      ],
-                    },
-                  ]}
-                  motionConfig="slow"
+                <Custom_ResponsiveLine 
+                  Data={LineData}
+                  axisBottomText="admin.statistics.web.traffic_chart_legend_x" 
+                  axisLeftText="admin.statistics.web.traffic_chart_legend_y" 
+                  tooltipLabel="admin.statistics.web.traffic_trend_title"
+                  tickValue={10}
                 />
               </div>
 
@@ -345,70 +245,19 @@ export default function StatisticsPage_Layout() {
               <h3 className={divTitle}>
                 {t("admin.statistics.web.engagement_trend_title")}
               </h3>
+              {/* Graph description */}
+              <p className={parGraphText}>
+                Graf zobrazuje kvalitu zapojení/interakce návštěvníků na webu za zvolené období.
+              </p>
 
               {/* Line Chart Graph */}
-              <div className="h-[360px]">
-                <ResponsiveLine
-                  data={EngagementLineData}
-                  margin={{ top: 10, right: 30, bottom: 80, left: 60 }}
-                  yScale={{ type: 'linear', min: 'auto', max: 100, stacked: false, reverse: false }}
-                  axisBottom={{ legend: t("admin.statistics.web.engagement_trend_chart_legend_y"), legendOffset: 45, tickValues: 5 }}
-                  axisLeft={{ legend: t("admin.statistics.web.engagement_trend_chart_legend_x"), legendOffset: -45 }}
-                  theme={{
-                    axis: {
-                      legend: {
-                        text: {
-                          fontSize: 14,
-                          fontWeight: 700,
-                          fill: '#111827'
-                        }
-                      }
-                    }
-                  }}
-                  tooltip={({ point }) => (
-                    <div style={{ 
-                        background: 'white', 
-                        padding: 12, 
-                        borderRadius: 6, 
-                        boxShadow: '0 1px 4px rgba(0,0,0,0.15)', 
-                        minWidth: 240, 
-                        maxWidth: 420,
-                        boxSizing: 'border-box',
-                        whiteSpace: 'normal',
-                        wordBreak: 'break-word'
-                      }}>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>
-                        {point.serieId || (point.serie && point.serie.id) || t("admin.statistics.web.engagement_trend_title")}
-                      </div>
-                      <div style={{ fontSize: 14, fontWeight: 400 }}>
-                        {t("admin.statistics.web.engagement_trend_chart_legend_y")}: <span style={{ fontWeight: 800 }}>{point.data.xFormatted ?? point.data.x}</span>
-                      </div>
-                      <div style={{ fontSize: 14, fontWeight: 400 }}>
-                        {t("admin.statistics.web.engagement_trend_chart_legend_x")}: <span style={{ fontWeight: 800 }}>{point.data.y}</span>
-                      </div>
-                    </div>
-                  )}
-                  colors={{ scheme: 'set1' }}
-                  lineWidth={4}
-                  pointSize={8}
-                  pointColor={{ theme: 'background' }}
-                  pointBorderWidth={6}
-                  pointBorderColor={{ from: 'seriesColor' }}
-                  pointLabelYOffset={-12}
-                  enableTouchCrosshair={true}
-                  useMesh={true}
-                  legends={[
-                    {
-                        anchor: 'bottom',
-                        direction: 'row',
-                        translateX: 0,
-                        translateY: 80,
-                        itemWidth: 120,
-                        itemHeight: 20,
-                        symbolShape: 'circle',
-                    }
-                  ]}
-                  motionConfig="slow"
+              <div className="h-[280px]">
+                <Custom_ResponsiveLine 
+                  Data={EngagementLineData}
+                  axisBottomText="admin.statistics.web.engagement_trend_chart_legend_x" 
+                  axisLeftText="admin.statistics.web.engagement_trend_chart_legend_y" 
+                  tooltipLabel="admin.statistics.web.engagement_trend_title"
+                  tickValue={10}
                 />
               </div>
 
@@ -422,70 +271,19 @@ export default function StatisticsPage_Layout() {
               <h3 className={divTitle}>
                 {t("admin.statistics.web.engagement_time_spend_title")}
               </h3>
+              {/* Graph description */}
+              <p className={parGraphText}>
+                Graf zobrazuje průměrný čas strávený návštěvníky na webu za zvolené období.
+              </p>
 
               {/* Line Chart Graph */}
-              <div className="h-[360px]">
-                <ResponsiveLine
-                  data={TimeSpentLineData}
-                  margin={{ top: 10, right: 30, bottom: 80, left: 60 }}
-                  yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
-                  axisBottom={{ legend: t("admin.statistics.web.engagement_time_spend_chart_legend_y"), legendOffset: 45, tickValues: 5 }}
-                  axisLeft={{ legend: t("admin.statistics.web.engagement_time_spend_chart_legend_x"), legendOffset: -45 }}
-                  theme={{
-                    axis: {
-                      legend: {
-                        text: {
-                          fontSize: 14,
-                          fontWeight: 700,
-                          fill: '#111827'
-                        }
-                      }
-                    }
-                  }}
-                  tooltip={({ point }) => (
-                    <div style={{ 
-                        background: 'white', 
-                        padding: 12, 
-                        borderRadius: 6, 
-                        boxShadow: '0 1px 4px rgba(0,0,0,0.15)', 
-                        minWidth: 240, 
-                        maxWidth: 420,
-                        boxSizing: 'border-box',
-                        whiteSpace: 'normal',
-                        wordBreak: 'break-word'
-                      }}>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>
-                        {point.serieId || (point.serie && point.serie.id) || t("admin.statistics.web.engagement_time_spend_title")}
-                      </div>
-                      <div style={{ fontSize: 14, fontWeight: 400 }}>
-                        {t("admin.statistics.web.engagement_time_spend_chart_legend_y")}: <span style={{ fontWeight: 800 }}>{point.data.xFormatted ?? point.data.x}</span>
-                      </div>
-                      <div style={{ fontSize: 14, fontWeight: 400 }}>
-                        {t("admin.statistics.web.engagement_time_spend_chart_legend_x")}: <span style={{ fontWeight: 800 }}>{point.data.y}</span>
-                      </div>
-                    </div>
-                  )}
-                  colors={{ scheme: 'set1' }}
-                  lineWidth={4}
-                  pointSize={8}
-                  pointColor={{ theme: 'background' }}
-                  pointBorderWidth={6}
-                  pointBorderColor={{ from: 'seriesColor' }}
-                  pointLabelYOffset={-12}
-                  enableTouchCrosshair={true}
-                  useMesh={true}
-                  legends={[
-                    {
-                        anchor: 'bottom',
-                        direction: 'row',
-                        translateX: 0,
-                        translateY: 80,
-                        itemWidth: 160,
-                        itemHeight: 20,
-                        symbolShape: 'circle',
-                    }
-                  ]}
-                  motionConfig="slow"
+              <div className="h-[280px]">
+                <Custom_ResponsiveLine 
+                  Data={TimeSpentLineData}
+                  axisBottomText="admin.statistics.web.engagement_time_spend_chart_legend_x" 
+                  axisLeftText="admin.statistics.web.engagement_time_spend_chart_legend_y" 
+                  tooltipLabel="admin.statistics.web.engagement_time_spend_title"
+                  tickValue={10}
                 />
               </div>
 
@@ -493,8 +291,8 @@ export default function StatisticsPage_Layout() {
           </div>
         </div>
 
-        {/* Traffic Sources Pie */}
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:gap-4 items-center mb-4">
+        {/* Sessions Sources Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:gap-4 items-center">
           {/* Channel Distribution */}
           <div className="lg:col-span-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-4 px-4 py-4 sm:px-6">
@@ -502,24 +300,15 @@ export default function StatisticsPage_Layout() {
               <h3 className={divTitle}>
                 {t("admin.statistics.web.traffic_channel_distribution_title")}
               </h3>
+              {/* Graph description */}
+              <p className={parGraphText}>
+                Graf zobrazuje rozdělení návštěv na webu podle různých kanálů (zdroje) za zvolené období.
+              </p>
 
               {/* Pie Chart */}
-              <div className="h-[320px]">
-                <ResponsivePie
-                  data={PieData}
-                  margin={{ top: 0, right: 85, bottom: 0, left: 85 }}
-                  innerRadius={0.4}
-                  padAngle={0.8}
-                  cornerRadius={5}
-                  colors={{ scheme: 'set1' }}
-                  activeOuterRadiusOffset={8}
-                  arcLinkLabelsSkipAngle={10}
-                  arcLinkLabelsTextColor="#333333"
-                  arcLinkLabelsThickness={2}
-                  arcLinkLabelsColor={{ from: 'color' }}
-                  arcLabelsSkipAngle={10}
-                  arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
-                  legends={[]}
+              <div className="h-[280px]">
+                <Custom_ResponsivePie 
+                  Data={SessionNameData} 
                 />
               </div>
 
@@ -533,39 +322,168 @@ export default function StatisticsPage_Layout() {
               <h3 className={divTitle}>
                 {t("admin.statistics.web.traffic_channel_quality_title")}
               </h3>
+              {/* Graph description */}
+              <p className={parGraphText}>
+                Graf zobrazuje kvalitu návštěv na webu podle různých kanálů za zvolené období. Kvalita je měřena pomocí míry zapojení návštěvníků (zapojení = interakce na webu).
+              </p>
 
               {/* Bar Chart */}
-              <div className="h-[320px]">
-                <ResponsiveBar
-                  data={BarData}
-                  keys={['engagementRate']}
-                  indexBy="source"
-                  padding={0.3}
-                  groupMode="stacked"
-                  labelSkipWidth={20}
-                  labelSkipHeight={20}
-                  colors={{ scheme: 'set1' }}
-                  legends={[
-                      {
-                          dataFrom: 'keys',
-                          anchor: 'bottom',
-                          direction: 'row',
-                          translateX: 20,
-                          translateY: 70,
-                          itemsSpacing: 3,
-                          itemWidth: 100,
-                          itemHeight: 16,
-                      }
-                  ]}
-                  axisBottom={{ tickSize: 6, tickPadding: 4, legend: 'source', legendOffset: 32 }}
-                  axisLeft={{ legend: 'food', legendOffset: -40 }}
-                  margin={{ top: 10, right: 50, bottom: 70, left: 60 }}
+              <div className="h-[280px]">
+                <Custom_ResponsiveBar 
+                  Data={SessionEngagementData}
+                  keys={["value"]}
+                  indexBy={"label"}
+                  axisBottomText="admin.statistics.web.traffic_channel_quality_legend_x"
+                  axisLeftText="admin.statistics.web.traffic_channel_quality_legend_y"
+                  tooltipLabel="admin.statistics.web.traffic_channel_quality_title"
+                  tooltipValueName="admin.statistics.web.traffic_channel_quality_tooltip_name"
+                  tooltipValueText="%"
                 />
               </div>
 
             </div>
           </div>
         </div>
+
+        {/* Top viewed pages on website */}
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 lg:gap-4 items-center">
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-4 px-4 py-4 sm:px-6">
+              {/* Title */}
+              <h3 className={divTitle}>
+                {t("admin.statistics.web.top_viewed_pages_title")}
+              </h3>
+              {/* Table description */}
+              <p className={parGraphText}>
+                Tabulka zobrazuje nejnavštěvovanějších stránky webu, počet unikátních návštěvníků a průměrnou dobu trvání relace.
+              </p>
+
+              {/* Table with content */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto">
+                {error ? (
+                  <ErrorCountrySection />
+                ) : loading ? (
+                  <>
+                    {[...Array(8)].map((_, i) => (
+                      <SkeletonCountryCard key={i} />
+                    ))}
+                  </>
+                ) : (
+                  pagesWebData?.pages?.map((name, index) => (
+                    <div
+                      key={index}
+                      className="w-full flex items-center justify-between bg-gray-50 p-3 rounded-md border border-gray-200 hover:border-gray-300 transition-colors"
+                    >
+                      {/* Page name with icon */}
+                      <div className="flex items-center gap-3">
+                        <div className="text-3xl">
+                          <Globe />
+                        </div>
+                        <span className="text-gray-800 font-medium">
+                          {name.name}
+                        </span>
+                      </div>
+
+                      {/* Page values */}
+                      <div className="grid grid-cols-3 gap-4 text-right">
+                        {/* Views */}
+                        <div className="min-w-[70px] flex flex-col items-end gap-1">
+                          <div className="flex items-center justify-center w-6 h-6 rounded-md bg-blue-50 text-blue-600">
+                            <View className="w-4 h-4" />
+                          </div>
+                          <div className="text-gray-900 font-bold text-lg tabular-nums">
+                            {name.screenPageViews}
+                          </div>
+                        </div>
+
+                        {/* Users */}
+                        <div className="min-w-[70px] flex flex-col items-end gap-1">
+                          <div className="flex items-center justify-center w-6 h-6 rounded-md bg-emerald-50 text-emerald-600">
+                            <User2 className="w-4 h-4" />
+                          </div>
+                          <div className="text-gray-900 font-bold text-lg tabular-nums">
+                            {name.activeUsers}
+                          </div>
+                        </div>
+
+                        {/* Time */}
+                        <div className="min-w-[90px] flex flex-col items-end gap-1">
+                          <div className="flex items-center justify-center w-6 h-6 rounded-md bg-purple-50 text-purple-600">
+                            <TimerIcon className="w-4 h-4" />
+                          </div>
+                          <div className="text-gray-900 font-bold text-lg tabular-nums">
+                            {name.averageSessionDuration} s
+                          </div>
+                        </div>
+                      </div>
+
+
+                    </div>
+                  ))
+                )}
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* Device Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:gap-4 items-center">
+          {/* Device Quality */}
+          <div className="lg:col-span-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-4 px-4 py-4 sm:px-6">
+              {/* Title */}
+              <h3 className={divTitle}>
+                {t("admin.statistics.web.device_engagment_quality_title")}
+              </h3>
+              {/* Graph description */}
+              <p className={parGraphText}>
+                Graf zobrazuje kvalitu návštěv na webu podle typu připojeného zařízení za zvolené období. Kvalita je měřena pomocí míry zapojení návštěvníků (zapojení = interakce na webu).
+              </p>
+
+              {/* Bar Chart */}
+              <div className="h-[280px]">
+                <Custom_ResponsiveBar 
+                  Data={DeviceEngagementData}
+                  keys={["value"]}
+                  indexBy={"label"}
+                  axisBottomText="admin.statistics.web.device_engagment_quality_legend_x"
+                  axisLeftText="admin.statistics.web.device_engagment_quality_legend_y"
+                  tooltipLabel="admin.statistics.web.device_engagment_quality_title"
+                  tooltipValueName="admin.statistics.web.traffic_channel_quality_tooltip_name"
+                  tooltipValueText="%"
+                />
+              </div>
+
+            </div>
+          </div>
+          
+          {/* Channel Distribution */}
+          <div className="lg:col-span-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-4 px-4 py-4 sm:px-6">
+              {/* Title */}
+              <h3 className={divTitle}>
+                {t("admin.statistics.web.device_engagment_distribution_title")}
+              </h3>
+              {/* Graph description */}
+              <p className={parGraphText}>
+                Graf zobrazuje rozdělení návštěv na webu podle různých typů zařízení za zvolené období.
+              </p>
+
+              {/* Pie Chart */}
+              <div className="h-[280px]">
+                <Custom_ResponsivePie 
+                  Data={DeviceNameData} 
+                />
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        {/* Ending div */}
+        <div className="mb-8"></div>
 
       </div>
 

@@ -353,15 +353,11 @@ def get_top_view_pages(limit: int = 10, days: int = 30) -> dict:
             
         # Replace / to home page
         if page_path == "/":
-            page_path = "Home page"
-        
-        # Remove leading slash
-        if page_path.startswith("/"):
-            page_path = page_path[1:]
+            page_path = "Home Page"
             
         # Renamed old php index page name
-        if page_path == "index.php":
-            page_path = "Old Web Catalog Page"
+        if page_path == "/index.php":
+            continue
 
         # Add to pages dictionary
         result["pages"].append({
@@ -483,7 +479,7 @@ def get_traffic_over_time(days: int) -> dict:
         active_users = int(float(active_users_raw)) if active_users_raw else 0
         sessions = int(float(sessions_raw)) if sessions_raw else 0
         screen_page_views = int(float(screen_page_views_raw)) if screen_page_views_raw else 0
-        date_formatted = datetime.strptime(date_str, "%Y%m%d").strftime("%d.%m.%Y") if date_str else date_str
+        date_formatted = datetime.strptime(date_str, "%Y%m%d").strftime("%Y-%m-%d") if date_str else date_str
 
         # Append to result list
         result["traffic_over_time"].append({
@@ -541,7 +537,7 @@ def get_engagment_quality(days: int) -> dict:
         # Safely convert values
         engagement_rate = round(float(engagement_rate_raw) * 100.0, 2) if engagement_rate_raw else 0.0
         average_session_duration = round(float(average_session_duration_raw), 2) if average_session_duration_raw else 0.0
-        date_formatted = datetime.strptime(date_str, "%Y%m%d").strftime("%d.%m.%Y") if date_str else date_str
+        date_formatted = datetime.strptime(date_str, "%Y%m%d").strftime("%Y-%m-%d") if date_str else date_str
 
         # Append to result list
         result["engagment_quality"].append({
