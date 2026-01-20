@@ -167,3 +167,4 @@ cython_debug/
 .DS_Store
 logs/django.log.*
 Backend/Keys/ga4_key.json
+.DS_Store
