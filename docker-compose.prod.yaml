@@ -106,7 +106,7 @@ services:
     networks:
       - mynetwork
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1 || exit 1"]
       interval: 30s
       timeout: 30s
       retries: 5
@@ -121,13 +121,8 @@ services:
     volumes:
       - ./nginx/certbot/conf:/etc/letsencrypt
       - ./nginx/certbot/www:/var/www/certbot
-    entrypoint: ["/bin/sh", "-c"]
-    command: >-
-      trap exit TERM;
-      while :; do
-        certbot renew --webroot -w /var/www/certbot --quiet;
-        sleep 24h;
-      done
+    entrypoint: /bin/sh
+    command: -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h; done"
     networks:
       - mynetwork
 
