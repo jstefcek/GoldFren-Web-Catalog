@@ -10,6 +10,7 @@ import { useStatsAPI } from "../../hooks/Stats_APIHook";
 import { SkeletonMetricCard, SkeletonCountryCard, ErrorMetricCard, ErrorCountrySection } from "../ui/Custom_SkeletonUI.jsx"
 import { LineDataTransform, PieDataTransform, BarDataTransform } from "../../hooks/DataTransformers/GraphTransformer";
 import { Globe, TimerIcon, User2, View } from "lucide-react";
+import { getCountryFlag } from "../../utils/GetCountryFlags";
 
 export default function StatisticsPage_Layout() {
   const { userInfo } = useAuth();
@@ -36,6 +37,7 @@ export default function StatisticsPage_Layout() {
   const sessionWebReq = `/api/goldfren/internal/metrics/stats/sessions?days=${days}`;
   const pagesWebReq = `/api/goldfren/internal/metrics/stats/pages?limit=11&days=${days}`;
   const deviceWebReq = `/api/goldfren/internal/metrics/stats/device?days=${days}`;
+  const langWebReq = `/api/goldfren/internal/metrics/stats/languages?days=${days}`;
 
   // Fetch data
   const summaryRes = useStatsAPI(summaryWebReq, userInfo?.access_token, { auto: false });
@@ -44,6 +46,7 @@ export default function StatisticsPage_Layout() {
   const sessionRes = useStatsAPI(sessionWebReq, userInfo?.access_token, { auto: false });
   const pagesRes = useStatsAPI(pagesWebReq, userInfo?.access_token, { auto: false });
   const deviceRes = useStatsAPI(deviceWebReq, userInfo?.access_token, { auto: false });
+  const langRes = useStatsAPI(langWebReq, userInfo?.access_token, { auto: false });
 
   // Destructure data and loading states
   const { data: summaryWebData } = summaryRes;
@@ -52,10 +55,11 @@ export default function StatisticsPage_Layout() {
   const { data: sessionWebData } = sessionRes;
   const { data: pagesWebData } = pagesRes;
   const { data: deviceWebData } = deviceRes;
+  const { data: langWebData } = langRes;
 
   // Combine loading and error states
-  const loading = summaryRes.loading || trafficRes.loading || engagementRes.loading || sessionRes.loading || pagesRes.loading;
-  const error = summaryRes.error || trafficRes.error || engagementRes.error || sessionRes.error || pagesRes.error;
+  const loading = summaryRes.loading || trafficRes.loading || engagementRes.loading || sessionRes.loading || pagesRes.loading || langRes.loading;
+  const error = summaryRes.error || trafficRes.error || engagementRes.error || sessionRes.error || pagesRes.error || langRes.error;
 
   // Transform data for line chart
   const LineData = useMemo(() => LineDataTransform(trafficWebData, "traffic_over_time", ["activeUsers", "sessions", "screenPageViews"]), [trafficWebData]);
@@ -78,6 +82,7 @@ export default function StatisticsPage_Layout() {
     sessionRes.refetch();
     pagesRes.refetch();
     deviceRes.refetch();
+    langRes.refetch();
   }, []);
 
   // Get today's date once
@@ -236,6 +241,80 @@ export default function StatisticsPage_Layout() {
           </div>
         </div>
 
+        {/* Top visitors by country */}
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 lg:gap-4 items-center">
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-4 px-4 py-4 sm:px-6">
+              {/* Title */}
+              <h3 className={divTitle}>
+                {t("admin.statistics.web.top_visitors_by_country_title")}
+              </h3>
+              {/* Table description */}
+              <p className={parGraphText}>
+                {t("admin.statistics.web.top_visitors_by_country_paragraph")}
+              </p>
+
+              {/* Table with content */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[370px] overflow-y-auto">
+                {error ? (
+                  <ErrorCountrySection />
+                ) : loading ? (
+                  <>
+                    {[...Array(8)].map((_, i) => (
+                      <SkeletonCountryCard key={i} />
+                    ))}
+                  </>
+                ) : (
+                  langWebData?.languages?.map((name, index) => (
+                    <div
+                      key={index}
+                      className="w-full flex items-center justify-between bg-gray-50 p-3 rounded-md border border-gray-200 hover:border-gray-300 transition-colors"
+                    >
+                      {/* Page name with icon */}
+                      <div className="flex items-center gap-3">
+                        <div className="text-3xl">
+                          {getCountryFlag(name.name)}
+                        </div>
+                        <span className="text-gray-800 font-medium">
+                          {name.name}
+                        </span>
+                      </div>
+
+                      {/* Page values */}
+                      <div className="grid grid-cols-2 gap-4 text-right">
+                        {/* Views */}
+                        <div className="min-w-[70px] flex flex-col items-end gap-1">
+                          <div className="flex items-center justify-center gap-1 w-auto h-6 rounded-md bg-blue-50 text-blue-600 px-2">
+                            <View className="w-4 h-4" />
+                            <span className="text-xs">Views</span>
+                          </div>
+                          <div className="text-gray-900 font-bold text-lg tabular-nums">
+                            {name.screenPageViews}
+                          </div>
+                        </div>
+
+                        {/* Users */}
+                        <div className="min-w-[70px] flex flex-col items-end gap-1">
+                          <div className="flex items-center justify-center gap-1 w-auto h-6 rounded-md bg-emerald-50 text-emerald-600 px-2">
+                            <User2 className="w-4 h-4" />
+                            <span className="text-xs">Users</span>
+                          </div>
+                          <div className="text-gray-900 font-bold text-lg tabular-nums">
+                            {name.activeUsers}
+                          </div>
+                        </div>
+                      
+                      </div>
+
+                    </div>
+                  ))
+                )}
+              </div>
+
+            </div>
+          </div>
+        </div>
+
         {/* Engagement Quality Trend Line Chart */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-4 items-center">
           {/* Engagement Trend Line Chart */}
@@ -247,7 +326,7 @@ export default function StatisticsPage_Layout() {
               </h3>
               {/* Graph description */}
               <p className={parGraphText}>
-                Graf zobrazuje kvalitu zapojení/interakce návštěvníků na webu za zvolené období.
+                {t("admin.statistics.web.engagement_trend_paragraph")}
               </p>
 
               {/* Line Chart Graph */}
@@ -273,7 +352,7 @@ export default function StatisticsPage_Layout() {
               </h3>
               {/* Graph description */}
               <p className={parGraphText}>
-                Graf zobrazuje průměrný čas strávený návštěvníky na webu za zvolené období.
+                {t("admin.statistics.web.engagement_time_spend_paragraph")}
               </p>
 
               {/* Line Chart Graph */}
@@ -302,7 +381,7 @@ export default function StatisticsPage_Layout() {
               </h3>
               {/* Graph description */}
               <p className={parGraphText}>
-                Graf zobrazuje rozdělení návštěv na webu podle různých kanálů (zdroje) za zvolené období.
+                {t("admin.statistics.web.traffic_channel_distribution_paragraph")}
               </p>
 
               {/* Pie Chart */}
@@ -324,7 +403,7 @@ export default function StatisticsPage_Layout() {
               </h3>
               {/* Graph description */}
               <p className={parGraphText}>
-                Graf zobrazuje kvalitu návštěv na webu podle různých kanálů za zvolené období. Kvalita je měřena pomocí míry zapojení návštěvníků (zapojení = interakce na webu).
+                {t("admin.statistics.web.traffic_channel_quality_paragraph")}
               </p>
 
               {/* Bar Chart */}
@@ -355,11 +434,11 @@ export default function StatisticsPage_Layout() {
               </h3>
               {/* Table description */}
               <p className={parGraphText}>
-                Tabulka zobrazuje nejnavštěvovanějších stránky webu, počet unikátních návštěvníků a průměrnou dobu trvání relace.
+                {t("admin.statistics.web.top_viewed_pages_paragraph")}
               </p>
 
               {/* Table with content */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[370px] overflow-y-auto">
                 {error ? (
                   <ErrorCountrySection />
                 ) : loading ? (
@@ -388,8 +467,9 @@ export default function StatisticsPage_Layout() {
                       <div className="grid grid-cols-3 gap-4 text-right">
                         {/* Views */}
                         <div className="min-w-[70px] flex flex-col items-end gap-1">
-                          <div className="flex items-center justify-center w-6 h-6 rounded-md bg-blue-50 text-blue-600">
+                          <div className="flex items-center justify-center gap-1 w-auto h-6 rounded-md bg-blue-50 text-blue-600 px-2">
                             <View className="w-4 h-4" />
+                            <span className="text-xs">Views</span>
                           </div>
                           <div className="text-gray-900 font-bold text-lg tabular-nums">
                             {name.screenPageViews}
@@ -398,8 +478,9 @@ export default function StatisticsPage_Layout() {
 
                         {/* Users */}
                         <div className="min-w-[70px] flex flex-col items-end gap-1">
-                          <div className="flex items-center justify-center w-6 h-6 rounded-md bg-emerald-50 text-emerald-600">
+                          <div className="flex items-center justify-center gap-1 w-auto h-6 rounded-md bg-emerald-50 text-emerald-600 px-2">
                             <User2 className="w-4 h-4" />
+                            <span className="text-xs">Users</span>
                           </div>
                           <div className="text-gray-900 font-bold text-lg tabular-nums">
                             {name.activeUsers}
@@ -408,15 +489,15 @@ export default function StatisticsPage_Layout() {
 
                         {/* Time */}
                         <div className="min-w-[90px] flex flex-col items-end gap-1">
-                          <div className="flex items-center justify-center w-6 h-6 rounded-md bg-purple-50 text-purple-600">
+                          <div className="flex items-center justify-center gap-1 w-auto h-6 rounded-md bg-purple-50 text-purple-600 px-2">
                             <TimerIcon className="w-4 h-4" />
+                            <span className="text-xs">Time</span>
                           </div>
                           <div className="text-gray-900 font-bold text-lg tabular-nums">
                             {name.averageSessionDuration} s
                           </div>
                         </div>
                       </div>
-
 
                     </div>
                   ))
@@ -438,7 +519,7 @@ export default function StatisticsPage_Layout() {
               </h3>
               {/* Graph description */}
               <p className={parGraphText}>
-                Graf zobrazuje kvalitu návštěv na webu podle typu připojeného zařízení za zvolené období. Kvalita je měřena pomocí míry zapojení návštěvníků (zapojení = interakce na webu).
+                {t("admin.statistics.web.device_engagment_quality_paragraph")}
               </p>
 
               {/* Bar Chart */}
@@ -467,7 +548,7 @@ export default function StatisticsPage_Layout() {
               </h3>
               {/* Graph description */}
               <p className={parGraphText}>
-                Graf zobrazuje rozdělení návštěv na webu podle různých typů zařízení za zvolené období.
+                {t("admin.statistics.web.device_engagment_distribution_paragraph")}
               </p>
 
               {/* Pie Chart */}

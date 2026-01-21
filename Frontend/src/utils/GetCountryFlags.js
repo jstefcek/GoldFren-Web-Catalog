@@ -1,76 +1,65 @@
 export const countryFlags = {
+  // --- A ---
   'Afghanistan': '🇦🇫',
   'Albania': '🇦🇱',
   'Algeria': '🇩🇿',
   'Andorra': '🇦🇩',
   'Angola': '🇦🇴',
-  'Antigua and Barbuda': '🇦🇬',
   'Argentina': '🇦🇷',
   'Armenia': '🇦🇲',
   'Australia': '🇦🇺',
   'Austria': '🇦🇹',
   'Azerbaijan': '🇦🇿',
+  'Arabic': '🇸🇦',
 
+  // --- B ---
   'Bahamas': '🇧🇸',
   'Bahrain': '🇧🇭',
   'Bangladesh': '🇧🇩',
-  'Barbados': '🇧🇧',
   'Belarus': '🇧🇾',
   'Belgium': '🇧🇪',
-  'Belize': '🇧🇿',
-  'Benin': '🇧🇯',
-  'Bhutan': '🇧🇹',
   'Bolivia': '🇧🇴',
   'Bosnia and Herzegovina': '🇧🇦',
-  'Botswana': '🇧🇼',
   'Brazil': '🇧🇷',
-  'Brunei': '🇧🇳',
   'Bulgaria': '🇧🇬',
-  'Burkina Faso': '🇧🇫',
-  'Burundi': '🇧🇮',
 
+  // --- C ---
   'Cambodia': '🇰🇭',
-  'Cameroon': '🇨🇲',
   'Canada': '🇨🇦',
-  'Cape Verde': '🇨🇻',
-  'Central African Republic': '🇨🇫',
-  'Chad': '🇹🇩',
   'Chile': '🇨🇱',
   'China': '🇨🇳',
+  'Chinese': '🇨🇳',
   'Colombia': '🇨🇴',
-  'Comoros': '🇰🇲',
-  'Congo': '🇨🇬',
-  'Costa Rica': '🇨🇷',
   'Croatia': '🇭🇷',
   'Cuba': '🇨🇺',
   'Cyprus': '🇨🇾',
   'Czechia': '🇨🇿',
   'Czech Republic': '🇨🇿',
+  'Czech': '🇨🇿',
 
+  // --- D ---
   'Denmark': '🇩🇰',
-  'Djibouti': '🇩🇯',
-  'Dominica': '🇩🇲',
-  'Dominican Republic': '🇩🇴',
 
+  // --- E ---
   'Ecuador': '🇪🇨',
   'Egypt': '🇪🇬',
-  'El Salvador': '🇸🇻',
   'Estonia': '🇪🇪',
-  'Ethiopia': '🇪🇹',
 
+  // --- F ---
   'Finland': '🇫🇮',
   'France': '🇫🇷',
+  'French': '🇫🇷',
 
+  // --- G ---
   'Georgia': '🇬🇪',
   'Germany': '🇩🇪',
-  'Ghana': '🇬🇭',
+  'German': '🇩🇪',
   'Greece': '🇬🇷',
-  'Guatemala': '🇬🇹',
 
-  'Haiti': '🇭🇹',
-  'Honduras': '🇭🇳',
+  // --- H ---
   'Hungary': '🇭🇺',
 
+  // --- I ---
   'Iceland': '🇮🇸',
   'India': '🇮🇳',
   'Indonesia': '🇮🇩',
@@ -79,45 +68,55 @@ export const countryFlags = {
   'Ireland': '🇮🇪',
   'Israel': '🇮🇱',
   'Italy': '🇮🇹',
+  'Italian': '🇮🇹',
 
-  'Jamaica': '🇯🇲',
+  // --- J ---
   'Japan': '🇯🇵',
-  'Jordan': '🇯🇴',
+  'Japanese': '🇯🇵',
 
+  // --- K ---
   'Kazakhstan': '🇰🇿',
-  'Kenya': '🇰🇪',
-  'Kuwait': '🇰🇼',
+  'Korea': '🇰🇷',
+  'South Korea': '🇰🇷',
+  'Korean': '🇰🇷',
 
+  // --- L ---
   'Latvia': '🇱🇻',
-  'Lebanon': '🇱🇧',
-  'Liechtenstein': '🇱🇮',
+  'Latvian': '🇱🇻',
   'Lithuania': '🇱🇹',
+  'Lithuanian': '🇱🇹',
   'Luxembourg': '🇱🇺',
 
+  // --- M ---
   'Malaysia': '🇲🇾',
-  'Malta': '🇲🇹',
   'Mexico': '🇲🇽',
   'Moldova': '🇲🇩',
   'Monaco': '🇲🇨',
-  'Mongolia': '🇲🇳',
   'Montenegro': '🇲🇪',
   'Morocco': '🇲🇦',
 
+  // --- N ---
   'Netherlands': '🇳🇱',
+  'Holland': '🇳🇱',
+  'Dutch': '🇳🇱',
   'New Zealand': '🇳🇿',
-  'Nigeria': '🇳🇬',
   'Norway': '🇳🇴',
 
+  // --- P ---
   'Pakistan': '🇵🇰',
-  'Panama': '🇵🇦',
   'Peru': '🇵🇪',
   'Philippines': '🇵🇭',
   'Poland': '🇵🇱',
+  'Polish': '🇵🇱',
   'Portugal': '🇵🇹',
+  'Portuguese': '🇵🇹',
 
+  // --- R ---
   'Romania': '🇷🇴',
   'Russia': '🇷🇺',
+  'Russian': '🇷🇺',
 
+  // --- S ---
   'Saudi Arabia': '🇸🇦',
   'Serbia': '🇷🇸',
   'Singapore': '🇸🇬',
@@ -125,22 +124,34 @@ export const countryFlags = {
   'Slovenia': '🇸🇮',
   'South Africa': '🇿🇦',
   'Spain': '🇪🇸',
+  'Spanish': '🇪🇸',
   'Sweden': '🇸🇪',
+  'Swedish': '🇸🇪',
   'Switzerland': '🇨🇭',
 
+  // --- T ---
   'Thailand': '🇹🇭',
-  'Tunisia': '🇹🇳',
   'Turkey': '🇹🇷',
+  'Turkish': '🇹🇷',
 
+  // --- U ---
   'Ukraine': '🇺🇦',
-  'United Arab Emirates': '🇦🇪',
   'United Kingdom': '🇬🇧',
+  'Great Britain': '🇬🇧',
+  'UK': '🇬🇧',
+  'England': '🇬🇧',
+  'English': '🇬🇧',
+
   'United States': '🇺🇸',
   'USA': '🇺🇸',
+  'US': '🇺🇸',
+  'American': '🇺🇸',
 
+  // --- V ---
   'Vietnam': '🇻🇳',
+  'Vietnamese': '🇻🇳',
 
-  'Zambia': '🇿🇲',
+  // --- Z ---
   'Zimbabwe': '🇿🇼',
 };
 
