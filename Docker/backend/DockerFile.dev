@@ -1,5 +1,5 @@
 # Use alpine Python image
-FROM python:3.13.11-alpine
+FROM python:3.14.3-alpine
 WORKDIR /goldfren
 
 # Install build dependencies for mysqlclient
