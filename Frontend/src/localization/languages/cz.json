@@ -207,6 +207,23 @@
       "category": "Kategorie vozidla",
       "updated_at": "Aktualizováno",
       "publish": "Publikovat"
+    },
+    "hadicka": {
+      "yes": "Ano",
+      "no": "Ne",
+      "type": "Typ hadičky",
+      "homologation": "Homologace",
+      "homologacni_cislo": "Homologační číslo",
+      "is_brake_active": "Je brzdová hadička aktivní?",
+      "system_brzdy": "Systém brzdy",
+      "fitting": "Uchycení",
+      "tuv_certifikat": "TÜV certifikát",
+      "zavit_hlavni_valec": "Závit hlavního válce",
+      "zavit_trmen_roztec": "Závit třmenu rozteče",
+      "zavit_roztec": "Závit rozteče",
+      "pocet_hadicek": "Počet hadiček",
+      "product_details_title": "Detaily hadičky",
+      "dimensions_title": "Rozměry závitů & počet hadiček"
     }
   },
   "setup_board": {

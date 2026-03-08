@@ -206,6 +206,23 @@
       "category": "Kategorie",
       "updated_at": "Aktualisiert am",
       "publish": "Veröffentlichen"
+    },
+    "hadicka": {
+      "yes": "Ja",
+      "no": "Nein",
+      "type": "Schlauchtyp",
+      "homologation": "Homologation",
+      "homologacni_cislo": "Homologationsnummer",
+      "is_brake_active": "Ist der BremsSchlauch aktiv?",
+      "system_brzdy": "Bremssystem",
+      "fitting": "Anschluss",
+      "tuv_certifikat": "TÜV-Zertifikat",
+      "zavit_hlavni_valec": "Gewinde des Hauptbremszylinders",
+      "zavit_trmen_roztec": "Steigungsdurchmesser der Halterung",
+      "zavit_roztec": "Steigungsdurchmesser",
+      "pocet_hadicek": "Anzahl der Schläuche",
+      "product_details_title": "Schlauchdetails",
+      "dimensions_title": "Gewindemaße & Anzahl der Schläuche"
     }
   },
   "setup_board": {

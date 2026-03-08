@@ -206,6 +206,23 @@
       "category": "Vehicle Category",
       "updated_at": "Updated At",
       "publish": "Publish"
+    },
+    "hadicka": {
+      "yes": "Yes",
+      "no": "No",
+      "type": "Hose Type",
+      "homologation": "Homologation",
+      "homologacni_cislo": "Homologation Number",
+      "is_brake_active": "Is Brake Hose Active?",
+      "system_brzdy": "Brake system",
+      "fitting": "Fitting",
+      "tuv_certifikat": "TÜV certificate",
+      "zavit_hlavni_valec": "Thread of master cylinder",
+      "zavit_trmen_roztec": "Stirrup pitch diameter",
+      "zavit_roztec": "Pitch diameter",
+      "pocet_hadicek": "Number of hoses",
+      "product_details_title": "Hose Details",
+      "dimensions_title": "Thread Sizes & Number of Hoses"
     }
   },
   "setup_board": {

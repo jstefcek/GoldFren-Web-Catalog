@@ -142,19 +142,135 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
         </div>
       </div>
 
-      {/* Third section */}
+      {/* Product details */}
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
-        {/* Product details */}
         <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-8">
           <div className="bg-gray-50 p-4 rounded-md">
-            <div className="grid grid-cols-1 gap-6">
-              {/* Note */}
+            {/* Section title */}
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              {t("datagrid.hadicka.product_details_title")}
+            </h2>
+            <div className="grid grid-cols-3 gap-6">
+              {/* Type */}
               <div>
                 <h3 className="text-lg font-medium mb-2">
-                  {t("datagrid.note")}
+                  {t("datagrid.hadicka.type")}
                 </h3>
                 <p className="text-gray-700">
-                  {displayData(hadickaData.poznamka)}
+                  {displayData(hadickaData.typ)}
+                </p>
+              </div>
+
+              {/* Homologation Flag */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.homologation")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.is_homologation ? t("datagrid.hadicka.yes") : t("datagrid.hadicka.no"))}
+                </p>
+              </div>
+
+              {/* Homologation Number */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.homologacni_cislo")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.homologacni_cislo ? hadickaData.homologacni_cislo : t("-"))}
+                </p>
+              </div>
+
+              {/* Brake active flag */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.is_brake_active")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.is_brake_active ? t("datagrid.hadicka.yes") : t("datagrid.hadicka.no"))}
+                </p>
+              </div>
+
+              {/* Brake system */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.system_brzdy")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.system_brzdy ? hadickaData.system_brzdy : t("-"))}
+                </p>
+              </div>
+
+              {/* Fitting Type */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.fitting")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.fitting ? hadickaData.fitting : t("-"))}
+                </p>
+              </div>
+
+              {/* TUV certificate */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.tuv_certifikat")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.tuv_certifikat ? t("datagrid.hadicka.yes") : t("datagrid.hadicka.no"))}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Other product details */}
+      <div className="flex flex-col lg:flex-row gap-8 mb-8">
+        <div className="lg:w-full rounded-lg shadow border border-gray-200 bg-white p-8">
+          <div className="bg-gray-50 p-4 rounded-md">
+            {/* Section title */}
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              {t("datagrid.hadicka.dimensions_title")}
+            </h2>
+            <div className="grid grid-cols-3 gap-6">
+              {/* Zavit Hlavniho valce */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.zavit_hlavni_valec")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.zavit_hlavni_valec !== 0 ? hadickaData.zavit_hlavni_valec + "\"" : t("-"))}
+                </p>
+              </div>
+
+              {/* Zavit Třmenu Rozteče */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.zavit_trmen_roztec")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.zavit_trmen_roztec !== 0 ? hadickaData.zavit_trmen_roztec + "\"" : t("-"))}
+                </p>
+              </div>
+
+              {/* Zavit Rozteče */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.zavit_roztec")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.zavit_roztec !== 0 ? hadickaData.zavit_roztec + "\"" : t("-"))}
+                </p>
+              </div>
+
+              {/* Počet hadiček */}
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {t("datagrid.hadicka.pocet_hadicek")}
+                </h3>
+                <p className="text-gray-700">
+                  {displayData(hadickaData.pocet_hadicek ? hadickaData.pocet_hadicek : t("-"))}
                 </p>
               </div>
             </div>
