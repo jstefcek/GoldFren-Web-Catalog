@@ -227,17 +227,59 @@ CREATE TABLE `d_hadicka` (
   `obrazek` varchar(255) DEFAULT NULL COMMENT 'Obrazek hadicky',
   `vektor` varchar(255) DEFAULT NULL COMMENT 'Vektor hadicky',
   `cislo_dilu` varchar(255) DEFAULT NULL COMMENT 'Cislo dilu hadicky',
-  `popis` varchar(255) DEFAULT NULL COMMENT 'Popis hadicky',
-  `poznamka` text COMMENT 'Poznamka hadicky',
+  `typ` varchar(255) DEFAULT NULL COMMENT 'Typ hadicky: Original, Alternativ',
+  `is_superbike` tinyint DEFAULT 0 COMMENT 'Oznacuje jestli je hadicka vhodna pro superbike',
+  `is_homologation` tinyint DEFAULT 0 COMMENT 'Oznacuje jestli je homologovana',
+  `homologacni_cislo` varchar(255) DEFAULT NULL COMMENT 'Specificke homologanční cislo',
+  `is_brake_active` tinyint DEFAULT 0 COMMENT 'Oznacuje jestli je brzda aktivni',
+  `system_brzdy` varchar(255) DEFAULT NULL COMMENT 'Typ systemu brzdy',
+  `fitting` varchar(255) DEFAULT NULL COMMENT 'Typ sroubeni hadicky',
+  `tuv_certifikat` tinyint DEFAULT 0 COMMENT 'Oznacuje jestli ma hadicka TUV certifikaci',
+  `kod_sady` varchar(255) DEFAULT NULL COMMENT 'Kod sady hadicky',
+  `zavit_hlavni_valec` float DEFAULT 0 COMMENT 'Velikost zavitu hlavniho valce hadicky',
+  `zavit_trmen_roztec` float DEFAULT 0 COMMENT 'Velikost roztece zavitu trmenu hadicky',
+  `zavit_roztec` float DEFAULT 0 COMMENT 'Velikost roztece zavitu hadicky',
+  `montazni_navod` varchar(255) DEFAULT NULL COMMENT 'Typ montazniho navodu',
+  `pocet_hadicek` int DEFAULT 0 COMMENT 'Pocet hadicek',
+  `poznamka` varchar(255) DEFAULT NULL COMMENT 'Poznamka pro hadicku',
   `publikovat` int DEFAULT NULL COMMENT 'Jestli se ma zaznam publikovat',
   `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
   `aktualizoval` int DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
   PRIMARY KEY (`kod`),
   KEY `FK_HADI_sortiment` (`sortiment`),
   KEY `FK_HADI_kategorie` (`kategorie`),
-  CONSTRAINT `FK_HADI_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`),
-  CONSTRAINT `FK_HADI_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`)
-) COMMENT='Tabulka brzdovych hadicek';
+  CONSTRAINT `FK_HADI_sortiment` FOREIGN KEY (`sortiment`) REFERENCES `c_sortiment` (`kod`),
+  CONSTRAINT `FK_HADI_kategorie` FOREIGN KEY (`kategorie`) REFERENCES `c_kategorie` (`kod`)
+) COMMENT='Tabulka dat brzdovych hadicek';
+
+-- Creates table for brzdove hadicky - prislusenstvi
+CREATE TABLE `d_hadicka_prislusenstvi` (
+  `prislusenstvi_kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod prislusenstvi hadicky',
+  `hadicka` int NOT NULL COMMENT 'Kod hadicky',
+  `nazev` varchar(255) DEFAULT NULL COMMENT 'Nazev prislusenstvi hadicky',
+  `pocet` int DEFAULT NULL COMMENT 'Pocet kusu prislusenstvi',
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`prislusenstvi_kod`),
+  KEY `FK_HADI_PRIS_hadicka` (`hadicka`),
+  CONSTRAINT `FK_HADI_PRIS_hadicka` FOREIGN KEY (`hadicka`) REFERENCES `d_hadicka` (`kod`)
+) COMMENT='Tabulka dat prislusenstvi pro brzdove hadicky';
+
+-- Creates table for brzdove hadicky - trubicka
+CREATE TABLE `d_hadicka_trubicka` (
+  `trubicka_kod` int NOT NULL AUTO_INCREMENT COMMENT 'Kod trubicky brzdove hadicky',
+  `hadicka` int NOT NULL COMMENT 'Kod hadicky',
+  `delka` float DEFAULT 0 COMMENT 'Delka trubicky',
+  `fitting_kontektoru_a` varchar(255) DEFAULT NULL COMMENT 'Fitting pro konektor A',
+  `fitting_kontektoru_b` varchar(255) DEFAULT NULL COMMENT 'Fitting pro konektor B',
+  `zapojeni_a` varchar(255) DEFAULT NULL COMMENT 'Zapojeni trubicky A',
+  `zapojeni_b` varchar(255) DEFAULT NULL COMMENT 'Zapojeni trubicky B', 
+  `aktualizovano` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Kdy byl zaznam aktualizovan',
+  `aktualizoval` int DEFAULT NULL COMMENT 'Kdo zaznam aktualizoval',
+  PRIMARY KEY (`trubicka_kod`),
+  KEY `FK_HADI_TRUB_hadicka` (`hadicka`),
+  CONSTRAINT `FK_HADI_TRUB_hadicka` FOREIGN KEY (`hadicka`) REFERENCES `d_hadicka` (`kod`)
+) COMMENT='Tabulka detailu zapojeni trubicky pro brzdove hadicky';
 
 -- Creates table for vyrobce
 CREATE TABLE `d_vyrobce` (

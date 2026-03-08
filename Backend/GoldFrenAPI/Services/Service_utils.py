@@ -3,7 +3,7 @@
 # Imports
 from Components.MySQL import connect
 
-def set_publication_state(sql_table: str, publikovat: int, item_id: int):
+def set_publication_state(sql_table: str, publikovat: int, item_id: int) -> bool | None:
     """
     Function to change the publication state of an item in the database.
     """
@@ -34,7 +34,7 @@ def set_publication_state(sql_table: str, publikovat: int, item_id: int):
         print("Connection failed")
         return None 
     
-def get_all_items(sql_view: str, limit: int = None, page: int = None, states: bool = False):
+def get_all_items(sql_view: str, limit: int = None, page: int = None, states: bool = False) -> list | None:
     """
     Function to get all items from the database
     """
@@ -80,7 +80,7 @@ def get_all_items(sql_view: str, limit: int = None, page: int = None, states: bo
         cursor.close()
         conn.close()
         
-def get_item_by_id(sql_view: str, item_id: int):
+def get_item_by_id(sql_view: str, item_id: int) -> dict | None:
     """
     Function to get a single item by ID
     """
@@ -111,7 +111,7 @@ def get_item_by_id(sql_view: str, item_id: int):
         print("Connection failed")
         return None
     
-def execute_update(sql_query: str, params: tuple):
+def execute_update(sql_query: str, params: tuple) -> bool | None:
     """
     Function to execute an update query
     """
@@ -140,7 +140,7 @@ def execute_update(sql_query: str, params: tuple):
         print("Connection failed")
         return None
     
-def insert_record(sql_query: str, params: tuple, return_id: bool = False):
+def insert_record(sql_query: str, params: tuple, return_id: bool = False) -> int | None:
     """
     Function to insert a record into the database
     """
@@ -168,14 +168,13 @@ def insert_record(sql_query: str, params: tuple, return_id: bool = False):
         # Return the new ID of the inserted record
         if return_id:
             return new_id
-
     
     # Return None if connection fails
     else:
         print("Connection failed")
         return None
     
-def get_filtered_records(sql_query: str, params: list):
+def get_filtered_records(sql_query: str, params: list) -> list | None:
     """
     Function to get filtered records from the database
     """
@@ -204,7 +203,7 @@ def get_filtered_records(sql_query: str, params: list):
         print("Connection failed")
         return None
     
-def get_records(sql_query: str, params: list = None, limit: int = None, page: int = None):
+def get_records(sql_query: str, params: list = None, limit: int = None, page: int = None) -> list | None:
     """
     Executes a fully provided SQL query with optional Publikovat filtering amd pagination (LIMIT/OFFSET).
 

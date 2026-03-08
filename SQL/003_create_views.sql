@@ -58,10 +58,13 @@ LEFT JOIN c_kategorie k on k.kod = p.kategorie;
 
 -- View structure for view 'v_hadicky_detail'
 CREATE OR REPLACE VIEW v_hadicky_detail AS
-SELECT h.kod, s.nazev as sortiment, k.nazev as kategorie, h.obrazek, h.vektor, h.cislo_dilu, h.popis, h.poznamka, h.publikovat, h.aktualizovano, h.aktualizoval 
+SELECT h.kod, s.nazev as sortiment, k.nazev as kategorie, h.obrazek, h.vektor, h.cislo_dilu, h.typ, h.is_superbike, h.is_homologation, 
+h.homologacni_cislo, h.is_brake_active, h.system_brzdy, h.fitting, h.tuv_certifikat, h.kod_sady, h.zavit_hlavni_valec, h.zavit_trmen_roztec, 
+h.zavit_roztec, h.montazni_navod, h.pocet_hadicek, h.poznamka, h.publikovat, h.aktualizovano, h.aktualizoval
 FROM d_hadicka h
 LEFT JOIN c_sortiment s on s.kod = h.sortiment
-LEFT JOIN c_kategorie k on k.kod = h.kategorie;
+LEFT JOIN c_kategorie k on k.kod = h.kategorie
+ORDER BY h.cislo_dilu ASC;
 
 -- View structure for view 'v_prislusenstvi_detail'
 CREATE OR REPLACE VIEW v_prislusenstvi_detail AS
