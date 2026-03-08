@@ -178,6 +178,10 @@
     "thickness": "Tloušťka [mm]",
     "note": "Poznámka",
     "all_entries": "Vyhledáno položek",
+    "zavit_hlavni_valec": "Závit hlavního válce",
+    "zavit_trmen_roztec": "Závit třmenu rozteče",
+    "zavit_roztec": "Závit rozteče",
+    "pocet_hadicek": "Počet hadiček",
     "user": {
       "username": "Uživatelské jméno",
       "email": "E-mail",

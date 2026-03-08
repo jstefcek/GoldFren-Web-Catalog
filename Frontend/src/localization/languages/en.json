@@ -178,6 +178,10 @@
     "thickness": "Thickness [mm]",
     "note": "Note",
     "all_entries": "Searched items",
+    "zavit_hlavni_valec": "Thread of master cylinder",
+    "zavit_trmen_roztec": "Stirrup pitch diameter",
+    "zavit_roztec": "Pitch diameter",
+    "pocet_hadicek": "Number of hoses",
     "user": {
       "username": "Username",
       "email": "E-mail",

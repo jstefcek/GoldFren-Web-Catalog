@@ -1,8 +1,8 @@
 export const columnsConfig = {
   // Adaptery web column config
   adaptery: [
-    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
-    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true },
     {key: "typ", label: "datagrid.type", sortable: true, filterable: true },
     {key: "prumer",label: "datagrid.diameter", sortable: true, filterable: true },
@@ -24,8 +24,8 @@ export const columnsConfig = {
 
   // Brzdice web column config
   brzdice: [
-    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
-    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true },
     {key: "typ_uchyceni", label: "datagrid.attached_type", sortable: true, filterable: true },
     {key: "pocet_pistku", label: "datagrid.pistku_count", sortable: true, filterable: true },
@@ -75,7 +75,7 @@ export const columnsConfig = {
 
   // Kotouce web column config
   kotouce: [
-    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
     {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
     {key: "typ", label: "datagrid.type", sortable: true, filterable: true,},
@@ -102,10 +102,14 @@ export const columnsConfig = {
 
   // Hadicky web column config
   hadicky: [
-    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
-    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
-    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+    {key: "typ", label: "datagrid.type", sortable: true, filterable: true,},
+    {key: "zavit_hlavni_valec", label: "datagrid.zavit_hlavni_valec", sortable: true, filterable: true,},
+    {key: "zavit_trmen_roztec", label: "datagrid.zavit_trmen_roztec", sortable: true, filterable: true,},
+    {key: "zavit_roztec", label: "datagrid.zavit_roztec", sortable: true, filterable: true,},
+    {key: "pocet_hadicek", label: "datagrid.pocet_hadicek", sortable: true, filterable: true,},
   ],
 
   // Hadicka vozidla web column config
@@ -122,8 +126,8 @@ export const columnsConfig = {
 
   // Pumpy web column config
   pumpy: [
-    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
-    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
     {key: "prumer", label: "datagrid.diameter", sortable: true, filterable: true,},
     {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
@@ -143,8 +147,8 @@ export const columnsConfig = {
 
   // Prislusenstvi web column config
   prislusenstvi: [
-    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
-    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
     {key: "typ", label: "datagrid.type", sortable: true, filterable: true,},
     {key: "popis", label: "datagrid.description", sortable: true, filterable: true,},

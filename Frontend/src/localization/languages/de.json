@@ -178,6 +178,10 @@
     "thickness": "Dicke [mm]",
     "note": "Hinweis",
     "all_entries": "Gesuchte Artikel",
+    "zavit_hlavni_valec": "Gewinde des Hauptzylinders",
+    "zavit_trmen_roztec": "Gewinde des Spreizbügels",
+    "zavit_roztec": "Gewinde der Spreizung",
+    "pocet_hadicek": "Anzahl der Schläuche",
     "user": {
       "username": "Benutzername",
       "email": "E-mail",
