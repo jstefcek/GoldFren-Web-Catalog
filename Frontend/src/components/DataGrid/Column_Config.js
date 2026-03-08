@@ -275,6 +275,24 @@ export const columnsConfig = {
     {key: "roztec_brzdice", label: "datagrid.brakepad_spacing", sortable: true, filterable: true },
   ],
 
+  // Home page search column config - pumpy vozidla
+  pumpy_home: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "prumer", label: "datagrid.diameter", sortable: true, filterable: true,},
+  ],
+
+  // Home page search column config - prislusenstvi vozidla
+  prislusenstvi_home: [
+    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
+    {key: "typ_prislusenstvi", label: "datagrid.type", sortable: true, filterable: true,},
+  ],
+
   // Admin page column config
   users: [
     {key: "is_valid", label: "datagrid.user.is_valid", sortable: true, filterable: true },
