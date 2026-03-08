@@ -253,17 +253,21 @@ export const columnsConfig = {
   // Home page search column config - hadicky vozidla
   hadicky_home: [
     {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
-    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
-    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
-    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+    {key: "hadicka_typ", label: "datagrid.hadicka.type", sortable: true, filterable: true,},
+    {key: "zavit_hlavni_valec", label: "datagrid.zavit_hlavni_valec", sortable: true, filterable: true,},
+    {key: "zavit_trmen_roztec", label: "datagrid.zavit_trmen_roztec", sortable: true, filterable: true,},
+    {key: "zavit_roztec", label: "datagrid.zavit_roztec", sortable: true, filterable: true,},
+    {key: "pocet_hadicek", label: "datagrid.pocet_hadicek", sortable: true, filterable: true,},
   ],
 
   // Home page search column config - adaptery vozidla
   adaptery_home: [
     {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
-    {key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
-    {key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
+    //{key: "obrazek", label: "datagrid.picture", type: "image", sortable: false },
+    //{key: "vektor", label: "datagrid.vektor", type: "vector", sortable: false },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true },
     {key: "typ_adapter", label: "datagrid.type", sortable: true, filterable: true },
     {key: "prumer",label: "datagrid.diameter", sortable: true, filterable: true },

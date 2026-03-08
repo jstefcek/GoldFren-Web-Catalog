@@ -63,25 +63,29 @@ class Hadicka:
                 result[key] = value
         return result
     
+@dataclass
 class VozidloHadicka():
-    def __init__(self, kod, cislo_dilu, kategorie, subkategorie, vyrobce, vozidlo, oznaceni_vozidla, typ, objem, obrazek, vektor, poznamka, specialni_oznaceni, rok_od, rok_do, pozice, publikovat):
-        self.kod = kod
-        self.cislo_dilu = cislo_dilu
-        self.kategorie = kategorie
-        self.subkategorie = subkategorie
-        self.vyrobce = vyrobce
-        self.vozidlo = vozidlo
-        self.oznaceni_vozidla = oznaceni_vozidla
-        self.typ = typ
-        self.objem = objem
-        self.obrazek = obrazek
-        self.vektor = vektor
-        self.poznamka = poznamka
-        self.specialni_oznaceni = specialni_oznaceni
-        self.rok_od = rok_od
-        self.rok_do = rok_do
-        self.pozice = pozice
-        self.publikovat = publikovat
-    
+    kod: str
+    cislo_dilu: str
+    kategorie: str
+    subkategorie: str
+    vyrobce: str
+    vozidlo: str
+    oznaceni_vozidla: str
+    typ: str
+    objem: int
+    obrazek: str
+    vektor: str
+    hadicka_typ: str
+    zavit_hlavni_valec: float
+    zavit_trmen_roztec: float
+    zavit_roztec: float
+    pocet_hadicek: int
+    specialni_oznaceni: str
+    rok_od: int
+    rok_do: int
+    pozice: str
+    publikovat: bool
+
     def to_dict(self):
         return self.__dict__
