@@ -9,24 +9,24 @@ export default defineConfig({
   ],
   build: {
     // Minification and source map settings
-    minify: 'terser',
+    minify: 'esbuild', 
     sourcemap: false,
     cssCodeSplit: true,
+
     // Bundle analysis configuration
     rollupOptions: {
       output: {
         manualChunks: {
-          react: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          i18n: ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
-          analytics: ['react-ga4'],
-          xlsx: ['xlsx'],
-          icons: ['lucide-react'],
-          react_cookie_manager: ['react-cookie-manager'],
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
+          'vendor-charts': ['@nivo/core', '@nivo/bar', '@nivo/line', '@nivo/pie', '@nivo/geo'],
+          'vendor-utils': ['xlsx', 'react-ga4', 'react-cookie-manager'],
+          'vendor-icons': ['lucide-react'],
         },
       },
     },
     // Ensure compatibility with modern browsers
-    target: 'esnext',
+    target: 'es2022',
+    emptyOutDir: true,
   },
 })

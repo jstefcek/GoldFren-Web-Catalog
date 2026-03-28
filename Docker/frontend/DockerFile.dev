@@ -1,5 +1,5 @@
 # Use alpine Node.js image
-FROM node:24.14.0-alpine
+FROM node:24.14.1-alpine
 WORKDIR /goldfren_frontend
 
 # 1. Copy lockfiles & package.json
@@ -7,7 +7,7 @@ COPY Frontend/package.json Frontend/package-lock.json ./
 
 # 2. Install dependencies
 RUN npm cache clean --force && \
-    npm install --include=optional
+    npm install --include=optional --legacy-peer-deps
 
 # 3. Copy the rest of the code
 COPY Frontend/ .
