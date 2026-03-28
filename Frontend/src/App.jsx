@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import "/src/localization/language_setup";
 import { GAnalytics, initializeGA } from "/src/utils/GoogleAnalytics";
@@ -32,17 +32,17 @@ import Pumpa_Detail from "./pages/DetailPages/Pumpa_Detail";
 import Prislusenstvi_Detail from "./pages/DetailPages/Prislusenstvi_Detail";
 
 // Admin Dashboard
-import MainDashboard from "./pages/AdminDashboard/MainDashboard";
-import Account from "./pages/AdminDashboard/Account";
-import Users_Detail from "./pages/AdminDashboard/Users_Detail";
-import Vehicle_Detail from "./pages/AdminDashboard/Vehicle_Detail";
-import Sortiment_Detail from "./pages/AdminDashboard/Sortiment_Detail";
-import VyrobceSortimentPage from "./pages/AdminDashboard/Vyrobce_Sortiment";
-import Vyrobce from "./pages/AdminDashboard/Vyrobce";
-import ImportData_Page from "./pages/AdminDashboard/ImportData_Page";
-import WebStats_Page from "./pages/AdminDashboard/WebStats_Page";
-import VehicleStats_Page from "./pages/AdminDashboard/VehicleStats_Page";
-import SortimentStats_Page from "./pages/AdminDashboard/SortimentStats_Page";
+const MainDashboard = lazy(() => import("./pages/AdminDashboard/MainDashboard"));
+const Account = lazy(() => import("./pages/AdminDashboard/Account"));
+const Users_Detail = lazy(() => import("./pages/AdminDashboard/Users_Detail"));
+const Vehicle_Detail = lazy(() => import("./pages/AdminDashboard/Vehicle_Detail"));
+const Sortiment_Detail = lazy(() => import("./pages/AdminDashboard/Sortiment_Detail"));
+const VyrobceSortimentPage = lazy(() => import("./pages/AdminDashboard/Vyrobce_Sortiment"));
+const Vyrobce = lazy(() => import("./pages/AdminDashboard/Vyrobce"));
+const ImportData_Page = lazy(() => import("./pages/AdminDashboard/ImportData_Page"));
+const WebStats_Page = lazy(() => import("./pages/AdminDashboard/WebStats_Page"));
+const VehicleStats_Page = lazy(() => import("./pages/AdminDashboard/VehicleStats_Page"));
+const SortimentStats_Page = lazy(() => import("./pages/AdminDashboard/SortimentStats_Page"));
 
 // Import authContext for user authentication
 import { AuthProvider } from "./services/authContext";
@@ -71,7 +71,9 @@ const CleanLayout = () => (
 const AdminLayout = () => (
   <ProtectedRoute>
     <HeaderDashboard>
-      <Outlet />
+      <Suspense fallback={<div className="p-4 text-sm text-gray-500">Loading page...</div>}>
+        <Outlet />
+      </Suspense>
     </HeaderDashboard>
   </ProtectedRoute>
 );
@@ -91,6 +93,7 @@ function App() {
         <CookieManager
           translations={t}
           translationI18NextPrefix="cookies."
+          disableGeolocation={true}
           privacyPolicyLink="/privacy"
           cookiePolicyLink="/cookies"
           enableFloatingButton={true}
