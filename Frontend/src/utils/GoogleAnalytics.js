@@ -5,10 +5,23 @@ const GA_ID = import.meta.env.VITE_GA_ID;
 
 // Track GA initialization
 let gaInitialized = false;
+let gaScriptInjected = false;
+
+// Function to inject the gtag script into the document
+const injectGtagScript = () => {
+  if (!GA_ID || gaScriptInjected || typeof document === "undefined") return;
+
+  const gtagScript = document.createElement("script");
+  gtagScript.async = true;
+  gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  document.head.appendChild(gtagScript);
+  gaScriptInjected = true;
+};
 
 // Initialize Google Analytics
 export function initializeGA() {
   if (!gaInitialized) {
+    injectGtagScript();
     ReactGA.initialize(GA_ID);
     gaInitialized = true;
   }

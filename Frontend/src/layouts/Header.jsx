@@ -179,6 +179,8 @@ function Header() {
                 src="/logo/goldfren-logo.svg"
                 alt="GoldFren Logo"
                 className="h-8 w-auto"
+                width="160"
+                height="32"
               />
             </Link>
           </div>
@@ -443,6 +445,8 @@ function Header() {
                     src="/logo/goldfren-logo.svg"
                     alt="GoldFren Logo"
                     className="h-8 w-auto"
+                    width="160"
+                    height="32"
                   />
                 </Link>
                 <button
