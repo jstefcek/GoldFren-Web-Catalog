@@ -340,8 +340,11 @@ export const columnsConfig = {
   hadicky_sortiment: [
     {key: "oznaceni_vozidla", label: "datagrid.vehicle_type", sortable: true, filterable: true },
     {key: "cislo_dilu", label: "datagrid.part_number", sortable: true, filterable: true, link: true,},
-    {key: "pozice", label: "datagrid.position", sortable: true, filterable: true },
-    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+    {key: "typ", label: "datagrid.type", sortable: true, filterable: true,},
+    {key: "zavit_hlavni_valec", label: "datagrid.zavit_hlavni_valec", sortable: true, filterable: true,},
+    {key: "zavit_trmen_roztec", label: "datagrid.zavit_trmen_roztec", sortable: true, filterable: true,},
+    {key: "zavit_roztec", label: "datagrid.zavit_roztec", sortable: true, filterable: true,},
+    {key: "pocet_hadicek", label: "datagrid.pocet_hadicek", sortable: true, filterable: true,},
   ],
 
   // Adaptery - Admin page for sortiment export based on manufacturer

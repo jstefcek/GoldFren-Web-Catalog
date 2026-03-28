@@ -144,12 +144,43 @@ export const dialogColumnsConfig = {
       hadicky: {
         addEndpoint: () => `${serverUrl}/api/goldfren/internal/hadicky/create`,
         fields: [
-          {key: "cislo_dilu", label: "Označení dílu", placeholder: "Zadejte číslo brzdové hadičky", type: "text", editable: true, show: true, dataType: "string", required: true  },
+          {key: "cislo_dilu", label: "Číslo dílu", type: "text", editable: true, show: true, dataType: "string", required: true },
+          {key: "kod", label: "ID", type: "text", editable: false, show: false, dataType: "string", },
+          
           {key: "obrazek", label: "Obrázek hadičky", type: "image", editable: true, show: true, dataType: "image", },
           {key: "vektor", label: "Vektor hadičky", type: "image", editable: true, show: true, dataType: "image", },
           {key: "kategorie", label: "Kategorie hadičky", placeholder: "Vyberte kategorii hadičky", value: SelectValueConfig.kategorie_vozidel, type: "select", editable: true, show: true, dataType: "string", required: true },
-          {key: "popis", label: "Popis hadičky", placeholder: "Zadejte popis hadičky", type: "input", editable: true, show: true, dataType: "string", },
           {key: "poznamka", label: "Poznámka", placeholder: "Zadejte poznámku", type: "input", editable: true, show: true, dataType: "string", },
+          
+          {key: "typ", label: "Typ", type: "input", placeholder: "Zadejte typ", editable: true, show: true, dataType: "string", },
+          {key: "is_superbike", label: "Pro superbike?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
+          
+          {key: "homologace_label", label: "Homologace hadičky", type: "label", label_type: "big", show: true, dataType: "string", },
+          {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+          {key: "is_homologation", label: "Existuje homologace?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
+          {key: "homologacni_cislo", label: "Homologační číslo", placeholder: "Zadejte homologační číslo", type: "input", editable: true, show: true, dataType: "string", },
+
+          {key: "brzda_label", label: "Typ brzdy", type: "label", label_type: "big", show: true, dataType: "string", },
+          {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+          {key: "is_brake_active", label: "Je brzda aktivní?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
+          {key: "system_brzdy", label: "Systém brzdy", placeholder: "Zadejte systém brzdy", type: "input",  editable: true, show: true, dataType: "string", },
+
+          {key: "zavit_label", label: "Rozměry závitu", type: "label", label_type: "big", show: true, dataType: "string", },
+          {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+          {key: "zavit_hlavni_valec", label: "Hlavní závit válec", type: "input", placeholder: "Zadejte rozteč hlavního závitu válec", editable: true, show: true, dataType: "number", min: 0, max: 10, step: 0.1, decimalPlaces: 1},
+          {key: "zavit_trmen_roztec", label: "Rozteč závitu třmenu", type: "input", placeholder: "Zadejte rozteč závitu třmenu", editable: true, show: true, dataType: "number", min: 0, max: 10, step: 0.1, decimalPlaces: 1},
+          {key: "zavit_roztec", label: "Rozteč závitu", type: "input", placeholder: "Zadejte rozteč závitu", editable: true, show: true, dataType: "number", min: 0, max: 10, step: 0.1, decimalPlaces: 1},
+          {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+
+          {key: "ostatni_label", label: "Ostatní", type: "label", label_type: "big", show: true, dataType: "string", },
+          {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+          {key: "fitting", label: "Fitting hadičky", placeholder: "Zadejte fitting hadičky", type: "input", editable: true, show: true, dataType: "string", },
+          {key: "kod_sady", label: "Kód sady", placeholder: "Zadejte kód sady", type: "input", editable: true, show: true, dataType: "string", },
+          {key: "tuv_certifikat", label: "TUV certifikát", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
+          {key: "montazni_navod", label: "Montážní návod", placeholder: "Zadejte montážní návod", type: "input", editable: true, show: true, dataType: "string", },
+
+          {key: "stav_label", label: "Publikace a poslední aktualizace", type: "label", label_type: "big", show: true, dataType: "string", },
+          {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
           {key: "publikovat", label: "Publikovat díl?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
         ],
       },

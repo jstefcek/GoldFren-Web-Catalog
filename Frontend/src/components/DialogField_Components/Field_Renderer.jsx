@@ -76,7 +76,7 @@ export default function FieldRenderer({
 
   const wrapper = (children) => (
     <div className="flex flex-col">
-      <label className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-1">
+      <label className="text-base font-semibold text-gray-800 mb-2 flex items-center gap-1">
         {t(col.label)}
         {col.required && <span className="text-red-600">*</span>}
       </label>
@@ -84,10 +84,11 @@ export default function FieldRenderer({
       {hasError && <span className="mt-1 text-xs text-red-600">{error}</span>}
     </div>
   );
-
+  // Handlers for image upload and delete actions to update the value in parent component
   const handleImageReplace = (file) => onChange(col.key, file);
   const handleImageDelete = () => onChange(col.key, null);
 
+  // Special handling for invisible fields to render a hidden input and an empty div for layout consistency, while being hidden from assistive technologies
   if (col.type === "invisible" || col.key === "invisible") {
     return (
       <div className="flex flex-col" aria-hidden="true">
@@ -100,6 +101,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for image type to use CustomImageViewer component with upload and delete functionality
   if (col.type === "image") {
     const componentKey = `${col.key}-${imageKey}`;
     const disabled = isDisabled(col);
@@ -146,6 +148,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for boolean fields with button type to use BooleanToggleButton component
   if (col.type === "button") {
     return wrapper(
       <div onBlur={() => onBlur(col.key)}>
@@ -159,6 +162,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for vyrobce to use options from config and display placeholder based on whether options are available
   if (col.key === "vyrobce") {
     const noOptions = (vyrobceOptions || []).length === 0;
     return wrapper(
@@ -184,6 +188,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for kategorie to use options from config and display placeholder
   if (col.key === "kategorie") {
     return wrapper(
       <select
@@ -206,6 +211,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for subkategorie to use filtered options based on selected kategorie
   if (col.key === "subkategorie") {
     return wrapper(
       <select
@@ -228,6 +234,7 @@ export default function FieldRenderer({
     );
   }
 
+  // General handling for any other select fields defined in config with value array
   if (col.type === "select" && Array.isArray(col.value)) {
     return wrapper(
       <select
@@ -250,6 +257,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for textarea type to render a multiline input
   if (col.type === "textarea") {
     return wrapper(
       <textarea
@@ -265,6 +273,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for label type to render as non-editable text with different sizes
   if (col.type === "label") {
     let labelClassName = "text-gray-900 font-bold ";
     switch (col.label_type) {
@@ -286,6 +295,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for setup_board type to render the SetupBoard component
   if (col.type === "setup_board") {
     const disabled = isDisabled(col);
     return wrapper(
@@ -303,6 +313,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for password fields to allow toggling visibility
   if (col.type === "password") {
     return wrapper(
       <div className="relative">
@@ -328,6 +339,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for non-editable username and model name fields to be read-only
   if (col.key === "username" || col.key === "nazev_modelu") {
     return wrapper(
       <input
@@ -342,6 +354,7 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for date fields to display formatted date and be read-only
   if (col.dataType === "date" && value) {
     const date = new Date(value);
     return wrapper(
@@ -357,6 +370,32 @@ export default function FieldRenderer({
     );
   }
 
+  // Special handling for numeric inputs to allow empty value and proper step
+  if (col.type === "input" && col.dataType === "number") {
+    // Display empty string if value is null, undefined, or empty to allow clearing the input, otherwise display the number with fixed decimal places if specified
+    const displayValue = value !== null && value !== undefined && value !== ""
+      ? Number(value).toFixed(col.decimalPlaces || 1)
+      : "";
+
+    return wrapper(
+      <input
+        type="number"
+        inputmode="decimal"
+        value={displayValue}
+        min={col.min}
+        max={col.max}
+        step={col.step || 0.1}
+        onChange={(e) => onChange(col.key, e.target.value)}
+        onBlur={() => onBlur(col.key)}
+        placeholder={col.placeholder || ""}
+        disabled={isDisabled(col)}
+        readOnly={isDisabled(col)}
+        className={controlClass(col)}
+      />
+    );
+  }
+
+  // Default to text input for any other types
   return wrapper(
     <input
       type={normalizeInputType(col.type)}
