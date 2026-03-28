@@ -275,6 +275,7 @@ export default function FieldRenderer({
 
   // Special handling for label type to render as non-editable text with different sizes
   if (col.type === "label") {
+    // Determine label class based on label_type for different sizes
     let labelClassName = "text-gray-900 font-bold ";
     switch (col.label_type) {
       case "big":
@@ -289,8 +290,8 @@ export default function FieldRenderer({
 
     return (
       <div className="flex flex-col">
-        <input type="hidden" value={value || ""} onChange={(e) => onChange(col.key, e.target.value)} />
-        <span className={labelClassName}>{t(col.label)}</span>
+        <input type="hidden" value={col.label} onChange={(e) => onChange(col.key, e.target.value)} />
+        <span className={labelClassName}>{"• " + t(col.label)}</span>
       </div>
     );
   }
@@ -374,7 +375,7 @@ export default function FieldRenderer({
   if (col.type === "input" && col.dataType === "number") {
     // Display empty string if value is null, undefined, or empty to allow clearing the input, otherwise display the number with fixed decimal places if specified
     const displayValue = value !== null && value !== undefined && value !== ""
-      ? Number(value).toFixed(col.decimalPlaces || 1)
+      ? Number(value).toFixed(col.decimalPlaces || 0)
       : "";
 
     return wrapper(

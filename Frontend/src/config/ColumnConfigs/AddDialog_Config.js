@@ -179,6 +179,14 @@ export const dialogColumnsConfig = {
           {key: "tuv_certifikat", label: "TUV certifikát", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
           {key: "montazni_navod", label: "Montážní návod", placeholder: "Zadejte montážní návod", type: "input", editable: true, show: true, dataType: "string", },
 
+          {key: "hadicky_label", label: "Detail hadiček", type: "label", label_type: "big", show: true, dataType: "string", },
+          {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+          {key: "pocet_hadicek", label: "Počet hadiček", type: "input", placeholder: "Zadejte počet hadiček", editable: true, show: true, dataType: "number", min: 0, max: 20, step: 1},
+          {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+
+          {key: "prislusenstvi_label", label: "Detail příslušenství", type: "label", label_type: "big", show: true, dataType: "string", },
+          {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+
           {key: "stav_label", label: "Publikace a poslední aktualizace", type: "label", label_type: "big", show: true, dataType: "string", },
           {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
           {key: "publikovat", label: "Publikovat díl?", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
