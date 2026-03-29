@@ -345,7 +345,7 @@ export default function CustomAddDialog({
   return (
     <>
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4 sm:p-8">
-        <div className="bg-white w-full max-w-5xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
+        <div className="bg-white w-full max-w-7xl p-6 sm:p-8 rounded-2xl shadow-xl relative border border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2">
             {t("Přidání nového záznamu")}
           </h2>
@@ -362,20 +362,29 @@ export default function CustomAddDialog({
               {fields
                 .filter((f) => f.show !== false)
                 .slice(0, 1)
-                .map((col) => (
-                  <FieldRenderer
-                    key={col.key}
-                    col={col}
-                    value={formData[col.key]}
-                    t={t}
-                    isDisabled={isDisabled}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors[col.key]}
-                    vyrobceOptions={vyrobceOptions}
-                    filteredSubkategorie={filteredSubkategorie}
-                  />
-                ))}
+                .map((col) => {
+                  const isBoard = col.type === "setup_board";
+                  const isCard = col.type === "card";
+                  const spanClass = (isBoard || isCard) ? "md:col-span-2" : "";
+
+                  return (
+                    <div key={col.key} className={spanClass}>
+                      <FieldRenderer
+                        col={col}
+                        value={formData[col.key]}
+                        t={t}
+                        isDisabled={isDisabled}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors[col.key]}
+                        vyrobceOptions={vyrobceOptions}
+                        filteredSubkategorie={filteredSubkategorie}
+                        dialogConfig={config}
+                        access_token={access_token}
+                      />
+                    </div>
+                  );
+                })}
             </div>
 
             {/* Remaining fields */}
@@ -383,20 +392,29 @@ export default function CustomAddDialog({
               {fields
                 .filter((f) => f.show !== false)
                 .slice(1)
-                .map((col) => (
-                  <FieldRenderer
-                    key={col.key}
-                    col={col}
-                    value={formData[col.key]}
-                    t={t}
-                    isDisabled={isDisabled}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors[col.key]}
-                    vyrobceOptions={vyrobceOptions}
-                    filteredSubkategorie={filteredSubkategorie}
-                  />
-                ))}
+                .map((col) => {
+                  const isBoard = col.type === "setup_board";
+                  const isCard = col.type === "card";
+                  const spanClass = (isBoard || isCard) ? "md:col-span-2" : "";
+                  
+                  return (
+                    <div key={col.key} className={spanClass}>
+                      <FieldRenderer
+                        col={col}
+                        value={formData[col.key]}
+                        t={t}
+                        isDisabled={isDisabled}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors[col.key]}
+                        vyrobceOptions={vyrobceOptions}
+                        filteredSubkategorie={filteredSubkategorie}
+                        dialogConfig={config}
+                        access_token={access_token}
+                      />
+                    </div>
+                  );
+                })}
             </div>
           </div>
 

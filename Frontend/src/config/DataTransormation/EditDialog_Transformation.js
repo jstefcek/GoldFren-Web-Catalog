@@ -193,13 +193,25 @@ export function transformFormData(category, formData, componentId = null) {
         obrazek: isFileObject(formData.obrazek) ? generateFilename(formData.obrazek, componentId) : (formData.obrazek ? extractFileName(formData.obrazek) : null),
         vektor: isFileObject(formData.vektor) ? generateFilename(formData.vektor, componentId) : (formData.vektor ? extractFileName(formData.vektor) : null),
         cislo_dilu: formData.cislo_dilu || "",
-        typ: parseInt(formData.typ) || null,
         publikovat: !!formData.publikovat,
         aktualizovano: new Date().toISOString(),
         poznamka: formData.poznamka || null,
 
         // Hadicky specific fields
-        popis: formData.popis || null
+        typ: formData.typ || null,
+        is_superbike: !!formData.is_superbike,
+        is_homologation: !!formData.is_homologation,
+        homologacni_cislo: formData.homologacni_cislo || null,
+        is_brake_active: !!formData.is_brake_active,
+        system_brzdy: formData.system_brzdy || null,
+        fitting: formData.fitting || null,
+        tuv_certifikat: !!formData.tuv_certifikat,
+        kod_sady: formData.kod_sady || null,
+        zavit_hlavni_valec: formData.zavit_hlavni_valec || null,
+        zavit_trmen_roztec: formData.zavit_trmen_roztec || null,
+        zavit_roztec: formData.zavit_roztec || null,
+        montazni_navod: formData.montazni_navod || null,
+        pocet_hadicek: formData.pocet_hadicek || null,
     };
 
     // Pumpy category data transformation

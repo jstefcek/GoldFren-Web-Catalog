@@ -396,6 +396,98 @@ export default function FieldRenderer({
     );
   }
 
+    // Handle card field where multiple values are stored
+  // as an array of dictionaries with keys specified as col.key as array, so we know
+  // which value to extract and display. For each dictionary object we make a new card to display 
+  // its values rendered with their proper types
+  if (col.type === "card") {
+    // Extract values as array of objects and store them in key value pairs
+    const cardValues = Array.isArray(value) ? value : [];
+
+    // If there are no values, initialize with an empty object to render at least one card for user to fill in
+    // Also add a new empty object whenever the last card has any value filled in, so user can easily add 
+    // multiple cards without needing to click an "Add Card" button, while ensuring there's always an 
+    // empty card available for input at the end of the list. 
+    if (cardValues.length === 0 || Object.values(cardValues[cardValues.length - 1]).some((v) => v !== "" && v !== null && v !== undefined)) {
+      cardValues.push({});
+    }
+
+    // When we create new empty card, track that card with attribute and make the border green 
+    // to visually indicate that this card is empty and ready for input
+    const isLastCardEmpty = Object.values(cardValues[cardValues.length - 1]).every((v) => v === "" || v === null || v === undefined);
+
+    // Handler to update the array when a field in a card changes
+    const handleCardChange = (cardIndex, fieldKey, newValue) => {
+      const newArray = [...cardValues];
+      newArray[cardIndex] = { ...newArray[cardIndex], [fieldKey]: newValue };
+      onChange(col.key, newArray);
+    };
+
+    // Render card field header without the standard wrapper since we handle layout ourselves
+    return (
+      <div className="flex flex-col">
+        <label className="text-base font-semibold text-gray-800 mb-2 flex items-center gap-1">
+          {t(col.label)}
+          {col.required && <span className="text-red-600">*</span>}
+        </label>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {cardValues.map((cardValue, index) => {
+            const isEmpty = isLastCardEmpty && index === cardValues.length - 1;
+            
+            return (
+              <div 
+                key={index} 
+                className={`
+                  border-2 rounded-md p-4 space-y-4 shadow-md relative transition-all
+                  ${isEmpty 
+                    ? 'border-dashed border-green-500 bg-green-50' 
+                    : 'border-solid border-gray-300 bg-white'}
+                `}
+              >         
+                {/* Card Label with Counter */}
+                <div className="flex items-center gap-4">
+                  <label className="text-base font-extrabold text-gray-800">
+                    {col.card_label + " " + (index + 1)}
+                  </label>
+                  {isEmpty && (
+                    <span className="text-xs font-normal bg-yellow-100 text-yellow-700 px-2 py-1 rounded ml-auto">
+                      {t("Vyplňte alespoň jedno pole")}
+                    </span>
+                  )}
+                </div>
+
+                {/* Fields */}
+                <div className={isEmpty ? 'space-y-4 pt-2' : 'space-y-4'}>
+                  {col.fields.map((field) => (
+                    // Render each field in the card using FieldRenderer, 
+                    // passing down the specific value for that field from the card's value object, 
+                    // along with necessary props and handlers for changes and blur events
+                    <FieldRenderer
+                      key={field.key}
+                      col={field}
+                      value={cardValue[field.key]}
+                      t={t}
+                      isDisabled={isDisabled}
+                      onChange={(key, val) => handleCardChange(index, key, val)}
+                      onBlur={onBlur}
+                      error={null}
+                      vyrobceOptions={vyrobceOptions}
+                      filteredSubkategorie={filteredSubkategorie}
+                      dialogConfig={dialogConfig}
+                      rowData={rowData}
+                      access_token={access_token}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {error && <span className="mt-1 text-xs text-red-600">{error}</span>}
+      </div>
+    );
+  }
+
   // Default to text input for any other types
   return wrapper(
     <input

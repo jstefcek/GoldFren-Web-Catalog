@@ -468,7 +468,8 @@ export default function CustomEditDialog({
                 .slice(0, 1)
                 .map((col) => {
                   const isBoard = col.type === "setup_board";
-                  const spanClass = isBoard ? "md:col-span-2" : "";
+                  const isCard = col.type === "card";
+                  const spanClass = (isBoard || isCard) ? "md:col-span-2" : "";
 
                   return (
                     <div key={col.key} className={spanClass}>
@@ -498,8 +499,9 @@ export default function CustomEditDialog({
                 .slice(1)
                 .map((col) => {
                   const isBoard = col.type === "setup_board";
-                  const spanClass = isBoard ? "md:col-span-2" : "";
-
+                  const isCard = col.type === "card";
+                  const spanClass = (isBoard || isCard) ? "md:col-span-2" : "";
+                  
                   return (
                     <div key={col.key} className={spanClass}>
                       <FieldRenderer

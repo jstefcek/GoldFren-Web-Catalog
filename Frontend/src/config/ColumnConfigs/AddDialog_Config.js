@@ -179,13 +179,24 @@ export const dialogColumnsConfig = {
           {key: "tuv_certifikat", label: "TUV certifikát", type: "button", buttonValue: { true: "Ano", false: "Ne" }, editable: true, show: true, dataType: "boolean", },
           {key: "montazni_navod", label: "Montážní návod", placeholder: "Zadejte montážní návod", type: "input", editable: true, show: true, dataType: "string", },
 
-          {key: "hadicky_label", label: "Detail hadiček", type: "label", label_type: "big", show: true, dataType: "string", },
+          {key: "trubicky_label", label: "Detail trubiček", type: "label", label_type: "big", show: true, dataType: "string", },
           {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
           {key: "pocet_hadicek", label: "Počet hadiček", type: "input", placeholder: "Zadejte počet hadiček", editable: true, show: true, dataType: "number", min: 0, max: 20, step: 1},
           {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+          {key: "detail_trubicek",  label: "Detailní informace o trubičkách", card_label: "Trubička", type: "card", editable: true, show: true, dataType: "array", fields: [
+            {key: "delka", label: "Délka trubičky", type: "input", placeholder: "Zadejte délku trubičky", editable: true, show: true, dataType: "number", min: 0, max: 200, step: 0.1, decimalPlaces: 1},
+            {key: "fitting_kontektoru_a", label: "Fitting kontektoru A", type: "input", placeholder: "Zadejte fitting kontektoru A", editable: true, show: true, dataType: "string", },
+            {key: "fitting_kontektoru_b", label: "Fitting kontektoru B", type: "input", placeholder: "Zadejte fitting kontektoru B", editable: true, show: true, dataType: "string", },
+            {key: "zapojeni_a", label: "Zapojení A", type: "input", placeholder: "Zadejte zapojení A", editable: true, show: true, dataType: "string", },
+            {key: "zapojeni_b", label: "Zapojení B", type: "input", placeholder: "Zadejte zapojení B", editable: true, show: true, dataType: "string", },
+          ]},
 
           {key: "prislusenstvi_label", label: "Detail příslušenství", type: "label", label_type: "big", show: true, dataType: "string", },
           {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
+          {key: "detail_prislusenstvi",  label: "Detailní informace o příslušenství", card_label: "Příslušenství", type: "card", editable: true, show: true, dataType: "array", fields: [
+            {key: "nazev", label: "Název příslušenství", type: "input", placeholder: "Zadejte název příslušenství", editable: true, show: true, dataType: "string", },
+            {key: "pocet", label: "Počet", type: "input", placeholder: "Zadejte počet", editable: true, show: true, dataType: "number", min: 0, max: 25, step: 1},
+          ]},
 
           {key: "stav_label", label: "Publikace a poslední aktualizace", type: "label", label_type: "big", show: true, dataType: "string", },
           {key: "invisible", label: "Invisible Field", type: "invisible", editable: false, show: true, },
