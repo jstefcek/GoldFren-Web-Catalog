@@ -1,11 +1,9 @@
-import { extractFileName, isFileObject } from "../../utils/utils";
-
-// Helper function to generate filename from component ID and file extension
-const generateFilename = (file, componentId) => {
-  if (!file || !componentId) return null;
-  const ext = file.name.split('.').pop().toLowerCase();
-  return `${componentId}.${ext}`;
-};
+import { 
+  extractFileName, 
+  isFileObject, 
+  generateFilename, 
+  removeEmptyDictFromArray 
+} from "../../utils/utils";
 
 // Helper function to normalize board data structure
 const normalizeBoard = (board) => ({
@@ -212,6 +210,13 @@ export function transformFormData(category, formData, componentId = null) {
         zavit_roztec: formData.zavit_roztec || null,
         montazni_navod: formData.montazni_navod || null,
         pocet_hadicek: formData.pocet_hadicek || null,
+
+        // Hadicky complex fileds 
+        // Hadicka - detail_trubicek (delka, fitting_kontektoru_a, fitting_kontektoru_b, zapojeni_a, zapojeni_b)
+        detail_trubicek: removeEmptyDictFromArray(formData.detail_trubicek || []),
+
+        // Hadicka - detail_prislusenstvi (nazev, pocet)
+        detail_prislusenstvi: removeEmptyDictFromArray(formData.detail_prislusenstvi || []),
     };
 
     // Pumpy category data transformation

@@ -89,3 +89,20 @@ export const todayStr = () => new Date().toISOString().slice(0, 10);
 // Make first letter uppercase
 export const CapFirstLetter = (string) =>
   string.charAt(0).toUpperCase() + string.slice(1);
+
+// Helper function to generate filename from component ID and file extension
+export const generateFilename = (file, componentId) => {
+  if (!file || !componentId) return null;
+  const ext = file.name.split('.').pop().toLowerCase();
+  return `${componentId}.${ext}`;
+};
+
+// Helper function to remove empty dictionary from array
+// Only remove empty dictionaries, keep if there is key value pair
+export const removeEmptyDictFromArray = (arr) => {
+  if (!Array.isArray(arr)) return arr;
+  return arr.filter(item => {
+    if (typeof item !== 'object' || item === null) return true;
+    return Object.keys(item).length > 0;
+  });
+};

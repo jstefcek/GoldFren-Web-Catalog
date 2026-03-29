@@ -352,6 +352,10 @@ export default function CustomEditDialog({
       const { primaryKey, editEndpoint } = config || {};
       const id = rowData?.[primaryKey];
 
+      // Log
+      console.log("Data: ", formData);
+      console.log("Data to save:", transformFormData(category, formData, id));
+
       // Ensure we have ID and endpoint
       if (!id || !editEndpoint) throw new Error("Chybí identifikátor záznamu nebo endpoint. ID: " + id + " Endpoint: " + editEndpoint);
 
