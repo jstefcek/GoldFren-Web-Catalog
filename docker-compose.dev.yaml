@@ -78,7 +78,7 @@ services:
   # Nginx service
   # This service is used to serve static files and proxy requests to the backend
   nginx:
-    image: nginx:1.29.7-alpine
+    image: nginx:1.29.8-alpine
     container_name: goldfren_nginx
     ports:
       - "80:80"
