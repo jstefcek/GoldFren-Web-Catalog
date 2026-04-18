@@ -1,5 +1,5 @@
 # Use alpine Node.js image
-FROM node:24.14.1-alpine
+FROM node:24.15.0-alpine
 WORKDIR /goldfren_frontend
 
 # 1. Copy lockfiles & package.json
