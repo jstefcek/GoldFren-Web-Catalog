@@ -104,6 +104,7 @@ services:
       - frontend_build:/usr/share/nginx/html
     depends_on:
       - backend
+      - frontend
     networks:
       - mynetwork
     healthcheck:
