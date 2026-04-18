@@ -2,31 +2,33 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-export default defineConfig({
+export default defineConfig(() => ({
   plugins: [
     react(),
     tailwindcss(),
   ],
+
   build: {
-    // Minification and source map settings
-    minify: 'terser',
+    target: 'esnext',
+    minify: 'esbuild',
     sourcemap: false,
     cssCodeSplit: true,
-    // Bundle analysis configuration
-    rollupOptions: {
+    reportCompressedSize: false,
+
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          i18n: ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
-          analytics: ['react-ga4'],
-          xlsx: ['xlsx'],
-          icons: ['lucide-react'],
-          react_cookie_manager: ['react-cookie-manager'],
+        advancedChunks: {
+          groups: [
+            { name: 'react', test: /node_modules\/(react|react-dom)\// },
+            { name: 'router', test: /node_modules\/react-router-dom\// },
+            { name: 'i18n', test: /node_modules\/(i18next|react-i18next|i18next-browser-languagedetector)\// },
+            { name: 'analytics', test: /node_modules\/react-ga4\// },
+            { name: 'xlsx', test: /node_modules\/xlsx\// },
+            { name: 'icons', test: /node_modules\/lucide-react\// },
+            { name: 'cookie', test: /node_modules\/react-cookie-manager\// },
+          ],
         },
       },
     },
-    // Ensure compatibility with modern browsers
-    target: 'esnext',
   },
-})
+}))

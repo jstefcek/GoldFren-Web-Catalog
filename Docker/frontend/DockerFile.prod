@@ -23,4 +23,4 @@ RUN npm cache clean --force && \
 COPY Frontend/ .
 
 # 4. Run react vite build
-RUN npm run build
+CMD ["npm", "run", "build"]
