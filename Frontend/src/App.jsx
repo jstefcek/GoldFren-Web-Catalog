@@ -91,6 +91,7 @@ function App() {
         <CookieManager
           translations={t}
           translationI18NextPrefix="cookies."
+          disableGeolocation={true}
           privacyPolicyLink="/privacy"
           cookiePolicyLink="/cookies"
           enableFloatingButton={true}
