@@ -8,10 +8,10 @@ This project involves both frontend and backend development, and is built using 
 
 ## 🔧 Tech Stack
 
-- **Backend:** Django (Python 3.13.11)
-- **Frontend:** React.js (JavaScript + Node 24.11.0)
+- **Backend:** Django (Python 3.14.4)
+- **Frontend:** React.js (JavaScript + Node 24.15.0)
 - **Database:** MySQL (8.44)
-- **Server:** Nginx (1.29.4)
+- **Server:** Nginx (1.29.8)
 - **Containerization:** Docker
 - **Hosting:** VPS with Ubuntu (Private hosting)
 
@@ -21,7 +21,7 @@ This project involves both frontend and backend development, and is built using 
 
 - Replace the old website (originally written in PHP, HTML, and CSS, with data stored in MySQL)
 - Provide fast filtering and search capabilities
-- Enable admin control over catalog content *(planned)*
+- Enable admin control over catalog content
 - Support multilingual content: Czech, German, and English
 - Deliver a clean and intuitive UX/UI for customers
 - Fully separate backend and frontend codebases
@@ -29,6 +29,4 @@ This project involves both frontend and backend development, and is built using 
 
 ---
 
-## 🚧 Work in Progress
-
-This project is currently under development and running on a private VPS for testing. We're actively fine-tuning all features in collaboration with the client.
+## 🚧 Still Work in Progress but almost feature complete
