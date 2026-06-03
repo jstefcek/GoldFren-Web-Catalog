@@ -177,6 +177,7 @@
     "inside_diameter": "Inner diameter [mm]",
     "thickness": "Thickness [mm]",
     "note": "Note",
+    "pocet_der": "Number of holes",
     "all_entries": "Searched items",
     "user": {
       "username": "Username",
