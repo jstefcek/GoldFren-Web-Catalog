@@ -160,7 +160,7 @@ export default function BrakePadDetail({ category = "", apiUrl = null }) {
               {/* Note */}
               <div>
                 <h3 className="text-lg font-medium mb-2">
-                  {t("datagrid.note")}
+                  {t("datagrid.pocet_der")}
                 </h3>
                 <p className="text-gray-700">
                   {displayData(kotoucData.poznamka)}
