@@ -85,7 +85,7 @@ export const columnsConfig = {
     {key: "tloustka", label: "datagrid.thickness", sortable: true, filterable: true,},
     {key: "konkurence_braking", label: "Braking", sortable: true, filterable: true,},
     {key: "konkurence_ngbrakes", label: "NGBrakes", sortable: true, filterable: true,},
-    {key: "poznamka", label: "datagrid.note", sortable: true, filterable: true,},
+    {key: "poznamka", label: "datagrid.pocet_der", sortable: true, filterable: true,},
   ],
 
   // Kotouc vozidla web column config
