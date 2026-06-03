@@ -8,10 +8,10 @@ This project involves both frontend and backend development, and is built using 
 
 ## 🔧 Tech Stack
 
-- **Backend:** Django (Python 3.13.11)
-- **Frontend:** React.js (JavaScript + Node 24.11.0)
+- **Backend:** Django (Python 3.14.5)
+- **Frontend:** React.js (JavaScript + Node 26.2.0)
 - **Database:** MySQL (8.44)
-- **Server:** Nginx (1.29.4)
+- **Server:** Nginx (1.30.2)
 - **Containerization:** Docker
 - **Hosting:** VPS with Ubuntu (Private hosting)
 
