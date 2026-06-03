@@ -177,6 +177,7 @@
     "inside_diameter": "Inner diameter [mm]",
     "thickness": "Thickness [mm]",
     "note": "Note",
+    "pocet_der": "Hole Count",
     "all_entries": "Searched items",
     "zavit_hlavni_valec": "Thread of master cylinder",
     "zavit_trmen_roztec": "Stirrup pitch diameter",

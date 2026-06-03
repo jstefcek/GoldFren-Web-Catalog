@@ -177,6 +177,7 @@
     "inside_diameter": "Innendurchmesser [mm]",
     "thickness": "Dicke [mm]",
     "note": "Hinweis",
+    "pocet_der": "Anzahl der Löcher",
     "all_entries": "Gesuchte Artikel",
     "zavit_hlavni_valec": "Gewinde des Hauptzylinders",
     "zavit_trmen_roztec": "Gewinde des Spreizbügels",
