@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [
     'catalog.goldfren.cz',
     'catalog.goldfren.com',
     'katalog.goldfren.cz',
+    '185.80.30.44',
 ]
 
 # Application definition
@@ -229,7 +230,7 @@ MEDIA_URL = '/GoldFren_Media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'GoldFren_Media')
 
 # Logging configuration
-LOG_DIR = Path("/goldfren/logs")
+LOG_DIR = Path(os.getenv("DJANGO_LOG_DIR", BASE_DIR / "logs"))
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 LOGGING = {

@@ -306,8 +306,10 @@ export default function CustomAddDialog({
       
       // Try to read response JSON; if none, treat as success without id
       const newRecord = await response.json().catch(() => ({}));
-      if (!newRecord?.id) console.warn("Add returned no id:", newRecord);
-      const newId = newRecord?.id;
+      const newId =
+        newRecord?.id ??
+        Object.entries(newRecord).find(([key]) => key.endsWith("_id"))?.[1];
+      if (!newId) console.warn("Add returned no id:", newRecord);
 
       // Then upload the image if exists and we have an id
       if (newId && isFileObject(formData.obrazek)) {

@@ -18,7 +18,8 @@ from GoldFrenAPI.Services.Service_utils import (
     execute_update,
     insert_record
 )
-from GoldFrenAPI.utils.utils import change_category_label, change_sortiment_label
+from Components.MySQL import connection
+from GoldFrenAPI.utils.utils import change_category_label
 
 def get_vyrobce_by_kategorie(kategorie_id: int, all_params: bool = False):
     """
@@ -279,59 +280,67 @@ def update_vozidlo_sortiment(vozidlo_id: int, data: dict, ):
     - vozidlo_id: int - ID of the vozidlo to update sortiment for
     - data: dict - Dictionary containing sortiment data to update, create or delete
     """
-    # Get who update the record
     operation_status = False
     aktualizoval_id = data.get("aktualizoval")
-    
-    # In cycle go through each sortiment type and update DB records
-    for sortiment_type, sortiment_operations in data.items():
-        # Skip the aktualizoval field
-        if sortiment_type == "aktualizoval":
-            continue
-        
-        # Construct table name 
-        sortiment_type = change_sortiment_label(sortiment_type)
-        table_name = f"c_vozidlo_{sortiment_type}"
-        
-        # Get record operation (INS, UPD, DEL)
-        for operation, item_values in sortiment_operations.items():
-            # Loop through items inside operation groups
-            for value in item_values:
-                # Get sortiment detailed values
-                sortiment_kod = value.get("kod", None)
-                sortiment_pos = value.get("pozice", None)
-                sortiment_new_pos = value.get("new_pozice", None)
+    allowed_sortiment = {
+        "adaptery": ("c_vozidlo_adapter", "adapter"),
+        "desticky": ("c_vozidlo_desticka", "desticka"),
+        "brzdice": ("c_vozidlo_brzdic", "brzdic"),
+        "hadicky": ("c_vozidlo_hadicka", "hadicka"),
+        "kotouce": ("c_vozidlo_kotouc", "kotouc"),
+        "prislusenstvi": ("c_vozidlo_prislusenstvi", "prislusenstvi"),
+        "pumpy": ("c_vozidlo_pumpa", "pumpa"),
+    }
 
-                # Delete record if specified
-                if operation == "DEL":
-                    # Prepare DEL query
-                    del_query = f"""DELETE FROM {table_name} 
-                    WHERE vozidlo = %s 
-                    AND {sortiment_type} = %s
-                    AND pozice = %s"""
-                    
-                    # Prepare query params
-                    del_params = [vozidlo_id, sortiment_kod, sortiment_pos]
+    try:
+        with connection(commit=True) as conn:
+            if conn is None:
+                return False
 
-                    # Execute query
-                    operation_status = execute_update(sql_query=del_query, params=del_params)
-                
-                # Insert new sortiment for vozidlo
-                elif operation == "INS":
-                    # Prepare INS query
-                    ins_query = f"""INSERT INTO {table_name} 
-                    (vozidlo, {sortiment_type}, pozice, aktualizovano, aktualizoval) 
-                    values (%s, %s, %s, CURRENT_TIMESTAMP(), %s)"""
-                    
-                    # Prepare query params
-                    ins_params = [vozidlo_id, sortiment_kod, sortiment_pos, aktualizoval_id]
+            cursor = None
+            try:
+                cursor = conn.cursor()
 
-                    # Execute sortiment insert
-                    insert_record(sql_query=ins_query, params=ins_params)
-                    operation_status = True
-                
-    # Return API status
-    return operation_status
+                for sortiment_type, sortiment_operations in data.items():
+                    if sortiment_type == "aktualizoval":
+                        continue
+
+                    if sortiment_type not in allowed_sortiment:
+                        raise ValueError(f"Invalid sortiment type: {sortiment_type}")
+
+                    table_name, sortiment_column = allowed_sortiment[sortiment_type]
+
+                    for operation, item_values in sortiment_operations.items():
+                        if operation not in {"DEL", "INS"}:
+                            raise ValueError(f"Invalid sortiment operation: {operation}")
+
+                        for value in item_values:
+                            sortiment_kod = value.get("kod", None)
+                            sortiment_pos = value.get("pozice", None)
+
+                            if operation == "DEL":
+                                del_query = f"""DELETE FROM {table_name}
+                                WHERE vozidlo = %s
+                                AND {sortiment_column} = %s
+                                AND pozice = %s"""
+                                cursor.execute(del_query, [vozidlo_id, sortiment_kod, sortiment_pos])
+                                operation_status = True
+
+                            elif operation == "INS":
+                                ins_query = f"""INSERT INTO {table_name}
+                                (vozidlo, {sortiment_column}, pozice, aktualizovano, aktualizoval)
+                                VALUES (%s, %s, %s, CURRENT_TIMESTAMP(), %s)"""
+                                cursor.execute(ins_query, [vozidlo_id, sortiment_kod, sortiment_pos, aktualizoval_id])
+                                operation_status = True
+
+                return operation_status
+            finally:
+                if cursor is not None:
+                    cursor.close()
+
+    except Exception as ex:
+        print(ex)
+        return False
 
 def get_vozidlo_sortiment_by_type(vozidlo_id: int, sortiment_type: str):
     """

@@ -10,7 +10,8 @@ from GoldFrenAPI.utils.utils import (
     get_pagination,
     get_total_count,
     get_pagination_urls,
-    get_total_count_with_params                     
+    get_total_count_with_params,
+    get_publication_states
 )
 from GoldFrenAPI.Services.Desticka_Service import (
     get_desticky as get_all_desticky,
@@ -33,7 +34,7 @@ def get_desticky(request):
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
-        states = bool(request.GET.get("states", False))
+        states = get_publication_states(request)
     
         # If limit is set to 0 return all destickas
         if limit == 0:
@@ -100,7 +101,7 @@ def get_filtered_desticky_view(request):
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
-        states = bool(request.GET.get("states", False))
+        states = get_publication_states(request)
     
         # If limit is set to 0 return all destickas
         if limit == 0:
@@ -154,7 +155,7 @@ def get_vozidla_for_desticka_view(request):
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
-        states = bool(request.GET.get("states", False))
+        states = get_publication_states(request)
         
         # If limit is set to 0 return all desticka
         if limit == 0:

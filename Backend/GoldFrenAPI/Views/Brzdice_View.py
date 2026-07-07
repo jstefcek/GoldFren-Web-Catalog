@@ -10,7 +10,8 @@ from GoldFrenAPI.utils.utils import (
     get_pagination,
     get_total_count,
     get_pagination_urls,
-    get_total_count_with_params
+    get_total_count_with_params,
+    get_publication_states
 )
 from GoldFrenAPI.Services.Brzdice_Service import (
     get_brzdice as get_all_brzdice,
@@ -33,7 +34,7 @@ def get_brzdice(request):
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
-        states = bool(request.GET.get("states", False))
+        states = get_publication_states(request)
         
         # If limit is set to 0 return all adapters
         if limit == 0:
@@ -100,7 +101,7 @@ def get_filtered_brzdice_view(request):
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
-        states = bool(request.GET.get("states", False))
+        states = get_publication_states(request)
     
         # If limit is set to 0 return all filtered brzdice
         if limit == 0:
@@ -151,7 +152,7 @@ def get_vozidla_for_brzdic_view(request):
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
-        states = bool(request.GET.get("states", False))
+        states = get_publication_states(request)
         
         # If limit is set to 0 return all adapters
         if limit == 0:

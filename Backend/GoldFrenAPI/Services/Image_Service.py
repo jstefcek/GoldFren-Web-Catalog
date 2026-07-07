@@ -1,18 +1,39 @@
 import os
 import io
+import re
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 
+ALLOWED_SORTIMENT = {
+    "adaptery",
+    "brzdice",
+    "desticky",
+    "hadicky",
+    "kotouce",
+    "pumpy",
+    "prislusenstvi",
+}
+ALLOWED_FILE_TYPES = {"image", "vector"}
+SAFE_COMPONENT_ID = re.compile(r"^[A-Za-z0-9_-]+$")
+
+
 def save_image_file(sortiment: str, file_object, file_type: str, component_id: str) -> str:
     """Save an image or vector file to the server file system"""
+    sortiment = str(sortiment).strip()
+    file_type = str(file_type).strip()
+    component_id = str(component_id).strip()
+
     # Validate file type
-    if file_type not in ['image', 'vector']:
+    if file_type not in ALLOWED_FILE_TYPES:
         raise ValueError("Invalid file type. Must be 'image' or 'vector'.")
 
     # Gets sortiment
-    if not sortiment:
-        raise ValueError("Sortiment does not exist in the database.")
+    if sortiment not in ALLOWED_SORTIMENT:
+        raise ValueError("Invalid sortiment.")
+
+    if not SAFE_COMPONENT_ID.fullmatch(component_id):
+        raise ValueError("Invalid component ID.")
 
     # Validate file file extension
     file_ext = os.path.splitext(file_object.name)[1].lower()
@@ -28,7 +49,11 @@ def save_image_file(sortiment: str, file_object, file_type: str, component_id: s
     # Use component_id as filename
     filename = f"{component_id}{file_ext}"
     
-    dir_path = os.path.join(settings.MEDIA_ROOT, sortiment, file_type)
+    media_root = os.path.abspath(settings.MEDIA_ROOT)
+    dir_path = os.path.abspath(os.path.join(media_root, sortiment, file_type))
+    if not dir_path.startswith(media_root + os.sep):
+        raise ValueError("Invalid upload path.")
+
     file_path = os.path.join(dir_path, filename)
 
     # Create the directory

@@ -10,6 +10,7 @@ from GoldFrenAPI.Services.Service_utils import (
     insert_record,
     get_records
 )
+from Components.MySQL import connection
 from GoldFrenAPI.utils.utils import prepare_sql_filters, change_category_label
 
 # Function to get all adapters
@@ -108,28 +109,41 @@ def update_adapter(adapter_id, data):
 
 # Function to create a new adapter
 def create_adapter(data):
-    # Prepare SQL query for adapter
-    query = """
-        INSERT INTO d_adapter (sortiment, kategorie, obrazek, vektor, 
-            cislo_dilu, typ, prumer, popis, poznamka, publikovat, aktualizovano, aktualizoval) 
+    adapter_query = """
+        INSERT INTO d_adapter (sortiment, kategorie, obrazek, vektor,
+            cislo_dilu, typ, prumer, popis, poznamka, publikovat, aktualizovano, aktualizoval)
         VALUES (6, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), %s)
     """
-    new_id = insert_record(sql_query=query, 
-        params=(data["kategorie"], data["obrazek"], data["vektor"],
-        data["cislo_dilu"], data["typ"], data.get("prumer"), data["popis"],
-        data["poznamka"], data["publikovat"], data["aktualizoval"]
-    ), 
-    return_id=True)
-        
-    # Insert info about adapter attachment to database
-    query_attachment = """
-        INSERT INTO d_adapter_attachment (typ_uchyceni, roztec_brzdic) 
-        VALUES (%s, %s)
+    attachment_query = """
+        INSERT INTO d_adapter_attachment (adapter_kod, typ_uchyceni, roztec_brzdic)
+        VALUES (%s, %s, %s)
     """
-    insert_record(sql_query=query_attachment, 
-        params=(data["typ_uchyceni"], data["roztec_brzdic"]
-    ))
-    return new_id
+
+    try:
+        with connection(commit=True) as conn:
+            if conn is None:
+                print("Connection failed")
+                return None
+
+            cursor = None
+            try:
+                cursor = conn.cursor()
+                cursor.execute(adapter_query, (
+                    data["kategorie"], data["obrazek"], data["vektor"],
+                    data["cislo_dilu"], data["typ"], data.get("prumer"), data["popis"],
+                    data["poznamka"], data["publikovat"], data["aktualizoval"]
+                ))
+                new_id = cursor.lastrowid
+                cursor.execute(attachment_query, (
+                    new_id, data["typ_uchyceni"], data["roztec_brzdic"]
+                ))
+                return new_id
+            finally:
+                if cursor is not None:
+                    cursor.close()
+    except Exception as ex:
+        print(ex)
+        return None
 
 # Change state of publikovat
 def adapter_publication(adapter_id: int, publikovat: int):

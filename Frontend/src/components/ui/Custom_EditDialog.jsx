@@ -123,6 +123,13 @@ export default function CustomEditDialog({
     );
     if (typOpt) initial.typ = String(typOpt.value);
 
+    // Normalize typ_kotouce
+    const kotoucTypOpt = findByValueOrLabel(
+      SelectValueConfig.typ_kotouce,
+      rowData.typ
+    );
+    if (kotoucTypOpt) initial.typ = String(kotoucTypOpt.value);
+
     // Manufacturer label (may not come from API yet)
     initial.vyrobce_label = rowData.vyrobce_label || "";
 

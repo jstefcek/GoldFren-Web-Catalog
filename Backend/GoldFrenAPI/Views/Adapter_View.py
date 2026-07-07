@@ -10,7 +10,8 @@ from GoldFrenAPI.utils.utils import (
     get_pagination,
     get_total_count,
     get_total_count_with_params,
-    get_pagination_urls
+    get_pagination_urls,
+    get_publication_states
 )
 from GoldFrenAPI.Services.Adapter_Service import (
     get_adapters as get_all_adapters,
@@ -33,7 +34,7 @@ def get_adapters(request):
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
-        states = bool(request.GET.get("states", False))
+        states = get_publication_states(request)
     
         # If limit is set to 0 return all adapters
         if limit == 0:
@@ -110,7 +111,7 @@ def get_filtered_adapters_view(request):
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
-        states = bool(request.GET.get("states", False))
+        states = get_publication_states(request)
     
         # If limit is set to 0 return all adapters
         if limit == 0:
@@ -161,7 +162,7 @@ def get_vozidla_for_adapter_view(request):
         limit, page = get_pagination(request)
         
         # Try to get state parameter from request
-        states = bool(request.GET.get("states", False))
+        states = get_publication_states(request)
         
         # If limit is set to 0 return all adapters
         if limit == 0:
@@ -246,7 +247,7 @@ def create_adapter_view(request):
     # Create adapter
     new_id = create_adapter(data)
     if new_id:
-        return JsonResponse({"message": "Adapter created successfully", "adapter_id": new_id}, status=201)
+        return JsonResponse({"message": "Adapter created successfully", "id": new_id, "adapter_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create adapter"}, status=500)
 
 # Change state of publikovat

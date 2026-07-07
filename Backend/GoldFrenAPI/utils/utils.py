@@ -2,9 +2,30 @@
 
 # Imports
 import os
-from Components.MySQL import connect
+from Components.MySQL import connection
 
 PAGINATION_DEFAULT_LIMIT = os.getenv("PAGINATION_DEFAULT_PAGE_SIZE", 25)
+
+
+def get_publication_states(request) -> bool:
+    """
+    Return True only when an authenticated internal user explicitly requests
+    unpublished records.
+    """
+    raw_value = request.GET.get("states")
+    if raw_value is None:
+        return False
+
+    wants_all_states = str(raw_value).strip().lower() in {"1", "true", "yes", "on"}
+    if not wants_all_states:
+        return False
+
+    user = getattr(request, "user", None)
+    return bool(
+        user
+        and user.is_authenticated
+        and user.groups.filter(name="Internal").exists()
+    )
 
 def get_pagination(request):
     """
@@ -29,16 +50,19 @@ def get_total_count(sql_table: str, states: bool) -> int:
     """
     try:
         # Execute SQL query to get the count
-        conn = connect()
-        with conn.cursor() as cursor:
-            # Prepare SQL query
-            query = f"SELECT COUNT(*) as pocet FROM {sql_table}"
-            query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
-            
-            # Execute query and fetch result
-            cursor.execute(query)
-            result = cursor.fetchone()
-            return result["pocet"] if result else 0
+        with connection() as conn:
+            if conn is None:
+                return 0
+
+            with conn.cursor() as cursor:
+                # Prepare SQL query
+                query = f"SELECT COUNT(*) as pocet FROM {sql_table}"
+                query += " WHERE Publikovat in (0,1)" if states else " WHERE Publikovat = 1"
+
+                # Execute query and fetch result
+                cursor.execute(query)
+                result = cursor.fetchone()
+                return result["pocet"] if result else 0
     
     except Exception as e:
         print(f"Error getting total count from {sql_table}: {e}")
@@ -50,26 +74,29 @@ def get_total_count_with_params(query: str, states: bool, filters: dict = None) 
     """
     try:
         # Execute SQL query to get the count
-        conn = connect()
-        with conn.cursor() as cursor:
-            filter_condition = []
-            parameters = []
+        with connection() as conn:
+            if conn is None:
+                return 0
 
-            # Apply publication filter 
-            filter_condition.append("publikovat in (0,1)" if states else "Publikovat = 1")
-            filter_condition, parameters = prepare_sql_filters(filters=filters, filter_condition=filter_condition, params=parameters)
+            with conn.cursor() as cursor:
+                filter_condition = []
+                parameters = []
 
-            # Append filters to base query
-            if filter_condition:
-                query += " WHERE " + " AND ".join(filter_condition)
-            
-            # Wrap query and return count
-            count_query = f"SELECT COUNT(*) as pocet FROM ({query}) AS sub"
-            
-            # Execute query with parameters if any
-            cursor.execute(count_query, parameters)
-            result = cursor.fetchone()
-            return result["pocet"] if result else 0
+                # Apply publication filter
+                filter_condition.append("publikovat in (0,1)" if states else "Publikovat = 1")
+                filter_condition, parameters = prepare_sql_filters(filters=filters, filter_condition=filter_condition, params=parameters)
+
+                # Append filters to base query
+                if filter_condition:
+                    query += " WHERE " + " AND ".join(filter_condition)
+
+                # Wrap query and return count
+                count_query = f"SELECT COUNT(*) as pocet FROM ({query}) AS sub"
+
+                # Execute query with parameters if any
+                cursor.execute(count_query, parameters)
+                result = cursor.fetchone()
+                return result["pocet"] if result else 0
     
     except Exception as ex:
         print(f"Error getting total count: {ex}")

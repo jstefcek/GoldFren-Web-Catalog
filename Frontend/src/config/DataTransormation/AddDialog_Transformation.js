@@ -35,7 +35,7 @@ export function transformFormData(category, formData, componentId = null) {
         // Adaptery specific fields
         prumer: parseFloat(formData.prumer) || 0.0,
         typ_uchyceni: formData.typ_uchyceni || "",
-        roztec_brzdic: parseFloat(formData.roztec_brzdic) || 0.0,
+        roztec_brzdic: parseFloat(formData.roztec_brzdice ?? formData.roztec_brzdic) || 0.0,
         popis: formData.popis || null,
     };
 

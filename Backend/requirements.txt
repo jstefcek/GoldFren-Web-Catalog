@@ -12,5 +12,6 @@ gunicorn==26.0.0
 mysqlclient==2.2.8
 pillow==12.2.0
 python-dotenv==1.2.2
+SQLAlchemy==2.0.51
 sqlparse==0.5.5
 tzdata==2026.2
