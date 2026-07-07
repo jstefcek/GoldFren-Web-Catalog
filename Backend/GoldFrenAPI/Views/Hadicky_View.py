@@ -2,6 +2,7 @@
 
 # Imports
 import json
+import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
@@ -11,7 +12,8 @@ from GoldFrenAPI.utils.utils import (
     get_total_count,
     get_pagination_urls,
     get_total_count_with_params,
-    get_publication_states
+    get_publication_states,
+    parse_publication_value
 )
 from GoldFrenAPI.Services.Hadicky_Service import (
     get_hadicky as get_all_hadicky,
@@ -22,6 +24,8 @@ from GoldFrenAPI.Services.Hadicky_Service import (
     get_filtered_hadicky,
     get_vozidla_for_hadicka
 )
+
+logger = logging.getLogger(__name__)
 
 # Function to get all hadicky
 @api_view(['GET'])
@@ -38,19 +42,18 @@ def get_hadicky(request):
     
         # If limit is set to 0 return all adapters
         if limit == 0:
-            hadicky_objects = get_all_hadicky(states=states)
-            if hadicky_objects:
-                hadicky = [hadicka.to_dict() for hadicka in hadicky_objects]
-                return JsonResponse({
-                    "count": len(hadicky),
-                    "data": hadicky
-                }, status=200)
+            hadicky_objects = get_all_hadicky(states=states) or []
+            hadicky = [hadicka.to_dict() for hadicka in hadicky_objects]
+            return JsonResponse({
+                "count": len(hadicky),
+                "data": hadicky
+            }, status=200)
         
         # Get hadicka count
         total_hadicky = get_total_count("d_hadicka", states=states)
         
         # If limit is set to a number, return paginated hadicky
-        hadicky_objects = get_all_hadicky(limit=limit, page=page, states=states)
+        hadicky_objects = get_all_hadicky(limit=limit, page=page, states=states) or []
         hadicky = [hadicka.to_dict() for hadicka in hadicky_objects]
         
         # Construct next and previous page URLs
@@ -152,7 +155,7 @@ def get_vozidla_for_hadicka_view(request):
         
         # If limit is set to 0 return all hadicka
         if limit == 0:
-            vozidla_objects = get_vozidla_for_hadicka(hadicka_id=hadicka_id)
+            vozidla_objects = get_vozidla_for_hadicka(hadicka_id=hadicka_id) or []
             if vozidla_objects:
                 vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
                 return JsonResponse({
@@ -161,7 +164,7 @@ def get_vozidla_for_hadicka_view(request):
                 }, status=200)
         
         # Get vozidla for the hadicky
-        vozidla_objects = get_vozidla_for_hadicka(limit=limit, page=page, states=states, hadicka_id=hadicka_id)
+        vozidla_objects = get_vozidla_for_hadicka(limit=limit, page=page, states=states, hadicka_id=hadicka_id) or []
         if vozidla_objects:
             vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
         
@@ -180,8 +183,9 @@ def get_vozidla_for_hadicka_view(request):
             
         return JsonResponse({"error": "No vozidla found for this hadicka"}, status=404)
     
-    except Exception as ex:
-        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
+    except Exception:
+        logger.exception("Error fetching vozidla for hadicka")
+        return JsonResponse({"error": "Error fetching vozidla"}, status=500)
 
 # Function to update an hadicka
 @api_view(['PUT'])
@@ -232,7 +236,7 @@ def create_hadicka_view(request):
     # Create adapter
     new_id = create_hadicka(data)
     if new_id:
-        return JsonResponse({"message": "Hadicka created successfully", "hadicka_id": new_id}, status=201)
+        return JsonResponse({"message": "Hadicka created successfully", "id": new_id, "hadicka_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create hadicka"}, status=500)
 
 # Change state of publikovat
@@ -247,11 +251,12 @@ def hadicka_publication_view(request, hadicka_id):
 
     # Get params from request
     try:
-        publikovat = request.GET.get("pbl", None)
-        if publikovat is None:
+        raw_publikovat = request.GET.get("pbl", None)
+        if raw_publikovat is None:
             return JsonResponse({"error": "publikovat parameter is required"}, status=400)
-    except Exception as ex:
-        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+        publikovat = parse_publication_value(raw_publikovat)
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
     
     # Update hadicka publication state
     success = hadicka_publication(hadicka_id, publikovat)

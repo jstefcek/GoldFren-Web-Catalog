@@ -2,6 +2,7 @@
 
 # Imports
 import json
+import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
@@ -11,7 +12,8 @@ from GoldFrenAPI.utils.utils import (
     get_total_count,
     get_pagination_urls,
     get_total_count_with_params,
-    get_publication_states
+    get_publication_states,
+    parse_publication_value
 )
 from GoldFrenAPI.Services.Desticka_Service import (
     get_desticky as get_all_desticky,
@@ -22,6 +24,8 @@ from GoldFrenAPI.Services.Desticka_Service import (
     get_filtered_desticky,
     get_vozidla_for_desticka
 )
+
+logger = logging.getLogger(__name__)
 
 # Function to get all desticky
 @api_view(['GET'])
@@ -35,22 +39,21 @@ def get_desticky(request):
         
         # Try to get state parameter from request
         states = get_publication_states(request)
-    
+
         # If limit is set to 0 return all destickas
         if limit == 0:
-            desticky_objects = get_all_desticky(states=states)
-            if desticky_objects:
-                desticky = [desticka.to_dict() for desticka in desticky_objects]
-                return JsonResponse({
-                    "count": len(desticky),
-                    "data": desticky
-                }, status=200)
+            desticky_objects = get_all_desticky(states=states) or []
+            desticky = [desticka.to_dict() for desticka in desticky_objects]
+            return JsonResponse({
+                "count": len(desticky),
+                "data": desticky
+            }, status=200)
             
         # Get destickas count
         total_desticky = get_total_count("d_desticka", states=states)
         
         # If limit is set to a number, return paginated destickas
-        desticky_objects = get_all_desticky(limit=limit, page=page, states=states)
+        desticky_objects = get_all_desticky(limit=limit, page=page, states=states) or []
         desticky = [desticka.to_dict() for desticka in desticky_objects]
         
         # Construct next and previous page URLs
@@ -61,7 +64,7 @@ def get_desticky(request):
             "previous": prev_url,
             "data": desticky
         }, status=200)
-    
+
     # Handle pagination errors
     except ValueError:
         return JsonResponse({"error": "Invalid pagination parameters. Limit and offset must be integers."}, status=400)
@@ -159,7 +162,7 @@ def get_vozidla_for_desticka_view(request):
         
         # If limit is set to 0 return all desticka
         if limit == 0:
-            vozidla_objects = get_vozidla_for_desticka(desticka_id=desticka_id)
+            vozidla_objects = get_vozidla_for_desticka(desticka_id=desticka_id) or []
             vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
             return JsonResponse({
                 "count": len(vozidla),
@@ -167,7 +170,7 @@ def get_vozidla_for_desticka_view(request):
             }, status=200)
         
         # Get vozidla for the desticka
-        vozidla_objects = get_vozidla_for_desticka(limit=limit, page=page, states=states, desticka_id=desticka_id)
+        vozidla_objects = get_vozidla_for_desticka(limit=limit, page=page, states=states, desticka_id=desticka_id) or []
         if vozidla_objects:
             vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
         
@@ -187,8 +190,9 @@ def get_vozidla_for_desticka_view(request):
             
         return JsonResponse({"error": "No vozidla found for this desticka"}, status=404)
     
-    except Exception as ex:
-        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
+    except Exception:
+        logger.exception("Error fetching vozidla for desticka")
+        return JsonResponse({"error": "Error fetching vozidla"}, status=500)
 
 # Function to update an desticka 
 @api_view(['PUT'])
@@ -197,31 +201,25 @@ def update_desticka_view(request, desticka_id):
     """
     This function updates an existing desticka.
     """
+    if request.method != "PUT":
+        return HttpResponseBadRequest("Invalid request method")
+
+    # Parse JSON request body
     try:
-        if request.method != "PUT":
-            return HttpResponseBadRequest("Invalid request method")
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-        # Parse JSON request body
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-        
-        # Get user id from request
-        user = request.user
-        data["aktualizoval"] = user.id
-        
-        # Update desticka
-        try:
-            success = update_desticka(desticka_id, data)
-        except Exception as ex:
-            raise ex
+    # Get user id from request
+    user = request.user
+    data["aktualizoval"] = user.id
 
-        if success:
-            return JsonResponse({"message": "Desticka updated successfully"}, status=200)
-        return JsonResponse({"error": "Failed to update desticka"}, status=500)
-    except Exception as ex:
-        raise ex
+    # Update desticka
+    success = update_desticka(desticka_id, data)
+
+    if success:
+        return JsonResponse({"message": "Desticka updated successfully"}, status=200)
+    return JsonResponse({"error": "Failed to update desticka"}, status=500)
 
 # Function to create a new desticka
 @api_view(['POST'])
@@ -246,7 +244,7 @@ def create_desticka_view(request):
     # Create desticka
     new_id = create_desticka(data)
     if new_id:
-        return JsonResponse({"message": "Desticka created successfully", "desticka_id": new_id}, status=201)
+        return JsonResponse({"message": "Desticka created successfully", "id": new_id, "desticka_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create desticka"}, status=500)
 
 # Change state of publikovat
@@ -261,11 +259,12 @@ def desticka_publication_view(request, desticka_id):
 
     # Get params from request
     try:
-        publikovat = request.GET.get("pbl", None)
-        if publikovat is None:
+        raw_publikovat = request.GET.get("pbl", None)
+        if raw_publikovat is None:
             return JsonResponse({"error": "Publikovat parameter is required"}, status=400)
-    except Exception as ex:
-        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+        publikovat = parse_publication_value(raw_publikovat)
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
     
     # Update desticka publication state
     success = desticka_publication(desticka_id, publikovat)

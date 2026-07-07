@@ -2,6 +2,7 @@
 
 # Imports
 import json
+import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
@@ -11,7 +12,8 @@ from GoldFrenAPI.utils.utils import (
     get_total_count,
     get_pagination_urls,
     get_total_count_with_params,
-    get_publication_states
+    get_publication_states,
+    parse_publication_value
 )
 from GoldFrenAPI.Services.Pumpy_Service import (
     get_pumpy as get_all_pumpy,
@@ -22,6 +24,8 @@ from GoldFrenAPI.Services.Pumpy_Service import (
     get_filtered_pumpy,
     get_vozidla_for_pumpa
 )
+
+logger = logging.getLogger(__name__)
 
 # Function to get all pumpy
 @api_view(['GET'])
@@ -38,19 +42,18 @@ def get_pumpy(request):
     
         # If limit is set to 0 return all pumpy
         if limit == 0:
-            pumpy_objects = get_all_pumpy(states=states)
-            if pumpy_objects:
-                pumpy = [pumpa.to_dict() for pumpa in pumpy_objects]
-                return JsonResponse({
-                    "count": len(pumpy),
-                    "data": pumpy
-                }, status=200)
+            pumpy_objects = get_all_pumpy(states=states) or []
+            pumpy = [pumpa.to_dict() for pumpa in pumpy_objects]
+            return JsonResponse({
+                "count": len(pumpy),
+                "data": pumpy
+            }, status=200)
         
         # Get pumpy count
         total_pumpy = get_total_count("d_pumpa", states=states)
         
         # If limit is set to a number, return paginated pumpy
-        pumpy_objects = get_all_pumpy(limit=limit, page=page, states=states)
+        pumpy_objects = get_all_pumpy(limit=limit, page=page, states=states) or []
         pumpy = [pumpa.to_dict() for pumpa in pumpy_objects]
         
         # Construct next and previous page URLs
@@ -157,7 +160,7 @@ def get_vozidla_for_pumpa_view(request):
         
         # If limit is set to 0 return all pumpa
         if limit == 0:
-            vozidla_objects = get_vozidla_for_pumpa(pumpa_id=pumpa_id)
+            vozidla_objects = get_vozidla_for_pumpa(pumpa_id=pumpa_id) or []
             if vozidla_objects:
                 vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
                 return JsonResponse({
@@ -166,7 +169,7 @@ def get_vozidla_for_pumpa_view(request):
                 }, status=200)
         
         # Get vozidla for the pumpa
-        vozidla_objects = get_vozidla_for_pumpa(limit=limit, page=page, states=states, pumpa_id=pumpa_id)
+        vozidla_objects = get_vozidla_for_pumpa(limit=limit, page=page, states=states, pumpa_id=pumpa_id) or []
         if vozidla_objects:
             vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
         
@@ -185,8 +188,9 @@ def get_vozidla_for_pumpa_view(request):
             
         return JsonResponse({"error": "No vozidla found for this pumpa"}, status=404)
     
-    except Exception as ex:
-        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
+    except Exception:
+        logger.exception("Error fetching vozidla for pumpa")
+        return JsonResponse({"error": "Error fetching vozidla"}, status=500)
 
 # Function to update an pumpa
 @api_view(['PUT'])
@@ -237,7 +241,7 @@ def create_pumpa_view(request):
     # Create adapter
     new_id = create_pumpa(data)
     if new_id:
-        return JsonResponse({"message": "Pumpa created successfully", "pumpa_id": new_id}, status=201)
+        return JsonResponse({"message": "Pumpa created successfully", "id": new_id, "pumpa_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create pumpa"}, status=500)
 
 # Change state of publikovat
@@ -252,11 +256,12 @@ def pumpa_publication_view(request, pumpa_id):
 
     # Get params from request
     try:
-        publikovat = request.GET.get("pbl", None)
-        if publikovat is None:
+        raw_publikovat = request.GET.get("pbl", None)
+        if raw_publikovat is None:
             return JsonResponse({"error": "Publikovat parameter is required"}, status=400)
-    except Exception as ex:
-        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+        publikovat = parse_publication_value(raw_publikovat)
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
     
     # Update pumpa publication state
     success = pumpa_publication(pumpa_id, publikovat)

@@ -1,9 +1,12 @@
-import os, json
+import json
+import logging
+import os
+import time
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from django.core.cache import cache
 from rest_framework.permissions import IsAuthenticated
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from GoldFrenAPI.Services.Vozidla_Service import (
     get_vyrobce_by_kategorie,
@@ -19,8 +22,36 @@ from GoldFrenAPI.Services.Vozidla_Service import (
     get_vozidlo_available_sortiment
 )
 
+logger = logging.getLogger(__name__)
+
 # Cache timeout settings
 CACHE_TIMEOUT = int(os.getenv("DJANGO_CACHE_TIMEOUT", 86400))
+VEHICLE_CACHE_VERSION_KEY = "vozidlo_cache_version"
+VEHICLE_CATEGORY_MAP = {
+    "automobily": ("Auto", 2),
+    "motocykly": ("Motocykl", 1),
+    "motokary": ("Motokary", 6),
+    "kola": ("Kolo", 3),
+    "letadla": ("Letadlo", 4),
+    "prumysl": ("Prumysl", 5),
+}
+
+
+def _vehicle_cache_version():
+    version = cache.get(VEHICLE_CACHE_VERSION_KEY)
+    if version is None:
+        version = str(time.time_ns())
+        cache.set(VEHICLE_CACHE_VERSION_KEY, version, None)
+    return version
+
+
+def _vehicle_cache_key(name, *parts):
+    normalized_parts = ["" if part is None else str(part) for part in parts]
+    return ":".join(["vozidlo", _vehicle_cache_version(), name, *normalized_parts])
+
+
+def _invalidate_vehicle_caches():
+    cache.set(VEHICLE_CACHE_VERSION_KEY, str(time.time_ns()), None)
 
 @api_view(['GET'])
 def get_vyrobce_names(request):
@@ -53,9 +84,9 @@ def get_vozidlo_filtered_view(request):
         return JsonResponse({"error": "kategorie_kod and vyrobce_kod are required"}, status=400)
 
     # Check if there is a cached version of the vozidlo data
-    cache_key = f"vozidlo_filtered_{kategorie_kod}_{vyrobce_kod}_{objem}_{model}_{rok_vyroby}"
+    cache_key = _vehicle_cache_key("filtered", kategorie_kod, vyrobce_kod, objem, model, rok_vyroby)
     cached_data = cache.get(cache_key)
-    if cached_data:
+    if cached_data is not None:
         return JsonResponse(cached_data, safe=False, status=200)
 
     # If not cached, fetch the vozidlo data from the database
@@ -79,9 +110,9 @@ def get_vozidlo_sortiment_view(request):
         return JsonResponse({"error": "vozidlo_kod must be an integer"}, status=400)
 
     # Check if there is a cached version of the vozidlo sortiment data
-    cache_key = f"vozidlo_sortiment_{vozidlo_id}"
+    cache_key = _vehicle_cache_key("sortiment", vozidlo_id)
     cached_data = cache.get(cache_key)
-    if cached_data:
+    if cached_data is not None:
         return JsonResponse(cached_data, safe=False, status=200)
 
     # If not cached, fetch the vozidlo sortiment data from the database
@@ -99,31 +130,17 @@ def get_vozidlo_by_category_view(request):
     if not kategorie:
         return JsonResponse({"error": "kategorie is required"}, status=400)
     
-    # Set the kategorie kod to specific value
-    if kategorie == "automobily":
-        kategorie = "Auto"
-        kategorie_kod = 2
-    elif kategorie == "motocykly":
-        kategorie = "Motocykl"
-        kategorie_kod = 1
-    elif kategorie == "motokary":
-        kategorie = "Motokary"
-        kategorie_kod = 6
-    elif kategorie == "kola":
-        kategorie = "Kolo"
-        kategorie_kod = 3
-    elif kategorie == "letadla":
-        kategorie = "Letadlo"
-        kategorie_kod = 4
-    elif kategorie == "prumysl":
-        kategorie = "Prumysl"
-        kategorie_kod = 5
+    category = VEHICLE_CATEGORY_MAP.get(kategorie)
+    if category is None:
+        return JsonResponse({"error": "Invalid kategorie_kod"}, status=400)
+
+    kategorie, kategorie_kod = category
 
     # Check if there is a cached version of the vozidlo data
-    cache_key = f"vozidlo_by_category_{kategorie_kod}"
+    cache_key = _vehicle_cache_key("by_category", kategorie_kod)
     
     cached_data = cache.get(cache_key)
-    if cached_data:
+    if cached_data is not None:
         return JsonResponse(cached_data, safe=False, status=200)
 
     # If not cached, fetch the vozidlo data from the database
@@ -175,14 +192,14 @@ def update_vozidlo_view(request, vozidlo_id):
     try:
         success = update_vozidlo(vozidlo_id, data)
 
-        # Clear kategorie cache and return 200
         if success:
-            cache.delete(f"vozidlo_by_category_{data.get('kategorie')}")
+            _invalidate_vehicle_caches()
             return JsonResponse({"message": "Vozidlo updated successfully"}, status=200)
 
         return JsonResponse({"error": "Failed to update Vozidlo"}, status=400)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    except Exception:
+        logger.exception("Failed to update vozidlo %s", vozidlo_id)
+        return JsonResponse({"error": "Failed to update vozidlo"}, status=500)
     
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsInternalUser])
@@ -203,6 +220,7 @@ def update_vyrobce_view(request, vyrobce_kod):
     # Update the vyrobce
     status = update_vyrobce(vyrobce_kod, data)
     if status:
+        _invalidate_vehicle_caches()
         return JsonResponse({"message": "Vyrobce updated successfully"}, status=200)
     return JsonResponse({"error": "Failed to update vyrobce"}, status=400)
 
@@ -228,6 +246,7 @@ def update_vozidlo_sortiment_view(request, vozidlo_id):
     # Update the vyrobce
     status = update_vozidlo_sortiment(vozidlo_id, data)
     if status:
+        _invalidate_vehicle_caches()
         return JsonResponse({"message": "Vozidlo sortiment updated successfully"}, status=200)
     return JsonResponse({"error": "Failed to update vozidlo sortiment"}, status=400)
     
@@ -253,7 +272,8 @@ def create_vozidlo_view(request):
     # Create vozidlo
     new_id = create_vozidlo(data)
     if new_id:
-        return JsonResponse({"message": "Vozidlo created successfully", "vozidlo_id": new_id}, status=201)
+        _invalidate_vehicle_caches()
+        return JsonResponse({"message": "Vozidlo created successfully", "id": new_id, "vozidlo_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create vozidlo"}, status=500)
 
 @api_view(['POST'])
@@ -275,5 +295,6 @@ def create_vyrobce_view(request):
     # Create the vyrobce
     new_id = create_vyrobce(data)
     if new_id:
-        return JsonResponse({"message": "Vyrobce created successfully", "vyrobce_id": new_id}, status=201)
-    return JsonResponse({"error": f"Failed to create vyrobce: {new_id}"}, status=400)
+        _invalidate_vehicle_caches()
+        return JsonResponse({"message": "Vyrobce created successfully", "id": new_id, "vyrobce_id": new_id}, status=201)
+    return JsonResponse({"error": "Failed to create vyrobce"}, status=400)

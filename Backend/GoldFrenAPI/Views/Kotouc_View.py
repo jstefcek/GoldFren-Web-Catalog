@@ -2,6 +2,7 @@
 
 # Imports
 import json
+import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
@@ -11,7 +12,8 @@ from GoldFrenAPI.utils.utils import (
     get_pagination_urls,
     get_total_count_with_params,
     get_total_count,
-    get_publication_states
+    get_publication_states,
+    parse_publication_value
 )
 from GoldFrenAPI.Services.Kotouc_Service import (
     get_kotouce as get_all_kotouce,
@@ -22,6 +24,8 @@ from GoldFrenAPI.Services.Kotouc_Service import (
     get_filtered_kotouce,
     get_vozidla_for_kotouc
 )
+
+logger = logging.getLogger(__name__)
 
 # Function to get all koutce
 @api_view(['GET'])
@@ -38,19 +42,18 @@ def get_kotouce(request):
     
         # If limit is set to 0 return all adapters
         if limit == 0:
-            kotouce_objects = get_all_kotouce(states=states)
-            if kotouce_objects:
-                kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
-                return JsonResponse({
-                        "count": len(kotouce),
-                        "data": kotouce
-                    }, status=200)
+            kotouce_objects = get_all_kotouce(states=states) or []
+            kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
+            return JsonResponse({
+                    "count": len(kotouce),
+                    "data": kotouce
+                }, status=200)
                 
         # Get destickas count
         total_kotouce = get_total_count("d_kotouce", states=states)
         
         # If limit is set to a number, return paginated destickas
-        kotouce_objects = get_all_kotouce(limit=limit, page=page, states=states)
+        kotouce_objects = get_all_kotouce(limit=limit, page=page, states=states) or []
         kotouce = [kotouc.to_dict() for kotouc in kotouce_objects]
         
         # Construct next and previous page URLs
@@ -165,7 +168,7 @@ def get_vozidla_for_kotouc_view(request):
         
         # If limit is set to 0 return all kotouc
         if limit == 0:
-            vozidla_objects = get_vozidla_for_kotouc(kotouc_id=kotouc_id)
+            vozidla_objects = get_vozidla_for_kotouc(kotouc_id=kotouc_id) or []
             if vozidla_objects:
                 vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
                 return JsonResponse({
@@ -174,7 +177,7 @@ def get_vozidla_for_kotouc_view(request):
                 }, status=200)
         
         # Get vozidla for the kotouc
-        vozidla_objects = get_vozidla_for_kotouc(limit=limit, page=page, states=states, kotouc_id=kotouc_id)
+        vozidla_objects = get_vozidla_for_kotouc(limit=limit, page=page, states=states, kotouc_id=kotouc_id) or []
         if vozidla_objects:
             vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
         
@@ -193,8 +196,9 @@ def get_vozidla_for_kotouc_view(request):
             
         return JsonResponse({"error": "No vozidla found for this kotouc"}, status=404)
     
-    except Exception as ex:
-        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
+    except Exception:
+        logger.exception("Error fetching vozidla for kotouc")
+        return JsonResponse({"error": "Error fetching vozidla"}, status=500)
 
 # Function to update an kotouc
 @api_view(['PUT'])
@@ -261,11 +265,12 @@ def kotouc_publication_view(request, kotouc_id):
 
     # Get params from request
     try:
-        publikovat = request.GET.get("pbl", None)
-        if publikovat is None:
+        raw_publikovat = request.GET.get("pbl", None)
+        if raw_publikovat is None:
             return JsonResponse({"error": "publikovat parameter is required"}, status=400)
-    except Exception as ex:
-        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+        publikovat = parse_publication_value(raw_publikovat)
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
     
     # Update kotouc publication state
     success = kotouc_publication(kotouc_id, publikovat)

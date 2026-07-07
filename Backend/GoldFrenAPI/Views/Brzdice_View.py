@@ -2,6 +2,7 @@
 
 # Imports
 import json
+import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
@@ -11,7 +12,8 @@ from GoldFrenAPI.utils.utils import (
     get_total_count,
     get_pagination_urls,
     get_total_count_with_params,
-    get_publication_states
+    get_publication_states,
+    parse_publication_value
 )
 from GoldFrenAPI.Services.Brzdice_Service import (
     get_brzdice as get_all_brzdice,
@@ -22,6 +24,8 @@ from GoldFrenAPI.Services.Brzdice_Service import (
     get_filtered_brzdice,
     get_vozidla_for_brzdic,
     )
+
+logger = logging.getLogger(__name__)
 
 # Function to get all brzdice
 @api_view(['GET'])
@@ -38,7 +42,7 @@ def get_brzdice(request):
         
         # If limit is set to 0 return all adapters
         if limit == 0:
-            brzdice_objects = get_all_brzdice(states=states)
+            brzdice_objects = get_all_brzdice(states=states) or []
             brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
             return JsonResponse({
                 "count": len(brzdice),
@@ -49,7 +53,7 @@ def get_brzdice(request):
         total_brzidce = get_total_count("d_brzdice", states=states)
         
         # If limit is set to a number, return paginated adapters
-        brzdice_objects = get_all_brzdice(limit=limit, page=page, states=states)
+        brzdice_objects = get_all_brzdice(limit=limit, page=page, states=states) or []
         brzdice = [brzdic.to_dict() for brzdic in brzdice_objects]
         
         # Construct next and previous page URLs
@@ -156,7 +160,7 @@ def get_vozidla_for_brzdic_view(request):
         
         # If limit is set to 0 return all adapters
         if limit == 0:
-            brzdice_objects = get_vozidla_for_brzdic(brzdic_id=brzdic_id)
+            brzdice_objects = get_vozidla_for_brzdic(brzdic_id=brzdic_id) or []
             if brzdice_objects:
                 brzdic = [brzdic.to_dict() for brzdic in brzdice_objects]
                 return JsonResponse({
@@ -165,7 +169,7 @@ def get_vozidla_for_brzdic_view(request):
                 }, status=200)
         
         # Get vozidla for the brzdic
-        brzdice_objects = get_vozidla_for_brzdic(limit=limit, page=page, states=states, brzdic_id=brzdic_id)
+        brzdice_objects = get_vozidla_for_brzdic(limit=limit, page=page, states=states, brzdic_id=brzdic_id) or []
         if brzdice_objects:
             vozidla = [vozidlo.to_dict() for vozidlo in brzdice_objects]
         
@@ -185,8 +189,9 @@ def get_vozidla_for_brzdic_view(request):
             
         return JsonResponse({"error": "No vozidla found for this brzdic"}, status=404)
     
-    except Exception as ex:
-        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
+    except Exception:
+        logger.exception("Error fetching vozidla for brzdic")
+        return JsonResponse({"error": "Error fetching vozidla"}, status=500)
 
 # Function to update an adapter
 @api_view(['PUT'])
@@ -237,7 +242,7 @@ def create_brzdic_view(request):
     # Create brzdic
     new_id = create_brzdic(data)
     if new_id:
-        return JsonResponse({"message": "Brzdic created successfully", "brzdic_id": new_id}, status=201)
+        return JsonResponse({"message": "Brzdic created successfully", "id": new_id, "brzdic_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create brzdic"}, status=500)
 
 # Change state of publikovat
@@ -252,11 +257,12 @@ def brzdic_publication_view(request, brzdic_id):
 
     # Get params from request
     try:
-        publikovat = request.GET.get("pbl", None)
-        if publikovat is None:
+        raw_publikovat = request.GET.get("pbl", None)
+        if raw_publikovat is None:
             return JsonResponse({"error": "publikovat parameter is required"}, status=400)
-    except Exception as ex:
-        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+        publikovat = parse_publication_value(raw_publikovat)
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
     
     # Update brzdic publication state
     success = brzdice_publication(brzdic_id, publikovat)

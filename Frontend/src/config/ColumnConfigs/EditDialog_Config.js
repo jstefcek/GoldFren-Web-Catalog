@@ -379,7 +379,7 @@ export const dialogColumnsConfig = {
   vozidlo_sortiment: {
     primaryKey: "kod",
     editEndpoint: (kod) => `${serverUrl}/api/goldfren/internal/vozidla/sortiment/update/${kod}`,
-    currentEndpoint: (kod, key) => `${serverUrl}/api/goldfren/internal/vozidla/sortiment/assaigned/${kod}/type/${key}`,
+    currentEndpoint: (kod, key) => `${serverUrl}/api/goldfren/internal/vozidla/sortiment/assigned/${kod}/type/${key}`,
     availableEndpoint: (kod, key) => `${serverUrl}/api/goldfren/internal/vozidla/sortiment/available/${kod}/type/${key}`,
     fields: [
       {key: "adaptery", label: "Adaptéry", type: "setup_board", editable: true, show: true, dataType: "object", boardLabels: {   assigned: "Již přiřazené položky",   changes: "Připravené změny",   available: "Dostupné položky", }, buildInitial: buildSortimentBoard, required: false },

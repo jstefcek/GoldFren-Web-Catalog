@@ -2,6 +2,7 @@
 
 # Imports
 import json
+import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
@@ -11,7 +12,8 @@ from GoldFrenAPI.utils.utils import (
     get_total_count,
     get_pagination_urls,
     get_total_count_with_params,
-    get_publication_states
+    get_publication_states,
+    parse_publication_value
 )
 from GoldFrenAPI.Services.Prislusenstvi_Service import (
     get_prislusenstvi as get_all_prislusenstvi,
@@ -22,6 +24,8 @@ from GoldFrenAPI.Services.Prislusenstvi_Service import (
     get_filtered_prislusenstvi,
     get_vozidla_for_prislusenstvi
 )
+
+logger = logging.getLogger(__name__)
 
 # Function to get all prislusenstvi
 @api_view(['GET'])
@@ -38,19 +42,18 @@ def get_prislusenstvi(request):
     
         # If limit is set to 0 return all prislusenstvi
         if limit == 0:
-            prislusenstvi_objects = get_all_prislusenstvi(states=states)
-            if prislusenstvi_objects:
-                prislusenstvi = [prislusenstvi.to_dict() for prislusenstvi in prislusenstvi_objects]
-                return JsonResponse({
-                    "count": len(prislusenstvi),
-                    "data": prislusenstvi
-                }, status=200)
+            prislusenstvi_objects = get_all_prislusenstvi(states=states) or []
+            prislusenstvi = [prislusenstvi.to_dict() for prislusenstvi in prislusenstvi_objects]
+            return JsonResponse({
+                "count": len(prislusenstvi),
+                "data": prislusenstvi
+            }, status=200)
         
         # Get prislusenstvi count
         total_prislusenstvi = get_total_count("d_prislusenstvi", states=states)
         
         # If limit is set to a number, return paginated prislusenstvi
-        prislusenstvi_objects = get_all_prislusenstvi(limit=limit, page=page, states=states)
+        prislusenstvi_objects = get_all_prislusenstvi(limit=limit, page=page, states=states) or []
         prislusenstvi = [prislusenstvi.to_dict() for prislusenstvi in prislusenstvi_objects]
         
         # Construct next and previous page URLs
@@ -115,7 +118,7 @@ def get_filtered_prislusenstvi_view(request):
             all_prislusenstvi = [prislusenstvi for prislusenstvi in prislusenstvi_objects]
             
             # Get filtered prislusenstvi count
-            total_prislusenstvi = get_filtered_prislusenstvi("""SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, typ, poznamka, popis, pozice
+            total_prislusenstvi = get_total_count_with_params("""SELECT DISTINCT kod, cislo_dilu, obrazek, vektor, typ, poznamka, popis, pozice
                                                             FROM v_vozidlo_prislusenstvi
                                                             """, 
                                                         states=states, filters=filters)
@@ -155,7 +158,7 @@ def get_vozidla_for_prislusenstvi_view(request):
         
         # If limit is set to 0 return all prislusenstvi
         if limit == 0:
-            vozidla_objects = get_vozidla_for_prislusenstvi(prislusenstvi_id=prislusenstvi_id)
+            vozidla_objects = get_vozidla_for_prislusenstvi(prislusenstvi_id=prislusenstvi_id) or []
             if vozidla_objects:
                 vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
                 return JsonResponse({
@@ -164,7 +167,7 @@ def get_vozidla_for_prislusenstvi_view(request):
                 }, status=200)
         
         # Get vozidla for the prislusenstvi
-        vozidla_objects = get_vozidla_for_prislusenstvi(limit=limit, page=page, states=states, prislusenstvi_id=prislusenstvi_id)
+        vozidla_objects = get_vozidla_for_prislusenstvi(limit=limit, page=page, states=states, prislusenstvi_id=prislusenstvi_id) or []
         if vozidla_objects:
             vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
         
@@ -183,8 +186,9 @@ def get_vozidla_for_prislusenstvi_view(request):
             
         return JsonResponse({"error": "No vozidla found for this prislusenstvi"}, status=404)
     
-    except Exception as ex:
-        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
+    except Exception:
+        logger.exception("Error fetching vozidla for prislusenstvi")
+        return JsonResponse({"error": "Error fetching vozidla"}, status=500)
 
 # Function to update an prislusenstvi
 @api_view(['PUT'])
@@ -235,7 +239,7 @@ def create_prislusenstvi_view(request):
     # Create adapter
     new_id = create_prislusenstvi(data)
     if new_id:
-        return JsonResponse({"message": "Prislusenstvi created successfully", "prislusenstvi_id": new_id}, status=201)
+        return JsonResponse({"message": "Prislusenstvi created successfully", "id": new_id, "prislusenstvi_id": new_id}, status=201)
     return JsonResponse({"error": "Failed to create prislusenstvi"}, status=500)
 
 # Change state of publikovat
@@ -250,11 +254,12 @@ def prislusenstvi_publication_view(request, prislusenstvi_id):
 
     # Get params from request
     try:
-        publikovat = request.GET.get("pbl", None)
-        if publikovat is None:
+        raw_publikovat = request.GET.get("pbl", None)
+        if raw_publikovat is None:
             return JsonResponse({"error": "Publikovat parameter is required"}, status=400)
-    except Exception as ex:
-        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+        publikovat = parse_publication_value(raw_publikovat)
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
     
     # Update prislusenstvi publication state
     success = prislusenstvi_publication(prislusenstvi_id, publikovat)

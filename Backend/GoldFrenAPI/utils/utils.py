@@ -27,6 +27,21 @@ def get_publication_states(request) -> bool:
         and user.groups.filter(name="Internal").exists()
     )
 
+def parse_publication_value(value) -> int:
+    """
+    Normalize publication values accepted by PATCH endpoints to a DB-safe 0/1.
+    """
+    if isinstance(value, bool):
+        return int(value)
+
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true"}:
+        return 1
+    if normalized in {"0", "false"}:
+        return 0
+
+    raise ValueError("pbl must be one of: 0, 1, true, false")
+
 def get_pagination(request):
     """
     This function returns pagination parameters from the request.

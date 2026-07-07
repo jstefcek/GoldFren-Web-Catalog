@@ -25,6 +25,7 @@ urlpatterns = [
     path("vyrobce/update/<int:vyrobce_kod>", update_vyrobce_view, name="update_vyrobce_view"),
     path("vyrobce/create", create_vyrobce_view, name="create_vyrobce_view"),
     path("sortiment/update/<int:vozidlo_id>", update_vozidlo_sortiment_view, name="update_vozidlo_sortiment_view"),
-    path("sortiment/assaigned/<int:vozidlo_id>/type/<str:sortiment_type>", get_vozidlo_sortiment_type_view, name="get_vozidlo_sortiment_type_view"),
+    path("sortiment/assigned/<int:vozidlo_id>/type/<str:sortiment_type>", get_vozidlo_sortiment_type_view, name="get_vozidlo_sortiment_type_view"),
+    path("sortiment/assaigned/<int:vozidlo_id>/type/<str:sortiment_type>", get_vozidlo_sortiment_type_view, name="get_vozidlo_sortiment_type_view_legacy"),
     path("sortiment/available/<int:vozidlo_id>/type/<str:sortiment_type>", get_vozidlo_available_sortiment_view, name="get_vozidlo_available_sortiment_view"),
 ]

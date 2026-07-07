@@ -1,9 +1,9 @@
-import os, json
+import logging
+import os
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from django.core.cache import cache
 from rest_framework.permissions import IsAuthenticated
-from django.http import JsonResponse, HttpResponseBadRequest
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
 from GoldFrenAPI.Services.GA4_Service import (
     get_home_page_metrics,
@@ -17,9 +17,31 @@ from GoldFrenAPI.Services.GA4_Service import (
     get_device_engagment
 )
 
+logger = logging.getLogger(__name__)
+
 # Cache timeout settings for home page
 CACHE_TIMEOUT_HOME = int(os.getenv("GA4_CACHE_TIMEOUT", 3600)) # 1 hour
 CACHE_TIMEOUT_METRICS = int(os.getenv("GA4_CACHE_TIMEOUT_METRICS", 300)) # 5 minutes
+MAX_GA4_DAYS = int(os.getenv("GA4_MAX_DAYS", 365))
+MAX_GA4_LIMIT = int(os.getenv("GA4_MAX_LIMIT", 100))
+
+
+def _bounded_int(request, name, default, minimum, maximum):
+    raw_value = request.GET.get(name, default)
+    try:
+        value = int(raw_value)
+    except (TypeError, ValueError):
+        raise ValueError(f"{name} must be an integer")
+
+    if value < minimum or value > maximum:
+        raise ValueError(f"{name} must be between {minimum} and {maximum}")
+
+    return value
+
+
+def _analytics_error(message):
+    logger.exception(message)
+    return JsonResponse({"error": "Failed to fetch analytics data"}, status=500)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
@@ -42,8 +64,8 @@ def get_home_page_metrics_view(request):
         # Return the fresh metrics
         return JsonResponse(metrics, safe=False)
     
-    except Exception as ex:
-        return HttpResponseBadRequest(f"Error fetching home page metrics: {str(ex)}")
+    except Exception:
+        return _analytics_error("Error fetching home page metrics")
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
@@ -66,15 +88,15 @@ def get_top_searched_manufacturers_view(request):
         # Return the fresh manufacturers
         return JsonResponse(manufacturers, safe=False)
     
-    except Exception as ex:
-        return HttpResponseBadRequest(f"Error fetching top searched manufacturers: {str(ex)}")
+    except Exception:
+        return _analytics_error("Error fetching top searched manufacturers")
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def get_sessions_manual_source_view(request):
     try:
         # Try to get days from request parameters
-        days = int(request.GET.get('days', 30))
+        days = _bounded_int(request, 'days', 30, 1, MAX_GA4_DAYS)
         
         # Try to get cached manual sources
         cache_key = f"sessions_manual_source_days_{days}"
@@ -93,16 +115,18 @@ def get_sessions_manual_source_view(request):
         # Return the fresh sources
         return JsonResponse(sources, safe=False)
     
-    except Exception as ex:
-        return HttpResponseBadRequest(f"Error fetching sessions by manual source: {str(ex)}")
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
+    except Exception:
+        return _analytics_error("Error fetching sessions by manual source")
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def get_language_sessions_view(request):
     try:
         # Try to get limit and days from request parameters
-        limit = int(request.GET.get('limit', 10))
-        days = int(request.GET.get('days', 30))
+        limit = _bounded_int(request, 'limit', 10, 1, MAX_GA4_LIMIT)
+        days = _bounded_int(request, 'days', 30, 1, MAX_GA4_DAYS)
         
         # Try to get cached language sessions
         cache_key = f"language_sessions_limit_{limit}_days_{days}"
@@ -121,16 +145,18 @@ def get_language_sessions_view(request):
         # Return the fresh language sessions
         return JsonResponse(languages, safe=False)
     
-    except Exception as ex:
-        return HttpResponseBadRequest(f"Error fetching sessions by language: {str(ex)}")
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
+    except Exception:
+        return _analytics_error("Error fetching sessions by language")
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def get_top_view_pages_view(request):
     try:
         # Try to get limit and days from request parameters
-        limit = int(request.GET.get('limit', 10))
-        days = int(request.GET.get('days', 30))
+        limit = _bounded_int(request, 'limit', 10, 1, MAX_GA4_LIMIT)
+        days = _bounded_int(request, 'days', 30, 1, MAX_GA4_DAYS)
         
         # Try to get cached top viewed pages
         cache_key = f"top_view_pages_limit_{limit}_days_{days}"
@@ -149,15 +175,17 @@ def get_top_view_pages_view(request):
         # Return the fresh top viewed pages
         return JsonResponse(languages, safe=False)
     
-    except Exception as ex:
-        return HttpResponseBadRequest(f"Error fetching top view pages: {str(ex)}")
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
+    except Exception:
+        return _analytics_error("Error fetching top view pages")
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def get_web_stats_summary_view(request):
     try:
         # Try to get days and limit from request parameters
-        days = int(request.GET.get('days', 30))
+        days = _bounded_int(request, 'days', 30, 1, MAX_GA4_DAYS)
         
         # Try to get cached web stats summary
         cache_key = f"web_stats_summary_days_{days}"
@@ -176,15 +204,17 @@ def get_web_stats_summary_view(request):
         # Return the fresh web stats summary
         return JsonResponse(summary, safe=False)
     
-    except Exception as ex:
-        return HttpResponseBadRequest(f"Error fetching web stats summary: {str(ex)}")
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
+    except Exception:
+        return _analytics_error("Error fetching web stats summary")
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def get_traffic_over_time_view(request):
     try:
         # Try to get days and limit from request parameters
-        days = int(request.GET.get('days', 30))
+        days = _bounded_int(request, 'days', 30, 1, MAX_GA4_DAYS)
 
         # Try to get cached traffic over time data
         cache_key = f"traffic_over_time_days_{days}"
@@ -203,15 +233,17 @@ def get_traffic_over_time_view(request):
         # Return the fresh traffic over time data
         return JsonResponse(summary, safe=False)
     
-    except Exception as ex:
-        return HttpResponseBadRequest(f"Error fetching traffic over time data: {str(ex)}")
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
+    except Exception:
+        return _analytics_error("Error fetching traffic over time data")
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def get_engagment_quality_view(request):
     try:
         # Try to get days from request parameters
-        days = int(request.GET.get('days', 30))
+        days = _bounded_int(request, 'days', 30, 1, MAX_GA4_DAYS)
         
         # Try to get cached engagement quality data
         cache_key = f"engagment_quality_days_{days}"
@@ -230,15 +262,17 @@ def get_engagment_quality_view(request):
         # Return the fresh engagement quality data
         return JsonResponse(data, safe=False)
     
-    except Exception as ex:
-        return HttpResponseBadRequest(f"Error fetching engagement quality data: {str(ex)}")
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
+    except Exception:
+        return _analytics_error("Error fetching engagement quality data")
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsInternalUser])
 def get_device_engagment_view(request):
     try:
         # Try to get days from request parameters
-        days = int(request.GET.get('days', 30))
+        days = _bounded_int(request, 'days', 30, 1, MAX_GA4_DAYS)
         
         # Try to get cached device engagement data
         cache_key = f"device_engagment_days_{days}"
@@ -257,5 +291,7 @@ def get_device_engagment_view(request):
         # Return the fresh device engagement data
         return JsonResponse(data, safe=False)
     
-    except Exception as ex:
-        return HttpResponseBadRequest(f"Error fetching device engagement data: {str(ex)}")
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
+    except Exception:
+        return _analytics_error("Error fetching device engagement data")

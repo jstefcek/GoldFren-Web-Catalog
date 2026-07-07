@@ -2,6 +2,7 @@
 
 # Imports
 import json
+import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from GoldFrenAPI.Authentication.Auth_Permissions import IsInternalUser
@@ -11,7 +12,8 @@ from GoldFrenAPI.utils.utils import (
     get_total_count,
     get_total_count_with_params,
     get_pagination_urls,
-    get_publication_states
+    get_publication_states,
+    parse_publication_value
 )
 from GoldFrenAPI.Services.Adapter_Service import (
     get_adapters as get_all_adapters,
@@ -22,6 +24,8 @@ from GoldFrenAPI.Services.Adapter_Service import (
     get_filtered_adapters,
     get_vozidla_for_adapter
 )
+
+logger = logging.getLogger(__name__)
 
 # Function to get all adapters
 @api_view(['GET'])
@@ -38,7 +42,7 @@ def get_adapters(request):
     
         # If limit is set to 0 return all adapters
         if limit == 0:
-            adapter_objects = get_all_adapters(states=states)
+            adapter_objects = get_all_adapters(states=states) or []
             adapters = [adapter.to_dict() for adapter in adapter_objects]
             return JsonResponse({
                 "count": len(adapters),
@@ -49,7 +53,7 @@ def get_adapters(request):
         total_adapters = get_total_count("d_adapter", states=states)
         
         # If limit is set to a number, return paginated adapters
-        adapter_objects = get_all_adapters(limit=limit, page=page, states=states)
+        adapter_objects = get_all_adapters(limit=limit, page=page, states=states) or []
         adapters = [adapter.to_dict() for adapter in adapter_objects]
         
         # Construct next and previous page URLs
@@ -166,7 +170,7 @@ def get_vozidla_for_adapter_view(request):
         
         # If limit is set to 0 return all adapters
         if limit == 0:
-            adapter_objects = get_vozidla_for_adapter(adapter_id=adapter_id)
+            adapter_objects = get_vozidla_for_adapter(adapter_id=adapter_id) or []
             if adapter_objects:
                 adapters = [adapter.to_dict() for adapter in adapter_objects]
                 return JsonResponse({
@@ -175,7 +179,7 @@ def get_vozidla_for_adapter_view(request):
                 }, status=200)
         
         # Get vozidla for the adapter
-        vozidla_objects = get_vozidla_for_adapter(limit=limit, page=page, states=states, adapter_id=adapter_id)
+        vozidla_objects = get_vozidla_for_adapter(limit=limit, page=page, states=states, adapter_id=adapter_id) or []
         if vozidla_objects:
             vozidla = [vozidlo.to_dict() for vozidlo in vozidla_objects]
         
@@ -195,8 +199,9 @@ def get_vozidla_for_adapter_view(request):
             
         return JsonResponse({"error": "No vozidla found for this adapter"}, status=404)
     
-    except Exception as ex:
-        return JsonResponse({"error": f"Error fetching vozidla: {str(ex)}"}, status=500)
+    except Exception:
+        logger.exception("Error fetching vozidla for adapter")
+        return JsonResponse({"error": "Error fetching vozidla"}, status=500)
     
 # Function to update an adapter
 @api_view(['PUT'])
@@ -262,11 +267,12 @@ def adapter_publication_view(request, adapter_id):
 
     # Get params from request
     try:
-        publikovat = request.GET.get("pbl", None)
-        if publikovat is None:
+        raw_publikovat = request.GET.get("pbl", None)
+        if raw_publikovat is None:
             return JsonResponse({"error": "publikovat parameter is required"}, status=400)
-    except Exception as ex:
-        return JsonResponse({"error": f"There was a error getting publikovat parameter. Error: {ex}"}, status=400)
+        publikovat = parse_publication_value(raw_publikovat)
+    except ValueError as ex:
+        return JsonResponse({"error": str(ex)}, status=400)
     
     # Update adapter publication state
     success = adapter_publication(adapter_id, publikovat)
