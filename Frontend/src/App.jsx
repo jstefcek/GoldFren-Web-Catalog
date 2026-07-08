@@ -99,6 +99,8 @@ function App() {
           enableFloatingButton={true}
           privacyPolicyUrl="/cookies"
           displayType="popup"
+          // Keep embedded contact maps visible; analytics still initializes only after consent callbacks.
+          disableAutomaticBlocking={true}
           // Initial cookie preferences
           initialPreferences={{
             Analytics: true,

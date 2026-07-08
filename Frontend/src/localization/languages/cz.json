@@ -246,6 +246,13 @@
   "contact": {
     "czech_republic": "Česká republika",
     "main_title": "Kontaktní údaje",
+    "intro": "Spojte se s námi telefonicky, e-mailem nebo nás navštivte přímo v provozovně GOLD FREN.",
+    "call_us": "Zavolat",
+    "email_us": "Napsat e-mail",
+    "open_map": "Otevřít mapu",
+    "location_map": "Kde nás najdete",
+    "map_description": "Provozovna GOLD FREN s.r.o. v Poběžovicích u Holic.",
+    "map_title": "Mapa provozovny GOLD FREN s.r.o.",
     "contact_info": "Adresa závodu, korespondenční, fakturační a dodací adresa:",
     "telephone": "Telefon:",
     "email": "E-mail:",
@@ -493,4 +500,4 @@
       "sortiment_search_text": "Sortiment"
     }
   }
-}  
+}

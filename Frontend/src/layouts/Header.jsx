@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   Menu,
   X,
@@ -10,20 +10,98 @@ import {
   Globe,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../services/authContext";
 import { useMenuItemsConfig } from "./HeaderConfig/menuItemsConfig";
+
+const menuLinkClass = ({ isActive }) =>
+  `flex items-center px-4 py-2 rounded-lg font-normal transition ${
+    isActive
+      ? "bg-red-50 text-red-700"
+      : "text-gray-700 hover:text-red-600 hover:bg-red-50"
+  }`;
+
+const submenuLinkClass = ({ isActive }) =>
+  `block px-4 py-3 text-sm font-normal transition ${
+    isActive
+      ? "bg-red-50 text-red-700"
+      : "text-gray-700 hover:bg-red-50 hover:text-red-600"
+  }`;
+
+const mobileLinkClass = ({ isActive }) =>
+  `block px-4 py-3 rounded-lg font-medium transition ${
+    isActive
+      ? "bg-red-50 text-red-700"
+      : "text-gray-700 hover:text-red-600 hover:bg-red-50"
+  }`;
+
+const mobileSubmenuLinkClass = ({ isActive }) =>
+  `block px-4 py-3 rounded-lg font-medium transition ${
+    isActive
+      ? "bg-red-50 text-red-700"
+      : "text-gray-600 hover:text-red-600 hover:bg-red-50"
+  }`;
+
+const userMenuLinkClass = ({ isActive }) =>
+  `block px-4 py-2 text-sm flex items-center transition ${
+    isActive
+      ? "bg-red-50 text-red-700"
+      : "text-gray-700 hover:bg-red-50 hover:text-red-600"
+  }`;
+
+const mobileUserLinkClass = ({ isActive }) =>
+  `flex items-center px-4 py-3 rounded-lg font-medium transition ${
+    isActive
+      ? "bg-red-50 text-red-700"
+      : "text-gray-600 hover:text-red-600 hover:bg-red-50"
+  }`;
+
+function useDropdownMenu() {
+  const [open, setOpen] = useState(false);
+  const [clicked, setClicked] = useState(false);
+  const closeTimeout = useRef();
+
+  const close = useCallback(() => {
+    setOpen(false);
+    setClicked(false);
+  }, []);
+
+  const toggle = useCallback(() => {
+    setOpen((currentOpen) => {
+      const nextOpen = !currentOpen;
+      setClicked(nextOpen);
+      return nextOpen;
+    });
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    clearTimeout(closeTimeout.current);
+    if (!clicked) setOpen(true);
+  }, [clicked]);
+
+  const handleMouseLeave = useCallback(() => {
+    closeTimeout.current = setTimeout(() => {
+      if (!clicked) setOpen(false);
+    }, 200);
+  }, [clicked]);
+
+  useEffect(() => {
+    return () => clearTimeout(closeTimeout.current);
+  }, []);
+
+  return { open, close, toggle, handleMouseEnter, handleMouseLeave };
+}
 
 function Header() {
   // State management for various menu states
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSortimentOpen, setMobileSortimentOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const [sortimentMenuOpen, setSortimentMenuOpen] = useState(false);
-  const [sortimentClicked, setSortimentClicked] = useState(false);
-  const [langClicked, setLangClicked] = useState(false);
-  const [userClicked, setUserClicked] = useState(false);
+  const sortimentMenu = useDropdownMenu();
+  const langMenu = useDropdownMenu();
+  const userMenu = useDropdownMenu();
+  const closeSortimentMenu = sortimentMenu.close;
+  const closeLangMenu = langMenu.close;
+  const closeUserMenu = userMenu.close;
 
   // Auth context to get user info and logout function
   const { userInfo, logout } = useAuth();
@@ -37,13 +115,13 @@ function Header() {
   const sortimentMenuRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
-  // Refs for timeouts to handle menu close delays
-  const sortimentCloseTimeout = useRef();
-  const langCloseTimeout = useRef();
-  const userCloseTimeout = useRef();
-
   // Configuration for menu items
   const menuItemsConfig = useMenuItemsConfig();
+  const sortimentMenuId = "header-sortiment-menu";
+  const languageMenuId = "header-language-menu";
+  const userMenuId = "header-user-menu";
+  const mobileMenuId = "header-mobile-menu";
+  const mobileSortimentMenuId = "header-mobile-sortiment-menu";
 
   // Effect to close mobile menu on window resize
   useEffect(() => {
@@ -56,115 +134,110 @@ function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Effect to close mobile menu when navigating to a new route
-  useEffect(() => {
-    setMobileMenuOpen(false);
-    setMobileSortimentOpen(false);
-    setSortimentMenuOpen(false);
-  }, [location.pathname]);
-
   // Effect to handle clicks outside of the menus
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
-        setUserMenuOpen(false);
-        setUserClicked(false);
+        closeUserMenu();
       }
       if (langMenuRef.current && !langMenuRef.current.contains(e.target)) {
-        setLangMenuOpen(false);
-        setLangClicked(false);
+        closeLangMenu();
       }
       if (
         sortimentMenuRef.current &&
         !sortimentMenuRef.current.contains(e.target)
       ) {
-        setSortimentMenuOpen(false);
-        setSortimentClicked(false);
+        closeSortimentMenu();
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [closeSortimentMenu, closeLangMenu, closeUserMenu]);
 
-  // Cleanup timeouts on component unmount
   useEffect(() => {
-    return () => {
-      clearTimeout(sortimentCloseTimeout.current);
-      clearTimeout(langCloseTimeout.current);
-      clearTimeout(userCloseTimeout.current);
+    if (!mobileMenuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const focusableSelector =
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    document.body.style.overflow = "hidden";
+
+    const focusFirstMenuItem = window.setTimeout(() => {
+      const firstFocusable = mobileMenuRef.current?.querySelector(focusableSelector);
+      firstFocusable?.focus();
+    }, 0);
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+        return;
+      }
+
+      if (event.key !== "Tab" || !mobileMenuRef.current) return;
+
+      const focusableItems = Array.from(
+        mobileMenuRef.current.querySelectorAll(focusableSelector)
+      );
+      if (focusableItems.length === 0) return;
+
+      const firstItem = focusableItems[0];
+      const lastItem = focusableItems[focusableItems.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstItem) {
+        event.preventDefault();
+        lastItem.focus();
+      } else if (!event.shiftKey && document.activeElement === lastItem) {
+        event.preventDefault();
+        firstItem.focus();
+      }
     };
-  }, []);
 
-  const handleSortimentMouseEnter = () => {
-    clearTimeout(sortimentCloseTimeout.current);
-    if (!sortimentClicked) setSortimentMenuOpen(true);
-  };
+    document.addEventListener("keydown", handleKeyDown);
 
-  const handleSortimentMouseLeave = () => {
-    sortimentCloseTimeout.current = setTimeout(() => {
-      if (!sortimentClicked) setSortimentMenuOpen(false);
-    }, 200);
-  };
-
-  const handleLangMouseEnter = () => {
-    clearTimeout(langCloseTimeout.current);
-    if (!langClicked) setLangMenuOpen(true);
-  };
-
-  const handleLangMouseLeave = () => {
-    langCloseTimeout.current = setTimeout(() => {
-      if (!langClicked) setLangMenuOpen(false);
-    }, 200);
-  };
-
-  const handleUserMouseEnter = () => {
-    clearTimeout(userCloseTimeout.current);
-    if (!userClicked) setUserMenuOpen(true);
-  };
-
-  const handleUserMouseLeave = () => {
-    userCloseTimeout.current = setTimeout(() => {
-      if (!userClicked) setUserMenuOpen(false);
-    }, 200);
-  };
+    return () => {
+      window.clearTimeout(focusFirstMenuItem);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
 
   // Function to handle language change
   const handleLanguageChange = useCallback(
     (lng) => {
       i18n.changeLanguage(lng);
-      setLangMenuOpen(false);
-      setLangClicked(false);
+      closeLangMenu();
       setMobileMenuOpen(false);
     },
-    [i18n]
+    [i18n, closeLangMenu]
   );
 
   // Function to handle logout
   const handleLogout = () => {
     sessionStorage.clear();
     logout();
-    setUserMenuOpen(false);
-    setUserClicked(false);
+    closeUserMenu();
     setMobileMenuOpen(false);
     navigate("/");
   };
 
   // Function to check if the current route matches the given path
-  const isActiveRoute = (path) => {
+  const isActiveRoute = useCallback((path) => {
     if (path === "/") return location.pathname === "/";
     return location.pathname.startsWith(path);
-  };
+  }, [location.pathname]);
 
   // Function to check if any submenu item is active
-  const hasActiveSubmenuItem = (submenu) => {
-    return submenu.some((item) => isActiveRoute(item.path));
-  };
+  const hasActiveSubmenuItem = useCallback(
+    (submenu) => submenu.some((item) => isActiveRoute(item.path)),
+    [isActiveRoute]
+  );
 
-  const languages = [
+  const languages = useMemo(() => [
     { code: "cs", name: "Česky", flagIcon: "/icons/czech.svg" },
     { code: "en", name: "English", flagIcon: "/icons/english.svg" },
     { code: "de", name: "Deutsch", flagIcon: "/icons/german.svg" },
-  ];
+  ], []);
 
   const currentLanguageInfo =
     languages.find((lang) => lang.code === i18n.language) || languages[0];
@@ -181,6 +254,8 @@ function Header() {
                 className="h-8 w-auto"
                 width="160"
                 height="32"
+                decoding="async"
+                fetchPriority="high"
               />
             </Link>
           </div>
@@ -193,15 +268,14 @@ function Header() {
                     key={item.name}
                     className="relative"
                     ref={sortimentMenuRef}
-                    onMouseEnter={handleSortimentMouseEnter}
-                    onMouseLeave={handleSortimentMouseLeave}
+                    onMouseEnter={sortimentMenu.handleMouseEnter}
+                    onMouseLeave={sortimentMenu.handleMouseLeave}
                   >
                     <button
-                      onClick={() => {
-                        const next = !sortimentMenuOpen;
-                        setSortimentMenuOpen(next);
-                        setSortimentClicked(next);
-                      }}
+                      onClick={sortimentMenu.toggle}
+                      aria-haspopup="menu"
+                      aria-expanded={sortimentMenu.open}
+                      aria-controls={sortimentMenuId}
                       className={`flex items-center px-4 py-2 rounded-lg font-normal transition cursor-pointer ${
                         hasActiveSubmenuItem(item.submenu)
                           ? "bg-red-50 text-red-700"
@@ -211,29 +285,24 @@ function Header() {
                       {item.name}
                       <ChevronDown
                         className={`h-4 w-4 ml-2 ${
-                          sortimentMenuOpen ? "rotate-180" : ""
+                          sortimentMenu.open ? "rotate-180" : ""
                         }`}
+                        aria-hidden="true"
                       />
                     </button>
-                    {sortimentMenuOpen && (
+                    {sortimentMenu.open && (
                       <div className="absolute left-0 mt-2 w-56 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 border border-gray-100">
-                        <ul className="py-2">
+                        <ul id={sortimentMenuId} className="py-2" role="menu">
                           {item.submenu.map((subitem) => (
                             <li key={subitem.name}>
-                              <Link
+                              <NavLink
                                 to={subitem.path}
-                                onClick={() => {
-                                  setSortimentMenuOpen(false);
-                                  setSortimentClicked(false);
-                                }}
-                                className={`block px-4 py-3 text-sm font-normal transition ${
-                                  isActiveRoute(subitem.path)
-                                    ? "bg-red-50 text-red-700"
-                                    : "text-gray-700 hover:bg-red-50 hover:text-red-600"
-                                }`}
+                                onClick={sortimentMenu.close}
+                                className={submenuLinkClass}
+                                role="menuitem"
                               >
                                 {subitem.name}
-                              </Link>
+                              </NavLink>
                             </li>
                           ))}
                         </ul>
@@ -242,16 +311,13 @@ function Header() {
                   </li>
                 ) : (
                   <li key={item.name}>
-                    <Link
+                    <NavLink
                       to={item.path}
-                      className={`flex items-center px-4 py-2 rounded-lg font-normal transition ${
-                        isActiveRoute(item.path)
-                          ? "bg-red-50 text-red-700"
-                          : "text-gray-700 hover:text-red-600 hover:bg-red-50"
-                      }`}
+                      end={item.path === "/"}
+                      className={menuLinkClass}
                     >
                       {item.name}
-                    </Link>
+                    </NavLink>
                   </li>
                 )
               )}
@@ -263,36 +329,40 @@ function Header() {
             <div
               className="relative hidden lg:block"
               ref={langMenuRef}
-              onMouseEnter={handleLangMouseEnter}
-              onMouseLeave={handleLangMouseLeave}
+              onMouseEnter={langMenu.handleMouseEnter}
+              onMouseLeave={langMenu.handleMouseLeave}
             >
               <button
-                onClick={() => {
-                  const next = !langMenuOpen;
-                  setLangMenuOpen(next);
-                  setLangClicked(next);
-                }}
+                onClick={langMenu.toggle}
+                aria-haspopup="menu"
+                aria-expanded={langMenu.open}
+                aria-controls={languageMenuId}
+                aria-label={t("header.language")}
                 className="flex items-center text-gray-700 hover:text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition cursor-pointer font-normal"
               >
                 <img
                   src={currentLanguageInfo.flagIcon}
                   alt={currentLanguageInfo.code}
                   className="h-5 w-5 mr-2 rounded-sm"
+                  decoding="async"
                 />
                 <span className="hidden md:inline">
                   {currentLanguageInfo.name}
                 </span>
                 <ChevronDown
-                  className={`h-4 w-4 ml-1 ${langMenuOpen ? "rotate-180" : ""}`}
+                  className={`h-4 w-4 ml-1 ${langMenu.open ? "rotate-180" : ""}`}
+                  aria-hidden="true"
                 />
               </button>
-              {langMenuOpen && (
+              {langMenu.open && (
                 <div className="absolute right-0 mt-2 min-w-[10rem] max-w-[12rem] rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 border border-gray-100">
-                  <ul className="py-2">
+                  <ul id={languageMenuId} className="py-2" role="menu">
                     {languages.map((lang) => (
                       <li key={lang.code}>
                         <button
                           onClick={() => handleLanguageChange(lang.code)}
+                          role="menuitemradio"
+                          aria-checked={i18n.language === lang.code}
                           className={`w-full text-left px-4 py-2 flex items-center gap-4 font-bold transition cursor-pointer ${
                             i18n.language === lang.code
                               ? "bg-red-50 text-red-700"
@@ -303,6 +373,8 @@ function Header() {
                             src={lang.flagIcon}
                             alt={lang.code}
                             className="h-5 w-5 font-bold"
+                            loading="lazy"
+                            decoding="async"
                           />
                           {lang.name}
                           {i18n.language === lang.code && (
@@ -323,30 +395,30 @@ function Header() {
               <div
                 className="relative"
                 ref={userMenuRef}
-                onMouseEnter={handleUserMouseEnter}
-                onMouseLeave={handleUserMouseLeave}
+                onMouseEnter={userMenu.handleMouseEnter}
+                onMouseLeave={userMenu.handleMouseLeave}
               >
                 <button
-                  onClick={() => {
-                    const next = !userMenuOpen;
-                    setUserMenuOpen(next);
-                    setUserClicked(next);
-                  }}
+                  onClick={userMenu.toggle}
+                  aria-haspopup="menu"
+                  aria-expanded={userMenu.open}
+                  aria-controls={userMenuId}
                   className="bg-white hover:bg-red-50 border-2 border-red-600 text-red-600 px-3 py-2 rounded-lg flex items-center font-medium transition cursor-pointer"
                 >
-                  <User className="h-5 w-5 mr-2" />
+                  <User className="h-5 w-5 mr-2" aria-hidden="true" />
                   <span className="hidden md:inline">
                     {userInfo.displayName}
                   </span>
                   <ChevronDown
                     className={`h-4 w-4 ml-1 ${
-                      userMenuOpen ? "rotate-180" : ""
+                      userMenu.open ? "rotate-180" : ""
                     }`}
+                    aria-hidden="true"
                   />
                 </button>
-                {userMenuOpen && (
+                {userMenu.open && (
                   <div className="absolute right-0 mt-2 min-w-[12rem] max-w-[14rem] rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 border border-gray-100">
-                    <ul className="py-1">
+                    <ul id={userMenuId} className="py-1" role="menu">
                       <li className="px-4 pt-2 font-bold text-xl text-gray-800">
                         {userInfo.fullName}
                       </li>
@@ -360,45 +432,34 @@ function Header() {
                         </li>
                       )}
                       <li>
-                        <Link
+                        <NavLink
                           to="/admin/dashboard"
-                          onClick={() => {
-                            setUserMenuOpen(false);
-                            setUserClicked(false);
-                          }}
-                          className={`block px-4 py-2 text-sm flex items-center transition border-t border-gray-100 ${
-                            isActiveRoute("/admin")
-                              ? "bg-red-50 text-red-700"
-                              : "text-gray-700 hover:bg-red-50 hover:text-red-600"
-                          }`}
+                          onClick={userMenu.close}
+                          className={({ isActive }) => `${userMenuLinkClass({ isActive })} border-t border-gray-100`}
+                          role="menuitem"
                         >
-                          <MonitorCog className="h-4 w-4 mr-2" />{" "}
+                          <MonitorCog className="h-4 w-4 mr-2" aria-hidden="true" />{" "}
                           {t("header.admin_page")}
-                        </Link>
+                        </NavLink>
                       </li>
                       <li>
-                        <Link
-                          to="/account"
-                          onClick={() => {
-                            setUserMenuOpen(false);
-                            setUserClicked(false);
-                          }}
-                          className={`block px-4 py-2 text-sm flex items-center transition ${
-                            isActiveRoute("/account")
-                              ? "bg-red-50 text-red-700"
-                              : "text-gray-700 hover:bg-red-50 hover:text-red-600"
-                          }`}
+                        <NavLink
+                          to="/admin/account"
+                          onClick={userMenu.close}
+                          className={userMenuLinkClass}
+                          role="menuitem"
                         >
-                          <User className="h-4 w-4 mr-2" />{" "}
+                          <User className="h-4 w-4 mr-2" aria-hidden="true" />{" "}
                           {t("header.my_account")}
-                        </Link>
+                        </NavLink>
                       </li>
                       <li className="border-t border-gray-100">
                         <button
                           onClick={handleLogout}
+                          role="menuitem"
                           className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center hover:bg-red-50 transition cursor-pointer"
                         >
-                          <LogOut className="h-4 w-4 mr-2" />{" "}
+                          <LogOut className="h-4 w-4 mr-2" aria-hidden="true" />{" "}
                           {t("header.logout")}
                         </button>
                       </li>
@@ -420,7 +481,9 @@ function Header() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-lg hover:bg-red-50 transition"
-              aria-label="Mobile Menu"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls={mobileMenuId}
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -434,8 +497,12 @@ function Header() {
         {/* Mobile menu fullscreen overlay */}
         {mobileMenuOpen && (
           <div
+            id={mobileMenuId}
             className="lg:hidden fixed inset-0 z-50 bg-white"
             ref={mobileMenuRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Main menu"
           >
             <div className="flex flex-col h-full">
               {/* Header with close button */}
@@ -447,11 +514,14 @@ function Header() {
                     className="h-8 w-auto"
                     width="160"
                     height="32"
+                    decoding="async"
+                    fetchPriority="high"
                   />
                 </Link>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2 rounded-lg hover:bg-red-50 transition"
+                  aria-label="Close menu"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -467,6 +537,8 @@ function Header() {
                           onClick={() =>
                             setMobileSortimentOpen(!mobileSortimentOpen)
                           }
+                          aria-expanded={mobileSortimentOpen}
+                          aria-controls={mobileSortimentMenuId}
                           className={`w-full flex items-center justify-between px-4 py-3 rounded-lg font-medium transition ${
                             hasActiveSubmenuItem(item.submenu)
                               ? "bg-red-50 text-red-700"
@@ -481,37 +553,30 @@ function Header() {
                           )}
                         </button>
                         {mobileSortimentOpen && (
-                          <div className="ml-4 mt-2 space-y-1">
+                          <div id={mobileSortimentMenuId} className="ml-4 mt-2 space-y-1">
                             {item.submenu.map((subitem) => (
-                              <Link
+                              <NavLink
                                 key={subitem.name}
                                 to={subitem.path}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className={`block px-4 py-3 rounded-lg font-medium transition ${
-                                  isActiveRoute(subitem.path)
-                                    ? "bg-red-50 text-red-700"
-                                    : "text-gray-600 hover:text-red-600 hover:bg-red-50"
-                                }`}
+                                className={mobileSubmenuLinkClass}
                               >
                                 {subitem.name}
-                              </Link>
+                              </NavLink>
                             ))}
                           </div>
                         )}
                       </div>
                     ) : (
-                      <Link
+                      <NavLink
                         key={item.name}
                         to={item.path}
+                        end={item.path === "/"}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`block px-4 py-3 rounded-lg font-medium transition ${
-                          isActiveRoute(item.path)
-                            ? "bg-red-50 text-red-700"
-                            : "text-gray-700 hover:text-red-600 hover:bg-red-50"
-                        }`}
+                        className={mobileLinkClass}
                       >
                         {item.name}
-                      </Link>
+                      </NavLink>
                     )
                   )}
 
@@ -538,6 +603,8 @@ function Header() {
                             src={lang.flagIcon}
                             alt={lang.code}
                             className="h-5 w-5 mr-3"
+                            loading="lazy"
+                            decoding="async"
                           />
                           {lang.name}
                           {i18n.language === lang.code && (
@@ -569,30 +636,22 @@ function Header() {
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <Link
+                        <NavLink
                           to="/admin/dashboard"
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center px-4 py-3 rounded-lg font-medium transition ${
-                            isActiveRoute("/admin")
-                              ? "bg-red-50 text-red-700"
-                              : "text-gray-600 hover:text-red-600 hover:bg-red-50"
-                          }`}
+                          className={mobileUserLinkClass}
                         >
                           <MonitorCog className="h-5 w-5 mr-3" />{" "}
                           {t("header.admin_page")}
-                        </Link>
-                        <Link
-                          to="/account"
+                        </NavLink>
+                        <NavLink
+                          to="/admin/account"
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center px-4 py-3 rounded-lg font-medium transition ${
-                            isActiveRoute("/account")
-                              ? "bg-red-50 text-red-700"
-                              : "text-gray-600 hover:text-red-600 hover:bg-red-50"
-                          }`}
+                          className={mobileUserLinkClass}
                         >
                           <User className="h-5 w-5 mr-3" />{" "}
                           {t("header.my_account")}
-                        </Link>
+                        </NavLink>
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center px-4 py-3 rounded-lg font-medium text-red-600 hover:bg-red-50 transition"

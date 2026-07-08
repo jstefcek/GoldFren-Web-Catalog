@@ -1,9 +1,10 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export function useMenuItemsConfig() {
   const { t } = useTranslation();
 
-  return [
+  return useMemo(() => [
     { name: t("home"), path: "/" },
     {
       name: t("sortiment"),
@@ -18,5 +19,5 @@ export function useMenuItemsConfig() {
       ],
     },
     { name: t("kontakt"), path: "/contact" },
-  ];
+  ], [t]);
 }
