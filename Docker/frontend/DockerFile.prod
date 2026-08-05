@@ -1,5 +1,5 @@
 # Build React/Vite app
-FROM node:26.4.0-alpine AS frontend_build
+FROM node:26.6.0-alpine AS frontend_build
 WORKDIR /goldfren_frontend
 
 # Declare build argument and environment variables
@@ -24,9 +24,9 @@ COPY Frontend/ .
 RUN npm run build
 
 # Serve build with Nginx
-FROM nginx:1.31.2-alpine
+FROM nginx:1.31.3-alpine
 
 COPY Docker/nginx/default.prod.conf /etc/nginx/conf.d/default.conf
 COPY Docker/nginx/security-headers.conf /etc/nginx/conf.d/security-headers.conf
-COPY nginx/ssl-params.conf /etc/nginx/snippets/ssl-params.conf
+COPY Docker/nginx/ssl-params.conf /etc/nginx/snippets/ssl-params.conf
 COPY --from=frontend_build /goldfren_frontend/dist /usr/share/nginx/html
