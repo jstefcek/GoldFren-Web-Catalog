@@ -1,3 +1,5 @@
+USE goldfren_data;
+
 INSERT INTO c_subkategorie (kod,kategorie,nazev,nazev_eng) VALUES
 	 (1,1,'Motocross','Dirt'),
 	 (2,1,'Silniční','Street'),

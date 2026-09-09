@@ -1,3 +1,6 @@
+ALTER TABLE goldfren_data.d_hadicka
+  ADD COLUMN popis varchar(255) DEFAULT NULL COMMENT 'Docasny sloupec pro import puvodnich dat' AFTER cislo_dilu;
+
 INSERT INTO goldfren_data.d_hadicka (kod,sortiment,kategorie,obrazek,vektor,cislo_dilu,popis,poznamka,publikovat,aktualizovano,aktualizoval) VALUES
 	 (1,4,NULL,NULL,NULL,'S91900',NULL,NULL,1,NULL,NULL),
 	 (2,4,NULL,NULL,NULL,'S50461',NULL,'original',1,NULL,NULL),
@@ -1624,3 +1627,5 @@ INSERT INTO goldfren_data.d_hadicka (kod,sortiment,kategorie,obrazek,vektor,cisl
 	 (1476,4,NULL,NULL,NULL,'S11114',NULL,'original',1,NULL,NULL),
 	 (1477,4,NULL,NULL,NULL,'S21380',NULL,'original',1,NULL,NULL),
 	 (1478,4,NULL,NULL,NULL,'S21388',NULL,'original',1,NULL,NULL);
+
+ALTER TABLE goldfren_data.d_hadicka DROP COLUMN popis;
