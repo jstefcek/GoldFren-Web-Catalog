@@ -168,3 +168,6 @@ cython_debug/
 logs/django.log.*
 Backend/Keys/ga4_key.json
 .DS_Store
+
+# Local database backups
+/backups/
