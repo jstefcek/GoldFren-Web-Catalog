@@ -96,8 +96,8 @@ def optimize_image(file_object, file_ext: str):
         output.seek(0)
         return InMemoryUploadedFile(output, 'ImageField', file_object.name, 'image/jpeg', output.getvalue().__len__(), None)
     
-    # Do not optimize SVG files
+    # SVG files are served with a restrictive CSP sandbox by Nginx.
     elif file_ext == 'svg':
         return file_object
-    
+
     return file_object

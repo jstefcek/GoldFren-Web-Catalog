@@ -1,4 +1,4 @@
--- Creates a goldfren user
-CREATE USER IF NOT EXISTS 'goldfren_user'@'%' IDENTIFIED BY 'U5Lko9TY6.FVT_-rKgkQn_pCCh1IYy';
+-- MYSQL_USER is created by the official MySQL entrypoint before init scripts run.
+-- Grant that application user access to the separately initialized catalog database.
 GRANT ALL PRIVILEGES ON goldfren_data.* TO 'goldfren_user'@'%';
 FLUSH PRIVILEGES;

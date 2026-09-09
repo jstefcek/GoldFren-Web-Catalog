@@ -1,5 +1,12 @@
 import { CapFirstLetter } from '../utils';
 
+const escapeHtml = (value) => String(value)
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#039;');
+
 export function PrintData(items, columns, category, translate) {
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
@@ -9,7 +16,7 @@ export function PrintData(items, columns, category, translate) {
   const htmlContent = `
     <html>
       <head>
-        <title>${category} – Exported Data</title>
+        <title>${escapeHtml(category)} – Exported Data</title>
         <style>
           /* ====== Base Styles ====== */
           body {
@@ -125,7 +132,7 @@ export function PrintData(items, columns, category, translate) {
           <div class="header-left">
             <img src="/logo/goldfren-logo.svg" alt="GoldFren Logo" class="logo" onerror="this.style.display='none'">
             <div class="header-info">
-              <h1>${CapFirstLetter(category)} – Exported Data</h1>
+              <h1>${escapeHtml(CapFirstLetter(category))} – Exported Data</h1>
               <p><strong>Generated:</strong> ${generatedAt}</p>
               <p><strong>Total Items:</strong> ${items.length}</p>
             </div>
@@ -135,7 +142,7 @@ export function PrintData(items, columns, category, translate) {
         <table>
           <thead>
             <tr>
-              ${columns.map(col => `<th>${translate(col.label) || col.label || '—'}</th>`).join('')}
+              ${columns.map(col => `<th>${escapeHtml(translate(col.label) || col.label || '—')}</th>`).join('')}
             </tr>
           </thead>
           <tbody>
@@ -145,10 +152,10 @@ export function PrintData(items, columns, category, translate) {
                   const value = row[col.key];
                   if (col.key === 'obrazek' || col.key === 'vektor' || col.type === 'image' || col.type === 'vector') {
                     return value
-                      ? `<td><img src="${value}" alt="${col.key}"></td>`
+                      ? `<td><img src="${escapeHtml(value)}" alt="${escapeHtml(col.key)}"></td>`
                       : `<td>—</td>`;
                   }
-                  return `<td>${value !== undefined && value !== null && value !== '' ? value : '—'}</td>`;
+                  return `<td>${escapeHtml(value !== undefined && value !== null && value !== '' ? value : '—')}</td>`;
                 }).join('')}
               </tr>
             `).join('')}

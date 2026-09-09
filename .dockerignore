@@ -11,6 +11,8 @@
 .codex
 
 Backend/GoldFren_Media
+Backend/goldfren-env
+Backend/.venv
 Backend/**/__pycache__
 Backend/**/*.pyc
 Backend/**/*.pyo
